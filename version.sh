@@ -16,7 +16,7 @@
 # Modify FROM: https://github.com/kubesphere/kubekey/blob/master/hack/version.sh
 # Modifier NAME: Lingnan Hua, MAIL: chisato-x@bupt.edu.cn
 
-GIT_REPO_HTTPS_ADDRESS=https://gitee.com/taveen/kube
+GIT_REPO_HTTPS_ADDRESS=https://github.com/Juminiy/kube
 
 set -o errexit
 set -o nounset
