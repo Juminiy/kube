@@ -91,7 +91,6 @@ func NewDeployment(c *DeploymentConfig) error {
 	} else {
 		kubeConfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
 	}
-	flag.Parse()
 
 	restConfig, err := clientcmd.BuildConfigFromFlags("", *kubeConfig)
 	if err != nil {

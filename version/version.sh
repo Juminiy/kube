@@ -16,7 +16,7 @@
 # Modify FROM: https://github.com/kubesphere/kubekey/blob/master/hack/version.sh
 # Modifier NAME: Lingnan Hua, MAIL: chisato-x@bupt.edu.cn
 
-GIT_REPO_HTTPS_ADDRESS=https://github.com/Juminiy/kube
+GIT_REPO_HTTPS_ADDRESS=github.com/Juminiy/kube
 
 set -o errexit
 set -o nounset
@@ -94,17 +94,17 @@ version::ldflags() {
         local key=${1}
         local val=${2}
         ldflags+=(
-            "-X '${GIT_REPO_HTTPS_ADDRESS}.version.${key}=${val}'"
+            "-X 'version.${key}=${val}'"
         )
     }
 
-    add_ldflag "buildDate" "$(date ${SOURCE_DATE_EPOCH:+"--date=@${SOURCE_DATE_EPOCH}"} -u +'%Y-%m-%dT%H:%M:%SZ')"
-    add_ldflag "gitCommit" "${GIT_COMMIT}"
-    add_ldflag "gitTreeState" "${GIT_TREE_STATE}"
-    add_ldflag "gitMajor" "${GIT_MAJOR}"
-    add_ldflag "gitMinor" "${GIT_MINOR}"
-    add_ldflag "gitVersion" "${GIT_VERSION}"
-    add_ldflag "gitReleaseCommit" "${GIT_RELEASE_COMMIT}"
+    add_ldflag "BuildDate" "$(date ${SOURCE_DATE_EPOCH:+"--date=@${SOURCE_DATE_EPOCH}"} -u +'%Y-%m-%dT%H:%M:%SZ')"
+    add_ldflag "GitCommit" "${GIT_COMMIT}"
+    add_ldflag "GitTreeState" "${GIT_TREE_STATE}"
+    add_ldflag "GitMajor" "${GIT_MAJOR}"
+    add_ldflag "GitMinor" "${GIT_MINOR}"
+    add_ldflag "GitVersion" "${GIT_VERSION}"
+    add_ldflag "GitReleaseCommit" "${GIT_RELEASE_COMMIT}"
 
     # The -ldflags parameter takes a single string, so join the output.
     echo "${ldflags[*]-}"

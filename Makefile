@@ -1,9 +1,11 @@
-BIN_NAM:= kube
-BIN_DIR:= bin
-LDFLAGS:= $(shell version.sh)
+BIN_NAM := kube
+BIN_DIR := bin
+LDFLAGS := $(shell version/version.sh)
 
 .PHONY: set
 set:
+	rm -rf $(BIN_DIR)
+	mkdir -p $(BIN_DIR)
 	GOPROXY=https://goproxy.cn,direct go mod tidy
 
 .PHONY: kube

@@ -27,7 +27,7 @@ func NewNginxDeployment() *kapi.DeploymentConfig {
 		},
 		ContainerResource: &kapi.ResourceDecl{
 			CPU:       0.5,
-			Mem:       2 * util.Gi,
+			Mem:       256 * util.Mi,
 			DiskCache: kapi.ContainerLimitDiskCacheDefaultGi * util.Gi,
 			//DiskMount: 16 * util.Gi, // none minio cluster bind with s3fs
 		},

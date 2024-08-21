@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"kube/deploy_example"
+	"kube/kapi"
 	ldversion "kube/version"
+	"time"
 )
 
 func main() {
@@ -35,6 +37,11 @@ func main() {
 		case "quit", "q":
 			fmt.Println("quit command line interaction interface")
 			return
+		case "start-sync":
+			kapi.SyncPodListByNS(dConf, 5*time.Second)
+		case "stop-sync":
+			fmt.Println("stop the pod state syncing...")
+			kapi.PodStateSyncingDone <- struct{}{}
 		default:
 			fmt.Printf("error action: %v\n", action)
 		}
