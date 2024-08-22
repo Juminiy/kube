@@ -9,4 +9,6 @@ const (
 	Ti = 1 << 40
 	Pi = 1 << 50
 	Ei = 1 << 60
+
+	JSONMarshalIndent = "  "
 )

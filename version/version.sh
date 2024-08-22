@@ -17,6 +17,7 @@
 # Modifier NAME: Lingnan Hua, MAIL: chisato-x@bupt.edu.cn
 
 GIT_REPO_HTTPS_ADDRESS=github.com/Juminiy/kube
+GIT_REPO_NAME=kube
 
 set -o errexit
 set -o nounset
@@ -94,11 +95,11 @@ version::ldflags() {
         local key=${1}
         local val=${2}
         ldflags+=(
-            "-X 'version.${key}=${val}'"
+            "-X '${GIT_REPO_NAME}/version.${key}=${val}'"
         )
     }
 
-    add_ldflag "BuildDate" "$(date ${SOURCE_DATE_EPOCH:+"--date=@${SOURCE_DATE_EPOCH}"} -u +'%Y-%m-%dT%H:%M:%SZ')"
+    add_ldflag "BuildDate" "$(TZ='Asia/Shanghai' date ${SOURCE_DATE_EPOCH:+"--date=@${SOURCE_DATE_EPOCH}"} +'%Y-%m-%dT%H:%M:%SZ')"
     add_ldflag "GitCommit" "${GIT_COMMIT}"
     add_ldflag "GitTreeState" "${GIT_TREE_STATE}"
     add_ldflag "GitMajor" "${GIT_MAJOR}"

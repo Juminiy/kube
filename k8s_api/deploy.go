@@ -1,9 +1,8 @@
-package kapi
+package k8s_api
 
 import (
 	"context"
 	"errors"
-	"flag"
 	"fmt"
 	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/client-go/util/retry"
@@ -25,6 +24,7 @@ import (
 	"path/filepath"
 )
 
+// move it to yaml
 const (
 	internalImageRegistry            = "192.168.31.242:8662"   // no http or https
 	internalImageProject             = "kubesphere-io-centos7" // namespace override
@@ -45,13 +45,13 @@ type (
 		ContainerPort      corev1.ContainerPort
 		ContainerResource  *ResourceDecl
 
-		CallBack
+		CallBack // what should do after CRUD kube api
 
 		k8s *k8scli.Clientset
-		app *appsv1.Deployment
 		cli typedappsv1.DeploymentInterface
+		app *appsv1.Deployment
 
-		ctx context.Context
+		ctx context.Context // context in k8e
 	}
 
 	// Pod Config Decl
@@ -85,25 +85,20 @@ func NewDeployment(c *DeploymentConfig) error {
 	if validErr := c.validate(); validErr != nil {
 		return validErr
 	}
-	var kubeConfig *string
-	if home := homedir.HomeDir(); home != "" {
-		kubeConfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeConfig file")
-	} else {
-		kubeConfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
-	}
 
-	restConfig, err := clientcmd.BuildConfigFromFlags("", *kubeConfig)
-	if err != nil {
-		return err
-	}
-	clientSet, err := k8scli.NewForConfig(restConfig)
+	restConfig, err := clientcmd.BuildConfigFromFlags(
+		"",
+		filepath.Join(homedir.HomeDir(), ".kube", "config"))
 	if err != nil {
 		return err
 	}
 
-	c.cli = clientSet.AppsV1().Deployments(c.Namespace)
+	c.k8s, err = k8scli.NewForConfig(restConfig)
+	if err != nil {
+		return err
+	}
 
-	c.ctx = context.TODO()
+	c.cli = c.k8s.AppsV1().Deployments(c.Namespace)
 
 	c.app = &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
@@ -128,15 +123,15 @@ func NewDeployment(c *DeploymentConfig) error {
 								c.ContainerPort,
 							},
 							Resources: corev1.ResourceRequirements{
-								Limits: map[corev1.ResourceName]resource.Quantity{
-									corev1.ResourceCPU:              resource.Quantity{Format: getCPUFormat(c.ContainerResource.CPU)},
-									corev1.ResourceMemory:           resource.Quantity{Format: getByteFormat(c.ContainerResource.Mem)},
-									corev1.ResourceEphemeralStorage: resource.Quantity{Format: getByteFormat(c.ContainerResource.DiskCache)},
+								Limits: corev1.ResourceList{
+									corev1.ResourceCPU:              resource.MustParse(getCPUStr(c.ContainerResource.CPU)),
+									corev1.ResourceMemory:           resource.MustParse(getByteStr(c.ContainerResource.Mem)),
+									corev1.ResourceEphemeralStorage: resource.MustParse(getByteStr(c.ContainerResource.DiskCache)),
 								},
-								Requests: map[corev1.ResourceName]resource.Quantity{
-									corev1.ResourceCPU:              resource.Quantity{Format: getCPUFormat(c.ContainerResource.CPU / 2.0)},
-									corev1.ResourceMemory:           resource.Quantity{Format: getByteFormat(c.ContainerResource.Mem >> 1)},
-									corev1.ResourceEphemeralStorage: resource.Quantity{Format: getByteFormat(c.ContainerResource.DiskCache >> 1)},
+								Requests: corev1.ResourceList{
+									corev1.ResourceCPU:              resource.MustParse(getCPUStr(c.ContainerResource.CPU / 2.0)),
+									corev1.ResourceMemory:           resource.MustParse(getByteStr(c.ContainerResource.Mem / 2)),
+									corev1.ResourceEphemeralStorage: resource.MustParse(getByteStr(c.ContainerResource.DiskCache / 2)),
 								},
 							},
 						},
@@ -152,11 +147,13 @@ func NewDeployment(c *DeploymentConfig) error {
 	if c.ContainerResource.BindMount {
 		for i := range c.app.Spec.Template.Spec.Containers {
 			c.app.Spec.Template.Spec.Containers[i].Resources.Limits[corev1.ResourceStorage] =
-				resource.Quantity{Format: getByteFormat(c.ContainerResource.DiskMount)}
+				resource.MustParse(getByteStr(c.ContainerResource.DiskMount))
 			c.app.Spec.Template.Spec.Containers[i].Resources.Requests[corev1.ResourceStorage] =
-				resource.Quantity{Format: getByteFormat(c.ContainerResource.DiskMount >> 1)}
+				resource.MustParse(getByteStr(c.ContainerResource.DiskMount / 2))
 		}
 	}
+
+	c.ctx = context.TODO()
 
 	defaultCallBackFunc := func() error {
 		if c.latest != nil {
@@ -245,12 +242,12 @@ func GetImageURL(image string) string {
 
 // when k8s node deploy in physical machine, core is physical core
 // when k8s node deploy in virtual machine, core is virtual core
-func getCPUFormat(coreNum float64) resource.Format {
-	return resource.Format(strconv.FormatFloat(coreNum, 'f', 6, 64))
+func getCPUStr(coreNum float64) string {
+	return strconv.FormatFloat(coreNum, 'f', 6, 64)
 }
 
 // B -> KiB/MiB/GiB/TiB/PiB/EiB
-// or not conv
-func getByteFormat(memByte int64) resource.Format {
-	return resource.Format(strconv.FormatInt(memByte, 10))
+// currently not conv
+func getByteStr(memByte int64) string {
+	return strconv.FormatInt(memByte, 10)
 }
