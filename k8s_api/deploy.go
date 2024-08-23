@@ -230,6 +230,15 @@ func (c *DeploymentConfig) List() error {
 	return c.CallBack.List()
 }
 
+func (c *DeploymentConfig) JSONMarshal() string {
+	bs, err := c.app.Marshal()
+	if err != nil {
+		fmt.Printf("marshal error: %v\n", err)
+		return ""
+	}
+	return util.Bytes2StringNoCopy(bs)
+}
+
 // GetImageURL
 // Example:
 // 192.168.31.242:8662/kubesphere-io-centos7/haproxy:2.9.6-alpine
