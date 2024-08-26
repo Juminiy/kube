@@ -4,10 +4,12 @@ import (
 	"context"
 	"github.com/goharbor/go-client/pkg/harbor"
 	v2client "github.com/goharbor/go-client/pkg/sdk/v2.0/client"
+	"github.com/goharbor/go-client/pkg/sdk/v2.0/client/artifact"
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/client/project"
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/client/repository"
+	"github.com/goharbor/go-client/pkg/sdk/v2.0/client/user"
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/models"
-	"kube/util"
+	"kube/pkg/util"
 	"net/http"
 )
 
@@ -26,15 +28,13 @@ const (
 type (
 	Client struct {
 		// global variant
-		PageConfig *util.Page
 		cliV2      *v2client.HarborAPI
 		ctx        context.Context
+		pageConfig *util.Page
 
-		// project variant
-		ProjectReqConfig
-
+		// callback variant
 		TriggerCallBack bool
-		CallBack
+		CallBacks
 	}
 
 	CallBackType      string
@@ -43,7 +43,8 @@ type (
 		latest any
 		doFunc util.Func
 	}
-	CallBack map[CallBackType]map[CallBackOpt]CallBackAttribute
+	CallBack  map[CallBackOpt]CallBackAttribute
+	CallBacks map[CallBackType]CallBack
 
 	ProjectReqConfig struct {
 		MetaDataPublic string
@@ -63,7 +64,8 @@ func NewHarborCli() (*Client, error) {
 		}
 	)
 	c := &Client{
-		ctx: context.TODO(),
+		ctx:        context.TODO(),
+		pageConfig: util.DefaultPage,
 	}
 	hCli, err := harbor.NewClientSet(csc)
 	if err != nil {
@@ -91,13 +93,8 @@ func (c *Client) WithContext(ctx context.Context) *Client {
 	return c
 }
 
-func (c *Client) WithProjectName(pName string) *Client {
-	c.ProjectName = pName
-	return c
-}
-
 func (c *Client) WithPageConfig(pCfg *util.Page) *Client {
-	c.PageConfig = pCfg
+	c.pageConfig = pCfg
 	return c
 }
 
@@ -122,51 +119,65 @@ func (c *Client) ListProjects() (*project.ListProjectsOK, error) {
 // preserve a project named: public
 // create new project for each user by a specified name
 // restrict the quota of each user
-func (c *Client) CreateProject() (*project.CreateProjectCreated, error) {
+func (c *Client) CreateProject(pReqCfg ProjectReqConfig) (*project.CreateProjectCreated, error) {
 	return c.cliV2.Project.CreateProject(
 		c.ctx,
 		project.NewCreateProjectParams().
 			WithContext(c.ctx).
 			WithHTTPClient(http.DefaultClient).
 			WithDefaults().
-			WithProject(NewProjectReq(c.ProjectReqConfig)),
+			WithProject(NewProjectReq(pReqCfg)),
 	)
 }
 
-func (c *Client) DeleteProject() (*project.DeleteProjectOK, error) {
+func (c *Client) DeleteProject(pName string) (*project.DeleteProjectOK, error) {
 	return c.cliV2.Project.DeleteProject(
 		c.ctx,
 		project.NewDeleteProjectParams().
 			WithContext(c.ctx).
 			WithHTTPClient(http.DefaultClient).
 			WithDefaults().
-			WithProjectNameOrID(c.ProjectName),
+			WithProjectNameOrID(pName),
 	)
 }
 
 // WARNING: high privilege and vague api: do not expose to Web
-func (c *Client) listAllImages() (*repository.ListAllRepositoriesOK, error) {
+func (c *Client) listAllRepositories() (*repository.ListAllRepositoriesOK, error) {
 	return c.cliV2.Repository.ListAllRepositories(
 		c.ctx,
 		repository.NewListAllRepositoriesParams().
 			WithContext(c.ctx).
 			WithHTTPClient(http.DefaultClient).
 			WithDefaults().
-			WithPage(c.PageConfig.Page()).
-			WithPageSize(c.PageConfig.Size()),
+			WithPage(c.pageConfig.Page()).
+			WithPageSize(c.pageConfig.Size()),
 	)
 }
 
-func (c *Client) ListImages() (*repository.ListRepositoriesOK, error) {
+func (c *Client) ListRepositories(pName string) (*repository.ListRepositoriesOK, error) {
 	return c.cliV2.Repository.ListRepositories(
 		c.ctx,
 		repository.NewListRepositoriesParams().
 			WithContext(c.ctx).
 			WithHTTPClient(http.DefaultClient).
 			WithDefaults().
-			WithPage(c.PageConfig.Page()).
-			WithPageSize(c.PageConfig.Size()).
-			WithProjectName(c.ProjectName),
+			WithPage(c.pageConfig.Page()).
+			WithPageSize(c.pageConfig.Size()).
+			WithProjectName(pName),
+	)
+}
+
+func (c *Client) ListArtifacts(pName, rName string) (*artifact.ListArtifactsOK, error) {
+	lsParam := artifact.NewListArtifactsParams().
+		WithContext(c.ctx).
+		WithHTTPClient(http.DefaultClient).
+		WithProjectName(pName)
+	lsParam.Page, lsParam.PageSize = c.pageConfig.Pair()
+	lsParam.WithRepositoryName(rName)
+
+	return c.cliV2.Artifact.ListArtifacts(
+		c.ctx,
+		lsParam,
 	)
 }
 
@@ -191,4 +202,24 @@ func (c *Client) GenerateImage() error {
 func (c *Client) DeleteImage() error {
 
 	return nil
+}
+
+func (c *Client) CreateAdmin(userReq *models.UserCreationReq) (*user.CreateUserCreated, error) {
+	return c.cliV2.User.CreateUser(
+		c.ctx,
+		user.NewCreateUserParams().
+			WithContext(c.ctx).
+			WithHTTPClient(http.DefaultClient).
+			WithUserReq(userReq),
+	)
+}
+
+func (c *Client) DeleteAdmin(uid int64) (*user.DeleteUserOK, error) {
+	return c.cliV2.User.DeleteUser(
+		c.ctx,
+		user.NewDeleteUserParams().
+			WithContext(c.ctx).
+			WithHTTPClient(http.DefaultClient).
+			WithUserID(uid),
+	)
 }

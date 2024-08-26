@@ -3,8 +3,8 @@ package k8s_api
 import (
 	"encoding/json"
 	"fmt"
-	v1 "k8s.io/api/apps/v1"
-	"kube/util"
+	appsv1 "k8s.io/api/apps/v1"
+	"kube/pkg/util"
 	"time"
 )
 
@@ -17,7 +17,7 @@ func SyncPodListByNS(
 	qDur time.Duration,
 ) {
 	dConf.CallBack.List = func() error {
-		latestDeployListOf := dConf.CallBack.latest.(*v1.DeploymentList)
+		latestDeployListOf := dConf.CallBack.latest.(*appsv1.DeploymentList)
 		if latestDeployListOf == nil ||
 			len(latestDeployListOf.Items) == 0 {
 			PodStateSyncingDone <- struct{}{}

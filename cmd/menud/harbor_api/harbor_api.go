@@ -3,7 +3,8 @@ package harbor_api
 import (
 	"encoding"
 	"fmt"
-	"kube/util"
+	"kube/pkg/harbor_api"
+	"kube/pkg/util"
 	"reflect"
 )
 
@@ -14,14 +15,14 @@ func Menu(s ...string) {
 		actionOf = s[1]
 	)
 
-	repoClient, err := NewHarborCli()
+	hCli, err := harbor_api.NewHarborCli()
 	if err != nil {
 		fmt.Printf("new harbor repo client error: %v\n", err)
 		return
 	}
 
 	if appOf == "project" && actionOf == "list" {
-		ls, err := repoClient.ListProjects()
+		ls, err := hCli.ListProjects()
 		if err != nil {
 			fmt.Printf("harbor list project error: %v\n", err)
 			return
@@ -29,7 +30,7 @@ func Menu(s ...string) {
 		for _, proj := range ls.Payload {
 			printBinaryMarshaler(proj)
 		}
-	} else if appOf == "image" && actionOf == "list" {
+	} else if appOf == "repository" && actionOf == "list" {
 		var (
 			projectName string
 			pageNum     int64
@@ -42,16 +43,15 @@ func Menu(s ...string) {
 			return
 		}
 
-		ls, err := repoClient.
-			WithProjectName(projectName).
+		ls, err := hCli.
 			WithPageConfig(util.NewPageConfig(pageNum, pageSize)).
-			ListImages()
+			ListRepositories(projectName)
 		if err != nil {
 			fmt.Printf("harbor list image error: %v\n", err)
 			return
 		}
-		for _, image := range ls.Payload {
-			printBinaryMarshaler(image)
+		for _, repo := range ls.Payload {
+			printBinaryMarshaler(repo)
 		}
 	}
 

@@ -1,8 +1,10 @@
-package deploy_example
+package instance_example
 
 import (
 	"fmt"
-	"kube/k8s_api"
+	"kube/pkg/instance_example/nginx"
+	"kube/pkg/instance_example/ubuntu"
+	"kube/pkg/k8s_api"
 	"os"
 	"time"
 )
@@ -26,9 +28,9 @@ func Menu(s ...string) {
 
 	switch appOf {
 	case "nginx":
-		dConf = NewNginxDeployment()
+		dConf = nginx.NewNginxDeployment()
 	case "ubuntu":
-		dConf = NewUbuntuDeployment()
+		dConf = ubuntu.NewUbuntuDeployment()
 	//case "centos":
 	//case "tensorflow":
 	//case "pytorch":

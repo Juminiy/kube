@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/client-go/util/retry"
+	"kube/pkg/util"
 	"strconv"
 	"strings"
 
@@ -20,7 +21,6 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
 
-	"kube/util"
 	"path/filepath"
 )
 

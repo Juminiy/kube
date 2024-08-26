@@ -1,9 +1,9 @@
-package deploy_example
+package nginx
 
 import (
 	corev1 "k8s.io/api/core/v1"
-	"kube/k8s_api"
-	"kube/util"
+	"kube/pkg/k8s_api"
+	"kube/pkg/util"
 )
 
 // NewNginxDeployment

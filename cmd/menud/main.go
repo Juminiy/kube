@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"kube/deploy_example"
-	"kube/harbor_api"
-	"kube/k8s_api"
 	ldversion "kube/version"
 	"os"
+
+	harbormenu "kube/cmd/menud/harbor_api"
+	instancemenu "kube/cmd/menud/instance_example"
+	k8smenu "kube/cmd/menud/k8s_api"
 )
 
 func main() {
@@ -51,11 +52,11 @@ func main() {
 		}
 		switch moduleOf {
 		case "cluster":
-			k8s_api.Menu(appOf, actionOf)
+			k8smenu.Menu(appOf, actionOf)
 		case "deploy":
-			deploy_example.Menu(appOf, actionOf)
+			instancemenu.Menu(appOf, actionOf)
 		case "harbor":
-			harbor_api.Menu(appOf, actionOf)
+			harbormenu.Menu(appOf, actionOf)
 		}
 	}
 
