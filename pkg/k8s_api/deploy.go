@@ -5,10 +5,15 @@ import (
 	"errors"
 	"fmt"
 	"k8s.io/apimachinery/pkg/api/resource"
+	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/client-go/util/homedir"
 	"k8s.io/client-go/util/retry"
+	"kube/pkg/harbor_api"
 	"kube/pkg/util"
+	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
@@ -17,33 +22,37 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	k8scli "k8s.io/client-go/kubernetes"
 	typedappsv1 "k8s.io/client-go/kubernetes/typed/apps/v1"
-
-	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/client-go/util/homedir"
-
-	"path/filepath"
 )
 
-// move it to yaml
+// move it to yaml config
 const (
-	internalImageRegistry            = "192.168.31.242:8662"   // no http or https
-	internalImageProject             = "kubesphere-io-centos7" // namespace override
-	containerRequestResourceRatio    = 0.5                     // request = ratio * limit
-	ContainerLimitDiskCacheDefaultGi = 8                       // ephemeral 8 GiB
+	internalImageRegistry            = "192.168.31.242:8662" // no http or https
+	containerRequestResourceRatio    = 0.5                   // request = ratio * limit
+	ContainerLimitDiskCacheDefaultGi = 8                     // ephemeral 8 GiB
+)
+
+var (
+	k8sClientSet struct {
+		k8s *k8scli.Clientset
+		sync.Once
+	}
 )
 
 type (
 	DeploymentConfig struct {
-		Namespace          string
-		MetaName           string
-		SpecReplicas       int32
-		SpecSelectorLabels map[string]string
-		SpecTemplateLabels map[string]string
-		ContainerName      string
-		ContainerImage     string
-		ContainerCommand   []string
-		ContainerPort      corev1.ContainerPort
-		ContainerResource  *ResourceDecl
+		Namespace                string
+		MetaName                 string
+		SpecReplicas             int32
+		SpecSelectorLabels       map[string]string
+		SpecTemplateLabels       map[string]string
+		SpecHostNetwork          bool
+		ContainerName            string
+		ContainerImage           string
+		ContainerCommand         []string
+		ContainerArgs            []string
+		ContainerPorts           []corev1.ContainerPort
+		ContainerResource        *ResourceDecl
+		ContainerSecurityContext *corev1.SecurityContext
 
 		CallBack // what should do after CRUD kube api
 
@@ -86,18 +95,17 @@ func NewDeployment(c *DeploymentConfig) error {
 		return validErr
 	}
 
-	restConfig, err := clientcmd.BuildConfigFromFlags(
-		"",
-		filepath.Join(homedir.HomeDir(), ".kube", "config"))
-	if err != nil {
-		return err
-	}
+	k8sClientSet.Do(func() {
+		restConfig, err := clientcmd.BuildConfigFromFlags(
+			"",
+			filepath.Join(homedir.HomeDir(), ".kube", "config"))
+		util.SilentHandleError("init k8s client error", err)
 
-	c.k8s, err = k8scli.NewForConfig(restConfig)
-	if err != nil {
-		return err
-	}
+		k8sClientSet.k8s, err = k8scli.NewForConfig(restConfig)
+		util.SilentHandleError("init k8s client error", err)
+	})
 
+	c.k8s = k8sClientSet.k8s
 	c.cli = c.k8s.AppsV1().Deployments(c.Namespace)
 
 	c.app = &appsv1.Deployment{
@@ -119,9 +127,8 @@ func NewDeployment(c *DeploymentConfig) error {
 							Name:    c.ContainerName,
 							Image:   c.ContainerImage,
 							Command: c.ContainerCommand,
-							Ports: []corev1.ContainerPort{
-								c.ContainerPort,
-							},
+							Args:    c.ContainerArgs,
+							Ports:   c.ContainerPorts,
 							Resources: corev1.ResourceRequirements{
 								Limits: corev1.ResourceList{
 									corev1.ResourceCPU:              resource.MustParse(getCPUStr(c.ContainerResource.CPU)),
@@ -134,8 +141,10 @@ func NewDeployment(c *DeploymentConfig) error {
 									corev1.ResourceEphemeralStorage: resource.MustParse(getByteStr(c.ContainerResource.DiskCache / 2)),
 								},
 							},
+							SecurityContext: c.ContainerSecurityContext,
 						},
 					},
+					HostNetwork: c.SpecHostNetwork,
 				},
 			},
 		},
@@ -143,7 +152,7 @@ func NewDeployment(c *DeploymentConfig) error {
 	// GPU Relation
 	if c.ContainerResource.BindGPU {
 	}
-	// Mount Relation
+	// Mount Volume(Minio Cluster) Relation
 	if c.ContainerResource.BindMount {
 		for i := range c.app.Spec.Template.Spec.Containers {
 			c.app.Spec.Template.Spec.Containers[i].Resources.Limits[corev1.ResourceStorage] =
@@ -242,9 +251,9 @@ func (c *DeploymentConfig) JSONMarshal() string {
 // GetImageURL
 // Example:
 // 192.168.31.242:8662/kubesphere-io-centos7/haproxy:2.9.6-alpine
-func GetImageURL(image string) string {
+func GetImageURL(arti harbor_api.ArtifactURI) string {
 	return strings.Join(
-		[]string{internalImageRegistry, internalImageProject, image},
+		[]string{internalImageRegistry, arti.String()},
 		"/",
 	)
 }

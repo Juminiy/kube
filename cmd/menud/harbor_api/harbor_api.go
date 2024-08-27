@@ -4,7 +4,6 @@ import (
 	"encoding"
 	"fmt"
 	"kube/pkg/harbor_api"
-	"kube/pkg/util"
 	"reflect"
 )
 
@@ -13,6 +12,11 @@ func Menu(s ...string) {
 	var (
 		appOf    = s[0]
 		actionOf = s[1]
+
+		projectName    string
+		repositoryName string
+		pageNum        int64
+		pageSize       int64
 	)
 
 	hCli, err := harbor_api.NewHarborCli()
@@ -21,37 +25,46 @@ func Menu(s ...string) {
 		return
 	}
 
+	inputFn := func() {
+		fmt.Printf("project: repository: pageNum: pageSize: ")
+		_, err := fmt.Scanf("%s %s %d %d", &projectName, &repositoryName, &pageNum, &pageSize)
+		if err != nil {
+			fmt.Printf("harbor input project config error: %v\n", err)
+			return
+		}
+	}
+
 	if appOf == "project" && actionOf == "list" {
 		ls, err := hCli.ListProjects()
 		if err != nil {
-			fmt.Printf("harbor list project error: %v\n", err)
+			fmt.Printf("harbor list proj error: %v\n", err)
 			return
 		}
 		for _, proj := range ls.Payload {
 			printBinaryMarshaler(proj)
 		}
 	} else if appOf == "repository" && actionOf == "list" {
-		var (
-			projectName string
-			pageNum     int64
-			pageSize    int64
-		)
-		fmt.Printf("projectName: pageNum: pageSize: ")
-		_, err := fmt.Scanf("%s %d %d", &projectName, &pageNum, &pageSize)
+		inputFn()
+		ls, err := hCli.ListRepositories(projectName)
 		if err != nil {
-			fmt.Printf("harbor input project config error: %v\n", err)
-			return
-		}
-
-		ls, err := hCli.
-			WithPageConfig(util.NewPageConfig(pageNum, pageSize)).
-			ListRepositories(projectName)
-		if err != nil {
-			fmt.Printf("harbor list image error: %v\n", err)
+			fmt.Printf("harbor list repo error: %v\n", err)
 			return
 		}
 		for _, repo := range ls.Payload {
 			printBinaryMarshaler(repo)
+		}
+	} else if appOf == "artifact" && actionOf == "list" {
+		inputFn()
+		ls, err := hCli.ListArtifacts(harbor_api.ArtifactURI{
+			Project:    projectName,
+			Repository: repositoryName,
+		})
+		if err != nil {
+			fmt.Printf("harbor list arti error: %v\n", err)
+			return
+		}
+		for _, arti := range ls.Payload {
+			printBinaryMarshaler(arti)
 		}
 	}
 

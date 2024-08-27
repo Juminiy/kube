@@ -11,25 +11,34 @@ import (
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/models"
 	"kube/pkg/util"
 	"net/http"
+	"strings"
 )
 
-// move it to yaml
+// move it to yaml config file
 const (
 	harborRegistry = "http://192.168.31.242:8662"
 	harborUsername = "hln"
 	harborPassword = "Hln@001202"
+	harborPublic   = "public"
 )
 
 const (
-	ProjectCallBack CallBackType = "Project"
-	RepoCallBack    CallBackType = "Repository"
+	ProjectCallBack       CallBackType = "Project"
+	RepoCallBack          CallBackType = "Repository"
+	ProjectNoStorageLimit int64        = -1
+)
+
+var (
+	todoContext       = context.TODO()
+	defaultHttpClient = http.DefaultClient
 )
 
 type (
 	Client struct {
 		// global variant
-		cliV2      *v2client.HarborAPI
+		v2Cli      *v2client.HarborAPI
 		ctx        context.Context
+		httpCli    *http.Client
 		pageConfig *util.Page
 
 		// callback variant
@@ -52,6 +61,12 @@ type (
 		RegistryId     int64
 		StorageLimit   int64
 	}
+
+	ArtifactURI struct {
+		Project    string
+		Repository string
+		Tag        string
+	}
 )
 
 func NewHarborCli() (*Client, error) {
@@ -64,20 +79,17 @@ func NewHarborCli() (*Client, error) {
 		}
 	)
 	c := &Client{
-		ctx:        context.TODO(),
+		ctx:        todoContext,
+		httpCli:    defaultHttpClient,
 		pageConfig: util.DefaultPage,
 	}
 	hCli, err := harbor.NewClientSet(csc)
 	if err != nil {
 		return nil, err
 	}
-	c.cliV2 = hCli.V2()
+	c.v2Cli = hCli.V2()
 	return c, nil
 }
-
-var (
-	defaultHttpClient = http.DefaultClient
-)
 
 func NewProjectReq(reqCfg ProjectReqConfig) *models.ProjectReq {
 	return &models.ProjectReq{
@@ -88,8 +100,23 @@ func NewProjectReq(reqCfg ProjectReqConfig) *models.ProjectReq {
 	}
 }
 
+// Example:
+// library/s3fstest:latest
+func (a ArtifactURI) String() string {
+	return strings.Join([]string{
+		a.Project, "/",
+		a.Repository, ":",
+		a.Tag,
+	}, "")
+}
+
 func (c *Client) WithContext(ctx context.Context) *Client {
 	c.ctx = ctx
+	return c
+}
+
+func (c *Client) WithHttpClient(httpCli *http.Client) *Client {
+	c.httpCli = httpCli
 	return c
 }
 
@@ -104,13 +131,14 @@ func (c *Client) WithCallBack() *Client {
 }
 
 func (c *Client) ListProjects() (*project.ListProjectsOK, error) {
-	return c.cliV2.Project.ListProjects(
+	return c.v2Cli.Project.ListProjects(
 		c.ctx,
 		project.NewListProjectsParams().
 			WithContext(c.ctx).
-			WithHTTPClient(http.DefaultClient).
+			WithHTTPClient(c.httpCli).
 			WithDefaults().
-			//WithName(util.NewString(c.ProjectName)).
+			WithPage(c.pageConfig.Page()).
+			WithPageSize(c.pageConfig.Size()).
 			WithPublic(util.NewBool(true)),
 	)
 }
@@ -120,34 +148,35 @@ func (c *Client) ListProjects() (*project.ListProjectsOK, error) {
 // create new project for each user by a specified name
 // restrict the quota of each user
 func (c *Client) CreateProject(pReqCfg ProjectReqConfig) (*project.CreateProjectCreated, error) {
-	return c.cliV2.Project.CreateProject(
+	return c.v2Cli.Project.CreateProject(
 		c.ctx,
 		project.NewCreateProjectParams().
 			WithContext(c.ctx).
-			WithHTTPClient(http.DefaultClient).
+			WithHTTPClient(c.httpCli).
 			WithDefaults().
 			WithProject(NewProjectReq(pReqCfg)),
 	)
 }
 
 func (c *Client) DeleteProject(pName string) (*project.DeleteProjectOK, error) {
-	return c.cliV2.Project.DeleteProject(
+	return c.v2Cli.Project.DeleteProject(
 		c.ctx,
 		project.NewDeleteProjectParams().
 			WithContext(c.ctx).
-			WithHTTPClient(http.DefaultClient).
+			WithHTTPClient(c.httpCli).
 			WithDefaults().
 			WithProjectNameOrID(pName),
 	)
 }
 
+// listAllRepositories
 // WARNING: high privilege and vague api: do not expose to Web
 func (c *Client) listAllRepositories() (*repository.ListAllRepositoriesOK, error) {
-	return c.cliV2.Repository.ListAllRepositories(
+	return c.v2Cli.Repository.ListAllRepositories(
 		c.ctx,
 		repository.NewListAllRepositoriesParams().
 			WithContext(c.ctx).
-			WithHTTPClient(http.DefaultClient).
+			WithHTTPClient(c.httpCli).
 			WithDefaults().
 			WithPage(c.pageConfig.Page()).
 			WithPageSize(c.pageConfig.Size()),
@@ -155,11 +184,11 @@ func (c *Client) listAllRepositories() (*repository.ListAllRepositoriesOK, error
 }
 
 func (c *Client) ListRepositories(pName string) (*repository.ListRepositoriesOK, error) {
-	return c.cliV2.Repository.ListRepositories(
+	return c.v2Cli.Repository.ListRepositories(
 		c.ctx,
 		repository.NewListRepositoriesParams().
 			WithContext(c.ctx).
-			WithHTTPClient(http.DefaultClient).
+			WithHTTPClient(c.httpCli).
 			WithDefaults().
 			WithPage(c.pageConfig.Page()).
 			WithPageSize(c.pageConfig.Size()).
@@ -167,59 +196,110 @@ func (c *Client) ListRepositories(pName string) (*repository.ListRepositoriesOK,
 	)
 }
 
-func (c *Client) ListArtifacts(pName, rName string) (*artifact.ListArtifactsOK, error) {
-	lsParam := artifact.NewListArtifactsParams().
-		WithContext(c.ctx).
-		WithHTTPClient(http.DefaultClient).
-		WithProjectName(pName)
-	lsParam.Page, lsParam.PageSize = c.pageConfig.Pair()
-	lsParam.WithRepositoryName(rName)
-
-	return c.cliV2.Artifact.ListArtifacts(
+func (c *Client) ListArtifacts(arti ArtifactURI) (*artifact.ListArtifactsOK, error) {
+	return c.v2Cli.Artifact.ListArtifacts(
 		c.ctx,
-		lsParam,
+		artifact.NewListArtifactsParams().
+			WithContext(c.ctx).
+			WithHTTPClient(c.httpCli).
+			WithProjectName(arti.Project).
+			WithRepositoryName(arti.Repository).
+			WithPage(c.pageConfig.Page()).
+			WithPageSize(c.pageConfig.Size()).
+			WithWithTag(util.NewBool(true)),
 	)
 }
 
-// Download the image.tar.gz file to localdir
-func (c *Client) GetImageDLURL() (string, error) {
+func (c *Client) CopyArtifact(toArti, fromArti ArtifactURI) (*artifact.CopyArtifactCreated, error) {
+	return c.v2Cli.Artifact.CopyArtifact(
+		c.ctx,
+		artifact.NewCopyArtifactParams().
+			WithContext(c.ctx).
+			WithHTTPClient(c.httpCli).
+			WithProjectName(toArti.Project).
+			WithRepositoryName(toArti.Repository).
+			WithFrom(fromArti.String()),
+	)
+}
+
+func (c *Client) GetArtifact(arti ArtifactURI) (*artifact.GetArtifactOK, error) {
+	return c.v2Cli.Artifact.GetArtifact(
+		c.ctx,
+		artifact.NewGetArtifactParams().
+			WithContext(c.ctx).
+			WithHTTPClient(c.httpCli).
+			WithProjectName(arti.Project).
+			WithRepositoryName(arti.Repository).
+			WithReference(arti.Tag).
+			WithWithTag(util.NewBool(true)),
+	)
+}
+
+func (c *Client) DeleteArtifact(arti ArtifactURI) (*artifact.DeleteArtifactOK, error) {
+	return c.v2Cli.Artifact.DeleteArtifact(
+		c.ctx,
+		artifact.NewDeleteArtifactParams().
+			WithContext(c.ctx).
+			WithHTTPClient(c.httpCli).
+			WithProjectName(arti.Project).
+			WithRepositoryName(arti.Repository).
+			WithReference(arti.Tag),
+	)
+}
+
+func (c *Client) CreateArtifactTag(toArti, fromArti ArtifactURI) (*artifact.CreateTagCreated, error) {
+	return c.v2Cli.Artifact.CreateTag(
+		c.ctx,
+		artifact.NewCreateTagParams().
+			WithContext(c.ctx).
+			WithHTTPClient(c.httpCli).
+			WithProjectName(fromArti.Project).
+			WithRepositoryName(fromArti.Repository).
+			WithReference(fromArti.Tag).
+			WithTag(&models.Tag{
+				Immutable: false,
+				Name:      toArti.Tag,
+			}),
+	)
+}
+
+// ExportArtifact
+// Download the image.tar.gz file to local
+func (c *Client) ExportArtifact() (string, error) {
 
 	return "", nil
 }
 
-// Upload a image.tar.gz file to repo
-func (c *Client) UploadImage() error {
+// ImportOfflineArtifact
+// Upload the image.tar.gz file to project
+func (c *Client) ImportOfflineArtifact() error {
 
 	return nil
 }
 
-// generate image from Dockerfile and push it to
-func (c *Client) GenerateImage() error {
-
-	return nil
-}
-
-func (c *Client) DeleteImage() error {
+// GenerateArtifact
+// generate image from Dockerfile and push it to project
+func (c *Client) GenerateArtifact() error {
 
 	return nil
 }
 
 func (c *Client) CreateAdmin(userReq *models.UserCreationReq) (*user.CreateUserCreated, error) {
-	return c.cliV2.User.CreateUser(
+	return c.v2Cli.User.CreateUser(
 		c.ctx,
 		user.NewCreateUserParams().
 			WithContext(c.ctx).
-			WithHTTPClient(http.DefaultClient).
+			WithHTTPClient(c.httpCli).
 			WithUserReq(userReq),
 	)
 }
 
 func (c *Client) DeleteAdmin(uid int64) (*user.DeleteUserOK, error) {
-	return c.cliV2.User.DeleteUser(
+	return c.v2Cli.User.DeleteUser(
 		c.ctx,
 		user.NewDeleteUserParams().
 			WithContext(c.ctx).
-			WithHTTPClient(http.DefaultClient).
+			WithHTTPClient(c.httpCli).
 			WithUserID(uid),
 	)
 }
