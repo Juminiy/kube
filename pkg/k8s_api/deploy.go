@@ -40,19 +40,21 @@ var (
 
 type (
 	DeploymentConfig struct {
-		Namespace                string
-		MetaName                 string
-		SpecReplicas             int32
-		SpecSelectorLabels       map[string]string
-		SpecTemplateLabels       map[string]string
-		SpecHostNetwork          bool
+		Namespace          string
+		MetaName           string
+		SpecReplicas       int32
+		SpecSelectorLabels map[string]string
+		SpecTemplateLabels map[string]string
+		SpecHostNetwork    bool
+
 		ContainerName            string
 		ContainerImage           string
 		ContainerCommand         []string
-		ContainerArgs            []string
+		ContainerArgs            string
 		ContainerPorts           []corev1.ContainerPort
 		ContainerResource        *ResourceDecl
 		ContainerSecurityContext *corev1.SecurityContext
+		UserServerDecl
 
 		CallBack // what should do after CRUD kube api
 
@@ -63,11 +65,11 @@ type (
 		ctx context.Context // context in k8e
 	}
 
-	// Pod Config Decl
+	// Pod Config Declaration
 	EnvironmentDecl struct {
 	}
 
-	// Container Resource Limit
+	// Container Resource Declaration
 	ResourceDecl struct {
 		CPU       float64 // VCPU Logical 					 /Core
 		GPU       float64 // VGPU 							 /Core
@@ -78,6 +80,13 @@ type (
 
 		BindGPU   bool
 		BindMount bool
+	}
+
+	// User Host Server Declaration
+	UserServerDecl struct {
+		HostName string
+		UserName string
+		Password string
 	}
 
 	CallBack struct {
@@ -127,7 +136,7 @@ func NewDeployment(c *DeploymentConfig) error {
 							Name:    c.ContainerName,
 							Image:   c.ContainerImage,
 							Command: c.ContainerCommand,
-							Args:    c.ContainerArgs,
+							Args:    []string{c.ContainerArgs},
 							Ports:   c.ContainerPorts,
 							Resources: corev1.ResourceRequirements{
 								Limits: corev1.ResourceList{
@@ -179,6 +188,20 @@ func NewDeployment(c *DeploymentConfig) error {
 	}
 
 	return nil
+}
+
+func (c *DeploymentConfig) WithCmdArgs(cmd []string, args string) *DeploymentConfig {
+	c.ContainerCommand = cmd
+	c.ContainerArgs = args
+	return c
+}
+
+func (c *DeploymentConfig) CancelCmd(ok bool) *DeploymentConfig {
+	if ok {
+		c.ContainerCommand = nil
+		c.ContainerArgs = ""
+	}
+	return c
 }
 
 func (c *DeploymentConfig) validate() error {
@@ -237,6 +260,17 @@ func (c *DeploymentConfig) List() error {
 	}
 
 	return c.CallBack.List()
+}
+
+func (c *DeploymentConfig) Stop() error {
+	return c.Delete()
+}
+
+func (c *DeploymentConfig) Restart() error {
+	if delErr := c.Delete(); delErr != nil {
+		return delErr
+	}
+	return c.Create()
 }
 
 func (c *DeploymentConfig) JSONMarshal() string {

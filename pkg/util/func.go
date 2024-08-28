@@ -1,6 +1,9 @@
 package util
 
-import "unsafe"
+import (
+	"strings"
+	"unsafe"
+)
 
 type Func func() error
 
@@ -14,4 +17,8 @@ func Bytes2StringNoCopy(bs []byte) string {
 	bh := (*[3]uintptr)(unsafe.Pointer(&bs))
 	sh := [2]uintptr{bh[0], bh[1]}
 	return *(*string)(unsafe.Pointer(&sh))
+}
+
+func StringConcat(s ...string) string {
+	return strings.Join(s, "")
 }
