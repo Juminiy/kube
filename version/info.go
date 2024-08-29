@@ -53,7 +53,7 @@ func Info() {
 				fmt.Println(err)
 				goto osExit
 			}
-			fmt.Println(string(j))
+			fmt.Println(util.Bytes2StringNoCopy(j))
 		}
 	osExit:
 		os.Exit(0)

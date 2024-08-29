@@ -42,8 +42,7 @@ type (
 		pageConfig *util.Page
 
 		// callback variant
-		TriggerCallBack bool
-		CallBacks
+		CallBack *CallBack
 	}
 
 	CallBackType      string
@@ -52,8 +51,11 @@ type (
 		latest any
 		doFunc util.Func
 	}
-	CallBack  map[CallBackOpt]CallBackAttribute
-	CallBacks map[CallBackType]CallBack
+	CallBackAttr  map[CallBackOpt]CallBackAttribute
+	CallBackAttrs map[CallBackType]CallBackAttr
+	CallBack      struct {
+		CallBackAttrs
+	}
 
 	ProjectReqConfig struct {
 		MetaDataPublic string
@@ -126,7 +128,6 @@ func (c *Client) WithPageConfig(pCfg *util.Page) *Client {
 }
 
 func (c *Client) WithCallBack() *Client {
-	c.TriggerCallBack = true
 	return c
 }
 

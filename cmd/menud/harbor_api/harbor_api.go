@@ -4,6 +4,7 @@ import (
 	"encoding"
 	"fmt"
 	"kube/pkg/harbor_api"
+	"kube/pkg/util"
 	"reflect"
 )
 
@@ -76,7 +77,7 @@ func printBinaryMarshaler(bm encoding.BinaryMarshaler) {
 		fmt.Printf("harbor list %v error: %v\n", reflect.TypeOf(bm).String(), bs)
 		return
 	}
-	fmt.Println(string(bs))
+	fmt.Println(util.Bytes2StringNoCopy(bs))
 }
 
 func printBinaryMarshalerList(bm []encoding.BinaryMarshaler) {
@@ -86,6 +87,6 @@ func printBinaryMarshalerList(bm []encoding.BinaryMarshaler) {
 			fmt.Printf("harbor list %v error: %v\n", reflect.TypeOf(bm).String(), bs)
 			return
 		}
-		fmt.Println(string(bs))
+		fmt.Println(util.Bytes2StringNoCopy(bs))
 	}
 }

@@ -2,6 +2,7 @@ package k8s_api
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -33,7 +34,7 @@ const (
 
 var (
 	k8sClientSet struct {
-		k8s *k8scli.Clientset
+		cs *k8scli.Clientset
 		sync.Once
 	}
 )
@@ -47,43 +48,47 @@ type (
 		SpecTemplateLabels map[string]string
 		SpecHostNetwork    bool
 
-		ContainerName            string
-		ContainerImage           string
-		ContainerCommand         []string
-		ContainerArgs            string
-		ContainerPorts           []corev1.ContainerPort
-		ContainerResource        *ResourceDecl
-		ContainerSecurityContext *corev1.SecurityContext
-		UserServerDecl
+		Container *ContainerConfig
 
-		CallBack // what should do after CRUD kube api
+		// do after kube api
+		CallBack *CallBack `json:"CallBack,omitempty"`
 
-		k8s *k8scli.Clientset
-		cli typedappsv1.DeploymentInterface
-		app *appsv1.Deployment
+		// global cli
+		cliSet *k8scli.Clientset
+		cli    typedappsv1.DeploymentInterface
+		app    *appsv1.Deployment
 
-		ctx context.Context // context in k8e
+		// context in k8e
+		ctx context.Context
 	}
 
-	// Pod Config Declaration
-	EnvironmentDecl struct {
+	// Container Config Declaration in Pod
+	ContainerConfig struct {
+		Name            string
+		Image           string
+		Command         []string
+		Args            string
+		Ports           []corev1.ContainerPort
+		Resource        *ResourceConfig
+		SecurityContext *corev1.SecurityContext
+		UserHost        *UserHostConfig
 	}
 
-	// Container Resource Declaration
-	ResourceDecl struct {
-		CPU       float64 // VCPU Logical 					 /Core
-		GPU       float64 // VGPU 							 /Core
-		GMem      int64   // VGPU Self VMemory				 /Byte
-		Mem       int64   // VMemory 				  			 /Byte
-		DiskMount int64   // Volume (Minio Cluster s3fs) mount /Byte
-		DiskCache int64   // Ephemeral mount 					 /Byte
+	// Container Resource Declaration in Pod
+	ResourceConfig struct {
+		CPU       float64 // VCPU Logical 					 	/Core
+		GPU       float64 // VGPU 							 	/Core
+		GMem      int64   // VGPU Self VMemory				 	/Byte
+		Mem       int64   // VMemory 				  			/Byte
+		DiskMount int64   // Volume (Minio Cluster s3fs) mount 	/Byte
+		DiskCache int64   // Ephemeral mount 					/Byte
 
 		BindGPU   bool
 		BindMount bool
 	}
 
-	// User Host Server Declaration
-	UserServerDecl struct {
+	// User Host Declaration in Pod
+	UserHostConfig struct {
 		HostName string
 		UserName string
 		Password string
@@ -91,7 +96,6 @@ type (
 
 	CallBack struct {
 		latest any
-		err    error
 		Create util.Func
 		Update util.Func
 		Delete util.Func
@@ -110,12 +114,12 @@ func NewDeployment(c *DeploymentConfig) error {
 			filepath.Join(homedir.HomeDir(), ".kube", "config"))
 		util.SilentHandleError("init k8s client error", err)
 
-		k8sClientSet.k8s, err = k8scli.NewForConfig(restConfig)
+		k8sClientSet.cs, err = k8scli.NewForConfig(restConfig)
 		util.SilentHandleError("init k8s client error", err)
 	})
+	c.cliSet = k8sClientSet.cs
 
-	c.k8s = k8sClientSet.k8s
-	c.cli = c.k8s.AppsV1().Deployments(c.Namespace)
+	c.cli = c.cliSet.AppsV1().Deployments(c.Namespace)
 
 	c.app = &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
@@ -131,56 +135,23 @@ func NewDeployment(c *DeploymentConfig) error {
 					Labels: c.SpecTemplateLabels,
 				},
 				Spec: corev1.PodSpec{
-					Containers: []corev1.Container{
-						{
-							Name:    c.ContainerName,
-							Image:   c.ContainerImage,
-							Command: c.ContainerCommand,
-							Args:    []string{c.ContainerArgs},
-							Ports:   c.ContainerPorts,
-							Resources: corev1.ResourceRequirements{
-								Limits: corev1.ResourceList{
-									corev1.ResourceCPU:              resource.MustParse(getCPUStr(c.ContainerResource.CPU)),
-									corev1.ResourceMemory:           resource.MustParse(getByteStr(c.ContainerResource.Mem)),
-									corev1.ResourceEphemeralStorage: resource.MustParse(getByteStr(c.ContainerResource.DiskCache)),
-								},
-								Requests: corev1.ResourceList{
-									corev1.ResourceCPU:              resource.MustParse(getCPUStr(c.ContainerResource.CPU / 2.0)),
-									corev1.ResourceMemory:           resource.MustParse(getByteStr(c.ContainerResource.Mem / 2)),
-									corev1.ResourceEphemeralStorage: resource.MustParse(getByteStr(c.ContainerResource.DiskCache / 2)),
-								},
-							},
-							SecurityContext: c.ContainerSecurityContext,
-						},
-					},
+					Containers:  []corev1.Container{*NewContainer(c.Container)},
 					HostNetwork: c.SpecHostNetwork,
 				},
 			},
 		},
 	}
-	// GPU Relation
-	if c.ContainerResource.BindGPU {
-	}
-	// Mount Volume(Minio Cluster) Relation
-	if c.ContainerResource.BindMount {
-		for i := range c.app.Spec.Template.Spec.Containers {
-			c.app.Spec.Template.Spec.Containers[i].Resources.Limits[corev1.ResourceStorage] =
-				resource.MustParse(getByteStr(c.ContainerResource.DiskMount))
-			c.app.Spec.Template.Spec.Containers[i].Resources.Requests[corev1.ResourceStorage] =
-				resource.MustParse(getByteStr(c.ContainerResource.DiskMount / 2))
-		}
-	}
 
 	c.ctx = context.TODO()
 
 	defaultCallBackFunc := func() error {
-		if c.latest != nil {
-			fmt.Println(c.latest)
+		if c.CallBack.latest != nil {
+			fmt.Println(c.CallBack.latest)
 		}
-		c.latest = nil
+		c.CallBack.latest = nil
 		return nil
 	}
-	c.CallBack = CallBack{
+	c.CallBack = &CallBack{
 		Create: defaultCallBackFunc,
 		Update: defaultCallBackFunc,
 		Delete: defaultCallBackFunc,
@@ -190,16 +161,67 @@ func NewDeployment(c *DeploymentConfig) error {
 	return nil
 }
 
+func NewContainer(c *ContainerConfig) *corev1.Container {
+	container := &corev1.Container{
+		Name:    c.Name,
+		Image:   c.Image,
+		Command: c.Command,
+		Args:    []string{c.Args},
+		Ports:   c.Ports,
+		Resources: corev1.ResourceRequirements{
+			Limits: corev1.ResourceList{
+				corev1.ResourceCPU:              resource.MustParse(getCPUStr(c.Resource.CPU)),
+				corev1.ResourceMemory:           resource.MustParse(getByteStr(c.Resource.Mem)),
+				corev1.ResourceEphemeralStorage: resource.MustParse(getByteStr(c.Resource.DiskCache)),
+			},
+			Requests: corev1.ResourceList{
+				corev1.ResourceCPU:              resource.MustParse(getCPUStr(c.Resource.CPU / 2.0)),
+				corev1.ResourceMemory:           resource.MustParse(getByteStr(c.Resource.Mem / 2)),
+				corev1.ResourceEphemeralStorage: resource.MustParse(getByteStr(c.Resource.DiskCache / 2)),
+			},
+		},
+		VolumeMounts:    nil, // TODO: need to fill after Minio Cluster is OK!
+		VolumeDevices:   nil, // TODO: need to fill after Minio Cluster is OK!
+		ImagePullPolicy: corev1.PullIfNotPresent,
+		SecurityContext: c.SecurityContext,
+	}
+
+	// GPU Relation
+	if c.Resource.BindGPU {
+	}
+	// Mount Volume(Minio Cluster) Relation
+	if c.Resource.BindMount {
+		container.Resources.Limits[corev1.ResourceStorage] =
+			resource.MustParse(getByteStr(c.Resource.DiskMount))
+		container.Resources.Requests[corev1.ResourceStorage] =
+			resource.MustParse(getByteStr(c.Resource.DiskMount / 2))
+	}
+
+	return container
+}
+
 func (c *DeploymentConfig) WithCmdArgs(cmd []string, args string) *DeploymentConfig {
-	c.ContainerCommand = cmd
-	c.ContainerArgs = args
+	c.Container.Command = cmd
+	c.Container.Args = args
 	return c
 }
 
-func (c *DeploymentConfig) CancelCmd(ok bool) *DeploymentConfig {
+func (c *DeploymentConfig) CancelCmdArgs(ok bool) *DeploymentConfig {
 	if ok {
-		c.ContainerCommand = nil
-		c.ContainerArgs = ""
+		c.Container.Command = nil
+		c.Container.Args = ""
+	}
+	return c
+}
+
+func (c *DeploymentConfig) WithUserHost(uh UserHostConfig) *DeploymentConfig {
+	c.Container.UserHost = &uh
+	return c
+}
+
+func (c *DeploymentConfig) CancelUserHost(ok bool) *DeploymentConfig {
+	if ok {
+		c.Container.UserHost = nil
 	}
 	return c
 }
@@ -208,7 +230,10 @@ func (c *DeploymentConfig) validate() error {
 	if c == nil {
 		return errors.New("deployment config is null")
 	}
-	if c.ContainerResource == nil {
+	if c.Container == nil {
+		return errors.New("container config is null")
+	}
+	if c.Container.Resource == nil {
 		return errors.New("container resource is null")
 	}
 	return nil
@@ -216,7 +241,7 @@ func (c *DeploymentConfig) validate() error {
 
 func (c *DeploymentConfig) Create() error {
 	var createErr error
-	c.latest, createErr = c.cli.Create(c.ctx, c.app, metav1.CreateOptions{})
+	c.CallBack.latest, createErr = c.cli.Create(c.ctx, c.app, metav1.CreateOptions{})
 	if createErr != nil {
 		return createErr
 	}
@@ -229,7 +254,7 @@ func (c *DeploymentConfig) Update() error {
 		retry.DefaultRetry,
 		func() error {
 			var updateErr error
-			c.latest, updateErr = c.cli.Update(c.ctx, c.app, metav1.UpdateOptions{})
+			c.CallBack.latest, updateErr = c.cli.Update(c.ctx, c.app, metav1.UpdateOptions{})
 			return updateErr
 		},
 	)
@@ -254,7 +279,7 @@ func (c *DeploymentConfig) Delete() error {
 
 func (c *DeploymentConfig) List() error {
 	var listErr error
-	c.latest, listErr = c.cli.List(c.ctx, metav1.ListOptions{})
+	c.CallBack.latest, listErr = c.cli.List(c.ctx, metav1.ListOptions{})
 	if listErr != nil {
 		return listErr
 	}
@@ -262,8 +287,8 @@ func (c *DeploymentConfig) List() error {
 	return c.CallBack.List()
 }
 
-func (c *DeploymentConfig) Stop() error {
-	return c.Delete()
+func (c *DeploymentConfig) Stop() (string, error) {
+	return c.SaveConfig(), c.Delete()
 }
 
 func (c *DeploymentConfig) Restart() error {
@@ -276,7 +301,19 @@ func (c *DeploymentConfig) Restart() error {
 func (c *DeploymentConfig) JSONMarshal() string {
 	bs, err := c.app.Marshal()
 	if err != nil {
-		fmt.Printf("marshal error: %v\n", err)
+		util.SilentHandleError("marshal error", err)
+		return ""
+	}
+	return util.Bytes2StringNoCopy(bs)
+}
+
+// SaveConfig
+// after SaveConfig, CallBack is nil
+func (c *DeploymentConfig) SaveConfig() string {
+	c.CallBack = nil
+	bs, err := json.Marshal(c)
+	if err != nil {
+		util.SilentHandleError("marshal error", err)
 		return ""
 	}
 	return util.Bytes2StringNoCopy(bs)

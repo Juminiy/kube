@@ -3,9 +3,10 @@ package k8s_api
 import (
 	"encoding/json"
 	"fmt"
-	appsv1 "k8s.io/api/apps/v1"
 	"kube/pkg/util"
 	"time"
+
+	appsv1 "k8s.io/api/apps/v1"
 )
 
 var (
@@ -23,11 +24,11 @@ func SyncPodListByNS(
 			PodStateSyncingDone <- struct{}{}
 		}
 		for _, deployOf := range latestDeployListOf.Items {
-			status, err := json.MarshalIndent(deployOf.Status, "", util.JSONMarshalIndent)
+			statusBytes, err := json.MarshalIndent(deployOf.Status, "", util.JSONMarshalIndent)
 			if err != nil {
 				fmt.Println(err)
 			}
-			fmt.Println(deployOf.Name, time.Since(deployOf.CreationTimestamp.Time), string(status))
+			fmt.Println(deployOf.Name, time.Since(deployOf.CreationTimestamp.Time), util.Bytes2StringNoCopy(statusBytes))
 		}
 		return nil
 	}

@@ -52,7 +52,9 @@ func Menu(s ...string) {
 		err = dConf.Delete()
 	case "stop", "s":
 		fmt.Println(appOf, "deployment stopping...")
-		err = dConf.Stop()
+		var saveCfg string
+		saveCfg, err = dConf.Stop()
+		fmt.Println(saveCfg)
 	case "list", "l":
 		fmt.Println("list deployment in NS default")
 		err = dConf.List()
