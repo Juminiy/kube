@@ -1,0 +1,61 @@
+package version
+
+import (
+	"encoding/json"
+	"flag"
+	"fmt"
+	"kube/pkg/util"
+	"os"
+	"runtime"
+)
+
+type (
+	infoType struct {
+		GitMajor     string
+		GitMinor     string
+		GitVersion   string
+		GitCommit    string
+		GitTreeState string
+		BuildDate    string
+		GoVersion    string
+		Compiler     string
+		Platform     string
+	}
+)
+
+var (
+	GitMajor     string // major version, always numeric
+	GitMinor     string // minor version, numeric possibly followed by "+"
+	GitVersion   string // semantic version, derived by build scripts
+	GitCommit    string // sha1 from git, output of $(git rev-parse HEAD)
+	GitTreeState string // state of git tree, either "clean" or "dirty"
+	BuildDate    string // build date in ISO8601 format, output of $(date -u +'%Y-%m-%dT%H:%M:%SZ')
+	info         = infoType{
+		GitMajor:     GitMajor,
+		GitMinor:     GitMinor,
+		GitVersion:   GitVersion,
+		GitCommit:    GitCommit,
+		GitTreeState: GitTreeState,
+		BuildDate:    BuildDate,
+		GoVersion:    runtime.Version(),
+		Compiler:     runtime.Compiler,
+		Platform:     fmt.Sprintf("%s/%s", runtime.GOOS, runtime.GOARCH),
+	}
+)
+
+func Info() {
+	if len(os.Args) == 2 {
+		version := flag.Bool("v", false, "print version info, -v")
+		flag.Parse()
+		if *version {
+			j, err := json.MarshalIndent(&info, "", util.JSONMarshalIndent)
+			if err != nil {
+				fmt.Println(err)
+				goto osExit
+			}
+			fmt.Println(util.Bytes2StringNoCopy(j))
+		}
+	osExit:
+		os.Exit(0)
+	}
+}

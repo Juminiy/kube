@@ -1,0 +1,100 @@
+[
+  {
+    "accessories": null,
+    "digest": "sha256:b5b836efeed0ab591b4df195461e654e6fa90b565443ae9196d9f2e5521b3f33",
+    "icon": "sha256:0048162a053eef4d4ce3fe7518615bef084403614f8bca43b40ae2e762e11e06",
+    "id": 1109,
+    "labels": null,
+    "manifest_media_type": "application/vnd.docker.distribution.manifest.list.v2+json",
+    "media_type": "application/vnd.docker.distribution.manifest.list.v2+json",
+    "project_id": 8,
+    "pull_time": "2024-08-15T06:28:21.976Z",
+    "push_time": "2024-08-12T09:21:56.328Z",
+    "references": [
+      {
+        "child_digest": "sha256:f13c65af6bc36c758234ca37b9177a053c73b92163c007bbe58951b2cb2ce013",
+        "child_id": 1054,
+        "parent_id": 1109,
+        "platform": {
+          "OsFeatures": null,
+          "architecture": "amd64",
+          "os": "linux"
+        },
+        "urls": null
+      }
+    ],
+    "repository_id": 559,
+    "size": 30700739,
+    "tags": [
+      {
+        "artifact_id": 1109,
+        "id": 1111,
+        "immutable": false,
+        "name": "1.13.0",
+        "pull_time": "0001-01-01T00:00:00.000Z",
+        "push_time": "2024-08-12T09:21:56.345Z",
+        "repository_id": 559
+      }
+    ],
+    "type": "IMAGE"
+  },
+  {
+    "accessories": null,
+    "addition_links": {
+      "build_history": {
+        "absolute": false,
+        "href": "/api/v2.0/projects/kubesphere-io-centos7/repositories/scope/artifacts/sha256:f13c65af6bc36c758234ca37b9177a053c73b92163c007bbe58951b2cb2ce013/additions/build_history"
+      }
+    },
+    "digest": "sha256:f13c65af6bc36c758234ca37b9177a053c73b92163c007bbe58951b2cb2ce013",
+    "extra_attrs": {
+      "architecture": "amd64",
+      "author": "Weaveworks \u003chelp@weave.works\u003e",
+      "config": {
+        "Entrypoint": [
+          "/home/weave/entrypoint.sh"
+        ],
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        ],
+        "ExposedPorts": {
+          "4040/tcp": {}
+        },
+        "Labels": {
+          "maintainer": "Weaveworks \u003chelp@weave.works\u003e",
+          "org.opencontainers.image.revision": "7c838affaaa0ca12f8510c2d28f1e1853fa85d2e",
+          "org.opencontainers.image.source": "https://github.com/weaveworks/scope",
+          "org.opencontainers.image.title": "scope",
+          "org.opencontainers.image.vendor": "Weaveworks",
+          "works.weave.role": "system"
+        },
+        "WorkingDir": "/home/weave"
+      },
+      "created": "2020-03-23T15:43:44.767267667Z",
+      "os": "linux"
+    },
+    "icon": "sha256:0048162a053eef4d4ce3fe7518615bef084403614f8bca43b40ae2e762e11e06",
+    "id": 1054,
+    "labels": null,
+    "manifest_media_type": "application/vnd.oci.image.manifest.v1+json",
+    "media_type": "application/vnd.oci.image.config.v1+json",
+    "project_id": 8,
+    "pull_time": "2024-08-16T02:23:26.536Z",
+    "push_time": "2024-08-12T09:21:42.884Z",
+    "references": null,
+    "repository_id": 559,
+    "size": 30700346,
+    "tags": [
+      {
+        "artifact_id": 1054,
+        "id": 1056,
+        "immutable": false,
+        "name": "1.13.0-amd64",
+        "pull_time": "0001-01-01T00:00:00.000Z",
+        "push_time": "2024-08-12T09:21:42.929Z",
+        "repository_id": 559
+      }
+    ],
+    "type": "IMAGE"
+  }
+]
