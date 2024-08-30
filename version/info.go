@@ -45,7 +45,7 @@ var (
 
 func Info() {
 	if len(os.Args) == 2 {
-		version := flag.Bool("v", false, "print version info, -v")
+		version := flag.Bool("v", false, "print version info")
 		flag.Parse()
 		if *version {
 			j, err := json.MarshalIndent(&info, "", util.JSONMarshalIndent)
