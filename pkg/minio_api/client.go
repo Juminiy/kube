@@ -69,6 +69,14 @@ func (c *Client) MakeBucket(bucket *BucketConfig) error {
 		return err
 	}
 
+	//err := c.mc.SetBucketPolicy(
+	//	c.ctx,
+	//	bucket.BName,
+	//)
+	//if err != nil {
+	//	return err
+	//}
+
 	return c.setBucketQuota(bucket)
 }
 
@@ -103,13 +111,12 @@ func (c *Client) setBucketQuota(bucket *BucketConfig) error {
 	)
 }
 
-func (c *Client) GetBucketAccess() string {
-	ak, sk := c.ma.GetAccessAndSecretKey()
-	return strings.Join([]string{ak, sk}, ":")
-}
-
-func (c *Client) createAccessSecretKey() {
-
+func (c *Client) createKey() error {
+	//return c.ma.CreateKey(
+	//	c.ctx,
+	//	s3_api.AccessKeyWithBucketRWPolicy(),
+	//)
+	return nil
 }
 
 func (c *BucketConfig) Name() string {
@@ -119,4 +126,12 @@ func (c *BucketConfig) Name() string {
 		"bucket",
 		c.UName,
 	}, "-")
+}
+
+func createKeyRandomPolicy() (string, string) {
+	return "", ""
+}
+
+func createKeyNameEncryptPolicy() (string, string) {
+	return "", ""
 }

@@ -22,3 +22,11 @@ func Bytes2StringNoCopy(bs []byte) string {
 func StringConcat(s ...string) string {
 	return strings.Join(s, "")
 }
+
+func URLWithHTTP(url string) string {
+	if strings.HasPrefix(url, "http://") ||
+		strings.HasPrefix(url, "https://") {
+		return url
+	}
+	return StringConcat("http://", url)
+}

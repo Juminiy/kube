@@ -266,9 +266,8 @@ func (c *DeploymentConfig) Update() error {
 }
 
 func (c *DeploymentConfig) Delete() error {
-	deletePolicy := metav1.DeletePropagationForeground
 	deleteErr := c.cli.Delete(c.ctx, c.MetaName, metav1.DeleteOptions{
-		PropagationPolicy: &deletePolicy,
+		PropagationPolicy: util.New(metav1.DeletePropagationForeground),
 	})
 	if deleteErr != nil {
 		return deleteErr

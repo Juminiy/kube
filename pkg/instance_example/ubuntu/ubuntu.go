@@ -57,6 +57,12 @@ func NewUbuntuDeployment() *k8s_api.DeploymentConfig {
 				cmd_args.LinuxPermitSSHLoginByRoot,
 				cmd_args.LinuxServiceStart("ssh"),
 				cmd_args.LinuxTerminalAlwaysOpen),
+			//cmd_args.S3fsMount{
+			//	Key:        "",
+			//	Dir:        "",
+			//	BucketName: "",
+			//	MinioAddr:  "",
+			//}.Args(),
 		).CancelCmdArgs(false).
 		WithUserHost(k8s_api.UserHostConfig{
 			HostName: "hln",
