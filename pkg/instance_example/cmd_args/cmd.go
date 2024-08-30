@@ -1,7 +1,7 @@
 package cmd_args
 
 import (
-	"kube/pkg/util"
+	"github.com/Juminiy/kube/pkg/util"
 	"strings"
 )
 

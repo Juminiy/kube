@@ -1,8 +1,7 @@
 package minio_api
 
 import (
-	"fmt"
-	"kube/pkg/util"
+	"github.com/Juminiy/kube/pkg/util"
 	"testing"
 )
 
@@ -31,5 +30,4 @@ func TestClient_RemoveBucket(t *testing.T) {
 }
 
 func TestClient_GetBucketAccess(t *testing.T) {
-	fmt.Println(New().GetBucketAccess())
 }

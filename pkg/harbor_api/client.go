@@ -2,6 +2,7 @@ package harbor_api
 
 import (
 	"context"
+	"github.com/Juminiy/kube/pkg/util"
 	"github.com/goharbor/go-client/pkg/harbor"
 	v2client "github.com/goharbor/go-client/pkg/sdk/v2.0/client"
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/client/artifact"
@@ -9,7 +10,6 @@ import (
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/client/repository"
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/client/user"
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/models"
-	"kube/pkg/util"
 	"net/http"
 	"strings"
 )

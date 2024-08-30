@@ -3,7 +3,7 @@ package s3_api
 import (
 	"encoding/json"
 	"fmt"
-	"kube/pkg/util"
+	"github.com/Juminiy/kube/pkg/util"
 )
 
 // gen from:

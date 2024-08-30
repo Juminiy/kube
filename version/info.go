@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"kube/pkg/util"
+	"github.com/Juminiy/kube/pkg/util"
 	"os"
 	"runtime"
 )

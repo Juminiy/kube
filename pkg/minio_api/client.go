@@ -3,10 +3,10 @@ package minio_api
 import (
 	"context"
 	"errors"
+	"github.com/Juminiy/kube/pkg/util"
 	"github.com/minio/madmin-go/v3"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
-	"kube/pkg/util"
 	"strings"
 )
 

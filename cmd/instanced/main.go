@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	ldversion "kube/version"
+	ldversion "github.com/Juminiy/kube/version"
 )
 
 func main() {

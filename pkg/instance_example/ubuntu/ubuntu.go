@@ -1,11 +1,11 @@
 package ubuntu
 
 import (
+	"github.com/Juminiy/kube/pkg/harbor_api"
+	"github.com/Juminiy/kube/pkg/instance_example/cmd_args"
+	"github.com/Juminiy/kube/pkg/k8s_api"
+	"github.com/Juminiy/kube/pkg/util"
 	corev1 "k8s.io/api/core/v1"
-	"kube/pkg/harbor_api"
-	"kube/pkg/instance_example/cmd_args"
-	"kube/pkg/k8s_api"
-	"kube/pkg/util"
 )
 
 func NewUbuntuDeployment() *k8s_api.DeploymentConfig {

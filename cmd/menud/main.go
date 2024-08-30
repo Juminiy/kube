@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	ldversion "kube/version"
+	ldversion "github.com/Juminiy/kube/version"
 	"os"
 
-	harbormenu "kube/cmd/menud/harbor_api"
-	instancemenu "kube/cmd/menud/instance_example"
-	k8smenu "kube/cmd/menud/k8s_api"
+	harbormenu "github.com/Juminiy/kube/cmd/menud/harbor_api"
+	instancemenu "github.com/Juminiy/kube/cmd/menud/instance_example"
+	k8smenu "github.com/Juminiy/kube/cmd/menud/k8s_api"
 )
 
 func main() {

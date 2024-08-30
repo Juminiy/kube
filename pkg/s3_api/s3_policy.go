@@ -1,6 +1,6 @@
 package s3_api
 
-import "kube/pkg/util"
+import "github.com/Juminiy/kube/pkg/util"
 
 // gen from:
 // https://min.io/docs/minio/linux/administration/identity-access-management/policy-based-access-control.html

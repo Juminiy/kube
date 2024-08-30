@@ -1,4 +1,4 @@
-module kube
+module github.com/Juminiy/kube
 
 go 1.23.0
 

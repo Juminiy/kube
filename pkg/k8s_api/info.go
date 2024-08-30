@@ -3,7 +3,7 @@ package k8s_api
 import (
 	"encoding/json"
 	"fmt"
-	"kube/pkg/util"
+	"github.com/Juminiy/kube/pkg/util"
 	"time"
 
 	appsv1 "k8s.io/api/apps/v1"

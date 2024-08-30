@@ -2,9 +2,9 @@ package instance_example
 
 import (
 	"fmt"
-	"kube/pkg/instance_example/nginx"
-	"kube/pkg/instance_example/ubuntu"
-	"kube/pkg/k8s_api"
+	"github.com/Juminiy/kube/pkg/instance_example/nginx"
+	"github.com/Juminiy/kube/pkg/instance_example/ubuntu"
+	"github.com/Juminiy/kube/pkg/k8s_api"
 	"os"
 	"time"
 )
