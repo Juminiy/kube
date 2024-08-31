@@ -16,8 +16,7 @@
 # Modify FROM: https://github.com/kubesphere/kubekey/blob/master/hack/version.sh
 # Modifier NAME: Lingnan Hua, MAIL: chisato-x@bupt.edu.cn
 
-GIT_REPO_HTTPS_ADDRESS=github.com/Juminiy/kube
-GIT_REPO_NAME=kube
+PROJECT_NAME=github.com/Juminiy/kube
 
 set -o errexit
 set -o nounset
@@ -95,7 +94,7 @@ version::ldflags() {
         local key=${1}
         local val=${2}
         ldflags+=(
-            "-X '${GIT_REPO_NAME}/version.${key}=${val}'"
+            "-X '${PROJECT_NAME}/version.${key}=${val}'"
         )
     }
 

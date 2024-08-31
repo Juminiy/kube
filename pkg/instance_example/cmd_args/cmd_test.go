@@ -2,7 +2,7 @@ package cmd_args
 
 import (
 	"fmt"
-	"kube/pkg/util"
+	"github.com/Juminiy/kube/pkg/util"
 	"testing"
 )
 
