@@ -1,0 +1,3 @@
+{
+  "Resource": "arn:aws:iam::account-ID-without-hyphens:user/accounting/*"
+}

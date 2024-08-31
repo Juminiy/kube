@@ -1,0 +1,5 @@
+{
+  "Principal": {
+    "AWS": "arn:aws:sts::AWS-account-ID:assumed-role/role-name/role-session-name"
+  }
+}

@@ -1,0 +1,3 @@
+{
+  "Resource": "arn:aws:sqs:us-east-2:account-ID-without-hyphens:queue1"
+}

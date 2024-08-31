@@ -1,0 +1,5 @@
+{
+  "Principal": {
+    "Federated": "cognito-identity.amazonaws.com"
+  }
+}

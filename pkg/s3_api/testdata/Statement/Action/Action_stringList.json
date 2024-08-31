@@ -1,0 +1,9 @@
+{
+  "Action": [
+    "sqs:SendMessage",
+    "sqs:ReceiveMessage",
+    "ec2:StartInstances",
+    "iam:ChangePassword",
+    "s3:GetObject"
+  ]
+}

@@ -1,0 +1,149 @@
+admin:*
+Selector for all admin action keys.
+
+admin:Heal
+Allows heal command
+
+admin:StorageInfo
+Allows listing server info
+
+admin:DataUsageInfo
+Allows listing data usage info
+
+admin:TopLocksInfo
+Allows listing top locks
+
+admin:Profiling
+Allows profiling
+
+admin:ServerTrace
+Allows listing server trace
+
+admin:ConsoleLog
+Allows listing console logs on terminal
+
+admin:KMSCreateKey
+Allows creating a new KMS master key
+
+admin:KMSKeyStatus
+Allows getting KMS key status
+
+admin:ServerInfo
+Allows listing server info
+
+admin:OBDInfo
+Allows obtaining cluster on-board diagnostics
+
+admin:ServerUpdate
+Allows MinIO binary update
+
+admin:ServiceRestart
+Allows restart of MinIO service.
+
+admin:ServiceStop
+Allows stopping MinIO service.
+
+admin:ConfigUpdate
+Allows MinIO config management
+
+admin:CreateUser
+Allows creating MinIO user
+
+admin:DeleteUser
+Allows deleting MinIO user
+
+admin:ListUsers
+Allows list users permission
+
+admin:EnableUser
+Allows enable user permission
+
+admin:DisableUser
+Allows disable user permission
+
+admin:GetUser
+Allows GET permission on user info
+
+admin:AddUserToGroup
+Allows adding user to group permission
+
+admin:RemoveUserFromGroup
+Allows removing user to group permission
+
+admin:GetGroup
+Allows getting group info
+
+admin:ListGroups
+Allows list groups permission
+
+admin:EnableGroup
+Allows enable group permission
+
+admin:DisableGroup
+Allows disable group permission
+
+admin:CreatePolicy
+Allows create policy permission
+
+admin:DeletePolicy
+Allows delete policy permission
+
+admin:GetPolicy
+Allows get policy permission
+
+admin:AttachUserOrGroupPolicy
+Allows attaching a policy to a user/group
+
+admin:ListUserPolicies
+Allows listing user policies
+
+admin:CreateServiceAccount
+Allows creating MinIO Access Key
+
+admin:UpdateServiceAccount
+Allows updating MinIO Access Key
+
+admin:RemoveServiceAccount
+Allows deleting MinIO Access Key
+
+admin:ListServiceAccounts
+Allows listing MinIO Access Key
+
+admin:SetBucketQuota
+Allows setting bucket quota
+
+admin:GetBucketQuota
+Allows getting bucket quota
+
+admin:SetBucketTarget
+Allows setting bucket target
+
+admin:GetBucketTarget
+Allows getting bucket targets
+
+admin:SetTier
+Allows creating and modifying remote storage tiers using the mc ilm tier commands.
+
+admin:ListTier
+Allows listing configured remote storage tiers using the mc ilm tier commands.
+
+admin:BandwidthMonitor
+Allows retrieving metrics related to current bandwidth consumption.
+
+admin:Prometheus
+Allows access to MinIO metrics. Only required if MinIO requires authentication for scraping metrics.
+
+admin:ListBatchJobs
+Allows access to list the active batch jobs.
+
+admin:DescribeBatchJobs
+Allows access to the see the definition details of a running batch job.
+
+admin:StartBatchJob
+Allows user to begin a batch job run.
+
+admin:CancelBatchJob
+Allows user to stop a batch job currently in process.
+
+admin:Rebalance
+Allows access to start, query, or stop a rebalancing of objects across pools with varying free storage space.

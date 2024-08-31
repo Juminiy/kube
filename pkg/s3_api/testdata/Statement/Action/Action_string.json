@@ -1,0 +1,8 @@
+{
+  "Action": "sqs:SendMessage"
+}
+// 1. prefix:
+// (1). service namespace as prefix: iam, ec2, sqs, sns, s3
+// (2). Case insensitive: sqs equal to SQS
+// 2. action:
+// (1). Case insensitive: SendMessage equal to sendmessage

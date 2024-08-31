@@ -1,0 +1,5 @@
+{
+  "Principal": {
+    "AWS": "arn:aws:iam::AWS-account-ID:user/user-name"
+  }
+}

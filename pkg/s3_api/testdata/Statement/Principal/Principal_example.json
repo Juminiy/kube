@@ -1,0 +1,20 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "UsePrincipalArnInsteadOfNotPrincipalWithDeny",
+      "Effect": "Deny",
+      "Action": "s3:*",
+      "Principal": "*",
+      "Resource": [
+        "arn:aws:s3:::BUCKETNAME/*",
+        "arn:aws:s3:::BUCKETNAME"
+      ],
+      "Condition": {
+        "ArnNotEquals": {
+          "aws:PrincipalArn": "arn:aws:iam::444455556666:user/user-name"
+        }
+      }
+    }
+  ]
+}

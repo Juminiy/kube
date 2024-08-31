@@ -1,0 +1,21 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "admin:OBDInfo",
+        "admin:Profiling",
+        "admin:Prometheus",
+        "admin:ServerInfo",
+        "admin:ServerTrace",
+        "admin:TopLocksInfo",
+        "admin:BandwidthMonitor",
+        "admin:ConsoleLog"
+      ],
+      "Resource": [
+        "arn:aws:s3:::*"
+      ]
+    }
+  ]
+}

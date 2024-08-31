@@ -1,0 +1,6 @@
+{
+  "Resource": [
+    "arn:aws:dynamodb:us-east-2:account-ID-without-hyphens:table/books_table",
+    "arn:aws:dynamodb:us-east-2:account-ID-without-hyphens:table/magazines_table"
+  ]
+}

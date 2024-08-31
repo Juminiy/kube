@@ -1,0 +1,16 @@
+{
+  "Effect": "Allow",
+  "NotAction": "s3:DeleteBucket",
+  "Resource": "arn:aws:s3:::*"
+}
+
+// 1. NotAction is not effected by Effect
+//  (1). Allow, permit unlisted action in service
+//     i. apply all the resource not matched
+//    ii. apply all the action not matched
+//  (2). Deny, refuse unlisted action in service
+
+// above Allow NotAction With Resource
+// (1). permit: any resource in s3 execute any action Expect NotAction
+// (2). forbid: ListAllMyBuckets, because action:ListAllMyBuckets need Resource *
+// (3). forbid: any other service, because they are not in s3 or not s3

@@ -1,0 +1,8 @@
+{
+  "Principal": {
+    "Service": [
+      "ecs.amazonaws.com",
+      "elasticloadbalancing.amazonaws.com"
+    ]
+  }
+}
