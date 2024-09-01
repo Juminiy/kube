@@ -23,6 +23,8 @@ func StringConcat(s ...string) string {
 	return strings.Join(s, "")
 }
 
+func StringJoin(sep string, s ...string) string { return strings.Join(s, sep) }
+
 func URLWithHTTP(url string) string {
 	if strings.HasPrefix(url, "http://") ||
 		strings.HasPrefix(url, "https://") {

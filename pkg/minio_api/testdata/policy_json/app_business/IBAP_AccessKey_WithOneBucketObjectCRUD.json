@@ -2,7 +2,7 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "$(businessUserName)-IBAP-AccessKeyIDSecret-WithOneBucketObject*",
+      "Sid": "$[BusinessUserName]-IBAP-AccessKey-WithOneBucketObjectCRUD",
       "Effect": "Allow",
       "Action": [
         "s3:ListBucket",
@@ -11,7 +11,7 @@
         "s3:PutObject",
       ],
       "Resource": [
-        "arn:aws:s3:::$(bucketName)/*"
+        "arn:aws:s3:::$[BucketName]/*"
       ]
     }
   ]

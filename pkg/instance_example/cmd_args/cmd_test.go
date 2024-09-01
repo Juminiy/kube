@@ -25,10 +25,13 @@ func TestArgConcat(t *testing.T) {
 
 func TestS3fsMount_Args(t *testing.T) {
 	s3fsM := &S3fsMount{
-		Key:        "accessKeyID:secretAccessKey",
-		Dir:        "/mnt",
+		AccessKey:  "AccessKeyID:SecretAccessKey",
+		MountDir:   "/mnt",
 		BucketName: "s3fs-mount-bucket-test",
 		MinioAddr:  "192.168.31.110:9000",
+		S3CredNamingPolicy: S3CredNamingPolicy{
+			GenMethod: S3CredNamingGenUUID,
+		},
 	}
 
 	_, err := pfn(s3fsM.Args())

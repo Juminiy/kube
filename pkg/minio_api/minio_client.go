@@ -3,13 +3,15 @@ package minio_api
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/Juminiy/kube/pkg/util"
+	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/minio/madmin-go/v3"
 	"github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/credentials"
-	"strings"
+	miniocred "github.com/minio/minio-go/v7/pkg/credentials"
 )
 
+// in yaml config
 const (
 	endpoint        = "192.168.31.110:9000"
 	accessKeyID     = "minioadmin"
@@ -18,31 +20,26 @@ const (
 	secure          = false
 )
 
+const (
+	AccessKeyIDMaxLen     = 50
+	SecretAccessKeyMaxLen = 128
+)
+
 type (
 	Client struct {
 		Endpoint string
-		ID       string // AccessKeyID
-		Secret   string // SecretAccessKey
-		Token    string // SessionToken
-		Secure   bool
+		credentials.Value
+		Secure bool
 
 		mc  *minio.Client
 		ma  *madmin.AdminClient
 		ctx context.Context
 	}
-	BucketConfig struct {
-		// restrict bucket size /Byte
-		SizeB uint64
-		// username to make bucket
-		UName string
-		// bucket name to get,delete,update
-		BName string
-	}
 )
 
 func New() *Client {
 	mOpts := &minio.Options{
-		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, sessionToken),
+		Creds:  miniocred.NewStaticV4(accessKeyID, secretAccessKey, sessionToken),
 		Secure: secure,
 	}
 	mc, err := minio.New(endpoint, mOpts)
@@ -59,79 +56,116 @@ func New() *Client {
 // 2. set bucket quota: size(B)
 // 3. set bucket policy: readwrite
 func (c *Client) MakeBucket(bucket *BucketConfig) error {
-	bucket.BName = bucket.Name()
+	bucket.BucketName = bucket.Name()
 	err := c.mc.MakeBucket(
 		c.ctx,
-		bucket.BName,
+		bucket.BucketName,
 		minio.MakeBucketOptions{},
 	)
 	if err != nil {
 		return err
 	}
 
-	//err := c.mc.SetBucketPolicy(
-	//	c.ctx,
-	//	bucket.BName,
-	//)
-	//if err != nil {
-	//	return err
-	//}
-
 	return c.setBucketQuota(bucket)
 }
 
-func (c *Client) RemoveBucket(bucket *BucketConfig) error {
+func (c *Client) RemoveBucket(config *BucketConfig) error {
 	return c.mc.RemoveBucket(
 		c.ctx,
-		bucket.BName,
+		config.BucketName,
 	)
 }
 
-func (c *Client) UpdateBucketQuota(bucket *BucketConfig) error {
-	return c.setBucketQuota(bucket)
+func (c *Client) UpdateBucketQuota(config *BucketConfig) error {
+	return c.setBucketQuota(config)
 }
 
-func (c *Client) setBucketQuota(bucket *BucketConfig) error {
-	if bucket == nil ||
-		(len(bucket.UName) == 0 && len(bucket.BName) == 0) ||
-		bucket.SizeB <= 0 {
+func (c *Client) setBucketQuota(config *BucketConfig) error {
+	if config == nil ||
+		(len(config.BusinessUserName) == 0 && len(config.BucketName) == 0) ||
+		config.Quota <= 0 {
 		return errors.New("bucket config error")
 	}
-	if len(bucket.BName) == 0 {
-		bucket.BName = bucket.Name()
+	if len(config.BucketName) == 0 {
+		config.BucketName = config.Name()
 	}
+
 	return c.ma.SetBucketQuota(
 		c.ctx,
-		bucket.BName,
+		config.BucketName,
 		&madmin.BucketQuota{
-			Quota: bucket.SizeB,
-			Size:  bucket.SizeB,
+			Quota: config.Quota, // Deprecated, but set it
+			Size:  config.Quota,
 			Type:  madmin.HardQuota,
 		},
 	)
 }
 
-func (c *Client) createKey() error {
-	//return c.ma.CreateKey(
-	//	c.ctx,
-	//	s3_api.AccessKeyWithBucketRWPolicy(),
-	//)
+func (c *Client) CreateBucketPolicy(config *PolicyConfig) error {
+	policy, err := config.RBAPBucketWithAdminAllWithAccessKeyOneBucketObjectCRUDPolicy()
+	if err != nil {
+		return err
+	}
+
+	return c.mc.SetBucketPolicy(
+		c.ctx,
+		config.BucketName,
+		policy,
+	)
+}
+
+func (c *Client) CreateAccessKey() (*miniocred.Value, error) {
+	cred := NewCred(randAccessKeyID(), randSecretAccessKey())
+	return cred, c.CreateIDPUser(cred)
+}
+
+func (c *Client) DeleteAccessKey(accessKeyID string) error {
+	return c.DeleteIDPUser(accessKeyID)
+}
+
+func (c *Client) CreateIDPUser(cred *miniocred.Value) error {
+	return c.ma.AddUser(
+		c.ctx,
+		randAccessKeyID(),
+		randSecretAccessKey(),
+	)
+}
+
+func (c *Client) DeleteIDPUser(accessKeyID string) error {
+	return c.ma.RemoveUser(
+		c.ctx,
+		accessKeyID,
+	)
+}
+
+func (c *Client) CreateAccessPolicy(config *PolicyConfig) error {
+	policy, err := config.IBAPAccessKeyWithOneBucketObjectCRUDPolicy()
+	if err != nil {
+		return err
+	}
+
+	resp, err := c.ma.AttachPolicy(
+		c.ctx,
+		madmin.PolicyAssociationReq{
+			Policies: []string{policy},
+			User:     config.Cred.AccessKeyID,
+			Group:    config.GroupName,
+		},
+	)
+	fmt.Println(resp)
+	return err
+}
+
+func (c *Client) DeleteAccessPolicy(config *PolicyConfig) error {
+	//c.ma.AttachPolicy()
+	//c.ma.DetachPolicy()
+	//
+	//c.ma.AssignPolicy()
+	//c.ma.DeletePolicy()
+	//
+	//c.ma.AddCannedPolicy()
+	//c.ma.RemoveCannedPolicy()
+	//
+
 	return nil
-}
-
-func (c *BucketConfig) Name() string {
-	return strings.Join([]string{
-		"s3fs",
-		"mount",
-		"bucket",
-		c.UName,
-	}, "-")
-}
-
-func createKeyRandomPolicy() (string, string) {
-	return "", ""
-}
-
-func createKeyNameEncryptPolicy() (string, string) {
-	return "", ""
 }

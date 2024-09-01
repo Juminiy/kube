@@ -1,7 +1,6 @@
 package version
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/Juminiy/kube/pkg/util"
@@ -48,12 +47,12 @@ func Info() {
 		version := flag.Bool("v", false, "print version json info")
 		flag.Parse()
 		if *version {
-			j, err := json.MarshalIndent(&info, "", util.JSONMarshalIndent)
+			infoJSON, err := util.MarshalJSONPretty(&info)
 			if err != nil {
 				fmt.Println(err)
 				goto osExit
 			}
-			fmt.Println(util.Bytes2StringNoCopy(j))
+			fmt.Println(infoJSON)
 		}
 	osExit:
 		os.Exit(0)

@@ -8,26 +8,27 @@ import (
 func TestClient_UpdateBucketQuota(t *testing.T) {
 	util.SilentHandleError("update quota error",
 		New().UpdateBucketQuota(&BucketConfig{
-			SizeB: util.Ti * 5,
-			BName: "bin",
+			Quota:      util.Ti * 5,
+			BucketName: "bin",
 		}))
 
 }
 func TestClient_MakeBucket(t *testing.T) {
 	util.SilentHandleError("create bucket error",
 		New().MakeBucket(&BucketConfig{
-			SizeB: util.Gi * 30,
-			UName: "chisato",
+			Quota:            util.Gi * 30,
+			BusinessUserName: "chisato",
 		}))
 }
 
 func TestClient_RemoveBucket(t *testing.T) {
 	util.SilentHandleError("remove bucket error",
 		New().RemoveBucket(&BucketConfig{
-			BName: "s3fs-mount-bucket-chisato",
+			BucketName: "s3fs-mount-bucket-chisato",
 		}),
 	)
 }
 
-func TestClient_GetBucketAccess(t *testing.T) {
+func TestClient_BucketWorkFlow(t *testing.T) {
+
 }

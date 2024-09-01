@@ -1,7 +1,6 @@
 package s3_api
 
 import (
-	"encoding/json"
 	"errors"
 	"github.com/Juminiy/kube/pkg/util"
 )
@@ -35,9 +34,24 @@ var (
 	singlePolicySizeError = errors.New("single policy size bigger than 20KiB")
 )
 
+var (
+	VersionError         = errors.New("Version value is not valid")
+	VersionOutdatedError = errors.New("Version value has outdated")
+	StatementError       = errors.New("Statement size can not be zero")
+	SidError             = errors.New("Sid are duplicated in full PolicyDocument")
+	EffectError          = errors.New("Effect value is not valid")
+	ActionError          = errors.New("Action and NotAction cannot be used simultaneously in a same Statement")
+	ResourceError        = errors.New("Resource and NotResource cannot be used simultaneously in a same Statement")
+	PrincipalError       = errors.New("Principal and NotPrincipal cannot be used simultaneously in a same Statement")
+	PrincipalV2Error     = errors.New("Principal can not be used in IBAPolicy Statement")
+)
+
+// AWS IAM PolicyDocument JSON
 type Policy interface {
 	// String to get packed json string
 	String() (string, error)
+	VersionString() string
+	StatementLen() int
 }
 
 // RBAPolicy
@@ -63,14 +77,15 @@ type RBAPolicy struct {
 }
 
 func (p *RBAPolicy) String() (string, error) {
-	bs, err := json.Marshal(p)
-	if err != nil {
-		return "", err
-	}
-	if len(bs) >= singlePolicyMaxSize {
-		return "", singlePolicySizeError
-	}
-	return util.Bytes2StringNoCopy(bs), nil
+	return MarshalPolicy(p)
+}
+
+func (p *RBAPolicy) VersionString() string {
+	return p.Version
+}
+
+func (p *RBAPolicy) StatementLen() int {
+	return len(p.StatementList)
 }
 
 // IBAPolicy
@@ -88,14 +103,15 @@ type IBAPolicy struct {
 }
 
 func (p *IBAPolicy) String() (string, error) {
-	bs, err := json.Marshal(p)
-	if err != nil {
-		return "", err
-	}
-	if len(bs) >= singlePolicyMaxSize {
-		return "", singlePolicySizeError
-	}
-	return util.Bytes2StringNoCopy(bs), nil
+	return MarshalPolicy(p)
+}
+
+func (p *IBAPolicy) VersionString() string {
+	return p.Version
+}
+
+func (p *IBAPolicy) StatementLen() int {
+	return len(p.StatementList)
 }
 
 type StatementList []Statement
@@ -143,7 +159,9 @@ type Statement struct {
 // PrincipalType
 // possible gotype: string, map[string]any
 type PrincipalType any
-
+type PrincipalTypeConstraint interface {
+	~string | ~map[string]any
+}
 type Principal struct {
 	// more detail referred to local: testdata/Statement/Principal
 	// and more detail referred to web: https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html
@@ -159,7 +177,9 @@ type Principal struct {
 // ActionType
 // possible gotype: string, []string
 type ActionType any
-
+type ActionTypeConstraint interface {
+	~string | ~[]string
+}
 type Action struct {
 	// more detail referred to local: testdata/Statement/Action
 	// and more detail referred to web: https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_action.html
@@ -175,7 +195,9 @@ type Action struct {
 // ResourceType
 // possible gotype: string, []string
 type ResourceType any
-
+type ResourceTypeConstraint interface {
+	~string | ~[]string
+}
 type Resource struct {
 	// more detail referred to local: testdata/Statement/Resource
 	// and more detail referred to web: https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_resource.html
@@ -191,3 +213,28 @@ type Resource struct {
 // ConditionType
 // Extremely Complex, do it when really need it!!!
 type ConditionType map[string]any
+
+func PolicyValid(policy Policy) error {
+	version := policy.VersionString()
+	if version == EarlierVersion {
+		return VersionOutdatedError
+	}
+	if version != Version {
+		return VersionError
+	}
+	if policy.StatementLen() == 0 {
+		return StatementError
+	}
+	return nil
+}
+
+func MarshalPolicy(policy Policy) (string, error) {
+	policyJSONString, err := util.MarshalJSONPretty(&policy)
+	if err != nil {
+		return "", err
+	}
+	if len(policyJSONString) > singlePolicyMaxSize {
+		return "", singlePolicySizeError
+	}
+	return policyJSONString, err
+}

@@ -1,3 +1,4 @@
 1. remove fmt.Println fmt.Printf in later version, replaced by logger api
 2. read yaml api
-3. logger api
+3. logger api: uber/zap
+4. struct json encoding api referred from: k8s & openapi

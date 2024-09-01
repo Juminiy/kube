@@ -3,7 +3,7 @@ package minio_api
 import "github.com/Juminiy/kube/pkg/s3_api"
 
 const (
-	Version = "2012-10-17"
+	Version = s3_api.Version
 )
 
 const (
@@ -19,7 +19,7 @@ const (
 // consoleAdmin
 const (
 	S3All    = s3_api.S3All
-	adminAll = "admin:*"
+	adminAll = AdminAll
 )
 
 // readonly
@@ -31,25 +31,25 @@ const (
 // readwrite
 const (
 	S3RW = S3All
-	S3Rw
+	s3RW
 )
 
 // diagnostics
 const (
-	adminServerTrace      = "admin:ServerTrace"
-	adminProfiling        = "admin:Profiling"
-	adminConsoleLog       = "admin:ConsoleLog"
-	adminServerInfo       = "admin:ServerInfo"
-	adminTopLocksInfo     = "admin:TopLocksInfo"
-	adminOBDInfo          = "admin:OBDInfo"
-	adminBandwidthMonitor = "admin:BandwidthMonitor"
-	adminPrometheus       = "admin:Prometheus"
+	adminServerTrace      = AdminServerTrace
+	adminProfiling        = AdminProfiling
+	adminConsoleLog       = AdminConsoleLog
+	adminServerInfo       = AdminServerInfo
+	adminTopLocksInfo     = AdminTopLocksInfo
+	adminOBDInfo          = AdminOBDInfo
+	adminBandwidthMonitor = AdminBandwidthMonitor
+	adminPrometheus       = AdminPrometheus
 )
 
 // writeonly
 const (
 	S3PutObject = s3_api.S3PutObject
-	S3PutObj
+	s3PutObject
 )
 
 // referred from:
@@ -120,4 +120,13 @@ const (
 	AWSSecureTransport = s3_api.AWSSecureTransport
 	AWSCurrentTime     = s3_api.AWSCurrentTime
 	AWSEpochTime       = s3_api.AWSEpochTime
+)
+
+const (
+	KMSAll = "kms:*"
+	kMSAll
+)
+
+const (
+	ResourceARNS3All = s3_api.ResourceARNS3All
 )

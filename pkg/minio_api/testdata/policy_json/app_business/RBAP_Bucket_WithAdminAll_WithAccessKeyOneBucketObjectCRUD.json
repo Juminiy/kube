@@ -1,0 +1,36 @@
+{
+  "Version": "2012-10-17",
+  "Id": "$[BusinessUserID]-$[GeneratedUUID]",
+  "Statement": [
+    {
+      "Sid": "$[BusinessUserName]-RBAP-Admin",
+      "Effect": "Allow",
+      "Action": [
+        "*"
+      ],
+      "Principal": {
+        "AWS": "arn:aws:iam::$[MinioAdminId]:root"
+      },
+      "Resource": [
+        "arn:aws:s3:::$[BucketName]/*",
+        "arn:aws:s3:::$[BucketName]"
+      ],
+    },
+    {
+      "Sid": "$[BusinessUserName]-RBAP-AccessKey-WithOneBucketObjectCRUD",
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:DeleteObject",
+        "s3:GetObject",
+        "s3:PutObject"
+      ],
+      "Principal": {
+        "AWS": "arn:aws:iam::$[MinioUserId]:root"
+      },
+      "Resource": [
+        "arn:aws:s3:::$[BucketName]/*"
+      ],
+    },
+  ]
+}

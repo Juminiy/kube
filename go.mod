@@ -3,7 +3,11 @@ module github.com/Juminiy/kube
 go 1.23.0
 
 require (
+	github.com/aws/aws-sdk-go v1.34.28
+	github.com/aws/aws-sdk-go-v2/service/iam v1.35.0
+	github.com/brianvoe/gofakeit/v7 v7.0.4
 	github.com/goharbor/go-client v0.210.0
+	github.com/google/uuid v1.6.0
 	github.com/minio/madmin-go/v3 v3.0.64
 	github.com/minio/minio-go/v7 v7.0.76
 	k8s.io/api v0.31.0
@@ -13,6 +17,10 @@ require (
 
 require (
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d // indirect
+	github.com/aws/aws-sdk-go-v2 v1.30.4 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.16 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.16 // indirect
+	github.com/aws/smithy-go v1.20.4 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/emicklei/go-restful/v3 v3.11.0 // indirect
@@ -38,8 +46,8 @@ require (
 	github.com/google/gnostic-models v0.6.8 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/imdario/mergo v0.3.6 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.17.9 // indirect

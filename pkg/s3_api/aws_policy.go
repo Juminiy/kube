@@ -28,8 +28,8 @@ const (
 // Action
 // S3:All
 const (
-	S3All = "s3:*"
-	S3all
+	ActionAll = matchAny
+	S3All     = "s3:*"
 )
 
 // S3:Bucket
@@ -135,7 +135,14 @@ const (
 // Resource
 const (
 	ResourceAll         = matchAny
+	ResourceARNS3All    = "arn:aws:s3:::*"
 	ResourceARNS3Prefix = "arn:aws:s3:::"
+)
+
+// Principal
+const (
+	PrincipalAll          = matchAny
+	PrincipalARNIAMPrefix = "arn:aws:iam::"
 )
 
 /*
@@ -156,4 +163,12 @@ func GetBucketResource(bucketName string) string {
 
 func GetBucketAnyResource(bucketName string) string {
 	return util.StringConcat(ResourceARNS3Prefix, bucketName, dirSlash, ResourceAll)
+}
+
+func GetPrincipalAccountRoot(accountId string) string {
+	return util.StringConcat(PrincipalARNIAMPrefix, accountId, ":root")
+}
+
+func GetPrincipalAccountUser(accountId, userName string) string {
+	return util.StringConcat(PrincipalARNIAMPrefix, accountId, ":user/", userName)
 }
