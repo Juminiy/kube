@@ -5,7 +5,14 @@ import (
 	"unsafe"
 )
 
-type Func func() error
+type (
+	Fn   func()
+	Func func() error
+)
+
+var (
+	NothingFn Fn = func() {}
+)
 
 func String2BytesNoCopy(s string) []byte {
 	sh := (*[2]uintptr)(unsafe.Pointer(&s))

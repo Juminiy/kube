@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Juminiy/kube/pkg/util"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/minio/madmin-go/v3"
 	"github.com/minio/minio-go/v7"
 	miniocred "github.com/minio/minio-go/v7/pkg/credentials"
@@ -28,7 +27,7 @@ const (
 type (
 	Client struct {
 		Endpoint string
-		credentials.Value
+		miniocred.Value
 		Secure bool
 
 		mc  *minio.Client
