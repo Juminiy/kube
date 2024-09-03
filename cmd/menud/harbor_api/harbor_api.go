@@ -3,7 +3,7 @@ package harbor_api
 import (
 	"encoding"
 	"fmt"
-	"github.com/Juminiy/kube/pkg/harbor_api"
+	"github.com/Juminiy/kube/pkg/image_api/harbor_api"
 	"github.com/Juminiy/kube/pkg/util"
 	"reflect"
 )

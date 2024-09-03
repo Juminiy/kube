@@ -1,16 +1,13 @@
 package zaplog
 
-import (
-	"github.com/Juminiy/kube/pkg/log_api/stdlog"
-	"github.com/Juminiy/kube/pkg/util"
-)
-
 const (
 	logEngineStdlib   = "stdlib"
 	logEngineZap      = "zap"
 	logEngineZapSugar = "zap sugared"
 )
 
+// ConfigOption
+// Singleton Type
 type ConfigOption struct {
 	_ struct{}
 }
@@ -19,9 +16,11 @@ func NewConfig() *ConfigOption {
 	return &ConfigOption{}
 }
 
-func (*ConfigOption) Load() {
-	stdlog.Debug(_sugaredLogger)
-	util.NothingFn()
+// Load
+// +required
+func (o *ConfigOption) Load() *ConfigOption {
+	Init()
+	return o
 }
 
 // WithLogEngineStd
@@ -46,7 +45,7 @@ func (o *ConfigOption) WithLogEngineSugar() *ConfigOption {
 }
 
 // WithLogLevel
-// +optional
+// +required
 func (o *ConfigOption) WithLogLevel(level string) *ConfigOption {
 	_logLevel = level
 	return o
@@ -67,10 +66,9 @@ func (o *ConfigOption) WithLogStackTrace() *ConfigOption {
 }
 
 // WithOutputPaths
-// +optional
+// +required
 func (o *ConfigOption) WithOutputPaths(s ...string) *ConfigOption {
 	_outputPaths = s
-	_errorOutputPaths = s
 	return o
 }
 

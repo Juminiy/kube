@@ -1,12 +1,13 @@
 package util
 
 type Page struct {
-	code *int64 // equal to pageNumberOf
-	size *int64 // equal to pageSizeOf
+	code *int64 // equal to pageNumberOf, pageCodeOf
+	size *int64 // equal to pageSizeOf, pageCapOf
 	offs *int64 // equal to recordOffsetOf
 }
 
-// immutable default page
+// DefaultPage
+// immutable default page config
 var (
 	DefaultPage = NewPageConfig(1, 10)
 )
@@ -44,4 +45,16 @@ func (p *Page) Page() *int64 {
 
 func (p *Page) Size() *int64 {
 	return p.size
+}
+
+func (p *Page) PairValue() (int64, int64) {
+	return *p.code, *p.size
+}
+
+func (p *Page) PageValue() int64 {
+	return *p.code
+}
+
+func (p *Page) SizeValue() int64 {
+	return *p.size
 }

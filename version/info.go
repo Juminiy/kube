@@ -3,9 +3,10 @@ package version
 import (
 	"flag"
 	"fmt"
-	"github.com/Juminiy/kube/pkg/util"
 	"os"
 	"runtime"
+
+	"github.com/Juminiy/kube/pkg/util"
 )
 
 type (
@@ -49,12 +50,10 @@ func Info() {
 		if *version {
 			infoJSON, err := util.MarshalJSONPretty(&info)
 			if err != nil {
-				fmt.Println(err)
-				goto osExit
+				panic(err)
 			}
 			fmt.Println(infoJSON)
 		}
-	osExit:
 		os.Exit(0)
 	}
 }

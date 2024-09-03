@@ -48,22 +48,44 @@ var (
 func Init() {
 	var _zapError error
 
-	if len(_outputPaths) == 0 &&
+	/*if len(_outputPaths) == 0 &&
 		len(_errorOutputPaths) == 0 {
 		stdlog.Error("output path and error output path must have one available absolute path at least")
 		return
-	}
-	checkOutputPath := func(outputPaths ...string) {
+	} else if len(_errorOutputPaths) == 0 {
+		_errorOutputPaths = _outputPaths
+	} else if len(_outputPaths) == 0 {
+		_outputPaths = _errorOutputPaths
+	}*/
+
+	checkOutputPath := func(outputPaths ...string) int {
+		cnt := 0
 		for _, outputPath := range outputPaths {
-			_zapError = util.OSCreateAbsolutePath(outputPath)
-			if _zapError != nil {
-				stdlog.Error(_zapError)
-				return
+			if !util.OSFilePathExists(outputPath) {
+				_zapError = util.OSCreateAbsolutePath(outputPath)
+				if _zapError != nil {
+					stdlog.Error(_zapError)
+					continue
+				}
+				cnt++
+				continue
 			}
+			cnt++
 		}
+		return cnt
 	}
-	checkOutputPath(_outputPaths...)
-	checkOutputPath(_errorOutputPaths...)
+	outputPathCnt := checkOutputPath(_outputPaths...)
+	errorOutputPathCnt := checkOutputPath(_errorOutputPaths...)
+
+	if outputPathCnt == 0 &&
+		errorOutputPathCnt == 0 {
+		stdlog.Error("output path and error output path must have one available absolute path at least")
+		return
+	} else if outputPathCnt == 0 {
+		_outputPaths = _errorOutputPaths
+	} else if errorOutputPathCnt == 0 {
+		_errorOutputPaths = _outputPaths
+	}
 
 	_zapConfig = util.New(zap.NewProductionConfig())
 	_zapConfig.DisableCaller = !_caller

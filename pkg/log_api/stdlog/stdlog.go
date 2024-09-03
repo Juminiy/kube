@@ -59,8 +59,7 @@ func outputFormatLine(format string, v ...any) {
 }
 
 func outputKeyValueLine(message string, kv ...any) {
-	log.Print(message)
-	log.Println(kv...)
+	log.Print(message, kv)
 }
 
 func formatLine(format string) string {

@@ -1,16 +1,21 @@
+//go:build unix
+
 package zaplog
 
-import "testing"
+import (
+	"path/filepath"
+	"testing"
+)
 
-var testGlobalConfig = NewConfig().
+var _ = NewConfig().
 	WithLogEngineSugar().
 	WithLogLevel("info").
 	WithLogCaller().
 	WithLogStackTrace().
-	WithOutputPaths("/home/wz/test_dir/app.log").
-	WithErrorOutputPaths("/home/wz/test_dir/app_error.log")
+	WithOutputPaths(filepath.Join(testDir, "app.log")).
+	WithErrorOutputPaths(filepath.Join(testDir, "app_error.log")).
+	Load()
 
-// TODO: something seems wrong
 func TestZapLog(t *testing.T) {
 	Debug("1", "2", "3")
 	DebugF("ex %d", 1)
@@ -27,6 +32,7 @@ func TestZapLog(t *testing.T) {
 	Error("1", "2", "3")
 	ErrorF("ex %d", 1)
 	ErrorW("xe", "k", "v", "k2", 2, "k3", map[string]string{})
+
 }
 
 // Once Tested, Comment them immediately with (Shift+Ctrl+/)

@@ -2,3 +2,4 @@
 2. read yaml api
 3. logger api: uber/zap
 4. struct json encoding api referred from: k8s & openapi
+5. find TODO: and WARNING: before commit

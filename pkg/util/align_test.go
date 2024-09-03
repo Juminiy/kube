@@ -1,9 +1,10 @@
 package util
 
 import (
-	"fmt"
 	"testing"
 	"unsafe"
+
+	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 )
 
 func TestInternalKeywordSizeOf(t *testing.T) {
@@ -17,12 +18,12 @@ func TestInternalKeywordSizeOf(t *testing.T) {
 
 func TestBytes2StringNoCopy(t *testing.T) {
 	bytesOf := []byte{104, 98, 111}
-	fmt.Println(string(bytesOf))
-	fmt.Println(Bytes2StringNoCopy(bytesOf))
+	stdlog.Info(string(bytesOf))
+	stdlog.Info(Bytes2StringNoCopy(bytesOf))
 }
 
 func TestString2BytesNoCopy(t *testing.T) {
 	strOf := "Alan"
-	fmt.Println([]byte(strOf))
-	fmt.Println(String2BytesNoCopy(strOf))
+	stdlog.Info([]byte(strOf))
+	stdlog.Info(String2BytesNoCopy(strOf))
 }

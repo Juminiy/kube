@@ -1,6 +1,8 @@
 package util
 
-import "fmt"
+import (
+	"github.com/Juminiy/kube/pkg/log_api/stdlog"
+)
 
 func SilentHandleError(handle string, err error) {
 	if err != nil {
@@ -9,5 +11,5 @@ func SilentHandleError(handle string, err error) {
 }
 
 func consoleLogError(detail string, err error) {
-	fmt.Printf("%s: %v\n", detail, err)
+	stdlog.ErrorF("%s: %v\n", detail, err)
 }
