@@ -3,6 +3,7 @@ package nginx
 import (
 	"github.com/Juminiy/kube/pkg/image_api/harbor_api"
 	"github.com/Juminiy/kube/pkg/k8s_api/pod_api"
+	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	corev1 "k8s.io/api/core/v1"
 )
@@ -42,7 +43,7 @@ func NewNginxDeployment() *pod_api.DeploymentConfig {
 	}
 	err := pod_api.NewDeployment(&dConf)
 	if err != nil {
-		panic(err)
+		stdlog.ErrorF("nginx deployment error: %s", err.Error())
 	}
 
 	return &dConf

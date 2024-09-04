@@ -12,6 +12,7 @@ type (
 
 var (
 	NothingFn Fn = func() {}
+	DoNothing Fn = func() {}
 )
 
 func String2BytesNoCopy(s string) []byte {

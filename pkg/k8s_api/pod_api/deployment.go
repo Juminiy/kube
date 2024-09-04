@@ -113,10 +113,10 @@ func NewDeployment(c *DeploymentConfig) error {
 		restConfig, err := clientcmd.BuildConfigFromFlags(
 			"",
 			filepath.Join(homedir.HomeDir(), ".kube", "config"))
-		util.SilentHandleError("init k8s client error", err)
+		stdlog.InfoF("init k8s client error: %s", err.Error())
 
 		k8sClientSet.cs, err = k8scli.NewForConfig(restConfig)
-		util.SilentHandleError("init k8s client error", err)
+		stdlog.InfoF("init k8s client error: %s", err.Error())
 	})
 	c.cliSet = k8sClientSet.cs
 
@@ -301,7 +301,7 @@ func (c *DeploymentConfig) Restart() error {
 func (c *DeploymentConfig) JSONMarshal() string {
 	bs, err := c.app.Marshal()
 	if err != nil {
-		util.SilentHandleError("marshal error", err)
+		stdlog.InfoF("appsv1 Deployment marshal error: %s", err.Error())
 		return ""
 	}
 	return util.Bytes2StringNoCopy(bs)
@@ -313,7 +313,7 @@ func (c *DeploymentConfig) SaveConfig() string {
 	c.CallBack = nil
 	bs, err := json.Marshal(c)
 	if err != nil {
-		util.SilentHandleError("marshal error", err)
+		stdlog.InfoF("deployment config json marshal error: %s", err.Error())
 		return ""
 	}
 	return util.Bytes2StringNoCopy(bs)

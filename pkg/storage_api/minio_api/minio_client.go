@@ -3,9 +3,8 @@ package minio_api
 import (
 	"context"
 	"errors"
-
+	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/log_api/zaplog"
-	"github.com/Juminiy/kube/pkg/util"
 	"github.com/minio/madmin-go/v3"
 	"github.com/minio/minio-go/v7"
 	miniocred "github.com/minio/minio-go/v7/pkg/credentials"
@@ -43,12 +42,22 @@ func New() *Client {
 		Secure: secure,
 	}
 	mc, err := minio.New(endpoint, mOpts)
-	util.SilentHandleError("minio client error: ", err)
+	if err != nil {
+		stdlog.ErrorF("minio client error: %s", err.Error())
+		return nil
+	}
 
 	ma, err := madmin.NewWithOptions(endpoint, &madmin.Options{Creds: mOpts.Creds, Secure: mOpts.Secure})
-	util.SilentHandleError("minio admin client error: ", err)
+	if err != nil {
+		stdlog.ErrorF("minio admin client error: %s", err.Error())
+		return nil
+	}
 
-	return &Client{mc: mc, ma: ma, ctx: context.TODO()}
+	return &Client{
+		mc:  mc,
+		ma:  ma,
+		ctx: context.TODO(),
+	}
 }
 
 // MakeBucket

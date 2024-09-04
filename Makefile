@@ -2,7 +2,7 @@ WORK_DIR:= $(PWD)
 CMD_DIR := $(WORK_DIR)/cmd
 BIN_DIR := $(WORK_DIR)/bin
 LDFLAGS := $(shell version/version.sh)
-GO_ENVS  = CGO_ENABLED=0
+GO_ENVS  = env CGO_ENABLED=0
 
 HOST_OS   := $(shell uname -s)
 HOST_ARCH := $(shell uname -m)

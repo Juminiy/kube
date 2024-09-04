@@ -1,7 +1,7 @@
 package v2
 
 import (
-	s3_api2 "github.com/Juminiy/kube/pkg/storage_api/s3_api"
+	"github.com/Juminiy/kube/pkg/storage_api/s3_api"
 	"k8s.io/apimachinery/pkg/util/sets"
 )
 
@@ -11,9 +11,9 @@ import (
 // s3_api can not refer api in s3_api/v2
 
 var (
-	ActionAll    = []string{s3_api2.ActionAll}
-	PrincipalAll = []string{s3_api2.PrincipalAll}
-	ResourceAll  = []string{s3_api2.ResourceAll}
+	ActionAll    = []string{s3_api.ActionAll}
+	PrincipalAll = []string{s3_api.PrincipalAll}
+	ResourceAll  = []string{s3_api.ResourceAll}
 )
 
 type RBAPolicy struct {
@@ -26,7 +26,7 @@ func (p *RBAPolicy) String() (string, error) {
 	if validErr := p.Valid(); validErr != nil {
 		return "", validErr
 	}
-	return s3_api2.MarshalPolicy(p)
+	return s3_api.MarshalPolicy(p)
 }
 
 func (p *RBAPolicy) VersionString() string {
@@ -38,13 +38,13 @@ func (p *RBAPolicy) StatementLen() int {
 }
 
 func (p *RBAPolicy) Valid() error {
-	if policyErr := s3_api2.PolicyValid(p); policyErr != nil {
+	if policyErr := s3_api.PolicyValid(p); policyErr != nil {
 		return policyErr
 	}
 	sidMap := sets.Set[string]{}
 	for _, sm := range p.Statement {
 		if sidMap.Has(sm.Sid) {
-			return s3_api2.SidError
+			return s3_api.SidError
 		}
 		sidMap.Insert(sm.Sid)
 		if smErr := sm.Valid(); smErr != nil {
@@ -63,7 +63,7 @@ func (p *IBAPolicy) String() (string, error) {
 	if validErr := p.Valid(); validErr != nil {
 		return "", validErr
 	}
-	return s3_api2.MarshalPolicy(p)
+	return s3_api.MarshalPolicy(p)
 }
 
 func (p *IBAPolicy) VersionString() string {
@@ -75,7 +75,7 @@ func (p *IBAPolicy) StatementLen() int {
 }
 
 func (p *IBAPolicy) Valid() error {
-	if policyErr := s3_api2.PolicyValid(p); policyErr != nil {
+	if policyErr := s3_api.PolicyValid(p); policyErr != nil {
 		return policyErr
 	}
 	for _, sm := range p.Statement {
@@ -101,21 +101,21 @@ type Statement struct {
 }
 
 func (s *Statement) Valid() error {
-	if s.Effect != s3_api2.Allow &&
-		s.Effect != s3_api2.Deny {
-		return s3_api2.EffectError
+	if s.Effect != s3_api.Allow &&
+		s.Effect != s3_api.Deny {
+		return s3_api.EffectError
 	}
 	if len(s.Principal) != 0 &&
 		len(s.NotPrincipal) != 0 {
-		return s3_api2.PrincipalError
+		return s3_api.PrincipalError
 	}
 	if len(s.Action) != 0 &&
 		len(s.NotAction) != 0 {
-		return s3_api2.ActionError
+		return s3_api.ActionError
 	}
 	if len(s.Resource) != 0 &&
 		len(s.NotResource) != 0 {
-		return s3_api2.ResourceError
+		return s3_api.ResourceError
 	}
 	return nil
 }
@@ -123,7 +123,7 @@ func (s *Statement) Valid() error {
 func (s *Statement) IBAPPrincipalValid() error {
 	if len(s.Principal) != 0 ||
 		len(s.NotPrincipal) != 0 {
-		return s3_api2.PrincipalV2Error
+		return s3_api.PrincipalV2Error
 	}
 	return nil
 }
