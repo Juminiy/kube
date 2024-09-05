@@ -71,7 +71,7 @@ type (
 	}
 )
 
-func NewHarborCli() (*Client, error) {
+func New() (*Client, error) {
 	var (
 		csc = &harbor.ClientSetConfig{
 			URL:      harborRegistry,

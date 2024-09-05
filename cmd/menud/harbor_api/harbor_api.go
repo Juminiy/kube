@@ -20,7 +20,7 @@ func Menu(s ...string) {
 		pageSize       int64
 	)
 
-	hCli, err := harbor_api.NewHarborCli()
+	hCli, err := harbor_api.New()
 	if err != nil {
 		fmt.Printf("new harbor repo client error: %v\n", err)
 		return

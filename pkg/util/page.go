@@ -58,3 +58,11 @@ func (p *Page) PageValue() int64 {
 func (p *Page) SizeValue() int64 {
 	return *p.size
 }
+
+func (p *Page) PageIntValue() int {
+	return int(p.PageValue())
+}
+
+func (p *Page) SizeIntValue() int {
+	return int(p.SizeValue())
+}

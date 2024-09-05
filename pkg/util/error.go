@@ -4,6 +4,16 @@ import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 )
 
+// SilentPanicError
+// Deprecated
+// only used in dev env or test env, _test file
+// not to use in production env
+func SilentPanicError(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 // SilentHandleError
 // Deprecated
 // only used in dev env or test env, _test file

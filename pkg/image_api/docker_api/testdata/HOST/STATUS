@@ -1,0 +1,24 @@
+wz@wz:~/.config$ sudo systemctl status docker
+● docker.service - Docker Application Container Engine
+     Loaded: loaded (/lib/systemd/system/docker.service; enabled; vendor preset: enabled)
+     Active: active (running) since Thu 2024-09-05 10:50:01 CST; 5s ago
+TriggeredBy: ● docker.socket
+       Docs: https://docs.docker.com
+   Main PID: 29580 (dockerd)
+      Tasks: 25
+     Memory: 33.6M
+        CPU: 1.331s
+     CGroup: /system.slice/docker.service
+             ├─29580 /usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+             └─29857 /usr/bin/docker-proxy -proto tcp -host-ip 127.0.0.1 -host-port 1514 -container-ip 172.19.0.5 -container-port 10514
+
+Sep 05 10:50:00 wz dockerd[29580]: time="2024-09-05T10:50:00.769886989+08:00" level=info msg="IPv6 enabled; Adding default IPv6 external servers: [nameserve>
+Sep 05 10:50:00 wz dockerd[29580]: time="2024-09-05T10:50:00.828930573+08:00" level=info msg="No non-localhost DNS nameservers are left in resolv.conf. Usin>
+Sep 05 10:50:00 wz dockerd[29580]: time="2024-09-05T10:50:00.828962945+08:00" level=info msg="IPv6 enabled; Adding default IPv6 external servers: [nameserve>
+Sep 05 10:50:01 wz dockerd[29580]: time="2024-09-05T10:50:01.097393051+08:00" level=error msg="failed to start container" container=94060064b543ed769ac29162>
+Sep 05 10:50:01 wz dockerd[29580]: time="2024-09-05T10:50:01.142666073+08:00" level=error msg="failed to start container" container=832c92b93881e6bac552e98c>
+Sep 05 10:50:01 wz dockerd[29580]: time="2024-09-05T10:50:01.370770212+08:00" level=info msg="Loading containers: done."
+Sep 05 10:50:01 wz dockerd[29580]: time="2024-09-05T10:50:01.380027941+08:00" level=info msg="Docker daemon" commit="24.0.7-0ubuntu2~22.04.1" graphdriver=ov>
+Sep 05 10:50:01 wz dockerd[29580]: time="2024-09-05T10:50:01.380104155+08:00" level=info msg="Daemon has completed initialization"
+Sep 05 10:50:01 wz dockerd[29580]: time="2024-09-05T10:50:01.398443214+08:00" level=info msg="API listen on /run/docker.sock"
+Sep 05 10:50:01 wz systemd[1]: Started Docker Application Container Engine.

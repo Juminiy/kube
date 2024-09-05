@@ -1,0 +1,807 @@
+[
+  {
+    "Id": "fe3ede52c59f01fb10bbda2e1286e9149e62aa151764e90059fcbb1b5560efa9",
+    "Names": [
+      "/nginx"
+    ],
+    "Image": "goharbor/nginx-photon:v2.11.0",
+    "ImageID": "sha256:681ba9915791feb40483ed9b7a0cf94e9071235542fb7aa280657c07041e50db",
+    "Command": "nginx -g 'daemon off;'",
+    "Created": 1720582827,
+    "Ports": [
+      {
+        "IP": "0.0.0.0",
+        "PrivatePort": 8080,
+        "PublicPort": 8662,
+        "Type": "tcp"
+      },
+      {
+        "IP": "::",
+        "PrivatePort": 8080,
+        "PublicPort": 8662,
+        "Type": "tcp"
+      }
+    ],
+    "SizeRw": 2,
+    "SizeRootFs": 153404050,
+    "Labels": {
+      "base-build-date": "20240529",
+      "build-date": "20240526",
+      "com.docker.compose.config-hash": "6ceaea11cc97d878094b7336f714177a87fbd8665556833a3e6cce88caa1294b",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "harbor",
+      "com.docker.compose.project.config_files": "docker-compose.yml",
+      "com.docker.compose.project.working_dir": "/opt/harbor",
+      "com.docker.compose.service": "proxy",
+      "com.docker.compose.version": "1.29.2",
+      "name": "Photon OS x86_64/5.0 Base Image",
+      "vendor": "VMware"
+    },
+    "State": "running",
+    "Status": "Up 4 hours (healthy)",
+    "HostConfig": {
+      "NetworkMode": "harbor_harbor"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "harbor_harbor": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "MacAddress": "02:42:ac:13:00:03",
+          "DriverOpts": null,
+          "NetworkID": "dcc060a49f6952b89ad3fc55afc5bc43cbb606dd77efcf21f08f36640cdf11b0",
+          "EndpointID": "88c37ecf827e2667fdeaab55a599563328ad55ed09af0256a212b27f061c77af",
+          "Gateway": "172.19.0.1",
+          "IPAddress": "172.19.0.3",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "volume",
+        "Name": "975c7e2ced53db277d71986d937567cb4469d94b68aa33efd958790c69d9b71b",
+        "Source": "",
+        "Destination": "/run",
+        "Driver": "local",
+        "Mode": "",
+        "RW": true,
+        "Propagation": ""
+      },
+      {
+        "Type": "volume",
+        "Name": "103ebb288e887f9d3aa3028e2474cda3c4bea5c796a14ba01cdec6df532168f5",
+        "Source": "",
+        "Destination": "/var/cache/nginx",
+        "Driver": "local",
+        "Mode": "",
+        "RW": true,
+        "Propagation": ""
+      },
+      {
+        "Type": "volume",
+        "Name": "5e9cef454861885d053f4b96d2fb85686000e648b02833d4d79262ceed1d28e1",
+        "Source": "",
+        "Destination": "/var/log/nginx",
+        "Driver": "local",
+        "Mode": "",
+        "RW": true,
+        "Propagation": ""
+      },
+      {
+        "Type": "bind",
+        "Source": "/opt/harbor/common/config/nginx",
+        "Destination": "/etc/nginx",
+        "Mode": "z",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/opt/harbor/common/config/shared/trust-certificates",
+        "Destination": "/harbor_cust_cert",
+        "Mode": "",
+        "RW": true,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "Id": "94060064b543ed769ac29162912e18441739a0f9f0a5a8f1cddc86e6f3e630b6",
+    "Names": [
+      "/harbor-jobservice"
+    ],
+    "Image": "goharbor/harbor-jobservice:v2.11.0",
+    "ImageID": "sha256:bba862a3784a6dc52f03cfaa83ad31bc2b792361ee480a93c99fba519af5ace4",
+    "Command": "/harbor/entrypoint.sh",
+    "Created": 1720582827,
+    "Ports": [],
+    "SizeRw": 1569424,
+    "SizeRootFs": 160685830,
+    "Labels": {
+      "base-build-date": "20240529",
+      "build-date": "20240526",
+      "com.docker.compose.config-hash": "2a4bc54e0dd97e6cc8d7cf2ce56b8ea5695bc65c9aead56b4bc9d889b88540dc",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "harbor",
+      "com.docker.compose.project.config_files": "docker-compose.yml",
+      "com.docker.compose.project.working_dir": "/opt/harbor",
+      "com.docker.compose.service": "jobservice",
+      "com.docker.compose.version": "1.29.2",
+      "name": "Photon OS x86_64/5.0 Base Image",
+      "vendor": "VMware"
+    },
+    "State": "running",
+    "Status": "Up 4 hours (healthy)",
+    "HostConfig": {
+      "NetworkMode": "harbor_harbor"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "harbor_harbor": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "MacAddress": "02:42:ac:13:00:04",
+          "DriverOpts": null,
+          "NetworkID": "dcc060a49f6952b89ad3fc55afc5bc43cbb606dd77efcf21f08f36640cdf11b0",
+          "EndpointID": "cca6dbe6fece0be8f629f9bab7992fbce2d4281af93585d3619b91bb1a4518b5",
+          "Gateway": "172.19.0.1",
+          "IPAddress": "172.19.0.4",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/opt/harbor/common/config/shared/trust-certificates",
+        "Destination": "/harbor_cust_cert",
+        "Mode": "",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/data/job_logs",
+        "Destination": "/var/log/jobs",
+        "Mode": "z",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/opt/harbor/common/config/jobservice/config.yml",
+        "Destination": "/etc/jobservice/config.yml",
+        "Mode": "",
+        "RW": true,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "Id": "dd42e66083bdafe90311517e8fef6b8f743d010ddba5a42984591871959e9479",
+    "Names": [
+      "/harbor-core"
+    ],
+    "Image": "goharbor/harbor-core:v2.11.0",
+    "ImageID": "sha256:2cf11c05e0e2c995e1a66bc6dafe10163fd60b31053f1531ba788db19a9308ea",
+    "Command": "/harbor/entrypoint.sh",
+    "Created": 1720582826,
+    "Ports": [],
+    "SizeRw": 1569424,
+    "SizeRootFs": 186869816,
+    "Labels": {
+      "base-build-date": "20240529",
+      "build-date": "20240526",
+      "com.docker.compose.config-hash": "2cd4d2f14110bd5b07fa942495bf4ce25d722695c3971a3efe3acf721975f4fa",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "harbor",
+      "com.docker.compose.project.config_files": "docker-compose.yml",
+      "com.docker.compose.project.working_dir": "/opt/harbor",
+      "com.docker.compose.service": "core",
+      "com.docker.compose.version": "1.29.2",
+      "name": "Photon OS x86_64/5.0 Base Image",
+      "vendor": "VMware"
+    },
+    "State": "running",
+    "Status": "Up 4 hours (healthy)",
+    "HostConfig": {
+      "NetworkMode": "harbor_harbor"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "harbor_harbor": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "MacAddress": "02:42:ac:13:00:05",
+          "DriverOpts": null,
+          "NetworkID": "dcc060a49f6952b89ad3fc55afc5bc43cbb606dd77efcf21f08f36640cdf11b0",
+          "EndpointID": "ce4bb0b52962561c170564923ce57ed6b8c086eac29edab37f2e15094d2786e1",
+          "Gateway": "172.19.0.1",
+          "IPAddress": "172.19.0.5",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/data/secret/core/private_key.pem",
+        "Destination": "/etc/core/private_key.pem",
+        "Mode": "",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/opt/harbor/common/config/shared/trust-certificates",
+        "Destination": "/harbor_cust_cert",
+        "Mode": "",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/data",
+        "Destination": "/data",
+        "Mode": "z",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/opt/harbor/common/config/core/app.conf",
+        "Destination": "/etc/core/app.conf",
+        "Mode": "",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/data/ca_download",
+        "Destination": "/etc/core/ca",
+        "Mode": "z",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/opt/harbor/common/config/core/certificates",
+        "Destination": "/etc/core/certificates",
+        "Mode": "z",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/data/secret/keys/secretkey",
+        "Destination": "/etc/core/key",
+        "Mode": "",
+        "RW": true,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "Id": "02dd51905971ba0b813bff5de5025fcb4988fc632304e6cc6a5f603affa78ea1",
+    "Names": [
+      "/harbor-db"
+    ],
+    "Image": "goharbor/harbor-db:v2.11.0",
+    "ImageID": "sha256:9bd788ea0df6651e9d9efbb52d09089408495e478152e212e84287bfd9fd12b5",
+    "Command": "/docker-entrypoint.sh 14 15",
+    "Created": 1720582826,
+    "Ports": [],
+    "SizeRw": 64,
+    "SizeRootFs": 270816760,
+    "Labels": {
+      "base-build-date": "20240529",
+      "build-date": "20240526",
+      "com.docker.compose.config-hash": "9f9005cec05e5000f0ecbe051b6a1deb2d5d115809de68c60fec0a452e61e1df",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "harbor",
+      "com.docker.compose.project.config_files": "docker-compose.yml",
+      "com.docker.compose.project.working_dir": "/opt/harbor",
+      "com.docker.compose.service": "postgresql",
+      "com.docker.compose.version": "1.29.2",
+      "name": "Photon OS x86_64/5.0 Base Image",
+      "vendor": "VMware"
+    },
+    "State": "running",
+    "Status": "Up 4 hours (healthy)",
+    "HostConfig": {
+      "NetworkMode": "harbor_harbor"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "harbor_harbor": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "MacAddress": "02:42:ac:13:00:06",
+          "DriverOpts": null,
+          "NetworkID": "dcc060a49f6952b89ad3fc55afc5bc43cbb606dd77efcf21f08f36640cdf11b0",
+          "EndpointID": "7945362cf0210641581202c518de9250701b59bd446f9f2896dd515ab20990de",
+          "Gateway": "172.19.0.1",
+          "IPAddress": "172.19.0.6",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/data/database",
+        "Destination": "/var/lib/postgresql/data",
+        "Mode": "z",
+        "RW": true,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "Id": "832c92b93881e6bac552e98c1e232c6c8d77bbb52e615ac120dbbf9425511653",
+    "Names": [
+      "/registryctl"
+    ],
+    "Image": "goharbor/harbor-registryctl:v2.11.0",
+    "ImageID": "sha256:f1220f69df9012325934a19eb65648fd9c47a7dfbcc52f3eb64c4a820066b16b",
+    "Command": "/home/harbor/start.sh",
+    "Created": 1720582826,
+    "Ports": [],
+    "SizeRw": 1569424,
+    "SizeRootFs": 163922956,
+    "Labels": {
+      "base-build-date": "20240529",
+      "build-date": "20240526",
+      "com.docker.compose.config-hash": "721bb6184f0001699aa9cd0c1fe3194a220b8f28fba9c16d5d72f8b5cf899fd3",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "harbor",
+      "com.docker.compose.project.config_files": "docker-compose.yml",
+      "com.docker.compose.project.working_dir": "/opt/harbor",
+      "com.docker.compose.service": "registryctl",
+      "com.docker.compose.version": "1.29.2",
+      "name": "Photon OS x86_64/5.0 Base Image",
+      "vendor": "VMware"
+    },
+    "State": "running",
+    "Status": "Up 4 hours (healthy)",
+    "HostConfig": {
+      "NetworkMode": "harbor_harbor"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "harbor_harbor": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "MacAddress": "02:42:ac:13:00:07",
+          "DriverOpts": null,
+          "NetworkID": "dcc060a49f6952b89ad3fc55afc5bc43cbb606dd77efcf21f08f36640cdf11b0",
+          "EndpointID": "87aee1730bbf60f6db28d527a6f5edb6e4480ed1031b5578db45e3e54e0b8eb5",
+          "Gateway": "172.19.0.1",
+          "IPAddress": "172.19.0.7",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/opt/harbor/common/config/registry",
+        "Destination": "/etc/registry",
+        "Mode": "z",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/opt/harbor/common/config/registryctl/config.yml",
+        "Destination": "/etc/registryctl/config.yml",
+        "Mode": "",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/opt/harbor/common/config/shared/trust-certificates",
+        "Destination": "/harbor_cust_cert",
+        "Mode": "",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/data/registry",
+        "Destination": "/storage",
+        "Mode": "z",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "volume",
+        "Name": "c9cbea15385458c9b0ed9d2880240905adb97139ce589b3f5094e93e18651329",
+        "Source": "",
+        "Destination": "/var/lib/registry",
+        "Driver": "local",
+        "Mode": "",
+        "RW": true,
+        "Propagation": ""
+      }
+    ]
+  },
+  {
+    "Id": "646c0c51277d50c42fac3882f72fd61293679023b42542fbe5952c48082dded5",
+    "Names": [
+      "/redis"
+    ],
+    "Image": "goharbor/redis-photon:v2.11.0",
+    "ImageID": "sha256:184984d263c287122b19c49897027f6fa746f41abb0f1cec0611ed919e4041d5",
+    "Command": "redis-server /etc/redis.conf",
+    "Created": 1720582826,
+    "Ports": [],
+    "SizeRootFs": 164668039,
+    "Labels": {
+      "base-build-date": "20240529",
+      "build-date": "20240526",
+      "com.docker.compose.config-hash": "cf5c7f3b4fc91e763c79bd0bba2676d44f944e7e2c746a539834a509929f1cc4",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "harbor",
+      "com.docker.compose.project.config_files": "docker-compose.yml",
+      "com.docker.compose.project.working_dir": "/opt/harbor",
+      "com.docker.compose.service": "redis",
+      "com.docker.compose.version": "1.29.2",
+      "name": "Photon OS x86_64/5.0 Base Image",
+      "vendor": "VMware"
+    },
+    "State": "running",
+    "Status": "Up 4 hours (healthy)",
+    "HostConfig": {
+      "NetworkMode": "harbor_harbor"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "harbor_harbor": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "MacAddress": "02:42:ac:13:00:08",
+          "DriverOpts": null,
+          "NetworkID": "dcc060a49f6952b89ad3fc55afc5bc43cbb606dd77efcf21f08f36640cdf11b0",
+          "EndpointID": "f2c38469548d0079f66db52896d843c476bc6727bcea6842d832bcdbf6c42fa8",
+          "Gateway": "172.19.0.1",
+          "IPAddress": "172.19.0.8",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/data/redis",
+        "Destination": "/var/lib/redis",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "Id": "0b445cb400b385e499887f37496b4d02789b5a7a4c8427ab96a834ad77586f9f",
+    "Names": [
+      "/harbor-portal"
+    ],
+    "Image": "goharbor/harbor-portal:v2.11.0",
+    "ImageID": "sha256:ea8fda08df5b358effb4b6a12ff5789defb19ec76e85490dbfe3957359c0e739",
+    "Command": "nginx -g 'daemon off;'",
+    "Created": 1720582826,
+    "Ports": [],
+    "SizeRw": 2,
+    "SizeRootFs": 161758415,
+    "Labels": {
+      "base-build-date": "20240529",
+      "build-date": "20240526",
+      "com.docker.compose.config-hash": "3009413d0ea9ab596982981c8efbd93ccbde4684ba1542f31c92ca9636e3de72",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "harbor",
+      "com.docker.compose.project.config_files": "docker-compose.yml",
+      "com.docker.compose.project.working_dir": "/opt/harbor",
+      "com.docker.compose.service": "portal",
+      "com.docker.compose.version": "1.29.2",
+      "name": "Photon OS x86_64/5.0 Base Image",
+      "vendor": "VMware"
+    },
+    "State": "running",
+    "Status": "Up 4 hours (healthy)",
+    "HostConfig": {
+      "NetworkMode": "harbor_harbor"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "harbor_harbor": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "MacAddress": "02:42:ac:13:00:09",
+          "DriverOpts": null,
+          "NetworkID": "dcc060a49f6952b89ad3fc55afc5bc43cbb606dd77efcf21f08f36640cdf11b0",
+          "EndpointID": "8b4591e1626d344d47726786fc42ac92305069452194b13d815ea7a4b594145e",
+          "Gateway": "172.19.0.1",
+          "IPAddress": "172.19.0.9",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/opt/harbor/common/config/portal/nginx.conf",
+        "Destination": "/etc/nginx/nginx.conf",
+        "Mode": "",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "volume",
+        "Name": "7a9a1cf1b9799abb8f3ae6c8dbb47faca157c52c7bb98cc9446ad9c6923488b9",
+        "Source": "",
+        "Destination": "/run",
+        "Driver": "local",
+        "Mode": "",
+        "RW": true,
+        "Propagation": ""
+      },
+      {
+        "Type": "volume",
+        "Name": "5a4ec1901edf7cabfec058eb3d951b94f9ccc89c1c4c4b2fbe66bb5488079889",
+        "Source": "",
+        "Destination": "/var/cache/nginx",
+        "Driver": "local",
+        "Mode": "",
+        "RW": true,
+        "Propagation": ""
+      },
+      {
+        "Type": "volume",
+        "Name": "92c9b94d25518e324ad2d139b3f18b6e2211bfb8fc62d8b545417151255df342",
+        "Source": "",
+        "Destination": "/var/log/nginx",
+        "Driver": "local",
+        "Mode": "",
+        "RW": true,
+        "Propagation": ""
+      }
+    ]
+  },
+  {
+    "Id": "82f472a7d4c3e5fdfe0dd0b4630f30fa01fca551df3b9671d4d79ca4076d99c2",
+    "Names": [
+      "/registry"
+    ],
+    "Image": "goharbor/registry-photon:v2.11.0",
+    "ImageID": "sha256:95046ed33f52fb580cb2d766f1f1d5d08f9058756840b7660f98c017841963be",
+    "Command": "/home/harbor/entrypoint.sh",
+    "Created": 1720582826,
+    "Ports": [],
+    "SizeRw": 1569424,
+    "SizeRootFs": 86078842,
+    "Labels": {
+      "base-build-date": "20240529",
+      "build-date": "20240526",
+      "com.docker.compose.config-hash": "a60c52102c34b7e1003d57ee7a1cdefaaddfae3c2d51d9a8098a3374d15c9b69",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "harbor",
+      "com.docker.compose.project.config_files": "docker-compose.yml",
+      "com.docker.compose.project.working_dir": "/opt/harbor",
+      "com.docker.compose.service": "registry",
+      "com.docker.compose.version": "1.29.2",
+      "name": "Photon OS x86_64/5.0 Base Image",
+      "vendor": "VMware"
+    },
+    "State": "running",
+    "Status": "Up 4 hours (healthy)",
+    "HostConfig": {
+      "NetworkMode": "harbor_harbor"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "harbor_harbor": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "MacAddress": "02:42:ac:13:00:0a",
+          "DriverOpts": null,
+          "NetworkID": "dcc060a49f6952b89ad3fc55afc5bc43cbb606dd77efcf21f08f36640cdf11b0",
+          "EndpointID": "1bb42e3d834c8ecee5fa7aa184c7af88ed33ae143be5a0594f3572a6528495f8",
+          "Gateway": "172.19.0.1",
+          "IPAddress": "172.19.0.10",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/data/registry",
+        "Destination": "/storage",
+        "Mode": "z",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/opt/harbor/common/config/registry",
+        "Destination": "/etc/registry",
+        "Mode": "z",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/data/secret/registry/root.crt",
+        "Destination": "/etc/registry/root.crt",
+        "Mode": "",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/opt/harbor/common/config/shared/trust-certificates",
+        "Destination": "/harbor_cust_cert",
+        "Mode": "",
+        "RW": true,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "Id": "196bcc5c520eff08032fbde5ec8f9064b5aefcada17eec975d79b01209ca111e",
+    "Names": [
+      "/harbor-log"
+    ],
+    "Image": "goharbor/harbor-log:v2.11.0",
+    "ImageID": "sha256:a0a812a075689e44a4320c39bf881b4b601cfaf9df050ead97f2b1de8b031a07",
+    "Command": "/bin/sh -c /usr/local/bin/start.sh",
+    "Created": 1720582825,
+    "Ports": [
+      {
+        "IP": "127.0.0.1",
+        "PrivatePort": 10514,
+        "PublicPort": 1514,
+        "Type": "tcp"
+      }
+    ],
+    "SizeRw": 427,
+    "SizeRootFs": 162904571,
+    "Labels": {
+      "base-build-date": "20240529",
+      "build-date": "20240526",
+      "com.docker.compose.config-hash": "cd6c76676756dc15954281394a1a6ed9c3b1f9d42317efea857a9b53f4530b42",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "harbor",
+      "com.docker.compose.project.config_files": "docker-compose.yml",
+      "com.docker.compose.project.working_dir": "/opt/harbor",
+      "com.docker.compose.service": "log",
+      "com.docker.compose.version": "1.29.2",
+      "name": "Photon OS x86_64/5.0 Base Image",
+      "vendor": "VMware"
+    },
+    "State": "running",
+    "Status": "Up 4 hours (healthy)",
+    "HostConfig": {
+      "NetworkMode": "harbor_harbor"
+    },
+    "NetworkSettings": {
+      "Networks": {
+        "harbor_harbor": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "MacAddress": "02:42:ac:13:00:02",
+          "DriverOpts": null,
+          "NetworkID": "dcc060a49f6952b89ad3fc55afc5bc43cbb606dd77efcf21f08f36640cdf11b0",
+          "EndpointID": "3d07b07fc4d04f42b41feff3d998970edb03765b50f7d82b0bbe6a517384d2e1",
+          "Gateway": "172.19.0.1",
+          "IPAddress": "172.19.0.2",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/opt/harbor/common/config/log/rsyslog_docker.conf",
+        "Destination": "/etc/rsyslog.d/rsyslog_docker.conf",
+        "Mode": "",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "volume",
+        "Name": "6969f4bd01720623b4fe71801764279a2388b2e2223a7ca12cfe7bc9c6afc23d",
+        "Source": "",
+        "Destination": "/run",
+        "Driver": "local",
+        "Mode": "",
+        "RW": true,
+        "Propagation": ""
+      },
+      {
+        "Type": "bind",
+        "Source": "/var/log/harbor",
+        "Destination": "/var/log/docker",
+        "Mode": "z",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "volume",
+        "Name": "a3b3222ed6137bbeb331339479635d8ff9d0a6c6bb8b65abbf31a71af1c7ab2e",
+        "Source": "",
+        "Destination": "/etc/logrotate.d",
+        "Driver": "local",
+        "Mode": "",
+        "RW": true,
+        "Propagation": ""
+      },
+      {
+        "Type": "bind",
+        "Source": "/opt/harbor/common/config/log/logrotate.conf",
+        "Destination": "/etc/logrotate.d/logrotate.conf",
+        "Mode": "",
+        "RW": true,
+        "Propagation": "rprivate"
+      }
+    ]
+  }
+]
+
+
