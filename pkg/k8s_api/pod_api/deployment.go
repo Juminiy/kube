@@ -4,18 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"path/filepath"
-	"strconv"
-	"strings"
-	"sync"
-
 	"github.com/Juminiy/kube/pkg/image_api/harbor_api"
+	"github.com/Juminiy/kube/pkg/k8s_api"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	"k8s.io/apimachinery/pkg/api/resource"
-	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/client-go/util/homedir"
 	"k8s.io/client-go/util/retry"
+	"strconv"
+	"strings"
 
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
@@ -33,12 +29,7 @@ const (
 	ContainerLimitDiskCacheDefaultGi = 8                     // ephemeral 8 GiB
 )
 
-var (
-	k8sClientSet struct {
-		cs *k8scli.Clientset
-		sync.Once
-	}
-)
+var ()
 
 type (
 	DeploymentConfig struct {
@@ -109,16 +100,7 @@ func NewDeployment(c *DeploymentConfig) error {
 		return validErr
 	}
 
-	k8sClientSet.Do(func() {
-		restConfig, err := clientcmd.BuildConfigFromFlags(
-			"",
-			filepath.Join(homedir.HomeDir(), ".kube", "config"))
-		stdlog.InfoF("init k8s client error: %s", err.Error())
-
-		k8sClientSet.cs, err = k8scli.NewForConfig(restConfig)
-		stdlog.InfoF("init k8s client error: %s", err.Error())
-	})
-	c.cliSet = k8sClientSet.cs
+	c.cliSet = k8s_api.Get()
 
 	c.cli = c.cliSet.AppsV1().Deployments(c.Namespace)
 

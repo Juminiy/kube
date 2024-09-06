@@ -8,8 +8,13 @@ import (
 	"testing"
 )
 
+const (
+	hostURL       = "tcp://192.168.31.242:2375"
+	clientVersion = "1.43"
+)
+
 var (
-	testNewClient, _ = New()
+	testNewClient, _ = New(hostURL, clientVersion)
 )
 
 func TestClient_ListContainers(t *testing.T) {
@@ -27,4 +32,8 @@ func TestClient_ListContainerIds(t *testing.T) {
 	ids, err := testNewClient.ListContainerIds()
 	util.SilentPanicError(err)
 	stdlog.Info(ids)
+
+	names, err := testNewClient.ListContainerNames()
+	util.SilentPanicError(err)
+	stdlog.Info(names)
 }

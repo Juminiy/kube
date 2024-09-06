@@ -11,21 +11,16 @@ import (
 	"strings"
 )
 
-const (
-	hostURL       = "tcp://192.168.31.242:2375"
-	clientVersion = "1.43"
-)
-
 type Client struct {
 	cli        *dockercli.Client
 	ctx        context.Context
 	pageConfig *util.Page
 }
 
-func New() (*Client, error) {
+func New(hostURL, version string) (*Client, error) {
 	dCli, err := dockercli.NewClientWithOpts(
 		dockercli.WithHost(hostURL),
-		dockercli.WithVersion(clientVersion),
+		dockercli.WithVersion(version),
 	)
 	if err != nil {
 		stdlog.ErrorF("connect to docker host: %s error: %s", hostURL, err.Error())
@@ -33,9 +28,14 @@ func New() (*Client, error) {
 	}
 	return &Client{
 		cli:        dCli,
-		ctx:        context.TODO(),
+		ctx:        util.TODOContext,
 		pageConfig: util.DefaultPage,
 	}, nil
+}
+
+func (c *Client) WithContext(ctx context.Context) *Client {
+	c.ctx = ctx
+	return c
 }
 
 func (c *Client) WithPage(page *util.Page) *Client {

@@ -10,15 +10,6 @@ import (
 	miniocred "github.com/minio/minio-go/v7/pkg/credentials"
 )
 
-// in yaml config
-const (
-	endpoint        = "192.168.31.110:9000"
-	accessKeyID     = "minioadmin"
-	secretAccessKey = "minioadmin"
-	sessionToken    = ""
-	secure          = false
-)
-
 const (
 	AccessKeyIDMaxLen     = 50
 	SecretAccessKeyMaxLen = 128
@@ -36,7 +27,13 @@ type (
 	}
 )
 
-func New() *Client {
+func New(
+	endpoint string,
+	accessKeyID string,
+	secretAccessKey string,
+	sessionToken string,
+	secure bool,
+) (*Client, error) {
 	mOpts := &minio.Options{
 		Creds:  miniocred.NewStaticV4(accessKeyID, secretAccessKey, sessionToken),
 		Secure: secure,
@@ -44,20 +41,20 @@ func New() *Client {
 	mc, err := minio.New(endpoint, mOpts)
 	if err != nil {
 		stdlog.ErrorF("minio client error: %s", err.Error())
-		return nil
+		return nil, err
 	}
 
 	ma, err := madmin.NewWithOptions(endpoint, &madmin.Options{Creds: mOpts.Creds, Secure: mOpts.Secure})
 	if err != nil {
 		stdlog.ErrorF("minio admin client error: %s", err.Error())
-		return nil
+		return nil, err
 	}
 
 	return &Client{
 		mc:  mc,
 		ma:  ma,
 		ctx: context.TODO(),
-	}
+	}, nil
 }
 
 // MakeBucket

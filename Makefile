@@ -55,6 +55,9 @@ test:
 vet:
 	go vet $(GO_LIST_DIR)
 
+codegen:
+
+
 .PHONY: clean
 clean:
 	rm -rf $(BIN_DIR)

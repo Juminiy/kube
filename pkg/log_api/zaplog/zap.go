@@ -39,7 +39,7 @@ var (
 	_errorOutputPaths []string
 )
 
-// global mutable variable
+// immutable global variable
 var (
 	_zapConfig   *zap.Config
 	_restoreFunc = util.NothingFn

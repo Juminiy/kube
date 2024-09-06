@@ -20,7 +20,7 @@ func Menu(s ...string) {
 		pageSize       int64
 	)
 
-	hCli, err := harbor_api.New()
+	hCli, err := harbor_api.New("", true, "", "")
 	if err != nil {
 		fmt.Printf("new harbor repo client error: %v\n", err)
 		return
@@ -42,7 +42,7 @@ func Menu(s ...string) {
 			return
 		}
 		for _, proj := range ls.Payload {
-			printBinaryMarshaler(proj)
+			printBinaryMarshaller(proj)
 		}
 	} else if appOf == "repository" && actionOf == "list" {
 		inputFn()
@@ -52,7 +52,7 @@ func Menu(s ...string) {
 			return
 		}
 		for _, repo := range ls.Payload {
-			printBinaryMarshaler(repo)
+			printBinaryMarshaller(repo)
 		}
 	} else if appOf == "artifact" && actionOf == "list" {
 		inputFn()
@@ -65,13 +65,13 @@ func Menu(s ...string) {
 			return
 		}
 		for _, arti := range ls.Payload {
-			printBinaryMarshaler(arti)
+			printBinaryMarshaller(arti)
 		}
 	}
 
 }
 
-func printBinaryMarshaler(bm encoding.BinaryMarshaler) {
+func printBinaryMarshaller(bm encoding.BinaryMarshaler) {
 	bs, err := bm.MarshalBinary()
 	if err != nil {
 		fmt.Printf("harbor list %v error: %v\n", reflect.TypeOf(bm).String(), bs)
@@ -80,7 +80,7 @@ func printBinaryMarshaler(bm encoding.BinaryMarshaler) {
 	fmt.Println(util.Bytes2StringNoCopy(bs))
 }
 
-func printBinaryMarshalerList(bm []encoding.BinaryMarshaler) {
+func printBinaryMarshallerList(bm []encoding.BinaryMarshaler) {
 	for _, elem := range bm {
 		bs, err := elem.MarshalBinary()
 		if err != nil {

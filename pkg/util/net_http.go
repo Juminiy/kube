@@ -1,6 +1,11 @@
 package util
 
-import "strings"
+import (
+	"net/http"
+	"strings"
+)
+
+var DefaultHTTPClient = http.DefaultClient
 
 func URLWithHTTP(url string) string {
 	if strings.HasPrefix(url, "http://") ||
