@@ -25,7 +25,7 @@ func TestS3fsMount_Args(t *testing.T) {
 		AccessKey:  "AccessKeyID:SecretAccessKey",
 		MountDir:   "/mnt",
 		BucketName: "s3fs-mount-bucket-test",
-		MinioAddr:  "192.168.31.110:9000",
+		MinioAddr:  "minio.local",
 		S3CredNamingPolicy: S3CredNamingPolicy{
 			GenMethod: S3CredNamingGenUUID,
 		},

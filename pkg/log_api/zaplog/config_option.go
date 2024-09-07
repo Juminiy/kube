@@ -1,5 +1,7 @@
 package zaplog
 
+import "sync"
+
 const (
 	logEngineStdlib   = "stdlib"
 	logEngineZap      = "zap"
@@ -10,6 +12,7 @@ const (
 // Singleton Type
 type ConfigOption struct {
 	_ struct{}
+	sync.Once
 }
 
 func NewConfig() *ConfigOption {
@@ -19,7 +22,12 @@ func NewConfig() *ConfigOption {
 // Load
 // +required
 func (o *ConfigOption) Load() *ConfigOption {
-	Init()
+	o.Do(Init)
+	return o
+}
+
+func (o *ConfigOption) WithLogEngine(logEngine string) *ConfigOption {
+	_logEngine = logEngine
 	return o
 }
 
@@ -53,15 +61,15 @@ func (o *ConfigOption) WithLogLevel(level string) *ConfigOption {
 
 // WithLogCaller
 // +optional
-func (o *ConfigOption) WithLogCaller() *ConfigOption {
-	_caller = true
+func (o *ConfigOption) WithLogCaller(ok bool) *ConfigOption {
+	_caller = ok
 	return o
 }
 
 // WithLogStackTrace
 // +optional
-func (o *ConfigOption) WithLogStackTrace() *ConfigOption {
-	_stacktrace = true
+func (o *ConfigOption) WithLogStackTrace(ok bool) *ConfigOption {
+	_stacktrace = ok
 	return o
 }
 

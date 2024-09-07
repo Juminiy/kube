@@ -6,6 +6,9 @@ import (
 	"os"
 )
 
+// ReadYaml
+// Deprecated
+// gopkg.in/aml.v3 can not reflect twice
 func ReadYaml(a any, filePath string) error {
 	fileBytes, err := os.ReadFile(filePath)
 	if err != nil {

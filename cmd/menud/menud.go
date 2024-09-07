@@ -1,20 +1,36 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/Juminiy/kube/cmd/menud/config"
 	harbormenu "github.com/Juminiy/kube/cmd/menud/harbor_api"
 	instancemenu "github.com/Juminiy/kube/cmd/menud/instance_api"
 	k8smenu "github.com/Juminiy/kube/cmd/menud/k8s_api"
+	"github.com/Juminiy/kube/pkg/image_api/docker_api/docker_inst"
+	"github.com/Juminiy/kube/pkg/image_api/harbor_api/harbor_inst"
+	"github.com/Juminiy/kube/pkg/k8s_api"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
+	"github.com/Juminiy/kube/pkg/log_api/zaplog"
+	"github.com/Juminiy/kube/pkg/storage_api/minio_api/minio_inst"
 	"github.com/Juminiy/kube/pkg/util"
 	ldversion "github.com/Juminiy/kube/version"
+	"gopkg.in/yaml.v3"
 	"os"
 )
 
 func main() {
-	ldversion.Info()
+	initFlag()
+	ldversion.Info(version)
 	initGlobalConfig()
+
+	util.SeqRun(
+		initLog,
+		initHarbor,
+		initDocker,
+		initKubernetes,
+		initMinio,
+	)
 
 	var (
 		setting                   string
@@ -67,14 +83,76 @@ func helpMenu(s ...string) int8 {
 	return nextRetCode
 }
 
+// global Flags
 var (
-	_globalConfig *config.Config
+	version        *bool
+	configYamlPath *string
+)
+
+func initFlag() {
+	version = flag.Bool("v", false, "print version json info")
+	configYamlPath = flag.String("c", "", "menud config file")
+	flag.Parse()
+}
+
+var (
+	_globalConfig config.Config
 )
 
 func initGlobalConfig() {
-	err := util.ReadYaml(&_globalConfig, "")
+	fileBytes, err := os.ReadFile(*configYamlPath)
 	if err != nil {
-		os.Exit(1)
+		stdlog.ErrorF("read yaml file path: %s error: %s", *configYamlPath, err)
+	}
+
+	err = yaml.Unmarshal(fileBytes, &_globalConfig)
+	if err != nil {
+		stdlog.ErrorF("unmarshal yaml file bytes: %v, yaml config instance: %#v, error: %s", fileBytes, _globalConfig, err.Error())
 	}
 	stdlog.Info("global config init success")
+}
+
+func initLog() {
+	zaplog.NewConfig().
+		WithLogEngine(_globalConfig.Log.Engine).
+		WithLogLevel(_globalConfig.Log.Zap.Level).
+		WithLogCaller(_globalConfig.Log.Zap.Caller).
+		WithLogStackTrace(_globalConfig.Log.Zap.Stacktrace).
+		WithOutputPaths(_globalConfig.Log.Zap.Path...).
+		WithErrorOutputPaths(_globalConfig.Log.Zap.InternalPath...).
+		Load()
+	stdlog.Info("zaplog init success")
+}
+
+func initHarbor() {
+	harbor_inst.NewConfig().
+		WithRegistry(_globalConfig.Harbor.Registry).
+		WithUsername(_globalConfig.Harbor.Username).
+		WithPassword(_globalConfig.Harbor.Password).
+		Load()
+	stdlog.Info("harbor client init success")
+}
+
+func initDocker() {
+	docker_inst.NewConfig().
+		WithHost(_globalConfig.Docker.Host).
+		WithVersion(_globalConfig.Docker.Version).
+		Load()
+	stdlog.Info("docker client init success")
+}
+
+func initKubernetes() {
+	k8s_api.WithKubeConfigPath(_globalConfig.Kubernetes.KubeConfigPath)
+	k8s_api.WithImageRegistry(_globalConfig.Harbor.Registry)
+	k8s_api.Load()
+	stdlog.Info("kubernetes client init success")
+}
+
+func initMinio() {
+	minio_inst.NewConfig().
+		WithEndpoint(_globalConfig.Minio.Endpoint).
+		WithAccessKeyID(_globalConfig.Minio.AccessKeyID).
+		WithSecretAccessKey(_globalConfig.Minio.SecretAccessKey).
+		Load()
+	stdlog.Info("minio client init success")
 }

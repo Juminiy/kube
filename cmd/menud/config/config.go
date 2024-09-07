@@ -13,7 +13,7 @@ type Log struct {
 	Zap    struct {
 		Level        string   `yaml:"level"`
 		Caller       bool     `yaml:"caller"`
-		Stacktrace   string   `yaml:"stacktrace"`
+		Stacktrace   bool     `yaml:"stacktrace"`
 		Path         []string `yaml:"path"`
 		InternalPath []string `yaml:"internalPath"`
 	} `yaml:"zap"`

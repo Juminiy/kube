@@ -1,7 +1,19 @@
 package minio_inst
 
+import "sync"
+
 type ConfigOption struct {
 	_ struct{}
+	sync.Once
+}
+
+func NewConfig() *ConfigOption {
+	return &ConfigOption{}
+}
+
+func (o *ConfigOption) Load() *ConfigOption {
+	o.Do(Init)
+	return o
 }
 
 func (o *ConfigOption) WithEndpoint(endpoint string) *ConfigOption {

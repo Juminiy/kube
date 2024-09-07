@@ -4,6 +4,7 @@ import (
 	"encoding"
 	"fmt"
 	"github.com/Juminiy/kube/pkg/image_api/harbor_api"
+	"github.com/Juminiy/kube/pkg/image_api/harbor_api/harbor_inst"
 	"github.com/Juminiy/kube/pkg/util"
 	"reflect"
 )
@@ -20,11 +21,11 @@ func Menu(s ...string) {
 		pageSize       int64
 	)
 
-	hCli, err := harbor_api.New("", true, "", "")
-	if err != nil {
-		fmt.Printf("new harbor repo client error: %v\n", err)
-		return
-	}
+	//hCli, err := harbor_api.New("", true, "", "")
+	//if err != nil {
+	//	fmt.Printf("new harbor repo client error: %v\n", err)
+	//	return
+	//}
 
 	inputFn := func() {
 		fmt.Printf("project: repository: pageNum: pageSize: ")
@@ -36,7 +37,7 @@ func Menu(s ...string) {
 	}
 
 	if appOf == "project" && actionOf == "list" {
-		ls, err := hCli.ListProjects()
+		ls, err := harbor_inst.ListProjects()
 		if err != nil {
 			fmt.Printf("harbor list proj error: %v\n", err)
 			return
@@ -46,7 +47,7 @@ func Menu(s ...string) {
 		}
 	} else if appOf == "repository" && actionOf == "list" {
 		inputFn()
-		ls, err := hCli.ListRepositories(projectName)
+		ls, err := harbor_inst.ListRepositories(projectName)
 		if err != nil {
 			fmt.Printf("harbor list repo error: %v\n", err)
 			return
@@ -56,7 +57,7 @@ func Menu(s ...string) {
 		}
 	} else if appOf == "artifact" && actionOf == "list" {
 		inputFn()
-		ls, err := hCli.ListArtifacts(harbor_api.ArtifactURI{
+		ls, err := harbor_inst.ListArtifacts(harbor_api.ArtifactURI{
 			Project:    projectName,
 			Repository: repositoryName,
 		})

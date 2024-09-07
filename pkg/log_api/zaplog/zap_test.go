@@ -10,8 +10,8 @@ import (
 var _ = NewConfig().
 	WithLogEngineSugar().
 	WithLogLevel("info").
-	WithLogCaller().
-	WithLogStackTrace().
+	WithLogCaller(false).
+	WithLogStackTrace(false).
 	WithOutputPaths(filepath.Join(testDir, "app.log")).
 	WithErrorOutputPaths(filepath.Join(testDir, "app_error.log")).
 	Load()

@@ -1,7 +1,6 @@
 package version
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"runtime"
@@ -43,17 +42,13 @@ var (
 	}
 )
 
-func Info() {
-	if len(os.Args) == 2 {
-		version := flag.Bool("v", false, "print version json info")
-		flag.Parse()
-		if *version {
-			infoJSON, err := util.MarshalJSONPretty(&info)
-			if err != nil {
-				panic(err)
-			}
-			fmt.Println(infoJSON)
+func Info(version *bool) {
+	if version != nil && *version {
+		infoJSON, err := util.MarshalJSONPretty(&info)
+		if err != nil {
+			panic(err)
 		}
+		fmt.Println(infoJSON)
 		os.Exit(0)
 	}
 }

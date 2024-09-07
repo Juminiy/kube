@@ -22,3 +22,10 @@ func StringConcat(s ...string) string {
 }
 
 func StringJoin(sep string, s ...string) string { return strings.Join(s, sep) }
+
+func StringReplaceAlls(s, to string, from ...string) string {
+	for _, fromElem := range from {
+		s = strings.ReplaceAll(s, fromElem, to)
+	}
+	return s
+}

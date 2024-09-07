@@ -45,6 +45,13 @@ func OSFilePathExists(filePath string) bool {
 	return false
 }
 
-func OSOpenFile(filePath string) (*os.File, error) {
+func OSOpenFileWithCreate(filePath string) (*os.File, error) {
 	return os.OpenFile(filePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
+}
+
+func OSRemoveFile(filePath string) error {
+	if OSFilePathExists(filePath) {
+		return os.Remove(filePath)
+	}
+	return nil
 }

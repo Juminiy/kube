@@ -55,7 +55,11 @@ test:
 vet:
 	go vet $(GO_LIST_DIR)
 
-codegen:
+codegen: set
+	go run cmd/codegend/codegend.go
+	git add pkg/image_api/docker_api/docker_inst/client.go
+	git add pkg/image_api/harbor_api/harbor_inst/client.go
+	git add pkg/storage_api/minio_api/minio_inst/client.go
 
 
 .PHONY: clean

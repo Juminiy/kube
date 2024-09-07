@@ -1,9 +1,13 @@
 package docker_inst
 
-import "context"
+import (
+	"context"
+	"sync"
+)
 
 type ConfigOption struct {
 	_ struct{}
+	sync.Once
 }
 
 func NewConfig() *ConfigOption {
@@ -11,7 +15,7 @@ func NewConfig() *ConfigOption {
 }
 
 func (o *ConfigOption) Load() *ConfigOption {
-	Init()
+	o.Do(Init)
 	return o
 }
 

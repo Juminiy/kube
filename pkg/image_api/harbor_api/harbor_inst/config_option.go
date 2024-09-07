@@ -1,7 +1,13 @@
 package harbor_inst
 
+import (
+	"github.com/Juminiy/kube/pkg/util"
+	"sync"
+)
+
 type ConfigOption struct {
 	_ struct{}
+	sync.Once
 }
 
 func NewConfig() *ConfigOption {
@@ -9,12 +15,13 @@ func NewConfig() *ConfigOption {
 }
 
 func (o *ConfigOption) Load() *ConfigOption {
-	Init()
+	o.Do(Init)
 	return o
 }
 
-func (o *ConfigOption) WithURL(harborURL string) *ConfigOption {
-	_harborRegistry = harborURL
+func (o *ConfigOption) WithRegistry(harborRegistry string) *ConfigOption {
+	_harborRegistry = harborRegistry
+	_harborInsecure = util.IsURLWithHTTP(harborRegistry)
 	return o
 }
 

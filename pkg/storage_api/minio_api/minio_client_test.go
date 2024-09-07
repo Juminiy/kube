@@ -1,8 +1,9 @@
 package minio_api
 
 import (
-	"github.com/Juminiy/kube/pkg/util"
 	"testing"
+
+	"github.com/Juminiy/kube/pkg/util"
 )
 
 const (
@@ -14,7 +15,7 @@ const (
 )
 
 var (
-	testMinioClient, _ = New(
+	testMinioClient, testMinioClientError = New(
 		endpoint,
 		accessKeyID,
 		secretAccessKey,
@@ -24,6 +25,7 @@ var (
 )
 
 func TestClient_UpdateBucketQuota(t *testing.T) {
+	util.SilentPanicError(testMinioClientError)
 	util.SilentHandleError("update quota error",
 		testMinioClient.UpdateBucketQuota(&BucketConfig{
 			Quota:      util.Ti * 5,
@@ -32,6 +34,7 @@ func TestClient_UpdateBucketQuota(t *testing.T) {
 
 }
 func TestClient_MakeBucket(t *testing.T) {
+	util.SilentPanicError(testMinioClientError)
 	util.SilentHandleError("create bucket error",
 		testMinioClient.MakeBucket(&BucketConfig{
 			Quota:            util.Gi * 30,
@@ -40,6 +43,7 @@ func TestClient_MakeBucket(t *testing.T) {
 }
 
 func TestClient_RemoveBucket(t *testing.T) {
+	util.SilentPanicError(testMinioClientError)
 	util.SilentHandleError("remove bucket error",
 		testMinioClient.RemoveBucket(&BucketConfig{
 			BucketName: "s3fs-mount-bucket-chisato",

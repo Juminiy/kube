@@ -2,22 +2,24 @@ package docker_api
 
 import (
 	"encoding/json"
-	"github.com/Juminiy/kube/pkg/log_api/stdlog"
-	"github.com/Juminiy/kube/pkg/util"
 	"strings"
 	"testing"
+
+	"github.com/Juminiy/kube/pkg/log_api/stdlog"
+	"github.com/Juminiy/kube/pkg/util"
 )
 
 const (
-	hostURL       = "tcp://192.168.31.242:2375"
+	hostURL       = "tcp://docker.local:2375"
 	clientVersion = "1.43"
 )
 
 var (
-	testNewClient, _ = New(hostURL, clientVersion)
+	testNewClient, testDockerClientError = New(hostURL, clientVersion)
 )
 
 func TestClient_ListContainers(t *testing.T) {
+	util.SilentPanicError(testDockerClientError)
 	containers, err := testNewClient.ListContainers()
 	util.SilentPanicError(err)
 	str := strings.Builder{}
@@ -29,6 +31,7 @@ func TestClient_ListContainers(t *testing.T) {
 }
 
 func TestClient_ListContainerIds(t *testing.T) {
+	util.SilentPanicError(testDockerClientError)
 	ids, err := testNewClient.ListContainerIds()
 	util.SilentPanicError(err)
 	stdlog.Info(ids)

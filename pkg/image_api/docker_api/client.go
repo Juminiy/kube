@@ -7,7 +7,7 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	dockercli "github.com/docker/docker/client"
-	"k8s.io/apimachinery/pkg/util/sets"
+	k8sutilsets "k8s.io/apimachinery/pkg/util/sets"
 	"strings"
 )
 
@@ -77,7 +77,7 @@ func (c *Client) ListContainerNames() ([]string, error) {
 }
 
 func (c *Client) listContainerWithFields(fields ...string) (map[string][]string, error) {
-	fieldSet := sets.New[string](fields...)
+	fieldSet := k8sutilsets.New[string](fields...)
 	containers, err := c.ListContainers()
 	if err != nil {
 		return nil, err

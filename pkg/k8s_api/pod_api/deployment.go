@@ -24,12 +24,13 @@ import (
 
 // move it to yaml config
 const (
-	internalImageRegistry            = "192.168.31.242:8662" // no http or https
-	containerRequestResourceRatio    = 0.5                   // request = ratio * limit
-	ContainerLimitDiskCacheDefaultGi = 8                     // ephemeral 8 GiB
+	ContainerRequestResourceRatio    = 0.5 // request = ratio * limit
+	ContainerLimitDiskCacheDefaultGi = 8   // ephemeral 8 GiB
 )
 
-var ()
+var (
+	internalImageRegistry = k8s_api.GetImageRegistry()
+)
 
 type (
 	DeploymentConfig struct {
@@ -100,7 +101,7 @@ func NewDeployment(c *DeploymentConfig) error {
 		return validErr
 	}
 
-	c.cliSet = k8s_api.Get()
+	c.cliSet = k8s_api.GetClientSet()
 
 	c.cli = c.cliSet.AppsV1().Deployments(c.Namespace)
 
@@ -283,7 +284,7 @@ func (c *DeploymentConfig) Restart() error {
 func (c *DeploymentConfig) JSONMarshal() string {
 	bs, err := c.app.Marshal()
 	if err != nil {
-		stdlog.InfoF("appsv1 Deployment marshal error: %s", err.Error())
+		stdlog.ErrorF("appsv1 Deployment marshal error: %s", err.Error())
 		return ""
 	}
 	return util.Bytes2StringNoCopy(bs)
@@ -295,7 +296,7 @@ func (c *DeploymentConfig) SaveConfig() string {
 	c.CallBack = nil
 	bs, err := json.Marshal(c)
 	if err != nil {
-		stdlog.InfoF("deployment config json marshal error: %s", err.Error())
+		stdlog.ErrorF("deployment config json marshal error: %s", err.Error())
 		return ""
 	}
 	return util.Bytes2StringNoCopy(bs)
@@ -303,7 +304,7 @@ func (c *DeploymentConfig) SaveConfig() string {
 
 // GetImageURL
 // Example:
-// 192.168.31.242:8662/kubesphere-io-centos7/haproxy:2.9.6-alpine
+// harbor.local:8662/kubesphere-io-centos7/haproxy:2.9.6-alpine
 func GetImageURL(arti harbor_api.ArtifactURI) string {
 	return strings.Join(
 		[]string{internalImageRegistry, arti.String()},
