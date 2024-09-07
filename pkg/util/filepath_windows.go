@@ -4,13 +4,14 @@ package util
 
 import (
 	"fmt"
-	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"os"
 	"strings"
+
+	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 )
 
 const (
-	slash  = "\"
+	slash  = "\\"
 	slash2 = "\\"
 )
 
@@ -18,7 +19,7 @@ func OSCreateAbsoluteDir(dir string) error {
 	return os.MkdirAll(dir, os.ModePerm)
 }
 
-//OSCreateAbsolutePath
+// OSCreateAbsolutePath
 // A:\ A:\\
 // B:\ B:\\
 // C:\ C:\\
@@ -57,4 +58,15 @@ func OSFilePathExists(filePath string) bool {
 	}
 
 	return false
+}
+
+func OSOpenFileWithCreate(filePath string) (*os.File, error) {
+	return os.OpenFile(filePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
+}
+
+func OSRemoveFile(filePath string) error {
+	if OSFilePathExists(filePath) {
+		return os.Remove(filePath)
+	}
+	return nil
 }
