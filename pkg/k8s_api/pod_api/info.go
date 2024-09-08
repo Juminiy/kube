@@ -2,9 +2,9 @@ package pod_api
 
 import (
 	"encoding/json"
+	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"time"
 
-	"github.com/Juminiy/kube/pkg/log_api/zaplog"
 	"github.com/Juminiy/kube/pkg/util"
 
 	appsv1 "k8s.io/api/apps/v1"
@@ -27,10 +27,10 @@ func SyncPodListByNS(
 		for _, deployOf := range latestDeployListOf.Items {
 			statusBytes, err := json.MarshalIndent(deployOf.Status, "", util.JSONMarshalIndent)
 			if err != nil {
-				zaplog.Error(err)
+				stdlog.Error(err)
 				return err
 			}
-			zaplog.Info(deployOf.Name, time.Since(deployOf.CreationTimestamp.Time), util.Bytes2StringNoCopy(statusBytes))
+			stdlog.Info(deployOf.Name, time.Since(deployOf.CreationTimestamp.Time), util.Bytes2StringNoCopy(statusBytes))
 		}
 		return nil
 	}
@@ -39,13 +39,13 @@ func SyncPodListByNS(
 		for {
 			select {
 			case <-PodStateSyncingDone:
-				zaplog.InfoF("stop syncing NS[%s] pods state\n", dConf.Namespace)
+				stdlog.InfoF("stop syncing NS[%s] pods state\n", dConf.Namespace)
 				return
 			default:
-				zaplog.InfoF("start syncing NS[%s] pods state by Dur[%v]\n", dConf.Namespace, qDur)
+				stdlog.InfoF("start syncing NS[%s] pods state by Dur[%v]\n", dConf.Namespace, qDur)
 				err := dConf.List()
 				if err != nil {
-					zaplog.Error(err)
+					stdlog.Error(err)
 				}
 				time.Sleep(qDur)
 			}

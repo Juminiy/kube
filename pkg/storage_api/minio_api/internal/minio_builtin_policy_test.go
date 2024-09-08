@@ -1,4 +1,4 @@
-package minio_api
+package internal
 
 import (
 	"testing"

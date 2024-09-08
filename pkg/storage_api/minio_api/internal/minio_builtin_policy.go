@@ -1,4 +1,4 @@
-package minio_api
+package internal
 
 import (
 	s3apiv2 "github.com/Juminiy/kube/pkg/storage_api/s3_api/v2"
@@ -77,4 +77,29 @@ var writeOnly = s3apiv2.IBAPolicy{
 			Resource: []string{ResourceARNS3All},
 		},
 	},
+}
+
+func ConsoleAdminPolicy() string {
+	consoleAdminPolicy, _ := consoleAdmin.String()
+	return consoleAdminPolicy
+}
+
+func DiagnosticsPolicy() string {
+	diagnosticsPolicy, _ := diagnostics.String()
+	return diagnosticsPolicy
+}
+
+func ReadOnlyPolicy() string {
+	readOnlyPolicy, _ := readOnly.String()
+	return readOnlyPolicy
+}
+
+func ReadWritePolicy() string {
+	readWritePolicy, _ := readWrite.String()
+	return readWritePolicy
+}
+
+func WriteOnlyPolicy() string {
+	writeOnlyPolicy, _ := writeOnly.String()
+	return writeOnlyPolicy
 }

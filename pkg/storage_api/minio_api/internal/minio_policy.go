@@ -1,4 +1,4 @@
-package minio_api
+package internal
 
 import (
 	"github.com/Juminiy/kube/pkg/storage_api/s3_api"
@@ -131,4 +131,8 @@ const (
 
 const (
 	ResourceARNS3All = s3_api.ResourceARNS3All
+)
+
+const (
+	AWS = "AWS"
 )

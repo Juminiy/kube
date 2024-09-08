@@ -1,9 +1,11 @@
 package minio_api
 
 import (
+	miniointernal "github.com/Juminiy/kube/pkg/storage_api/minio_api/internal"
 	"github.com/Juminiy/kube/pkg/storage_api/s3_api"
 	s3apiv2 "github.com/Juminiy/kube/pkg/storage_api/s3_api/v2"
 	"github.com/Juminiy/kube/pkg/util"
+	"github.com/Juminiy/kube/pkg/util/random"
 	"github.com/google/uuid"
 	miniocred "github.com/minio/minio-go/v7/pkg/credentials"
 )
@@ -12,18 +14,27 @@ type (
 	PolicyConfig struct {
 		BusinessUser BusinessUser
 
-		// Minio:UserName equals to Minio:AccessKeyID
-		// +optional
+		// Minio's UserName equals to Minio's AccessKeyID
+		// +required
 		Cred miniocred.Value
+
 		// +optional
 		GroupName string
 
+		// +required
 		BucketName string
-	}
 
-	BusinessUser struct {
-		Name string
-		ID   string
+		// when delete policy from a user, must provide the PolicyJSONString
+		// +required
+		// when create policy from a user, api will ignore the PolicyJSONString
+		// +optional
+		PolicyJSONString string
+
+		// when delete policy from a user, must provide the PolicyName
+		// +required
+		// when create policy from a user, api will ignore the PolicyName
+		// +optional
+		PolicyName string
 	}
 )
 
@@ -35,9 +46,19 @@ const (
 	IdentifyAccessKey = "AccessKey"
 )
 
+func (c *PolicyConfig) GetPolicyName() string {
+	return util.StringJoin(
+		"-",
+		c.BusinessUser.ID,
+		c.BusinessUser.Name,
+		c.BucketName,
+		random.IDString(len(c.BusinessUser.Name)),
+	)
+}
+
 func (c *PolicyConfig) IBAPAccessKeyWithOneBucketObjectCRUDPolicy() (string, error) {
 	policy := s3apiv2.IBAPolicy{
-		Version: Version,
+		Version: miniointernal.Version,
 		Statement: []s3apiv2.Statement{
 			s3apiv2.Statement{
 				Sid: makeStatementSid(
@@ -46,7 +67,7 @@ func (c *PolicyConfig) IBAPAccessKeyWithOneBucketObjectCRUDPolicy() (string, err
 					IdentifyAccessKey,
 					"WithOneBucketObjectCRUD",
 				),
-				Effect:       Allow,
+				Effect:       miniointernal.Allow,
 				Principal:    nil,
 				NotPrincipal: nil,
 				Action: []string{
@@ -57,6 +78,7 @@ func (c *PolicyConfig) IBAPAccessKeyWithOneBucketObjectCRUDPolicy() (string, err
 				},
 				NotAction: nil,
 				Resource: []string{
+					s3_api.GetBucketResource(c.BucketName),
 					s3_api.GetBucketAnyResource(c.BucketName),
 				},
 				NotResource: nil,
@@ -68,10 +90,10 @@ func (c *PolicyConfig) IBAPAccessKeyWithOneBucketObjectCRUDPolicy() (string, err
 
 func (c *PolicyConfig) RBAPBucketWithAdminAllWithAccessKeyOneBucketObjectCRUDPolicy() (string, error) {
 	policy := s3apiv2.RBAPolicy{
-		Version: Version,
+		Version: miniointernal.Version,
 		Id:      makePolicyId(c.BusinessUser.ID),
 		Statement: []s3apiv2.Statement{
-			c.RBAPBucketWithAdminAllStatement(),
+			//c.RBAPBucketWithAdminAllStatement(), admin already allow any, not required any more
 			c.RBAPBucketWithAccessKeyOneBucketObjectCRUDStatement(),
 		},
 	}
@@ -85,8 +107,10 @@ func (c *PolicyConfig) RBAPBucketWithAdminAllStatement() s3apiv2.Statement {
 			IAMRBAP,
 			IdentifyAdmin,
 		),
-		Effect:       Allow,
-		Principal:    map[string]any{},
+		Effect: miniointernal.Allow,
+		Principal: map[string]any{
+			miniointernal.AWS: makeAWSAccountPrincipal(""),
+		},
 		NotPrincipal: nil,
 		Action:       s3apiv2.ActionAll,
 		NotAction:    nil,
@@ -105,8 +129,10 @@ func (c *PolicyConfig) RBAPBucketWithAccessKeyOneBucketObjectCRUDStatement() s3a
 			IAMRBAP,
 			IdentifyAccessKey,
 		),
-		Effect:       Allow,
-		Principal:    map[string]any{},
+		Effect: miniointernal.Allow,
+		Principal: map[string]any{
+			miniointernal.AWS: makeAWSAccountPrincipal(c.Cred.AccessKeyID),
+		},
 		NotPrincipal: nil,
 		Action: []string{
 			s3_api.S3ListBucket,
@@ -116,6 +142,7 @@ func (c *PolicyConfig) RBAPBucketWithAccessKeyOneBucketObjectCRUDStatement() s3a
 		},
 		NotAction: nil,
 		Resource: []string{
+			s3_api.GetBucketResource(c.BucketName),
 			s3_api.GetBucketAnyResource(c.BucketName),
 		},
 		NotResource: nil,
@@ -135,4 +162,8 @@ func makeStatementSid(s ...string) string {
 		"-",
 		s...,
 	)
+}
+
+func makeAWSAccountPrincipal(minioUserId string) string {
+	return s3_api.GetPrincipalAccountRoot(minioUserId)
 }

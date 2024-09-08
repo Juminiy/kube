@@ -6,7 +6,7 @@ import (
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
-func CreateAccessKey() (*credentials.Value, error) {
+func CreateAccessKey() (credentials.Value, error) {
 	return _minioClient.CreateAccessKey()
 }
 
@@ -18,8 +18,8 @@ func CreateBucketPolicy(policyConfig *minio_api.PolicyConfig) error {
 	return _minioClient.CreateBucketPolicy(policyConfig)
 }
 
-func CreateIDPUser(value *credentials.Value) error {
-	return _minioClient.CreateIDPUser(value)
+func CreateIAMUser(value *credentials.Value) error {
+	return _minioClient.CreateIAMUser(value)
 }
 
 func DeleteAccessKey(_string string) error {
@@ -30,8 +30,8 @@ func DeleteAccessPolicy(policyConfig *minio_api.PolicyConfig) error {
 	return _minioClient.DeleteAccessPolicy(policyConfig)
 }
 
-func DeleteIDPUser(_string string) error {
-	return _minioClient.DeleteIDPUser(_string)
+func DeleteIAMUser(_string string) error {
+	return _minioClient.DeleteIAMUser(_string)
 }
 
 func MakeBucket(bucketConfig *minio_api.BucketConfig) error {

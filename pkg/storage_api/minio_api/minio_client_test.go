@@ -37,8 +37,10 @@ func TestClient_MakeBucket(t *testing.T) {
 	util.SilentPanicError(testMinioClientError)
 	util.SilentHandleError("create bucket error",
 		testMinioClient.MakeBucket(&BucketConfig{
-			Quota:            util.Gi * 30,
-			BusinessUserName: "chisato",
+			Quota: util.Gi * 30,
+			BusinessUser: BusinessUser{
+				Name: "chisato",
+			},
 		}))
 }
 
