@@ -1,6 +1,7 @@
 package minio_api
 
 import (
+	"errors"
 	miniointernal "github.com/Juminiy/kube/pkg/storage_api/minio_api/internal"
 	"github.com/Juminiy/kube/pkg/storage_api/s3_api"
 	s3apiv2 "github.com/Juminiy/kube/pkg/storage_api/s3_api/v2"
@@ -10,33 +11,33 @@ import (
 	miniocred "github.com/minio/minio-go/v7/pkg/credentials"
 )
 
-type (
-	PolicyConfig struct {
-		BusinessUser BusinessUser
+type PolicyConfig struct {
+	// +required
+	BusinessUser BusinessUser
 
-		// Minio's UserName equals to Minio's AccessKeyID
-		// +required
-		Cred miniocred.Value
+	// Minio's UserName equals to Minio's AccessKeyID
+	// +required Cred.AccessKeyID
+	Cred miniocred.Value
 
-		// +optional
-		GroupName string
+	// +optional
+	GroupName string
 
-		// +required
-		BucketName string
+	// +required
+	BucketName string
 
-		// when delete policy from a user, must provide the PolicyJSONString
-		// +required
-		// when create policy from a user, api will ignore the PolicyJSONString
-		// +optional
-		PolicyJSONString string
+	// when delete policy from a user, must provide the PolicyName
+	// +required
+	// when create policy from a user, api will ignore the PolicyName
+	// +optional
+	PolicyName string
+}
 
-		// when delete policy from a user, must provide the PolicyName
-		// +required
-		// when create policy from a user, api will ignore the PolicyName
-		// +optional
-		PolicyName string
-	}
-)
+// BusinessUser
+// assume the business user is
+type BusinessUser struct {
+	ID   string
+	Name string
+}
 
 const (
 	IAMIBAP = "IBAP"
@@ -46,8 +47,23 @@ const (
 	IdentifyAccessKey = "AccessKey"
 )
 
-func (c *PolicyConfig) GetPolicyName() string {
-	return util.StringJoin(
+var (
+	rbapBusinessUserIDError   = errors.New("RBAPolicy, BusinessUser.ID is nil")
+	rbapBusinessUserNameError = errors.New("RBAPolicy, BusinessUser.Name is nil")
+	rbapBucketNameError       = errors.New("RBAPolicy, BucketName is nil")
+	rbapAccessKeyIDError      = errors.New("RBAPolicy, AccessKeyID is nil")
+)
+
+var (
+	ibapBusinessUserIDError   = errors.New("IBAPolicy, BusinessUser.ID is nil")
+	ibapBusinessUserNameError = errors.New("IBAPolicy, BusinessUser.Name is nil")
+	ibapBucketNameError       = errors.New("IBAPolicy, BucketName is nil")
+	ibapAccessKeyIDError      = errors.New("IBAPolicy, AccessKeyID is nil")
+)
+
+// +self define
+func (c *PolicyConfig) setPolicyName() {
+	c.PolicyName = util.StringJoin(
 		"-",
 		c.BusinessUser.ID,
 		c.BusinessUser.Name,
@@ -57,6 +73,9 @@ func (c *PolicyConfig) GetPolicyName() string {
 }
 
 func (c *PolicyConfig) IBAPAccessKeyWithOneBucketObjectCRUDPolicy() (string, error) {
+	if err := c.validateIBAP(); err != nil {
+		return "", err
+	}
 	policy := s3apiv2.IBAPolicy{
 		Version: miniointernal.Version,
 		Statement: []s3apiv2.Statement{
@@ -89,6 +108,9 @@ func (c *PolicyConfig) IBAPAccessKeyWithOneBucketObjectCRUDPolicy() (string, err
 }
 
 func (c *PolicyConfig) RBAPBucketWithAdminAllWithAccessKeyOneBucketObjectCRUDPolicy() (string, error) {
+	if err := c.validateRBAP(); err != nil {
+		return "", err
+	}
 	policy := s3apiv2.RBAPolicy{
 		Version: miniointernal.Version,
 		Id:      makePolicyId(c.BusinessUser.ID),
@@ -149,6 +171,33 @@ func (c *PolicyConfig) RBAPBucketWithAccessKeyOneBucketObjectCRUDStatement() s3a
 	}
 }
 
+func (c *PolicyConfig) validateRBAP() error {
+	if len(c.BusinessUser.ID) == 0 {
+		return rbapBusinessUserIDError
+	}
+	if len(c.BusinessUser.Name) == 0 {
+		return rbapBusinessUserNameError
+	}
+	if len(c.BucketName) == 0 {
+		return rbapBucketNameError
+	}
+	if len(c.Cred.AccessKeyID) == 0 {
+		return rbapAccessKeyIDError
+	}
+	return nil
+}
+
+func (c *PolicyConfig) validateIBAP() error {
+	if len(c.BusinessUser.Name) == 0 {
+		return ibapBusinessUserNameError
+	}
+	if len(c.BucketName) == 0 {
+		return ibapBucketNameError
+	}
+	return nil
+}
+
+// +self define
 func makePolicyId(bUID string) string {
 	return util.StringJoin(
 		"-",
@@ -157,6 +206,7 @@ func makePolicyId(bUID string) string {
 	)
 }
 
+// +self define
 func makeStatementSid(s ...string) string {
 	return util.StringJoin(
 		"-",
@@ -164,6 +214,8 @@ func makeStatementSid(s ...string) string {
 	)
 }
 
-func makeAWSAccountPrincipal(minioUserId string) string {
-	return s3_api.GetPrincipalAccountRoot(minioUserId)
+// +aws define
+// +minio define
+func makeAWSAccountPrincipal(minioUserID string) string {
+	return s3_api.GetPrincipalAccountRoot(minioUserID)
 }

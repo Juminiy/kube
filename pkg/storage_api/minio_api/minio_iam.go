@@ -1,7 +1,6 @@
 package minio_api
 
 import (
-	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/Juminiy/kube/pkg/util/random"
 	"github.com/minio/madmin-go/v3"
@@ -17,14 +16,14 @@ func NewCred(id, secret string) miniocred.Value {
 
 func (c *Client) CreateAccessKey() (miniocred.Value, error) {
 	cred := NewCred(randAccessKeyID(), randSecretAccessKey())
-	return cred, c.CreateIAMUser(&cred)
+	return cred, c.AddIAMUser(&cred)
 }
 
 func (c *Client) DeleteAccessKey(accessKeyID string) error {
-	return c.DeleteIAMUser(accessKeyID)
+	return c.RemoveIAMUser(accessKeyID)
 }
 
-func (c *Client) CreateIAMUser(cred *miniocred.Value) error {
+func (c *Client) AddIAMUser(cred *miniocred.Value) error {
 	return c.ma.AddUser(
 		c.ctx,
 		cred.AccessKeyID,
@@ -32,50 +31,53 @@ func (c *Client) CreateIAMUser(cred *miniocred.Value) error {
 	)
 }
 
-func (c *Client) DeleteIAMUser(accessKeyID string) error {
+func (c *Client) RemoveIAMUser(accessKeyID string) error {
 	return c.ma.RemoveUser(
 		c.ctx,
 		accessKeyID,
 	)
 }
 
-// CreateAccessPolicy
-// 1. create an IBA AccessKey Policy from business user information
+// SetAccessPolicy
+// 1. create an IBA AccessKey Policy(IAM Policy) from business user information
 // 2. and attach the created policy to the business user's AccessKey
-func (c *Client) CreateAccessPolicy(config *PolicyConfig) error {
+func (c *Client) SetAccessPolicy(config *PolicyConfig) error {
 	policy, err := config.IBAPAccessKeyWithOneBucketObjectCRUDPolicy()
 	if err != nil {
 		return err
 	}
+	config.setPolicyName()
 
 	err = c.ma.AddCannedPolicy(
 		c.ctx,
-		config.GetPolicyName(),
+		config.PolicyName,
 		util.String2BytesNoCopy(policy),
 	)
 	if err != nil {
 		return err
 	}
 
-	resp, err := c.ma.AttachPolicy(
+	_, err = c.ma.AttachPolicy(
 		c.ctx,
 		madmin.PolicyAssociationReq{
-			Policies: []string{config.GetPolicyName()},
+			Policies: []string{config.PolicyName},
 			User:     config.Cred.AccessKeyID,
 			Group:    config.GroupName,
 		},
 	)
-	stdlog.Debug(resp)
+	//stdlog.Debug(resp)
+
 	return err
 }
 
 // DeleteAccessPolicy
-// 1. delete the PolicyJSONString from an exists user
+// 1. detach the PolicyJSONString from an exists user
+// 1. delete the PolicyJSONString from Minio Server(Minio IAM)
 func (c *Client) DeleteAccessPolicy(config *PolicyConfig) error {
-	resp, err := c.ma.DetachPolicy(
+	_, err := c.ma.DetachPolicy(
 		c.ctx,
 		madmin.PolicyAssociationReq{
-			Policies: []string{config.PolicyJSONString},
+			Policies: []string{config.PolicyName},
 			User:     config.Cred.AccessKeyID,
 			Group:    config.GroupName,
 		},
@@ -88,8 +90,8 @@ func (c *Client) DeleteAccessPolicy(config *PolicyConfig) error {
 		c.ctx,
 		config.PolicyName,
 	)
+	//stdlog.Debug(resp)
 
-	stdlog.Debug(resp)
 	return err
 }
 
@@ -99,11 +101,4 @@ func randAccessKeyID() string {
 
 func randSecretAccessKey() string {
 	return random.PasswordString(SecretAccessKeyMaxLen)
-}
-
-// BusinessUser
-// assume the business user is
-type BusinessUser struct {
-	ID   string
-	Name string
 }

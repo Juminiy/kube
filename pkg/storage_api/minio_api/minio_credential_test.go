@@ -1,1 +1,0 @@
-package minio_api

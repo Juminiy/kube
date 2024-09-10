@@ -2,24 +2,21 @@
 package minio_inst
 
 import (
+	"context"
 	"github.com/Juminiy/kube/pkg/storage_api/minio_api"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
+func AddIAMUser(value *credentials.Value) error {
+	return _minioClient.AddIAMUser(value)
+}
+
+func AtomicWorkflow(req minio_api.Req) (minio_api.Resp, error) {
+	return _minioClient.AtomicWorkflow(req)
+}
+
 func CreateAccessKey() (credentials.Value, error) {
 	return _minioClient.CreateAccessKey()
-}
-
-func CreateAccessPolicy(policyConfig *minio_api.PolicyConfig) error {
-	return _minioClient.CreateAccessPolicy(policyConfig)
-}
-
-func CreateBucketPolicy(policyConfig *minio_api.PolicyConfig) error {
-	return _minioClient.CreateBucketPolicy(policyConfig)
-}
-
-func CreateIAMUser(value *credentials.Value) error {
-	return _minioClient.CreateIAMUser(value)
 }
 
 func DeleteAccessKey(_string string) error {
@@ -30,10 +27,6 @@ func DeleteAccessPolicy(policyConfig *minio_api.PolicyConfig) error {
 	return _minioClient.DeleteAccessPolicy(policyConfig)
 }
 
-func DeleteIAMUser(_string string) error {
-	return _minioClient.DeleteIAMUser(_string)
-}
-
 func MakeBucket(bucketConfig *minio_api.BucketConfig) error {
 	return _minioClient.MakeBucket(bucketConfig)
 }
@@ -42,6 +35,22 @@ func RemoveBucket(bucketConfig *minio_api.BucketConfig) error {
 	return _minioClient.RemoveBucket(bucketConfig)
 }
 
+func RemoveIAMUser(_string string) error {
+	return _minioClient.RemoveIAMUser(_string)
+}
+
+func SetAccessPolicy(policyConfig *minio_api.PolicyConfig) error {
+	return _minioClient.SetAccessPolicy(policyConfig)
+}
+
+func SetBucketPolicy(policyConfig *minio_api.PolicyConfig) error {
+	return _minioClient.SetBucketPolicy(policyConfig)
+}
+
 func UpdateBucketQuota(bucketConfig *minio_api.BucketConfig) error {
 	return _minioClient.UpdateBucketQuota(bucketConfig)
+}
+
+func WithContext(context context.Context) *minio_api.Client {
+	return _minioClient.WithContext(context)
 }

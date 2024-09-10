@@ -2,7 +2,6 @@ package minio_api
 
 import (
 	"errors"
-	"github.com/Juminiy/kube/pkg/util"
 	"github.com/minio/madmin-go/v3"
 	"github.com/minio/minio-go/v7"
 	"strings"
@@ -19,6 +18,7 @@ type BucketConfig struct {
 	BucketName string
 }
 
+// +self define
 func (c *BucketConfig) setDefaultBucketName() {
 	c.BucketName = strings.Join([]string{
 		"s3fs",
@@ -29,75 +29,72 @@ func (c *BucketConfig) setDefaultBucketName() {
 }
 
 // MakeBucket
-// 1. make bucket
+// 1. make a new bucket
 // 2. set bucket quota: size(B)
-// 3. set bucket policy: readwrite
-func (c *Client) MakeBucket(bucket *BucketConfig) error {
-	if len(bucket.BucketName) == 0 {
-		bucket.setDefaultBucketName()
+// 3. set bucket access policy
+func (c *Client) MakeBucket(bucketConfig *BucketConfig) error {
+	if len(bucketConfig.BucketName) == 0 {
+		bucketConfig.setDefaultBucketName()
 	}
+
 	err := c.mc.MakeBucket(
 		c.ctx,
-		bucket.BucketName,
+		bucketConfig.BucketName,
 		minio.MakeBucketOptions{},
 	)
 	if err != nil {
 		return err
 	}
 
-	return c.setBucketQuota(bucket)
+	err = c.setBucketQuota(bucketConfig)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (c *Client) RemoveBucket(config *BucketConfig) error {
+func (c *Client) RemoveBucket(bucketConfig *BucketConfig) error {
 	return c.mc.RemoveBucket(
 		c.ctx,
-		config.BucketName,
+		bucketConfig.BucketName,
 	)
 }
 
-func (c *Client) UpdateBucketQuota(config *BucketConfig) error {
-	return c.setBucketQuota(config)
+func (c *Client) UpdateBucketQuota(bucketConfig *BucketConfig) error {
+	return c.setBucketQuota(bucketConfig)
 }
 
-func (c *Client) setBucketQuota(config *BucketConfig) error {
-	if config == nil ||
-		(len(config.BusinessUser.Name) == 0 && len(config.BucketName) == 0) ||
-		config.Quota <= 0 {
+func (c *Client) setBucketQuota(bucketConfig *BucketConfig) error {
+	if bucketConfig == nil ||
+		(len(bucketConfig.BusinessUser.Name) == 0 && len(bucketConfig.BucketName) == 0) ||
+		bucketConfig.Quota <= 0 {
 		return errors.New("bucket config error")
 	}
-	if len(config.BucketName) == 0 {
-		config.setDefaultBucketName()
+	if len(bucketConfig.BucketName) == 0 {
+		bucketConfig.setDefaultBucketName()
 	}
 
 	return c.ma.SetBucketQuota(
 		c.ctx,
-		config.BucketName,
+		bucketConfig.BucketName,
 		&madmin.BucketQuota{
-			Quota: config.Quota, // Deprecated, but set it
-			Size:  config.Quota,
+			Quota: bucketConfig.Quota, // Deprecated, but set it
+			Size:  bucketConfig.Quota,
 			Type:  madmin.HardQuota,
 		},
 	)
 }
 
-func (c *Client) CreateBucketPolicy(config *PolicyConfig) error {
-	policy, err := config.RBAPBucketWithAdminAllWithAccessKeyOneBucketObjectCRUDPolicy()
-	if err != nil {
-		return err
-	}
-
-	err = c.ma.AddCannedPolicy(
-		c.ctx,
-		config.GetPolicyName(),
-		util.String2BytesNoCopy(policy),
-	)
+func (c *Client) SetBucketPolicy(policyConfig *PolicyConfig) error {
+	policy, err := policyConfig.RBAPBucketWithAdminAllWithAccessKeyOneBucketObjectCRUDPolicy()
 	if err != nil {
 		return err
 	}
 
 	return c.mc.SetBucketPolicy(
 		c.ctx,
-		config.BucketName,
+		policyConfig.BucketName,
 		policy,
 	)
 }

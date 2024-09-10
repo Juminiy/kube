@@ -7,9 +7,9 @@ import (
 )
 
 func TestBuiltInPolicyVars(t *testing.T) {
-	stdlog.Info(consoleAdmin.String())
-	stdlog.Info(diagnostics.String())
-	stdlog.Info(readOnly.String())
-	stdlog.Info(readWrite.String())
-	stdlog.Info(writeOnly.String())
+	stdlog.Info(ConsoleAdminPolicy())
+	stdlog.Info(DiagnosticsPolicy())
+	stdlog.Info(ReadOnlyPolicy())
+	stdlog.Info(ReadWritePolicy())
+	stdlog.Info(WriteOnlyPolicy())
 }

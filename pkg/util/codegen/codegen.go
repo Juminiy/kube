@@ -115,15 +115,15 @@ func (g *Manifest) genFunc() {
 			paramInTyp := reflectType{typ: paramIn}
 			paramInTyp.parse()
 
-			paramInFullTypeName := paramInTyp.fullTypeName
+			paramInTypeId := paramInTyp.pkgTypeName // fix example like: func fn_xxx(type_xxx1 type_xxx, type_xxx2 *type_xxx) {}, ptr type and value type conflict
 			paramInVarName := paramInTyp.varName
-			if inTypTh, inTypExists := fullTypeNames[paramInFullTypeName]; inTypExists {
+			if inTypTh, inTypExists := fullTypeNames[paramInTypeId]; inTypExists {
 				paramInVarName += strconv.Itoa(inTypTh + 1)
-				fullTypeNames[paramInFullTypeName] = inTypTh + 1
+				fullTypeNames[paramInTypeId] = inTypTh + 1
 			} else {
-				fullTypeNames[paramInFullTypeName] = 1
+				fullTypeNames[paramInTypeId] = 1
 			}
-			g.writes(paramInVarName, paramInFullTypeName)
+			g.writes(paramInVarName, paramInTyp.fullTypeName)
 
 			paramList = append(paramList, paramInVarName)
 			if j < funcInstanceTypeOf.NumIn()-1 {
@@ -203,15 +203,24 @@ type reflectType struct {
 	inst any
 	typ  reflect.Type
 
+	// src pkg name with generate pkg name
 	comparePkgName string
-	pkgName        string
-	shortPkg       string
 
-	fullTypeName   string
-	pkgTypeName    string
+	// current pkg name
+	pkgName string
+	// current pkg short name
+	shortPkg string
+
+	// full type name, with ptr(if absent), with package(must absent)
+	fullTypeName string
+	// type name with package
+	pkgTypeName string
+	// type ptr name with package
 	pkgTypePtrName string
-	typeName       string
-	typePtrName    string
+	// type name, pure name without package
+	typeName string
+	// type ptr name, pure name without package
+	typePtrName string
 
 	varName string
 }

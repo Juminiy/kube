@@ -2,8 +2,6 @@ package minio_api
 
 import (
 	"testing"
-
-	"github.com/Juminiy/kube/pkg/util"
 )
 
 const (
@@ -24,35 +22,6 @@ var (
 	)
 )
 
-func TestClient_UpdateBucketQuota(t *testing.T) {
-	util.SilentPanicError(testMinioClientError)
-	util.SilentHandleError("update quota error",
-		testMinioClient.UpdateBucketQuota(&BucketConfig{
-			Quota:      util.Ti * 5,
-			BucketName: "bin",
-		}))
-
-}
-func TestClient_MakeBucket(t *testing.T) {
-	util.SilentPanicError(testMinioClientError)
-	util.SilentHandleError("create bucket error",
-		testMinioClient.MakeBucket(&BucketConfig{
-			Quota: util.Gi * 30,
-			BusinessUser: BusinessUser{
-				Name: "chisato",
-			},
-		}))
-}
-
-func TestClient_RemoveBucket(t *testing.T) {
-	util.SilentPanicError(testMinioClientError)
-	util.SilentHandleError("remove bucket error",
-		testMinioClient.RemoveBucket(&BucketConfig{
-			BucketName: "s3fs-mount-bucket-chisato",
-		}),
-	)
-}
-
-func TestClient_BucketWorkFlow(t *testing.T) {
+func TestClient_BusinessUserWorkFlow(t *testing.T) {
 
 }

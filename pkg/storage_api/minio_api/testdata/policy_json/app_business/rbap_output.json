@@ -1,21 +1,13 @@
 {
   "Version": "2012-10-17",
-  "Id": "33-8af05c15-74b8-4a8e-9759-df9d13638a3e",
+  "Id": "11-6c6f8347-d307-429f-a853-c204d7745d3a",
   "Statement": [
     {
-      "Sid": "chisatox0129-RBAP-Admin",
+      "Sid": "chisato-RBAP-AccessKey",
       "Effect": "Allow",
-      "Action": [
-        "*"
-      ],
-      "Resource": [
-        "arn:aws:s3:::s3fs-mount-bucket-chisatox0129",
-        "arn:aws:s3:::s3fs-mount-bucket-chisatox0129/*"
-      ]
-    },
-    {
-      "Sid": "chisatox0129-RBAP-AccessKey",
-      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::uUDC29bGJj3v15K33rAmM1urgRk6c924eov0IrF6PZz3BnHj24:root"
+      },
       "Action": [
         "s3:ListBucket",
         "s3:DeleteObject",
@@ -23,7 +15,8 @@
         "s3:PutObject"
       ],
       "Resource": [
-        "arn:aws:s3:::s3fs-mount-bucket-chisatox0129/*"
+        "arn:aws:s3:::s3fs-mount-bucket-chisato",
+        "arn:aws:s3:::s3fs-mount-bucket-chisato/*"
       ]
     }
   ]

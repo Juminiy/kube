@@ -1,6 +1,7 @@
 package codegen
 
-/*func TestManifest_Do_ExampleStruct(t *testing.T) {
+/*
+func TestManifest_Do_ExampleStruct(t *testing.T) {
 	exampleManifest := Manifest{
 		DstFilePath: filepath.Join(workPath, "pkg", "util", "codegen", "example", "example_inst", "example_codegen.go"),
 		InstanceOf:  &example.ExampleStruct{},
@@ -9,7 +10,6 @@ package codegen
 	}
 	exampleManifest.Do()
 }
-
 func TestManifest_Do_DockerInst(t *testing.T) {
 	dockerInst := Manifest{
 		DstFilePath:           filepath.Join(workPath, "pkg", "image_api", "docker_api", "docker_inst", "client.go"),
