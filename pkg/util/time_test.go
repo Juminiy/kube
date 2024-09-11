@@ -1,13 +1,16 @@
 package util
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
-// TODO: Error
+// +passed
 func TestTimestamp2CST(t *testing.T) {
-	Timestamp2CST("1720582825")
+	fmt.Println(Timestamp2CST("1136185445"))
 }
 
-// TODO: Error
+// +passed
 func TestCST2Timestamp(t *testing.T) {
-	CST2Timestamp("2006-01-02 15:04:05")
+	fmt.Println(CST2Timestamp("2006-01-02 15:04:05"))
 }

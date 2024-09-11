@@ -149,12 +149,12 @@ const (
  * Func
  */
 
-func GetSid(policyName ...string) string {
-	pName := ""
-	if len(policyName) > 0 {
-		pName = policyName[0]
+func GetSid(s ...string) string {
+	sId := ""
+	if len(s) > 0 {
+		sId = s[0]
 	}
-	return pName
+	return sId
 }
 
 func GetBucketResource(bucketName string) string {

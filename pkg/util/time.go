@@ -2,26 +2,37 @@ package util
 
 import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
-	"strconv"
 	"time"
 )
 
+const (
+	TimeLocationAsiaShanghai = "Asia/Shanghai"
+)
+
+// CST2Timestamp
+// Convert (CST: UTC+8) to (Unix timestamp)
 func CST2Timestamp(cst string) string {
-	cstInt64, err := strconv.ParseInt(cst, 10, 64)
+	cstTm, err := time.ParseInLocation(time.DateTime, cst, cstLocation())
 	if err != nil {
-		stdlog.ErrorF("cst string: %s error: %s", cst, err.Error())
+		stdlog.ErrorF("convert cst: %s to timestamp error: %s", cst, err.Error())
 		return ""
 	}
-	return time.
-		Unix(cstInt64, 0).
+	return I64toa(cstTm.Unix())
+}
+
+// Timestamp2CST
+// Convert (Unix timestamp) to (CST: UTC+8)
+func Timestamp2CST(timestamp string) string {
+	return time.Unix(AtoI64(timestamp), 0).
+		In(cstLocation()).
 		Format(time.DateTime)
 }
 
-func Timestamp2CST(timestamp string) string {
-	tm, err := time.Parse(time.DateTime, timestamp)
+func cstLocation() *time.Location {
+	cstLoc, err := time.LoadLocation(TimeLocationAsiaShanghai)
 	if err != nil {
-		stdlog.ErrorF("timestamp: %s parse to CST time error: %s", timestamp, err.Error())
-		return ""
+		stdlog.ErrorF("LoadLocation: %s, error: %s", TimeLocationAsiaShanghai, err.Error())
+		return nil
 	}
-	return strconv.Itoa(int(tm.Unix()))
+	return cstLoc
 }

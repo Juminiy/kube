@@ -126,7 +126,7 @@ func NewDeployment(c *DeploymentConfig) error {
 		},
 	}
 
-	c.ctx = context.TODO()
+	c.ctx = util.TODOContext
 
 	defaultCallBackFunc := func() error {
 		if c.CallBack.latest != nil {

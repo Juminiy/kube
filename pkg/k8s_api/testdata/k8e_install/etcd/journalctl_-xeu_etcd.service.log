@@ -1,0 +1,75 @@
+Sep 11 15:05:11 k8s-master etcd[9073]: {"level":"warn","ts":"2024-09-11T15:05:11.004972+0800","caller":"rafthttp/probing_status.go:68","msg":"prober detected unhealthy status","round-tripper-name":"ROUND_TRIPPER_RAFT_MESSAGE","remote-peer-id":"747aa9d68a1822d2","rtt":"0s","error":"dial tcp 10.112.105.252:2380: conn>
+Sep 11 15:05:16 k8s-master etcd[9073]: {"level":"warn","ts":"2024-09-11T15:05:16.005899+0800","caller":"rafthttp/probing_status.go:68","msg":"prober detected unhealthy status","round-tripper-name":"ROUND_TRIPPER_SNAPSHOT","remote-peer-id":"747aa9d68a1822d2","rtt":"0s","error":"dial tcp 10.112.105.252:2380: connect:>
+Sep 11 15:05:16 k8s-master etcd[9073]: {"level":"warn","ts":"2024-09-11T15:05:16.005977+0800","caller":"rafthttp/probing_status.go:68","msg":"prober detected unhealthy status","round-tripper-name":"ROUND_TRIPPER_RAFT_MESSAGE","remote-peer-id":"747aa9d68a1822d2","rtt":"0s","error":"dial tcp 10.112.105.252:2380: conn>
+Sep 11 15:05:21 k8s-master etcd[9073]: {"level":"warn","ts":"2024-09-11T15:05:21.006327+0800","caller":"rafthttp/probing_status.go:68","msg":"prober detected unhealthy status","round-tripper-name":"ROUND_TRIPPER_SNAPSHOT","remote-peer-id":"747aa9d68a1822d2","rtt":"0s","error":"dial tcp 10.112.105.252:2380: connect:>
+Sep 11 15:05:21 k8s-master etcd[9073]: {"level":"warn","ts":"2024-09-11T15:05:21.006424+0800","caller":"rafthttp/probing_status.go:68","msg":"prober detected unhealthy status","round-tripper-name":"ROUND_TRIPPER_RAFT_MESSAGE","remote-peer-id":"747aa9d68a1822d2","rtt":"0s","error":"dial tcp 10.112.105.252:2380: conn>
+Sep 11 15:05:26 k8s-master etcd[9073]: {"level":"warn","ts":"2024-09-11T15:05:26.006638+0800","caller":"rafthttp/probing_status.go:68","msg":"prober detected unhealthy status","round-tripper-name":"ROUND_TRIPPER_RAFT_MESSAGE","remote-peer-id":"747aa9d68a1822d2","rtt":"0s","error":"dial tcp 10.112.105.252:2380: conn>
+Sep 11 15:05:26 k8s-master etcd[9073]: {"level":"warn","ts":"2024-09-11T15:05:26.006719+0800","caller":"rafthttp/probing_status.go:68","msg":"prober detected unhealthy status","round-tripper-name":"ROUND_TRIPPER_SNAPSHOT","remote-peer-id":"747aa9d68a1822d2","rtt":"0s","error":"dial tcp 10.112.105.252:2380: connect:>
+Sep 11 15:05:31 k8s-master etcd[9073]: {"level":"warn","ts":"2024-09-11T15:05:31.007583+0800","caller":"rafthttp/probing_status.go:68","msg":"prober detected unhealthy status","round-tripper-name":"ROUND_TRIPPER_SNAPSHOT","remote-peer-id":"747aa9d68a1822d2","rtt":"0s","error":"dial tcp 10.112.105.252:2380: connect:>
+Sep 11 15:05:31 k8s-master etcd[9073]: {"level":"warn","ts":"2024-09-11T15:05:31.007665+0800","caller":"rafthttp/probing_status.go:68","msg":"prober detected unhealthy status","round-tripper-name":"ROUND_TRIPPER_RAFT_MESSAGE","remote-peer-id":"747aa9d68a1822d2","rtt":"0s","error":"dial tcp 10.112.105.252:2380: conn>
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:32.175972+0800","logger":"raft","caller":"etcdserver/zap_raft.go:77","msg":"4aabe8799b5d2630 [term 2] received MsgTimeoutNow from d3e18b5a07a5917a and starts an election to get leadership."}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:32.17608+0800","logger":"raft","caller":"etcdserver/zap_raft.go:77","msg":"4aabe8799b5d2630 is starting a new election at term 2"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:32.176124+0800","logger":"raft","caller":"etcdserver/zap_raft.go:77","msg":"4aabe8799b5d2630 became candidate at term 3"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:32.176153+0800","logger":"raft","caller":"etcdserver/zap_raft.go:77","msg":"4aabe8799b5d2630 received MsgVoteResp from 4aabe8799b5d2630 at term 3"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:32.176202+0800","logger":"raft","caller":"etcdserver/zap_raft.go:77","msg":"4aabe8799b5d2630 [logterm: 2, index: 7] sent MsgVote request to 747aa9d68a1822d2 at term 3"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:32.17623+0800","logger":"raft","caller":"etcdserver/zap_raft.go:77","msg":"4aabe8799b5d2630 [logterm: 2, index: 7] sent MsgVote request to d3e18b5a07a5917a at term 3"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:32.176267+0800","logger":"raft","caller":"etcdserver/zap_raft.go:77","msg":"raft.node: 4aabe8799b5d2630 lost leader d3e18b5a07a5917a at term 3"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:32.177195+0800","caller":"osutil/interrupt_unix.go:64","msg":"received signal; shutting down","signal":"terminated"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:32.177272+0800","caller":"embed/etcd.go:375","msg":"closing etcd server","name":"etcd-k8s-master","data-dir":"/var/lib/etcd","advertise-peer-urls":["https://10.112.18.108:2380"],"advertise-client-urls":["https://10.112.18.108:2379"]}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"warn","ts":"2024-09-11T15:05:32.177393+0800","caller":"embed/serve.go:212","msg":"stopping secure grpc server due to error","error":"accept tcp 10.112.18.108:2379: use of closed network connection"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"warn","ts":"2024-09-11T15:05:32.177445+0800","caller":"embed/serve.go:214","msg":"stopped secure grpc server due to error","error":"accept tcp 10.112.18.108:2379: use of closed network connection"}
+Sep 11 15:05:32 k8s-master systemd[1]: Stopping etcd...
+░░ Subject: A stop job for unit etcd.service has begun execution
+░░ Defined-By: systemd
+░░ Support: http://www.ubuntu.com/support
+░░ 
+░░ A stop job for unit etcd.service has begun execution.
+░░ 
+░░ The job identifier is 133076.
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"warn","ts":"2024-09-11T15:05:32.179109+0800","caller":"embed/serve.go:212","msg":"stopping secure grpc server due to error","error":"accept tcp 127.0.0.1:2379: use of closed network connection"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"warn","ts":"2024-09-11T15:05:32.179158+0800","caller":"embed/serve.go:214","msg":"stopped secure grpc server due to error","error":"accept tcp 127.0.0.1:2379: use of closed network connection"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:32.181107+0800","caller":"etcdserver/server.go:1504","msg":"skipped leadership transfer; local server is not leader","local-member-id":"4aabe8799b5d2630","current-leader-member-id":"0"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:32.181277+0800","caller":"rafthttp/peer.go:330","msg":"stopping remote peer","remote-peer-id":"747aa9d68a1822d2"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:32.181378+0800","caller":"rafthttp/stream.go:294","msg":"stopped TCP streaming connection with remote peer","stream-writer-type":"unknown stream","remote-peer-id":"747aa9d68a1822d2"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:32.181423+0800","caller":"rafthttp/stream.go:294","msg":"stopped TCP streaming connection with remote peer","stream-writer-type":"unknown stream","remote-peer-id":"747aa9d68a1822d2"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:32.181528+0800","caller":"rafthttp/pipeline.go:85","msg":"stopped HTTP pipelining with remote peer","local-member-id":"4aabe8799b5d2630","remote-peer-id":"747aa9d68a1822d2"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:32.181591+0800","caller":"rafthttp/stream.go:442","msg":"stopped stream reader with remote peer","stream-reader-type":"stream MsgApp v2","local-member-id":"4aabe8799b5d2630","remote-peer-id":"747aa9d68a1822d2"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:32.181699+0800","caller":"rafthttp/stream.go:442","msg":"stopped stream reader with remote peer","stream-reader-type":"stream Message","local-member-id":"4aabe8799b5d2630","remote-peer-id":"747aa9d68a1822d2"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:32.181749+0800","caller":"rafthttp/peer.go:335","msg":"stopped remote peer","remote-peer-id":"747aa9d68a1822d2"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:32.181765+0800","caller":"rafthttp/peer.go:330","msg":"stopping remote peer","remote-peer-id":"d3e18b5a07a5917a"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"warn","ts":"2024-09-11T15:05:32.181913+0800","caller":"rafthttp/stream.go:286","msg":"closed TCP streaming connection with remote peer","stream-writer-type":"stream MsgApp v2","remote-peer-id":"d3e18b5a07a5917a"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:32.181967+0800","caller":"rafthttp/stream.go:294","msg":"stopped TCP streaming connection with remote peer","stream-writer-type":"stream MsgApp v2","remote-peer-id":"d3e18b5a07a5917a"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"warn","ts":"2024-09-11T15:05:32.182161+0800","caller":"rafthttp/stream.go:286","msg":"closed TCP streaming connection with remote peer","stream-writer-type":"stream Message","remote-peer-id":"d3e18b5a07a5917a"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:32.182195+0800","caller":"rafthttp/stream.go:294","msg":"stopped TCP streaming connection with remote peer","stream-writer-type":"stream Message","remote-peer-id":"d3e18b5a07a5917a"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:32.18224+0800","caller":"rafthttp/pipeline.go:85","msg":"stopped HTTP pipelining with remote peer","local-member-id":"4aabe8799b5d2630","remote-peer-id":"d3e18b5a07a5917a"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"warn","ts":"2024-09-11T15:05:32.182344+0800","caller":"rafthttp/stream.go:421","msg":"lost TCP streaming connection with remote peer","stream-reader-type":"stream MsgApp v2","local-member-id":"4aabe8799b5d2630","remote-peer-id":"d3e18b5a07a5917a","error":"context can>
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"warn","ts":"2024-09-11T15:05:32.182377+0800","caller":"rafthttp/peer_status.go:66","msg":"peer became inactive (message send to peer failed)","peer-id":"d3e18b5a07a5917a","error":"failed to read d3e18b5a07a5917a on stream MsgApp v2 (context canceled)"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:32.182408+0800","caller":"rafthttp/stream.go:442","msg":"stopped stream reader with remote peer","stream-reader-type":"stream MsgApp v2","local-member-id":"4aabe8799b5d2630","remote-peer-id":"d3e18b5a07a5917a"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"warn","ts":"2024-09-11T15:05:32.182523+0800","caller":"rafthttp/stream.go:421","msg":"lost TCP streaming connection with remote peer","stream-reader-type":"stream Message","local-member-id":"4aabe8799b5d2630","remote-peer-id":"d3e18b5a07a5917a","error":"context cance>
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:32.182557+0800","caller":"rafthttp/stream.go:442","msg":"stopped stream reader with remote peer","stream-reader-type":"stream Message","local-member-id":"4aabe8799b5d2630","remote-peer-id":"d3e18b5a07a5917a"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:32.182588+0800","caller":"rafthttp/peer.go:335","msg":"stopped remote peer","remote-peer-id":"d3e18b5a07a5917a"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:32.199459+0800","caller":"embed/etcd.go:579","msg":"stopping serving peer traffic","address":"10.112.18.108:2380"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"warn","ts":"2024-09-11T15:05:32.199627+0800","caller":"embed/config_logging.go:169","msg":"rejected connection","remote-addr":"10.112.142.224:55546","server-name":"","error":"read tcp 10.112.18.108:2380->10.112.142.224:55546: use of closed network connection"}
+Sep 11 15:05:32 k8s-master etcd[9073]: {"level":"warn","ts":"2024-09-11T15:05:32.199932+0800","caller":"rafthttp/http.go:413","msg":"failed to find remote peer in cluster","local-member-id":"4aabe8799b5d2630","remote-peer-id-stream-handler":"4aabe8799b5d2630","remote-peer-id-from":"d3e18b5a07a5917a","cluster-id":"3>
+Sep 11 15:05:33 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:33.199825+0800","caller":"embed/etcd.go:584","msg":"stopped serving peer traffic","address":"10.112.18.108:2380"}
+Sep 11 15:05:33 k8s-master etcd[9073]: {"level":"info","ts":"2024-09-11T15:05:33.199898+0800","caller":"embed/etcd.go:377","msg":"closed etcd server","name":"etcd-k8s-master","data-dir":"/var/lib/etcd","advertise-peer-urls":["https://10.112.18.108:2380"],"advertise-client-urls":["https://10.112.18.108:2379"]}
+Sep 11 15:05:33 k8s-master systemd[1]: etcd.service: Deactivated successfully.
+░░ Subject: Unit succeeded
+░░ Defined-By: systemd
+░░ Support: http://www.ubuntu.com/support
+░░ 
+░░ The unit etcd.service has successfully entered the 'dead' state.
+Sep 11 15:05:33 k8s-master systemd[1]: Stopped etcd.
+░░ Subject: A stop job for unit etcd.service has finished
+░░ Defined-By: systemd
+░░ Support: http://www.ubuntu.com/support
+░░ 
+░░ A stop job for unit etcd.service has finished.
+░░ 
+░░ The job identifier is 133076 and the job result is done.
+Sep 11 15:05:33 k8s-master systemd[1]: etcd.service: Consumed 4.836s CPU time.
+░░ Subject: Resources consumed by unit runtime
+░░ Defined-By: systemd
+░░ Support: http://www.ubuntu.com/support
+░░ 
+░░ The unit etcd.service completed and consumed the indicated resources.

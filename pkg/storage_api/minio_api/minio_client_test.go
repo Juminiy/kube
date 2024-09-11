@@ -22,6 +22,6 @@ var (
 	)
 )
 
-func TestClient_BusinessUserWorkFlow(t *testing.T) {
+func TestClient_AtomicWorkflow(t *testing.T) {
 
 }

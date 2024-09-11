@@ -7,15 +7,15 @@ import (
 var consoleAdmin = s3apiv2.IBAPolicy{
 	Version: Version,
 	Statement: []s3apiv2.Statement{
-		s3apiv2.Statement{
+		{
 			Effect: Allow,
 			Action: []string{AdminAll},
 		},
-		s3apiv2.Statement{
+		{
 			Effect: Allow,
 			Action: []string{KMSAll},
 		},
-		s3apiv2.Statement{
+		{
 			Effect:   Allow,
 			Action:   []string{S3All},
 			Resource: []string{ResourceARNS3All},
@@ -26,7 +26,7 @@ var consoleAdmin = s3apiv2.IBAPolicy{
 var diagnostics = s3apiv2.IBAPolicy{
 	Version: Version,
 	Statement: []s3apiv2.Statement{
-		s3apiv2.Statement{
+		{
 			Effect: Allow,
 			Action: []string{
 				AdminOBDInfo,
@@ -46,7 +46,7 @@ var diagnostics = s3apiv2.IBAPolicy{
 var readOnly = s3apiv2.IBAPolicy{
 	Version: Version,
 	Statement: []s3apiv2.Statement{
-		s3apiv2.Statement{
+		{
 			Effect: Allow,
 			Action: []string{
 				S3GetBucketLocation,
@@ -60,7 +60,7 @@ var readOnly = s3apiv2.IBAPolicy{
 var readWrite = s3apiv2.IBAPolicy{
 	Version: Version,
 	Statement: []s3apiv2.Statement{
-		s3apiv2.Statement{
+		{
 			Effect:   Allow,
 			Action:   []string{S3All},
 			Resource: []string{ResourceARNS3All},
@@ -71,7 +71,7 @@ var readWrite = s3apiv2.IBAPolicy{
 var writeOnly = s3apiv2.IBAPolicy{
 	Version: Version,
 	Statement: []s3apiv2.Statement{
-		s3apiv2.Statement{
+		{
 			Effect:   Allow,
 			Action:   []string{S3PutObject},
 			Resource: []string{ResourceARNS3All},

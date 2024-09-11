@@ -102,12 +102,12 @@ var (
 func initGlobalConfig() {
 	fileBytes, err := os.ReadFile(*configYamlPath)
 	if err != nil {
-		stdlog.ErrorF("read yaml file path: %s error: %s", *configYamlPath, err)
+		stdlog.FatalF("read yaml file path: %s error: %s", *configYamlPath, err)
 	}
 
 	err = yaml.Unmarshal(fileBytes, &_globalConfig)
 	if err != nil {
-		stdlog.ErrorF("unmarshal yaml file bytes: %v, yaml config instance: %#v, error: %s", fileBytes, _globalConfig, err.Error())
+		stdlog.FatalF("unmarshal yaml file bytes: %v, yaml config instance: %#v, error: %s", fileBytes, _globalConfig, err.Error())
 	}
 	stdlog.Info("global config init success")
 }

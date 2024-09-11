@@ -18,8 +18,7 @@ func main() {
 	var err error
 	workPath, err = os.Getwd()
 	if err != nil {
-		stdlog.ErrorF("os get work directory error: %s", err.Error())
-		os.Exit(1)
+		stdlog.FatalF("os get work directory error: %s", err.Error())
 	}
 	stdlog.InfoF("current work directory is: %s", workPath)
 

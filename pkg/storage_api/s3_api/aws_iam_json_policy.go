@@ -46,6 +46,7 @@ var (
 	PrincipalV2Error     = errors.New("Principal can not be used in IBAPolicy Statement")
 )
 
+// Policy
 // AWS IAM PolicyDocument JSON
 type Policy interface {
 	// String to get packed json string

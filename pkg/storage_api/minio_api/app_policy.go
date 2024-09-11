@@ -45,6 +45,8 @@ const (
 
 	IdentifyAdmin     = "Admin"
 	IdentifyAccessKey = "AccessKey"
+
+	OneBucketObjectCRUD = "WithOneBucketObjectCRUD"
 )
 
 var (
@@ -55,22 +57,9 @@ var (
 )
 
 var (
-	ibapBusinessUserIDError   = errors.New("IBAPolicy, BusinessUser.ID is nil")
 	ibapBusinessUserNameError = errors.New("IBAPolicy, BusinessUser.Name is nil")
 	ibapBucketNameError       = errors.New("IBAPolicy, BucketName is nil")
-	ibapAccessKeyIDError      = errors.New("IBAPolicy, AccessKeyID is nil")
 )
-
-// +self define
-func (c *PolicyConfig) setPolicyName() {
-	c.PolicyName = util.StringJoin(
-		"-",
-		c.BusinessUser.ID,
-		c.BusinessUser.Name,
-		c.BucketName,
-		random.IDString(len(c.BusinessUser.Name)),
-	)
-}
 
 func (c *PolicyConfig) IBAPAccessKeyWithOneBucketObjectCRUDPolicy() (string, error) {
 	if err := c.validateIBAP(); err != nil {
@@ -79,12 +68,12 @@ func (c *PolicyConfig) IBAPAccessKeyWithOneBucketObjectCRUDPolicy() (string, err
 	policy := s3apiv2.IBAPolicy{
 		Version: miniointernal.Version,
 		Statement: []s3apiv2.Statement{
-			s3apiv2.Statement{
+			{
 				Sid: makeStatementSid(
 					c.BusinessUser.Name,
 					IAMIBAP,
 					IdentifyAccessKey,
-					"WithOneBucketObjectCRUD",
+					OneBucketObjectCRUD,
 				),
 				Effect:       miniointernal.Allow,
 				Principal:    nil,
@@ -115,8 +104,8 @@ func (c *PolicyConfig) RBAPBucketWithAdminAllWithAccessKeyOneBucketObjectCRUDPol
 		Version: miniointernal.Version,
 		Id:      makePolicyId(c.BusinessUser.ID),
 		Statement: []s3apiv2.Statement{
-			//c.RBAPBucketWithAdminAllStatement(), admin already allow any, not required any more
-			c.RBAPBucketWithAccessKeyOneBucketObjectCRUDStatement(),
+			//c.RBAPBucketWithAdminAllStatement(), //admin already allow any, not required any more
+			c.RBAPBucketWithAccessKeyOneBucketObjectCRUDStatement(), //accessKey must be required
 		},
 	}
 	return policy.String()
@@ -150,6 +139,7 @@ func (c *PolicyConfig) RBAPBucketWithAccessKeyOneBucketObjectCRUDStatement() s3a
 			c.BusinessUser.Name,
 			IAMRBAP,
 			IdentifyAccessKey,
+			OneBucketObjectCRUD,
 		),
 		Effect: miniointernal.Allow,
 		Principal: map[string]any{
@@ -198,10 +188,21 @@ func (c *PolicyConfig) validateIBAP() error {
 }
 
 // +self define
-func makePolicyId(bUID string) string {
+func (c *PolicyConfig) setPolicyName() {
+	c.PolicyName = util.StringJoin(
+		"-",
+		c.BusinessUser.ID,
+		c.BusinessUser.Name,
+		c.BucketName,
+		random.IDString(len(c.BusinessUser.Name)),
+	)
+}
+
+// +self define
+func makePolicyId(businessUserID string) string {
 	return util.StringJoin(
 		"-",
-		bUID,
+		businessUserID,
 		uuid.NewString(),
 	)
 }

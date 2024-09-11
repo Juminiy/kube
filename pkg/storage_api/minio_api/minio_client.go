@@ -50,7 +50,7 @@ func New(
 	return &Client{
 		mc:  mc,
 		ma:  ma,
-		ctx: context.TODO(),
+		ctx: util.TODOContext,
 	}, nil
 }
 

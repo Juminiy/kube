@@ -13,20 +13,20 @@ log:
     path:
 
 harbor:
-  registry: http://harbor.local:8662
+  registry: http://harbor.local:18111
   username: admin
-  password: Harbor12345
+  password: bupt.harbor@666
   public: public
 
 docker:
-  host: tcp://docker.local:2375
+  host: tcp://docker.local:12375
   version: 1.43
 
 kubernetes:
   kubeConfigPath: ~/.kube/config
 
 minio:
-  endpoint: 192.168.31.110:9000
-  accessKeyID: minioadmin
-  secretAccessKey: minioadmin
+  endpoint: 192.168.31.66:19000
+  accessKeyID: bupt.minio@666
+  secretAccessKey: bupt.minio@666
   secure: false
