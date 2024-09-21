@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"github.com/Juminiy/kube/pkg/image_api/docker_api"
 	"github.com/Juminiy/kube/pkg/image_api/harbor_api"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
@@ -10,11 +11,10 @@ import (
 	"path/filepath"
 )
 
-var (
-	workPath string
-)
-
 func main() {
+	flag.StringVar(&genModule, "gen", "", "which module to gen: docker | harbor | minio | all")
+	flag.Parse()
+
 	var err error
 	workPath, err = os.Getwd()
 	if err != nil {
@@ -22,10 +22,24 @@ func main() {
 	}
 	stdlog.InfoF("current work directory is: %s", workPath)
 
+	switch genModule {
+	case "docker":
+		dockerCodegen()
+	case "harbor":
+		harborCodegen()
+	case "minio":
+		minioCodegen()
+	case "all":
+		allCodegen()
+	default:
+		stdlog.Warn(genModule, "do nothing, exit 0")
+	}
+
+}
+
+func allCodegen() {
 	dockerCodegen()
-
 	harborCodegen()
-
 	minioCodegen()
 }
 
@@ -68,3 +82,9 @@ func minioCodegen() {
 func tipsPathToFixPackageImport(pkgPath string) {
 	stdlog.WarnF("please go to dir: %s to fix package import", pkgPath)
 }
+
+var (
+	workPath string
+
+	genModule string
+)

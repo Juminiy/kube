@@ -1,5 +1,5 @@
 package zaplog
 
 var (
-	testDir = "C:\\Users\\chisato\\test_log\\"
+	testDir = "C:\\Users\\Juminiy\\test_log\\"
 )

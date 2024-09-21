@@ -19,12 +19,13 @@ type BucketConfig struct {
 }
 
 // +self define
+// v1.1.1->v1.1.2 update name rule
 func (c *BucketConfig) setDefaultBucketName() {
 	c.BucketName = strings.Join([]string{
 		"s3fs",
 		"mount",
 		"bucket",
-		c.BusinessUser.Name,
+		c.BusinessUser.ID,
 	}, "-")
 }
 

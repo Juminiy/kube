@@ -1,6 +1,8 @@
 package minio_api
 
 import (
+	"github.com/Juminiy/kube/pkg/log_api/stdlog"
+	"github.com/Juminiy/kube/pkg/util"
 	"testing"
 )
 
@@ -23,5 +25,18 @@ var (
 )
 
 func TestClient_AtomicWorkflow(t *testing.T) {
-
+	resp, err := testMinioClient.AtomicWorkflow(Req{
+		UserID:          16,
+		UserName:        "calimimicc",
+		BucketQuotaByte: 114514,
+		BucketName:      "funkqqqzaaweqaadfafwq4124asf1122",
+	})
+	if err != nil {
+		panic(err)
+	}
+	respJSONStr, err := util.MarshalJSONPretty(resp)
+	if err != nil {
+		panic(err)
+	}
+	stdlog.Info(respJSONStr)
 }

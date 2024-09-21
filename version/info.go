@@ -12,6 +12,7 @@ type (
 	infoType struct {
 		GitMajor     string
 		GitMinor     string
+		GitPatch     string
 		GitVersion   string
 		GitCommit    string
 		GitTreeState string
@@ -25,6 +26,7 @@ type (
 var (
 	GitMajor     string // major version, always numeric
 	GitMinor     string // minor version, numeric possibly followed by "+"
+	GitPatch     string // patch version, always numeric
 	GitVersion   string // semantic version, derived by build scripts
 	GitCommit    string // sha1 from git, output of $(git rev-parse HEAD)
 	GitTreeState string // state of git tree, either "clean" or "dirty"
@@ -32,6 +34,7 @@ var (
 	info         = infoType{
 		GitMajor:     GitMajor,
 		GitMinor:     GitMinor,
+		GitPatch:     GitPatch,
 		GitVersion:   GitVersion,
 		GitCommit:    GitCommit,
 		GitTreeState: GitTreeState,

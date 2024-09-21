@@ -3,5 +3,5 @@
 package zaplog
 
 var (
-	testDir = "/home/chisato/test_log"
+	testDir = "/home/Juminiy/test_log"
 )

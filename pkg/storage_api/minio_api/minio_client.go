@@ -60,21 +60,25 @@ func (c *Client) WithContext(ctx context.Context) *Client {
 }
 
 type Req struct {
-	UserID          uint64
-	UserName        string
+	// +required
+	UserID uint64
+	// +required
+	UserName string
+	// +required
 	BucketQuotaByte uint64
-	BucketName      string
+	// +optional
+	BucketName string
 }
 
 type Resp struct {
-	BucketName      string
-	AccessKeyID     string
-	SecretAccessKey string
+	Req
+	CredValue      miniocred.Value
+	CredPolicyName string
 }
 
 // AtomicWorkflow
 // functionality:
-//  1. create a bucket, set bucket quota by byte{BucketName}
+//  1. create a bucket, set bucket quota by byte{BucketQuotaByte} with optional bucket name{BucketName}
 //  2. create an iam credential{AccessKeyID, SecretAccessKey}
 //  3. set bucket RBAPolicy, with info(2): Principal{AccessKeyID}, with info(1): Resource{BucketName, BucketName/*}, Action{CRUD}
 //  4. iam user policy
@@ -88,11 +92,10 @@ type Resp struct {
 //
 // synchronization
 // 1. the func call may take some time and may be failure with nothing created in Minio Server
-// so call to with go func() { resp, err := minioClient.AtomicWorkflow() } is a good practice
-func (c *Client) AtomicWorkflow(req Req) (Resp, error) {
+// so call to with go func() { resp, err := minioClient.AtomicWorkflow() } or use channel is a good practice
+func (c *Client) AtomicWorkflow(req Req) (resp Resp, err error) {
 
-	var returnErr error
-
+	resp.Req = req
 	businessUser := BusinessUser{
 		ID:   util.U64toa(req.UserID),
 		Name: req.UserName,
@@ -104,49 +107,60 @@ func (c *Client) AtomicWorkflow(req Req) (Resp, error) {
 		BucketName:   req.BucketName,
 	}
 
-	//1.
-	makeBucketErr := c.MakeBucket(&bucketConfig)
-	if makeBucketErr != nil {
-		returnErr = makeBucketErr
-		//goto makeBucketRollback
+	credValue := miniocred.Value{}
+	policyConfig := PolicyConfig{}
+
+	progErrFn := func(step int, desc string, err error) {
+		stdlog.ErrorF("minio atomic workflow progress %d/4, step %d desc: %s error: %s", step-1, step, desc, err.Error())
 	}
+
+	//1.
+	err = c.MakeBucket(&bucketConfig)
+	if err != nil {
+		progErrFn(1, "make bucket", err)
+		goto makeBucketRollback
+	}
+	resp.BucketName = bucketConfig.BucketName
 
 	//2.
-	credValue, createAccessErr := c.CreateAccessKey()
-	if createAccessErr != nil {
-		returnErr = createAccessErr
-		//goto createAccessKeyRollback
+	credValue, err = c.CreateAccessKey()
+	if err != nil {
+		progErrFn(2, "create accessKey", err)
+		goto createAccessKeyRollback
 	}
+	resp.CredValue = credValue
 
-	policyConfig := PolicyConfig{
+	policyConfig = PolicyConfig{
 		BusinessUser: businessUser,
 		Cred:         credValue,
 		BucketName:   bucketConfig.BucketName,
 	}
 
 	//3.
-	setBucketPolicyErr := c.SetBucketPolicy(&policyConfig)
-	if setBucketPolicyErr != nil {
-		returnErr = setBucketPolicyErr
-		//goto createAccessKeyRollback
+	err = c.SetBucketPolicy(&policyConfig)
+	if err != nil {
+		progErrFn(3, "set bucket policy", err)
+		goto createAccessKeyRollback
 	}
 
 	//4.
-	setAccessPolicyErr := c.SetAccessPolicy(&policyConfig)
-	if setAccessPolicyErr != nil {
-		returnErr = setAccessPolicyErr
-		//goto setAccessPolicyRollback
+	err = c.SetAccessPolicy(&policyConfig)
+	if err != nil {
+		progErrFn(4, "create and set accessKey policy", err)
+		goto setAccessPolicyRollback
 	}
+	resp.CredPolicyName = policyConfig.PolicyName
 
-	// rollback
-	//setAccessPolicyRollback:
-	//	c.DeleteAccessPolicy(&policyConfig)
-	//	return Resp{}, returnErr
-	//createAccessKeyRollback:
-	//	c.DeleteAccessKey(credValue.AccessKeyID)
-	//makeBucketRollback:
-	//	c.RemoveBucket(&bucketConfig)
+	return
 
 	//5.
-	return Resp{}, returnErr
+	// rollback and return
+setAccessPolicyRollback:
+	c.DeleteAccessPolicy(&policyConfig)
+createAccessKeyRollback:
+	c.DeleteAccessKey(credValue.AccessKeyID)
+makeBucketRollback:
+	c.RemoveBucket(&bucketConfig)
+
+	return
 }

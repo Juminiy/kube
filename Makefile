@@ -1,7 +1,7 @@
 WORK_DIR:= $(PWD)
 CMD_DIR := $(WORK_DIR)/cmd
 BIN_DIR := $(WORK_DIR)/bin
-LDFLAGS := $(shell version/version.sh)
+LDFLAGS := $(shell hack/version.sh)
 GO_ENVS  = env CGO_ENABLED=0
 
 HOST_OS   := $(shell uname -s)
@@ -43,7 +43,7 @@ set:
 	env GO111MODULE=on GOPROXY=https://goproxy.cn,direct go mod tidy
 
 .PHONY: all
-all: menud consoled marketd payd
+all: menud
 	@echo "make $^ in $(HOST_ARCH)/$(HOST_OS)"
 	@echo $^
 
@@ -56,11 +56,10 @@ vet:
 	go vet $(GO_LIST_DIR)
 
 codegen: set
-	go run cmd/codegend/codegend.go
+	go run cmd/codegencli/codegencli.go -gen all
 	git add pkg/image_api/docker_api/docker_inst/client.go
 	git add pkg/image_api/harbor_api/harbor_inst/client.go
 	git add pkg/storage_api/minio_api/minio_inst/client.go
-
 
 .PHONY: clean
 clean:
@@ -68,16 +67,4 @@ clean:
 
 .PHONY: menud
 menud: set vet
-	$(GO_RUN_BUILD)
-
-.PHONY: consoled
-consoled: set vet
-	$(GO_RUN_BUILD)
-
-.PHONY: marketd
-marketd: set vet
-	$(GO_RUN_BUILD)
-
-.PHONY: payd
-payd: set vet
 	$(GO_RUN_BUILD)

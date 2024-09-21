@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # Modify FROM: https://github.com/kubesphere/kubekey/blob/master/hack/version.sh
-# Modifier NAME: Lingnan Hua, MAIL: chisato-x@bupt.edu.cn
+# Modifier NAME: Juminiy, MAIL: chisato-x@bupt.edu.cn
 
 PROJECT_NAME=github.com/Juminiy/kube
 
@@ -70,6 +70,7 @@ version::get_version_vars() {
         if [[ "${GIT_VERSION}" =~ ^v([0-9]+)\.([0-9]+)(\.[0-9]+)?([-].*)?([+].*)?$ ]]; then
             GIT_MAJOR=${BASH_REMATCH[1]}
             GIT_MINOR=${BASH_REMATCH[2]}
+            GIT_PATCH=${BASH_REMATCH[3]}
         fi
 
         # If GIT_VERSION is not a valid Semantic Version, then refuse to build.
@@ -103,6 +104,7 @@ version::ldflags() {
     add_ldflag "GitTreeState" "${GIT_TREE_STATE}"
     add_ldflag "GitMajor" "${GIT_MAJOR}"
     add_ldflag "GitMinor" "${GIT_MINOR}"
+    add_ldflag "GitPatch" "${GIT_PATCH}"
     add_ldflag "GitVersion" "${GIT_VERSION}"
     add_ldflag "GitReleaseCommit" "${GIT_RELEASE_COMMIT}"
 

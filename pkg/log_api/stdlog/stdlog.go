@@ -34,32 +34,33 @@ var (
 	// Fatal color: red
 	Fatal  = log.Fatalln
 	FatalF = func(format string, v ...any) {
-		log.Fatalf(formatLine(format), v)
+		log.Fatalf(formatLine(format), v...)
 	}
 	FatalW = func(msg string, kv ...any) {
 		log.Print(msg)
-		log.Fatalln(kv)
+		log.Fatalln(kv...)
 	}
 
 	// Panic color: red
 	Panic  = log.Panicln
 	PanicF = func(format string, v ...any) {
-		log.Panicf(formatLine(format), v)
+		log.Panicf(formatLine(format), v...)
 	}
 	PanicW = func(msg string, kv ...any) {
 		log.Print(msg)
-		log.Panicln(kv)
+		log.Panicln(kv...)
 	}
 )
 
 var outputLine = log.Println
 
 func outputFormatLine(format string, v ...any) {
-	log.Printf(formatLine(format), v)
+	log.Printf(formatLine(format), v...)
 }
 
 func outputKeyValueLine(message string, kv ...any) {
-	log.Print(message, kv)
+	log.Print(message)
+	log.Println(kv...)
 }
 
 func formatLine(format string) string {
