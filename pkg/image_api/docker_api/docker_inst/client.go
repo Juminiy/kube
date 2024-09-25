@@ -6,10 +6,23 @@ import (
 	"github.com/Juminiy/kube/pkg/image_api/docker_api"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/docker/docker/api/types"
+	"io"
 )
 
-func CreateTag() {
-	_dockerClient.CreateTag()
+func CreateImageTag(_string string, _string2 string) (io.ReadCloser, error) {
+	return _dockerClient.CreateImageTag(_string, _string2)
+}
+
+func ExportImage(_string string) (io.ReadCloser, error) {
+	return _dockerClient.ExportImage(_string)
+}
+
+func HostImageGC(hostImageGCFunc docker_api.HostImageGCFunc) {
+	_dockerClient.HostImageGC(hostImageGCFunc)
+}
+
+func ImportImage(_string string, reader io.Reader) (io.ReadCloser, error) {
+	return _dockerClient.ImportImage(_string, reader)
 }
 
 func ListContainerFullIds() ([]string, error) {
@@ -26,14 +39,6 @@ func ListContainerNames() ([]string, error) {
 
 func ListContainers() ([]types.Container, error) {
 	return _dockerClient.ListContainers()
-}
-
-func PullImage() {
-	_dockerClient.PullImage()
-}
-
-func PushImage() {
-	_dockerClient.PushImage()
 }
 
 func WithContext(context context.Context) *docker_api.Client {

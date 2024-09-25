@@ -53,6 +53,10 @@ func GetArtifact(artifactURI harbor_api.ArtifactURI) (*artifact.GetArtifactOK, e
 	return _harborClient.GetArtifact(artifactURI)
 }
 
+func GetAuth() (string, error) {
+	return _harborClient.GetAuth()
+}
+
 func ImportOfflineArtifact() error {
 	return _harborClient.ImportOfflineArtifact()
 }

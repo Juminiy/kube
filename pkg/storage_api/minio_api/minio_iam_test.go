@@ -43,6 +43,7 @@ func TestClient_SetAccessPolicy(t *testing.T) {
 		))
 }
 
+// +passed
 func TestClient_DeleteAccessPolicy(t *testing.T) {
 	util.SilentHandleError("delete access policy error",
 		testMinioClient.DeleteAccessPolicy(

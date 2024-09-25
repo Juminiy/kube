@@ -9,6 +9,16 @@ const (
 	TimeLocationAsiaShanghai = "Asia/Shanghai"
 )
 
+const (
+	DurationMinute  = time.Second * 60
+	DurationHour    = DurationMinute * 60
+	DurationHalfDay = DurationHour * 12
+	DurationDay     = DurationHalfDay * 2
+	DurationWeek    = DurationDay * 7
+	DurationMonth   = DurationDay * 30
+	DurationYear    = DurationDay * 365
+)
+
 // CST2Timestamp
 // Convert (CST: UTC+8) to (Unix timestamp)
 func CST2Timestamp(cst string) string {

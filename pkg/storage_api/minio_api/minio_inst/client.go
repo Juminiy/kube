@@ -5,6 +5,8 @@ import (
 	"context"
 	"github.com/Juminiy/kube/pkg/storage_api/minio_api"
 	"github.com/minio/minio-go/v7/pkg/credentials"
+	"net/url"
+	"time"
 )
 
 func AddIAMUser(value *credentials.Value) error {
@@ -45,6 +47,14 @@ func SetAccessPolicy(policyConfig *minio_api.PolicyConfig) error {
 
 func SetBucketPolicy(policyConfig *minio_api.PolicyConfig) error {
 	return _minioClient.SetBucketPolicy(policyConfig)
+}
+
+func TempGetObject(objectConfig *minio_api.ObjectConfig, duration time.Duration) (*url.URL, error) {
+	return _minioClient.TempGetObject(objectConfig, duration)
+}
+
+func TempPutObject(objectConfig *minio_api.ObjectConfig, duration time.Duration) (*url.URL, error) {
+	return _minioClient.TempPutObject(objectConfig, duration)
 }
 
 func UpdateBucketQuota(bucketConfig *minio_api.BucketConfig) error {

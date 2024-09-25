@@ -11,6 +11,7 @@ var (
 	_minioSecretAccessKey string
 	_minioSessionToken    string
 	_minioSecure          bool
+	_minioPublicBucket    string
 )
 
 var (
@@ -32,4 +33,8 @@ func Init() {
 		return
 	}
 
+}
+
+func GetPublicBucket() string {
+	return _minioPublicBucket
 }

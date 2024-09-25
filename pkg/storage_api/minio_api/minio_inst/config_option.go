@@ -40,3 +40,8 @@ func (o *ConfigOption) WithSecure() *ConfigOption {
 	_minioSecure = true
 	return o
 }
+
+func (o *ConfigOption) WithPublicBucket(publicBucket string) *ConfigOption {
+	_minioPublicBucket = publicBucket
+	return o
+}

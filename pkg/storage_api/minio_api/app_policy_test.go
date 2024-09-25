@@ -7,6 +7,7 @@ import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 )
 
+// +passed
 func TestPolicyConfig_IBAPAccessKeyWithOneBucketObjectCRUDPolicy(t *testing.T) {
 	pc := PolicyConfig{
 		BusinessUser: BusinessUser{
@@ -18,6 +19,7 @@ func TestPolicyConfig_IBAPAccessKeyWithOneBucketObjectCRUDPolicy(t *testing.T) {
 	stdlog.Info(pc.IBAPAccessKeyWithOneBucketObjectCRUDPolicy())
 }
 
+// +passed
 func TestPolicyConfig_RBAPBucketWithAdminAllWithAccessKeyOneBucketObjectCRUDPolicy(t *testing.T) {
 	pc := PolicyConfig{
 		BusinessUser: BusinessUser{

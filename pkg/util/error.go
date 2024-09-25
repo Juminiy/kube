@@ -35,6 +35,6 @@ func consoleLogError(detail string, err error) {
 func HandleCloseError(msg string, closer io.Closer) {
 	err := closer.Close()
 	if err != nil {
-		stdlog.ErrorF(msg+" instance: %#v close error: %s", closer, err)
+		stdlog.ErrorF(msg+" instance: %#v close error: %s", closer, err.Error())
 	}
 }
