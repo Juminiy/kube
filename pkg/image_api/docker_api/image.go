@@ -93,20 +93,22 @@ func (c *Client) ImportImage(absRefStr string, input io.Reader) (io.ReadCloser, 
 	if err != nil {
 		return nil, err
 	}
-	defer util.HandleCloseError("image", loadResp.Body)
+	defer util.HandleCloseError("docker image load", loadResp.Body)
 
-	// return json message
 	if loadResp.Body != nil && loadResp.JSON {
-		stdlog.Debug("image loadResp json format")
-		return nil, jsonmessage.DisplayJSONMessagesToStream(loadResp.Body, stdlog.Stream(), nil)
-	}
-	// return plain text
-	// +return_val
-	// Loaded image: hello-world:latest
-	stdlog.Debug("image loadResp plain text format")
-	_, err = io.Copy(stdlog.Stream(), loadResp.Body)
-	if err != nil {
-		return nil, err
+		// return json message
+		stdlog.Debug("docker image loadResp format: json")
+		ignoreJSONMessageErr := jsonmessage.DisplayJSONMessagesToStream(loadResp.Body, stdlog.Stream(), nil)
+		if ignoreJSONMessageErr != nil {
+			stdlog.Warn(ignoreJSONMessageErr)
+			stdlog.Info(util.IOGetStr(loadResp.Body))
+		}
+	} else {
+		stdlog.Debug("docker image loadResp format: plain text")
+		_, err = io.Copy(stdlog.Stream(), loadResp.Body)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// get Loaded image: name:tag
@@ -192,3 +194,20 @@ func getRelativeRefStr(absRefStr string) string {
 
 	return util.StringConcat(parts[1], "/", parts[2])
 }
+
+type (
+	engineAPIv1dot43ImagesLoadResp struct {
+		//{
+		//	"Id": "sha256:abcdef123456...",
+		//	"RepoTags": [
+		//	"myimage:latest"
+		//],
+		//	"Message": ""
+		//}
+		Id          string   `json:"Id,omitempty"`
+		RepoTags    []string `json:"RepoTags,omitempty"`
+		Message     string   `json:"Message,omitempty"`
+		Error       string   `json:"error,omitempty"`
+		ErrorDetail any      `json:"errorDetail,omitempty"`
+	}
+)

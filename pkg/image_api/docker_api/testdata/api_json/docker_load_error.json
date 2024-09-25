@@ -1,0 +1,6 @@
+{
+  "errorDetail": {
+    "message": "open /var/lib/docker/tmp/docker-import-2501969992/repositories: no such file or directory"
+  },
+  "error": "open /var/lib/docker/tmp/docker-import-2501969992/repositories: no such file or directory"
+}

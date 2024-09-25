@@ -29,7 +29,7 @@ func TestClient_ExportImage(t *testing.T) {
 }
 
 func TestClient_ImportImage(t *testing.T) {
-	imageFile, err := util.OSOpenFileWithCreate("testdata/tar_gz/hello.tar.gz")
+	imageFile, err := util.OSOpenFileWithCreate(testTarGzPath)
 	util.SilentPanicError(err)
 	_, err = testNewClient.ImportImage(imageRef.String(), imageFile)
 	util.SilentPanicError(err)

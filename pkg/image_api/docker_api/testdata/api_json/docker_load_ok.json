@@ -1,0 +1,7 @@
+{
+  "Id": "sha256:abcdef123456...",
+  "RepoTags": [
+    "myimage:latest"
+  ],
+  "Message": ""
+}
