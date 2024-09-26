@@ -85,7 +85,7 @@ const (
 // filter constant
 // +self define
 const (
-	// referred from: "github.com/docker/docker/client/image_list_test.go/TestImageListConnectionError
+	// referred from: github.com/docker/docker/client/image_list_test.go/TestImageListConnectionError
 	ReferenceNone = "no-such-image.invalid:no-such-tag.invalid"
 	ReferenceAll  = "*"
 )

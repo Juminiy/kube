@@ -4,10 +4,10 @@ import (
 	"errors"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
+	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/registry"
-	"github.com/docker/docker/pkg/jsonmessage"
 	"io"
 	"strings"
 )
@@ -55,7 +55,7 @@ func (r *ImageRef) String() string {
 
 // ExportImage
 // +param absRefStr
-// absolutely reference string for registry/project/repository/artifact/name:tag
+// (1). absolutely reference string for registry/project/repository/artifact/name:tag
 // +desc
 //
 //	(1).if image do not exist in docker host local, pull image to local
@@ -95,15 +95,22 @@ func (c *Client) ImportImage(absRefStr string, input io.Reader) (io.ReadCloser, 
 	}
 	defer util.HandleCloseError("docker image load", loadResp.Body)
 
+	// get Loaded image: name:tag or ID
+	var loadedImageRefStr string
+
 	if loadResp.Body != nil && loadResp.JSON {
 		// return json message
 		stdlog.Debug("docker image loadResp format: json")
-		ignoreJSONMessageErr := jsonmessage.DisplayJSONMessagesToStream(loadResp.Body, stdlog.Stream(), nil)
-		if ignoreJSONMessageErr != nil {
-			stdlog.Warn(ignoreJSONMessageErr)
-			stdlog.Info(util.IOGetStr(loadResp.Body))
-		}
+		// +example
+		// resp.body.body.src.buf JSON{"stream":"Loaded image ID: sha256:d2c94e258dcb3c5ac2798d32e1249e42ef01cba4841c2234249495f87264ac5a\n"}
+		// STDOUT: Loaded image ID: sha256:249f59e1dec7f7eacbeba4bb9215b8000e4bdbb672af523b3dacc89915b026ae
+		//ignoreJSONMessageErr := jsonmessage.DisplayJSONMessagesToStream(loadResp.Body, stdlog.Stream(), nil)
+		//if ignoreJSONMessageErr != nil {
+		//	stdlog.Warn(ignoreJSONMessageErr)
+		//}
+		loadedImageRefStr = getImageIDFromJSONMessage(loadResp.Body)
 	} else {
+		stdlog.Warn("docker client API Version too old, can not create tag furthermore")
 		stdlog.Debug("docker image loadResp format: plain text")
 		_, err = io.Copy(stdlog.Stream(), loadResp.Body)
 		if err != nil {
@@ -111,18 +118,24 @@ func (c *Client) ImportImage(absRefStr string, input io.Reader) (io.ReadCloser, 
 		}
 	}
 
-	// get Loaded image: name:tag
-	var loadedImageRefStr string
+	if len(loadedImageRefStr) == 0 {
+		return nil, errImageNotFound
+	}
 	return c.CreateImageTag(absRefStr, loadedImageRefStr)
-
 }
 
-func (c *Client) CreateImageTag(toAbsRefStr, fromAsbRefStr string) (io.ReadCloser, error) {
-	err := c.cli.ImageTag(c.ctx, fromAsbRefStr, toAbsRefStr)
+func (c *Client) CreateImageTag(toAbsRefStr, fromAbsRefStr string) (io.ReadCloser, error) {
+	err := c.cli.ImageTag(c.ctx, fromAbsRefStr, toAbsRefStr)
 	if err != nil {
 		return nil, err
 	}
 	return c.pushImage(toAbsRefStr)
+}
+
+func (c *Client) InspectImage(imageID string) (types.ImageInspect, error) {
+	// discard raw []byte, no usage anymore
+	imageInspect, _, err := c.cli.ImageInspectWithRaw(c.ctx, imageID)
+	return imageInspect, err
 }
 
 type HostImageGCFunc func()
@@ -196,6 +209,8 @@ func getRelativeRefStr(absRefStr string) string {
 }
 
 type (
+	// Deprecated
+	// github.com/docker/docker/pkg/jsonmessage.JSONMessage
 	engineAPIv1dot43ImagesLoadResp struct {
 		//{
 		//	"Id": "sha256:abcdef123456...",

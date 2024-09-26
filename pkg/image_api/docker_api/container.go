@@ -4,6 +4,8 @@ import (
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/image"
+	"io"
 	k8sutilsets "k8s.io/apimachinery/pkg/util/sets"
 	"strings"
 )
@@ -27,6 +29,25 @@ func (c *Client) ListContainerIds() ([]string, error) {
 func (c *Client) ListContainerNames() ([]string, error) {
 	resultMap, err := c.listContainerWithFields("Name")
 	return resultMap["Name"], err
+}
+
+func (c *Client) ImportContainer(destRefStr string) (io.ReadCloser, error) {
+	return c.cli.ImageImport(
+		c.ctx,
+		image.ImportSource{
+			Source:     nil,
+			SourceName: "",
+		},
+		destRefStr, image.ImportOptions{
+			Tag:      "",
+			Message:  "",
+			Changes:  nil,
+			Platform: "",
+		})
+}
+
+func (c *Client) ExportContainer(containerID string) (io.ReadCloser, error) {
+	return c.cli.ContainerExport(c.ctx, containerID)
 }
 
 func (c *Client) listContainerWithFields(fields ...string) (map[string][]string, error) {

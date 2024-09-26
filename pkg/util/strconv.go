@@ -30,3 +30,29 @@ func AtoU64(s string) uint64 {
 	}
 	return u64
 }
+
+func F64toa(f64 float64) string {
+	return strconv.FormatFloat(f64, 'f', 3, 64)
+}
+
+func F32toa(f32 float32) string {
+	return strconv.FormatFloat(float64(f32), 'f', 3, 32)
+}
+
+func AtoF64(s string) float64 {
+	f64, err := strconv.ParseFloat(s, 64)
+	if err != nil {
+		stdlog.Error(err)
+		return 0.0
+	}
+	return f64
+}
+
+func AtoF32(s string) float32 {
+	f64, err := strconv.ParseFloat(s, 32)
+	if err != nil {
+		stdlog.Error(err)
+		return 0.0
+	}
+	return float32(f64)
+}

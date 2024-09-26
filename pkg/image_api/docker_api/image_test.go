@@ -11,12 +11,13 @@ var (
 	imageRef = ImageRef{
 		Registry:   "192.168.31.242:8662",
 		Project:    "library",
-		Repository: "nginx",
-		Tag:        "stable-alpine3.17",
+		Repository: "hello-world",
+		Tag:        "latest",
 		absRefStr:  "",
 	}
 )
 
+// +passed
 func TestClient_ExportImage(t *testing.T) {
 	imageRC, err := testNewClient.ExportImage(imageRef.String())
 	if err != nil {
@@ -25,12 +26,32 @@ func TestClient_ExportImage(t *testing.T) {
 
 	imageBytes, err := io.ReadAll(imageRC)
 	defer util.HandleCloseError("image read error", imageRC)
-	stdlog.InfoF("size of image amd64 %s is: %d", imageRef.String(), len(imageBytes))
+
+	stdlog.InfoF("size of image amd64 %s is: %s", imageRef.String(), util.BytesOf(imageBytes))
+
+	err = util.TarIOReader2File(imageRC, testTarGzPath)
+	util.SilentPanicError(err)
+	stdlog.Info("success save tar file")
 }
 
+// +failed
 func TestClient_ImportImage(t *testing.T) {
 	imageFile, err := util.OSOpenFileWithCreate(testTarGzPath)
 	util.SilentPanicError(err)
 	_, err = testNewClient.ImportImage(imageRef.String(), imageFile)
+	util.SilentPanicError(err)
+}
+
+func TestClient_ExportImageImportImage(t *testing.T) {
+	imageRC, err := testNewClient.ExportImage(imageRef.String())
+	if err != nil {
+		panic(err)
+	}
+
+	//imageBytes, err := io.ReadAll(imageRC)
+	defer util.HandleCloseError("image read error", imageRC)
+	//stdlog.InfoF("size of image amd64 %s is: %d", imageRef.String(), len(imageBytes))
+
+	_, err = testNewClient.ImportImage(imageRef.String(), imageRC)
 	util.SilentPanicError(err)
 }

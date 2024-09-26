@@ -13,6 +13,10 @@ func CreateImageTag(_string string, _string2 string) (io.ReadCloser, error) {
 	return _dockerClient.CreateImageTag(_string, _string2)
 }
 
+func ExportContainer(_string string) (io.ReadCloser, error) {
+	return _dockerClient.ExportContainer(_string)
+}
+
 func ExportImage(_string string) (io.ReadCloser, error) {
 	return _dockerClient.ExportImage(_string)
 }
@@ -21,8 +25,16 @@ func HostImageGC(hostImageGCFunc docker_api.HostImageGCFunc) {
 	_dockerClient.HostImageGC(hostImageGCFunc)
 }
 
+func ImportContainer(_string string) (io.ReadCloser, error) {
+	return _dockerClient.ImportContainer(_string)
+}
+
 func ImportImage(_string string, reader io.Reader) (io.ReadCloser, error) {
 	return _dockerClient.ImportImage(_string, reader)
+}
+
+func InspectImage(_string string) (types.ImageInspect, error) {
+	return _dockerClient.InspectImage(_string)
 }
 
 func ListContainerFullIds() ([]string, error) {

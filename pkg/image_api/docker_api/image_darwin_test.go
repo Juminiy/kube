@@ -3,5 +3,5 @@
 package docker_api
 
 const (
-	testTarGzPath = "testdata/tar_gz/hello.tar.gz"
+	testTarGzPath = "testdata/tar_gz/hello-world.tar"
 )
