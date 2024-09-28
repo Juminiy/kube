@@ -102,3 +102,11 @@ func randAccessKeyID() string {
 func randSecretAccessKey() string {
 	return random.PasswordString(SecretAccessKeyMaxLen)
 }
+
+func (c *Client) ListAccessKey() {}
+
+func (c *Client) BatchDeleteAccessKey() {}
+
+func (c *Client) ListCannedPolicy() {}
+
+func (c *Client) BatchDeletePolicy() {}

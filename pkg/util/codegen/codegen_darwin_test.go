@@ -2,4 +2,4 @@
 
 package codegen
 
-const workPath = "/Users/Juminiy/go/src/kube"
+const workPath = "/Users/chisato/go/src/kube"

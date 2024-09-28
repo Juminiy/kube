@@ -1,6 +1,9 @@
 package util
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 const (
 	JSONMarshalPrefix = ""
@@ -13,9 +16,9 @@ type StdJSONEncoder interface {
 }
 
 type JSONEncoder interface {
-	String() string
-	Bytes() []byte
-	Size() int64
+	Stringer
+	Byteser
+	Sizer
 }
 
 func MarshalJSONPretty(v any) (string, error) {
@@ -25,4 +28,14 @@ func MarshalJSONPretty(v any) (string, error) {
 
 func marshalJSONPretty(v any) ([]byte, error) {
 	return json.MarshalIndent(&v, JSONMarshalPrefix, JSONMarshalIndent)
+}
+
+type Stringer fmt.Stringer
+
+type Byteser interface {
+	Bytes() []byte
+}
+
+type Sizer interface {
+	Size() int64
 }

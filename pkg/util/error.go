@@ -14,12 +14,21 @@ func SilentPanicError(err error) {
 	}
 }
 
+// SilentFatalError
+// only used in dev env or test env, _test file
+// not to use in production env
+func SilentFatalError(err error) {
+	if err != nil {
+		stdlog.Fatal(err)
+	}
+}
+
 // SilentHandleError
 // only used in dev env or test env, _test file
 // not to use in production env
 func SilentHandleError(detail string, err error) {
 	if err != nil {
-		stdlog.FatalF("%s: %v\n", detail, err)
+		stdlog.FatalF("%s: %s", detail, err.Error())
 	}
 }
 

@@ -50,7 +50,7 @@ func New(
 	return &Client{
 		mc:  mc,
 		ma:  ma,
-		ctx: util.TODOContext,
+		ctx: util.TODOContext(),
 	}, nil
 }
 
@@ -163,4 +163,14 @@ makeBucketRollback:
 	c.RemoveBucket(&bucketConfig)
 
 	return
+}
+
+// GC
+// garbage collection of resource that allocated:
+// 1. Object
+// 2. Bucket
+// 3. AccessKey
+// 4. IBAPolicy
+func (c *Client) GC(gcFn ...util.Func) {
+
 }

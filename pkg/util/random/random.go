@@ -25,8 +25,21 @@ func URLSafeString(size int) string {
 	return urlSafeString
 }
 
-var IDString = password
-var PasswordString = password
+func IDString(size int) string {
+	return password(size)
+}
+
+func ID() string {
+	return password(magicFix8)
+}
+
+func PasswordString(size int) string {
+	return password(size)
+}
+
+func Password() string {
+	return password(magicFix8)
+}
 
 func password(size int) string {
 	return gofakeit.Password(

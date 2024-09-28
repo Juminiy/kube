@@ -6,11 +6,15 @@ type Page struct {
 	offs *int64 // equal to recordOffsetOf
 }
 
+var (
+	_defaultPage = NewPageConfig(1, 10)
+)
+
 // DefaultPage
 // immutable default page config
-var (
-	DefaultPage = NewPageConfig(1, 10)
-)
+func DefaultPage() *Page {
+	return _defaultPage
+}
 
 func NewPageConfig(pageNum, pageSize int64) *Page {
 	return &Page{

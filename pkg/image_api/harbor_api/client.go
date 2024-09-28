@@ -32,9 +32,9 @@ func New(
 		Password: harborPassword,
 	}
 	c := &Client{
-		ctx:        util.TODOContext,
-		httpCli:    util.DefaultHTTPClient,
-		pageConfig: util.DefaultPage,
+		ctx:        util.TODOContext(),
+		httpCli:    util.DefaultHTTPClient(),
+		pageConfig: util.DefaultPage(),
 	}
 	hCli, err := harbor.NewClientSet(csc)
 	if err != nil {
@@ -71,4 +71,8 @@ func (c *Client) WithPageConfig(pCfg *util.Page) *Client {
 func (c *Client) WithCallBack(callback *CallBack) *Client {
 	c.CallBack = callback
 	return c
+}
+
+func (c *Client) GC(gcFn ...util.Func) {
+
 }

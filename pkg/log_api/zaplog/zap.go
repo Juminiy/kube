@@ -42,7 +42,7 @@ var (
 // immutable global variable
 var (
 	_zapConfig   *zap.Config
-	_restoreFunc = util.NothingFn
+	_restoreFunc util.Fn = util.NothingFn()
 )
 
 func Init() {

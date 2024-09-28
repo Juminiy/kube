@@ -6,9 +6,21 @@ type (
 )
 
 var (
-	NothingFn Fn = func() {}
-	DoNothing Fn = func() {}
+	_nothingFn   = func() {}
+	_nothingFunc = func() error { return nil }
 )
+
+func NothingFn() Fn {
+	return _nothingFn
+}
+
+func DoNothing() Fn {
+	return _nothingFn
+}
+
+func NothingFunc() Func {
+	return _nothingFunc
+}
 
 func SeqRun(fns ...Fn) {
 	for _, fn := range fns {

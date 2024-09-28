@@ -5,7 +5,11 @@ import (
 	"strings"
 )
 
-var DefaultHTTPClient = http.DefaultClient
+var _defaultHTTPClient = http.DefaultClient
+
+func DefaultHTTPClient() *http.Client {
+	return _defaultHTTPClient
+}
 
 func URLWithHTTP(url string) string {
 	if IsURLWithScheme(url) {

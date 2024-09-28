@@ -20,5 +20,5 @@ Sep 09 07:47:19 serverh dockerd[98062]: time="2024-09-09T07:47:19.692055952Z" le
 Sep 09 07:47:19 serverh dockerd[98062]: time="2024-09-09T07:47:19.964988298Z" level=info msg="API listen on /run/docker.sock"
 Sep 09 07:47:19 serverh systemd[1]: Started Docker Application Container Engine.
 
-
+# target dockerd startup
 /usr/bin/dockerd -H fd:// -H unix:///run/docker.sock -H tcp://docker.local --containerd=/run/containerd/containerd.sock

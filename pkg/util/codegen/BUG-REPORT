@@ -1,0 +1,13 @@
+1. func param is variable length
+    (1). variable length param identified to slice: [] instead of ...
+    (2). unpack of variable length param as format param to call original func
+2. func param name is in golang reserve-word and keyword
+   golang keyword
+   break        default      func         interface    select
+   case         defer        go           map          struct
+   chan         else         goto         package      switch
+   const        fallthrough  if           range        type
+   continue     for          import       return       var
+    golang reserve-word
+    true        false       iota        nil
+3. ptr type and struct type mixed

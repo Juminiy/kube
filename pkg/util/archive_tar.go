@@ -6,8 +6,8 @@ import (
 	"time"
 )
 
-func TarIOReader2File(ioReader io.Reader, fileName string) (err error) {
-	filePtr, err := OSOpenFileWithCreate(fileName)
+func TarIOReader2File(ioReader io.Reader, filePath string) (err error) {
+	filePtr, err := OSOpenFileWithCreate(filePath)
 	defer HandleCloseError("tar file ptr", filePtr)
 	if err != nil {
 		return
@@ -18,7 +18,7 @@ func TarIOReader2File(ioReader io.Reader, fileName string) (err error) {
 
 	timeNow := time.Now()
 	err = tarFileWriter.WriteHeader(&tar.Header{
-		Name:       fileName,
+		Name:       filePath,
 		Mode:       FileMaxPerm,
 		ModTime:    timeNow,
 		AccessTime: timeNow,

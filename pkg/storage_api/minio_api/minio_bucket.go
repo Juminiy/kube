@@ -99,3 +99,7 @@ func (c *Client) SetBucketPolicy(policyConfig *PolicyConfig) error {
 		policy,
 	)
 }
+
+func (c *Client) ListBucket() {}
+
+func (c *Client) BatchDeleteBucket() {}
