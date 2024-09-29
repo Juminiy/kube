@@ -2,6 +2,7 @@ package internal
 
 import (
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -90,4 +91,16 @@ func SplitDirAndFileName(filePath string) (string, string) {
 
 func openFile(filePath string) (*os.File, error) {
 	return os.OpenFile(filePath, os.O_RDWR|os.O_APPEND, FilePerm)
+}
+
+func GetWorkPath(s ...string) (string, error) {
+	workDir, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+	return filePathJoin(workDir, s...), nil
+}
+
+func filePathJoin(base string, s ...string) string {
+	return filepath.Join(base, filepath.Join(s...))
 }

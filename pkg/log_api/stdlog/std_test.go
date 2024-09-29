@@ -1,15 +1,26 @@
 package stdlog
 
 import (
+	kubeinternal "github.com/Juminiy/kube/pkg/internal"
 	"path/filepath"
 	"testing"
 )
 
+var testDir, testDirErr = kubeinternal.GetWorkPath("testdata", "test_log")
+
 var stdCfg = New().
 	WithLogPath(filepath.Join(testDir, "console.log"))
 
-func TestStdLog(t *testing.T) {
+func testInit() {
 	stdCfg.Load()
+	if testDirErr != nil {
+		panic(testDirErr)
+	}
+}
+
+// +passed +windows
+func TestStdLog(t *testing.T) {
+	testInit()
 	Debug("1", "2", "3")
 	DebugF("ex %d", 1)
 	DebugW("xe", "k", "v", "k2", 2, "k3", map[string]string{})
@@ -29,32 +40,39 @@ func TestStdLog(t *testing.T) {
 }
 
 // Once Tested, Comment them immediately with (Shift+Ctrl+/)
-/*func TestStdLogFatal(t *testing.T) {
-	stdCfg.Load()
+
+/*// +passed +windows
+func TestStdLogFatal(t *testing.T) {
+	testInit()
 	Fatal("1", "2", "3")
 }
 
+// +passed +windows
 func TestStdLogFatalF(t *testing.T) {
-	stdCfg.Load()
+	testInit()
 	FatalF("ex %d", 1)
 }
 
+// +passed +windows
 func TestStdLogFatalW(t *testing.T) {
-	stdCfg.Load()
+	testInit()
 	FatalW("xe", "k", "v", "k2", 2, "k3", map[string]string{})
 }
 
+// +passed +windows
 func TestStdLogPanic(t *testing.T) {
-	stdCfg.Load()
+	testInit()
 	Panic("1", "2", "3")
 }
 
+// +passed +windows
 func TestStdLogPanicF(t *testing.T) {
-	stdCfg.Load()
+	testInit()
 	PanicF("ex %d", 1)
 }
 
+// +passed +windows
 func TestStdLogPanicW(t *testing.T) {
-	stdCfg.Load()
+	testInit()
 	PanicW("xe", "k", "v", "k2", 2, "k3", map[string]string{})
 }*/

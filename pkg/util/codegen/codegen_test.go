@@ -1,9 +1,9 @@
 package codegen
 
 import (
+	kubeinternal "github.com/Juminiy/kube/pkg/internal"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util/codegen/example"
-	"path/filepath"
 	"reflect"
 	"testing"
 )
@@ -43,9 +43,14 @@ func TestManifest_Do_MinioInst(t *testing.T) {
 }
 */
 
+// +passed +windows
 func TestManifest_Do_ExampleStruct(t *testing.T) {
+	dstFilePath, err := kubeinternal.GetWorkPath("example", "example_inst", "example_codegen.go")
+	if err != nil {
+		t.Fatal(err)
+	}
 	exampleManifest := Manifest{
-		DstFilePath: filepath.Join(workPath, "pkg", "util", "codegen", "example", "example_inst", "example_codegen.go"),
+		DstFilePath: dstFilePath,
 		InstanceOf:  &example.ExampleStruct{},
 		GenImport:   true,
 		GenVar:      true,

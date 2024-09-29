@@ -1,11 +1,12 @@
-//go:build unix
-
 package zaplog
 
 import (
+	kubeinternal "github.com/Juminiy/kube/pkg/internal"
 	"path/filepath"
 	"testing"
 )
+
+var testDir, testDirErr = kubeinternal.GetWorkPath("testdata", "test_log")
 
 var _cfg = New().
 	WithLogEngineSugar().
@@ -15,8 +16,16 @@ var _cfg = New().
 	WithOutputPaths(filepath.Join(testDir, "app.log")).
 	WithErrorOutputPaths(filepath.Join(testDir, "app_error.log"))
 
-func TestZapLog(t *testing.T) {
+func testInit() {
 	_cfg.Load()
+	if testDirErr != nil {
+		panic(testDirErr)
+	}
+}
+
+// +passed +windows
+func TestZapLog(t *testing.T) {
+	testInit()
 	Debug("1", "2", "3")
 	DebugF("ex %d", 1)
 	DebugW("xe", "k", "v", "k2", 2, "k3", map[string]string{})
@@ -36,32 +45,39 @@ func TestZapLog(t *testing.T) {
 }
 
 // Once Tested, Comment them immediately with (Shift+Ctrl+/)
-/*func TestStdLogFatal(t *testing.T) {
-	_cfg.Load()
+
+/*// +passed +windows
+func TestStdLogFatal(t *testing.T) {
+	testInit()
 	Fatal("1", "2", "3")
 }
 
+// +passed +windows
 func TestStdLogFatalF(t *testing.T) {
-	_cfg.Load()
+	testInit()
 	FatalF("ex %d", 1)
 }
 
+// +passed +windows
 func TestStdLogFatalW(t *testing.T) {
-	_cfg.Load()
+	testInit()
 	FatalW("xe", "k", "v", "k2", 2, "k3", map[string]string{})
 }
 
+// +passed +windows
 func TestStdLogPanic(t *testing.T) {
-	_cfg.Load()
+	testInit()
 	Panic("1", "2", "3")
 }
 
+// +passed +windows
 func TestStdLogPanicF(t *testing.T) {
-	_cfg.Load()
+	testInit()
 	PanicF("ex %d", 1)
 }
 
+// +passed +windows
 func TestStdLogPanicW(t *testing.T) {
-	_cfg.Load()
+	testInit()
 	PanicW("xe", "k", "v", "k2", 2, "k3", map[string]string{})
 }*/
