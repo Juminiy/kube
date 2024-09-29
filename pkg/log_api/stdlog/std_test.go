@@ -29,7 +29,7 @@ func TestStdLog(t *testing.T) {
 }
 
 // Once Tested, Comment them immediately with (Shift+Ctrl+/)
-func TestStdLogFatal(t *testing.T) {
+/*func TestStdLogFatal(t *testing.T) {
 	stdCfg.Load()
 	Fatal("1", "2", "3")
 }
@@ -57,4 +57,4 @@ func TestStdLogPanicF(t *testing.T) {
 func TestStdLogPanicW(t *testing.T) {
 	stdCfg.Load()
 	PanicW("xe", "k", "v", "k2", 2, "k3", map[string]string{})
-}
+}*/

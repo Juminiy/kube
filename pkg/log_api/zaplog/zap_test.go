@@ -35,34 +35,33 @@ func TestZapLog(t *testing.T) {
 
 }
 
-/*// Once Tested, Comment them immediately with (Shift+Ctrl+/)
-func TestStdLogFatal(t *testing.T) {
-	cfg.Load()
+// Once Tested, Comment them immediately with (Shift+Ctrl+/)
+/*func TestStdLogFatal(t *testing.T) {
+	_cfg.Load()
 	Fatal("1", "2", "3")
 }
 
 func TestStdLogFatalF(t *testing.T) {
-	cfg.Load()
+	_cfg.Load()
 	FatalF("ex %d", 1)
 }
 
 func TestStdLogFatalW(t *testing.T) {
-	cfg.Load()
+	_cfg.Load()
 	FatalW("xe", "k", "v", "k2", 2, "k3", map[string]string{})
 }
 
 func TestStdLogPanic(t *testing.T) {
-	cfg.Load()
+	_cfg.Load()
 	Panic("1", "2", "3")
 }
 
 func TestStdLogPanicF(t *testing.T) {
-	cfg.Load()
+	_cfg.Load()
 	PanicF("ex %d", 1)
 }
 
 func TestStdLogPanicW(t *testing.T) {
-	cfg.Load()
+	_cfg.Load()
 	PanicW("xe", "k", "v", "k2", 2, "k3", map[string]string{})
-}
-*/
+}*/
