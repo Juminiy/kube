@@ -6,13 +6,13 @@ import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 )
 
-// describe in config file
+// global config
 var (
 	_hostURL string
 	_version string
 )
 
-// immutable global variable
+// global var
 var (
 	_dockerClient  *docker_api.Client
 	_docketContext context.Context

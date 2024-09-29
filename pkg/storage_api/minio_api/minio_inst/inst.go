@@ -5,6 +5,7 @@ import (
 	"github.com/Juminiy/kube/pkg/storage_api/minio_api"
 )
 
+// global config
 var (
 	_minioEndpoint        string
 	_minioAccessKeyID     string
@@ -14,6 +15,7 @@ var (
 	_minioPublicBucket    string
 )
 
+// global var
 var (
 	_minioClient *minio_api.Client
 )

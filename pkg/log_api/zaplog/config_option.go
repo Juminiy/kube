@@ -8,22 +8,23 @@ const (
 	logEngineZapSugar = "zap sugared"
 )
 
-// ConfigOption
-// Singleton Type
 type ConfigOption struct {
 	_ struct{}
 	sync.Once
 }
 
+// NewConfig
+// Deprecated, use New instead
 func NewConfig() *ConfigOption {
 	return &ConfigOption{}
 }
 
-// Load
-// +required
-func (o *ConfigOption) Load() *ConfigOption {
+func New() *ConfigOption {
+	return &ConfigOption{}
+}
+
+func (o *ConfigOption) Load() {
 	o.Do(Init)
-	return o
 }
 
 func (o *ConfigOption) WithLogEngine(logEngine string) *ConfigOption {

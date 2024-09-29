@@ -10,6 +10,9 @@ import (
 	"strings"
 )
 
+// Deprecated: github.com/Juminiy/kube/pkg/util/filepath_unix.go do not maintain anymore
+// use: github.com/Juminiy/kube/pkg/internal/filepath_unix.go instead
+
 const (
 	slash = "/"
 )

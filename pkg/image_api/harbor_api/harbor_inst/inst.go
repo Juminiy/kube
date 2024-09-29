@@ -5,7 +5,7 @@ import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 )
 
-// describe in config file
+// global config
 var (
 	_harborRegistry string
 	_harborInsecure bool
@@ -13,7 +13,7 @@ var (
 	_harborPassword string
 )
 
-// immutable global variable
+// global var
 var (
 	_harborClient *harbor_api.Client
 )

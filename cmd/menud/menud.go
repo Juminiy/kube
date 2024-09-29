@@ -83,6 +83,9 @@ func helpMenu(s ...string) int8 {
 	return nextRetCode
 }
 
+func prepare() {
+}
+
 // global Flags
 var (
 	version        *bool
@@ -113,7 +116,7 @@ func initGlobalConfig() {
 }
 
 func initLog() {
-	zaplog.NewConfig().
+	zaplog.New().
 		WithLogEngine(_globalConfig.Log.Engine).
 		WithLogLevel(_globalConfig.Log.Zap.Level).
 		WithLogCaller(_globalConfig.Log.Zap.Caller).
@@ -125,7 +128,7 @@ func initLog() {
 }
 
 func initHarbor() {
-	harbor_inst.NewConfig().
+	harbor_inst.New().
 		WithRegistry(_globalConfig.Harbor.Registry).
 		WithUsername(_globalConfig.Harbor.Username).
 		WithPassword(_globalConfig.Harbor.Password).
@@ -134,7 +137,7 @@ func initHarbor() {
 }
 
 func initDocker() {
-	docker_inst.NewConfig().
+	docker_inst.New().
 		WithHost(_globalConfig.Docker.Host).
 		WithVersion(_globalConfig.Docker.Version).
 		Load()
@@ -149,7 +152,7 @@ func initKubernetes() {
 }
 
 func initMinio() {
-	minio_inst.NewConfig().
+	minio_inst.New().
 		WithEndpoint(_globalConfig.Minio.Endpoint).
 		WithAccessKeyID(_globalConfig.Minio.AccessKeyID).
 		WithSecretAccessKey(_globalConfig.Minio.SecretAccessKey).

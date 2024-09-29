@@ -10,6 +10,9 @@ import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 )
 
+// Deprecated: github.com/Juminiy/kube/pkg/util/filepath_windows.go do not maintain anymore
+// use: github.com/Juminiy/kube/pkg/internal/filepath_windows.go instead
+
 const (
 	slash  = "\\"
 	slash2 = "\\"

@@ -20,7 +20,7 @@ var (
 	}
 )
 
-// describe in config file
+// global config
 var (
 	// default sugar, optional: {"stdlib", "zap", "zap sugared"}
 	_logEngine string
@@ -39,10 +39,12 @@ var (
 	_errorOutputPaths []string
 )
 
-// immutable global variable
+// global var
 var (
-	_zapConfig   *zap.Config
-	_restoreFunc util.Fn = util.NothingFn()
+	_zapConfig     *zap.Config
+	_restoreFunc   util.Fn = util.NothingFn()
+	_logger        *zap.Logger
+	_sugaredLogger *zap.SugaredLogger
 )
 
 func Init() {

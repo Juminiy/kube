@@ -14,7 +14,7 @@ var (
 	testNewClient, testDockerClientError = New(hostURL, clientVersion)
 )
 
-func init() {
+func initFunc() {
 	util.SilentPanicError(testDockerClientError)
 
 	testNewClient.WithRegistryAuth(&registry.AuthConfig{

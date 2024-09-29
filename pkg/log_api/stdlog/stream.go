@@ -2,17 +2,17 @@ package stdlog
 
 import (
 	"github.com/docker/docker/pkg/jsonmessage"
-	"os"
 )
 
+// conform and consistency with Docker pkg jsonmessage
 type stream struct{}
 
 func (s *stream) Write(bs []byte) (int, error) {
-	return os.Stdout.Write(bs)
+	return _logDefaultOut.Write(bs)
 }
 
 func (s *stream) FD() uintptr {
-	return os.Stdout.Fd()
+	return _logDefaultOut.Fd()
 }
 
 func (s *stream) IsTerminal() bool {

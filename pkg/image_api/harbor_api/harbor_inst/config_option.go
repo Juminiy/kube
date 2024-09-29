@@ -10,13 +10,18 @@ type ConfigOption struct {
 	sync.Once
 }
 
+// NewConfig
+// Deprecated, use New instead
 func NewConfig() *ConfigOption {
 	return &ConfigOption{}
 }
 
-func (o *ConfigOption) Load() *ConfigOption {
+func New() *ConfigOption {
+	return &ConfigOption{}
+}
+
+func (o *ConfigOption) Load() {
 	o.Do(Init)
-	return o
 }
 
 func (o *ConfigOption) WithRegistry(harborRegistry string) *ConfigOption {

@@ -10,6 +10,7 @@ import (
 
 // +passed
 func TestClient_ListContainers(t *testing.T) {
+	initFunc()
 	containers, err := testNewClient.ListContainers()
 	util.SilentPanicError(err)
 	str := strings.Builder{}
@@ -22,6 +23,7 @@ func TestClient_ListContainers(t *testing.T) {
 
 // +passed
 func TestClient_ListContainerIds(t *testing.T) {
+	initFunc()
 	ids, err := testNewClient.ListContainerIds()
 	util.SilentPanicError(err)
 	stdlog.Info(ids)
@@ -29,6 +31,7 @@ func TestClient_ListContainerIds(t *testing.T) {
 
 // +passed
 func TestClient_ListContainerNames(t *testing.T) {
+	initFunc()
 	names, err := testNewClient.ListContainerNames()
 	util.SilentPanicError(err)
 	stdlog.Info(names)

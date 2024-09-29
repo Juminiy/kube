@@ -4,9 +4,10 @@ import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"sync"
 )
 
-var _logger *zap.Logger
+var _stdTipOnce sync.Once
 
 func logFunc(level zapcore.Level, fn string, templateOrMessage string, v ...any) {
 	useZap := _logEngine == logEngineZap && _logger != nil
@@ -84,9 +85,11 @@ func logFunc(level zapcore.Level, fn string, templateOrMessage string, v ...any)
 	}
 
 	// default or set to stdlib
-	if _logEngine != logEngineStdlib {
-		stdlog.ErrorF("config log engine is: %s, but it seems wrong, use stdlib instead", _logEngine)
-	}
+	_stdTipOnce.Do(func() {
+		if _logEngine != logEngineStdlib {
+			stdlog.ErrorF("config log engine is: %s, but it seems wrong, use stdlib instead", _logEngine)
+		}
+	})
 	switch level {
 	case zap.DebugLevel:
 		switch fn {
@@ -143,8 +146,8 @@ func logFunc(level zapcore.Level, fn string, templateOrMessage string, v ...any)
 		default:
 			stdlog.Fatal(v...)
 		}
+		return
 	}
-
 }
 
 func Debug(v ...any) {

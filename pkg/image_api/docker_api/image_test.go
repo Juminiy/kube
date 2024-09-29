@@ -20,6 +20,7 @@ var (
 
 // +passed
 func TestClient_ExportImage(t *testing.T) {
+	initFunc()
 	imageRC, err := testNewClient.ExportImage(imageRef.String())
 	if err != nil {
 		panic(err)
@@ -37,6 +38,7 @@ func TestClient_ExportImage(t *testing.T) {
 
 // +failed
 func TestClient_ImportImage(t *testing.T) {
+	initFunc()
 	imageFile, err := util.OSOpenFileWithCreate(testTarGZPathExportedByLinux)
 	util.SilentPanicError(err)
 	_, err = testNewClient.ImportImage(imageRef.String(), imageFile)
@@ -45,6 +47,7 @@ func TestClient_ImportImage(t *testing.T) {
 
 // +passed
 func TestClient_ExportImageImportImage(t *testing.T) {
+	initFunc()
 	imageRC, err := testNewClient.ExportImage(imageRef.String())
 	if err != nil {
 		panic(err)
