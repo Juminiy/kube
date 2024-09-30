@@ -1,8 +1,9 @@
+// global var
 package stdlog
 
 import (
 	"fmt"
-	internalapi "github.com/Juminiy/kube/pkg/internal"
+	internalapi "github.com/Juminiy/kube/pkg/internal_api"
 	"log"
 	"os"
 )

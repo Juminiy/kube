@@ -1,4 +1,4 @@
-package internal
+package minio_internal
 
 import (
 	"testing"

@@ -1,3 +1,4 @@
+// global config
 package docker_inst
 
 import (

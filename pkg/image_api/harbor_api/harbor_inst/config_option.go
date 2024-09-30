@@ -1,3 +1,4 @@
+// global config
 package harbor_inst
 
 import (

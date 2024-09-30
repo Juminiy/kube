@@ -1,4 +1,4 @@
-package internal
+package minio_internal
 
 import (
 	"github.com/Juminiy/kube/pkg/storage_api/s3_api"

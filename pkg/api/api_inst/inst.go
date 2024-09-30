@@ -1,3 +1,4 @@
+// global var
 package api_inst
 
 import (

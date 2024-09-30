@@ -1,4 +1,4 @@
-package internal
+package minio_internal
 
 import (
 	s3apiv2 "github.com/Juminiy/kube/pkg/storage_api/s3_api/v2"

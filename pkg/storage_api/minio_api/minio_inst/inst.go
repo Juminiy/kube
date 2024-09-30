@@ -1,3 +1,4 @@
+// global var
 package minio_inst
 
 import (

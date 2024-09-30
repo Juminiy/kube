@@ -1,3 +1,4 @@
+// global config
 package minio_inst
 
 import "sync"

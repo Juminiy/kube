@@ -1,3 +1,4 @@
+// global config
 package api_inst
 
 import (

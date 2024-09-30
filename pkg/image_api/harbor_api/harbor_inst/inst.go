@@ -1,3 +1,4 @@
+// global var
 package harbor_inst
 
 import (

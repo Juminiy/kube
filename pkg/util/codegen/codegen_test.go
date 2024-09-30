@@ -1,7 +1,7 @@
 package codegen
 
 import (
-	kubeinternal "github.com/Juminiy/kube/pkg/internal"
+	kubeinternal "github.com/Juminiy/kube/pkg/internal_api"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util/codegen/example"
 	"reflect"
@@ -43,7 +43,7 @@ func TestManifest_Do_MinioInst(t *testing.T) {
 }
 */
 
-// +passed +windows
+// +passed +windows +darwin
 func TestManifest_Do_ExampleStruct(t *testing.T) {
 	dstFilePath, err := kubeinternal.GetWorkPath("example", "example_inst", "example_codegen.go")
 	if err != nil {

@@ -2,7 +2,7 @@ package minio_api
 
 import (
 	"errors"
-	miniointernal "github.com/Juminiy/kube/pkg/storage_api/minio_api/internal"
+	miniointernal "github.com/Juminiy/kube/pkg/storage_api/minio_api/minio_internal"
 	"github.com/Juminiy/kube/pkg/storage_api/s3_api"
 	s3apiv2 "github.com/Juminiy/kube/pkg/storage_api/s3_api/v2"
 	"github.com/Juminiy/kube/pkg/util"

@@ -1,3 +1,4 @@
+// global func
 package stdlog
 
 import (

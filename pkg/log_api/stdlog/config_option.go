@@ -1,3 +1,4 @@
+// global config
 package stdlog
 
 import "sync"

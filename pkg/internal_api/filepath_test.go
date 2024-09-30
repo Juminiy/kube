@@ -1,13 +1,13 @@
-package internal
+package internal_api
 
 import "testing"
 
-// +passed +windows
+// +passed +windows +darwin
 func TestGetWorkPath(t *testing.T) {
-	t.Log(GetWorkPath("pkg", "log_api", "stdlog", "testdata", "test_log"))
+	t.Log(GetWorkPath("testdata", "test_log"))
 }
 
-// +passed +windows
+// +passed +windows +darwin
 func TestOpenFileWithCreateIfNotExist(t *testing.T) {
 	filePtr, err := OpenFileWithCreateIfNotExist(filePathJoin("testdata", "test.txt"))
 	if err != nil {

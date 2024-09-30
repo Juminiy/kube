@@ -2,7 +2,7 @@ package codegen
 
 import (
 	"fmt"
-	kubeinternal "github.com/Juminiy/kube/pkg/internal"
+	kubeinternal "github.com/Juminiy/kube/pkg/internal_api"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	"os"

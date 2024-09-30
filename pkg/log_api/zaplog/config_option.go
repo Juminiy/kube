@@ -1,3 +1,4 @@
+// global config
 package zaplog
 
 import "sync"

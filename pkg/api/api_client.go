@@ -1,3 +1,4 @@
+// Package api: Unify the API configuration and API call methods, and hide the internal details of the API
 package api
 
 import (
