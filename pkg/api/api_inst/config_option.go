@@ -3,11 +3,13 @@ package api_inst
 
 import (
 	kubeapi "github.com/Juminiy/kube/pkg/api"
+	"github.com/Juminiy/kube/pkg/internal"
 	"sync"
 )
 
 type ConfigOption struct {
-	_ struct{}
+	_      internal.NoCmp
+	noCopy internal.NoCopy
 	sync.Once
 }
 

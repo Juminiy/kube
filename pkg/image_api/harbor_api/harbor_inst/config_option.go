@@ -2,12 +2,14 @@
 package harbor_inst
 
 import (
+	"github.com/Juminiy/kube/pkg/internal"
 	"github.com/Juminiy/kube/pkg/util"
 	"sync"
 )
 
 type ConfigOption struct {
-	_ struct{}
+	_      internal.NoCmp
+	noCopy internal.NoCopy
 	sync.Once
 }
 

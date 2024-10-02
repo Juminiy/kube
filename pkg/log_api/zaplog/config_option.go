@@ -1,7 +1,10 @@
 // global config
 package zaplog
 
-import "sync"
+import (
+	"github.com/Juminiy/kube/pkg/internal"
+	"sync"
+)
 
 const (
 	logEngineStdlib   = "stdlib"
@@ -10,7 +13,8 @@ const (
 )
 
 type ConfigOption struct {
-	_ struct{}
+	_      internal.NoCmp
+	noCopy internal.NoCopy
 	sync.Once
 }
 

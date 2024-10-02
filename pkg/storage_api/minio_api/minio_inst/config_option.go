@@ -1,10 +1,14 @@
 // global config
 package minio_inst
 
-import "sync"
+import (
+	"github.com/Juminiy/kube/pkg/internal"
+	"sync"
+)
 
 type ConfigOption struct {
-	_ struct{}
+	_      internal.NoCmp
+	noCopy internal.NoCopy
 	sync.Once
 }
 
