@@ -13,10 +13,10 @@ func TestClient_CreateAccessKey(t *testing.T) {
 	// create
 	accessKey, err := testMinioClient.CreateAccessKey()
 	stdlog.Info(accessKey)
-	util.SilentHandleError("create access key error", err)
+	util.SilentFatalf("create access key error", err)
 
 	// delete
-	util.SilentHandleError("delete access key error",
+	util.SilentFatalf("delete access key error",
 		testMinioClient.DeleteAccessKey(accessKey.AccessKeyID),
 	)
 }
@@ -28,7 +28,7 @@ func TestClient_DeleteAccessKey(t *testing.T) {
 
 // +passed
 func TestClient_SetAccessPolicy(t *testing.T) {
-	util.SilentHandleError("create access policy error",
+	util.SilentFatalf("create access policy error",
 		testMinioClient.SetAccessPolicy(
 			&PolicyConfig{
 				BusinessUser: BusinessUser{
@@ -45,7 +45,7 @@ func TestClient_SetAccessPolicy(t *testing.T) {
 
 // +passed
 func TestClient_DeleteAccessPolicy(t *testing.T) {
-	util.SilentHandleError("delete access policy error",
+	util.SilentFatalf("delete access policy error",
 		testMinioClient.DeleteAccessPolicy(
 			&PolicyConfig{
 				BusinessUser: BusinessUser{
@@ -71,7 +71,7 @@ func TestClient_AccessKeyWorkFlow(t *testing.T) {
 
 	//create access key
 	userCred, err := testMinioClient.CreateAccessKey()
-	util.SilentHandleError("create access key error", err)
+	util.SilentFatalf("create access key error", err)
 	stdlog.Info(userCred.AccessKeyID)
 
 	policyConfig := PolicyConfig{
@@ -81,7 +81,7 @@ func TestClient_AccessKeyWorkFlow(t *testing.T) {
 	}
 
 	// create access policy
-	util.SilentHandleError("create access policy",
+	util.SilentFatalf("create access policy",
 		testMinioClient.SetAccessPolicy(&policyConfig))
 
 }

@@ -5,43 +5,54 @@ import (
 	"io"
 )
 
-// SilentPanicError
+// SilentPanic
 // only used in dev env or test env, _test file
 // not to use in production env
-func SilentPanicError(err error) {
+func SilentPanic(err error) {
 	if err != nil {
-		panic(err)
+		stdlog.Panic(err)
 	}
 }
 
-// SilentFatalError
+// SilentFatal
 // only used in dev env or test env, _test file
 // not to use in production env
-func SilentFatalError(err error) {
+func SilentFatal(err error) {
 	if err != nil {
 		stdlog.Fatal(err)
 	}
 }
 
-// SilentHandleError
+// SilentFatalf
 // only used in dev env or test env, _test file
 // not to use in production env
-func SilentHandleError(detail string, err error) {
+func SilentFatalf(detail string, err error) {
 	if err != nil {
 		stdlog.FatalF("%s: %s", detail, err.Error())
 	}
 }
 
-// consoleLogError
+// SilentError
 // only used in dev env or test env, _test file
 // not to use in production env
-func consoleLogError(detail string, err error) {
-
+func SilentError(err error) {
+	if err != nil {
+		stdlog.Error(err.Error())
+	}
 }
 
-// HandleCloseError
+// SilentErrorf
+// only used in dev env or test env, _test file
+// not to use in production env
+func SilentErrorf(detail string, err error) {
+	if err != nil {
+		stdlog.ErrorF("%s: %s", detail, err.Error())
+	}
+}
+
+// SilentCloseIO
 // handle io closer error
-func HandleCloseError(msg string, closer io.Closer) {
+func SilentCloseIO(msg string, closer io.Closer) {
 	err := closer.Close()
 	if err != nil {
 		stdlog.ErrorF(msg+" instance: %#v close error: %s", closer, err.Error())

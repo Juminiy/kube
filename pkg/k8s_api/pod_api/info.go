@@ -18,8 +18,8 @@ func SyncPodListByNS(
 	dConf *DeploymentConfig,
 	qDur time.Duration,
 ) {
-	dConf.CallBack.List = func() error {
-		latestDeployListOf := dConf.CallBack.latest.(*appsv1.DeploymentList)
+	dConf.cbk.List = func() error {
+		latestDeployListOf := dConf.cbk.Latest.(*appsv1.DeploymentList)
 		if latestDeployListOf == nil ||
 			len(latestDeployListOf.Items) == 0 {
 			PodStateSyncingDone <- struct{}{}

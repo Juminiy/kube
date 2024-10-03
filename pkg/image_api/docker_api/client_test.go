@@ -15,7 +15,7 @@ var (
 )
 
 func initFunc() {
-	util.SilentPanicError(testDockerClientError)
+	util.SilentPanic(testDockerClientError)
 
 	testNewClient.WithRegistryAuth(&registry.AuthConfig{
 		Username:      "admin",

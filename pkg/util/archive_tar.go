@@ -8,13 +8,13 @@ import (
 
 func TarIOReader2File(ioReader io.Reader, filePath string) (err error) {
 	filePtr, err := OSOpenFileWithCreate(filePath)
-	defer HandleCloseError("tar file ptr", filePtr)
+	defer SilentCloseIO("tar file ptr", filePtr)
 	if err != nil {
 		return
 	}
 
 	tarFileWriter := tar.NewWriter(filePtr)
-	defer HandleCloseError("tar file writer", tarFileWriter)
+	defer SilentCloseIO("tar file writer", tarFileWriter)
 
 	timeNow := time.Now()
 	err = tarFileWriter.WriteHeader(&tar.Header{

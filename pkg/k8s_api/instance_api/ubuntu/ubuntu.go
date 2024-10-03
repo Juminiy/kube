@@ -2,7 +2,7 @@ package ubuntu
 
 import (
 	"github.com/Juminiy/kube/pkg/image_api/harbor_api"
-	"github.com/Juminiy/kube/pkg/k8s_api/instance_api/internal/cmd_args"
+	"github.com/Juminiy/kube/pkg/k8s_api/instance_api/cmd_args"
 	"github.com/Juminiy/kube/pkg/k8s_api/pod_api"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
@@ -50,11 +50,11 @@ func NewUbuntuDeployment() *pod_api.DeploymentConfig {
 			//args[0]
 			cmd_args.ArgsConcat(
 				cmd_args.UbuntuUpdateUpgrade,
-				cmd_args.UbuntuInstall("systemd"),
+				//cmd_args.UbuntuInstall("systemd"),
 				//cmd_args.LinuxHostNameCtl(dConf.HostName),
 				//cmd_args.LinuxAddUser(dConf.UserName),
 				//cmd_args.LinuxSetUserPassword(dConf.Password),
-				cmd_args.UbuntuInstall("openssh-server"),
+				//cmd_args.UbuntuInstall("openssh-server"),
 				cmd_args.LinuxPermitSSHLoginByRoot,
 				cmd_args.LinuxServiceStart("ssh"),
 				cmd_args.LinuxTerminalAlwaysOpen),
@@ -65,7 +65,7 @@ func NewUbuntuDeployment() *pod_api.DeploymentConfig {
 			//	MinioAddr:  "",
 			//}.Args(),
 		).CancelCmdArgs(false).
-		WithUserHost(pod_api.UserHostConfig{
+		WithUserHost(&cmd_args.UserHostConfig{
 			HostName: "hln",
 			UserName: "hln",
 			Password: "hln@666",

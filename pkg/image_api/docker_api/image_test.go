@@ -6,6 +6,7 @@ import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	"io"
+	"os"
 	"testing"
 )
 
@@ -27,22 +28,22 @@ func TestClient_ExportImage(t *testing.T) {
 	}
 
 	imageBytes, err := io.ReadAll(imageRC)
-	defer util.HandleCloseError("image read error", imageRC)
+	defer util.SilentCloseIO("image read error", imageRC)
 
 	stdlog.InfoF("size of image amd64 %s is: %s", imageRef.String(), util.BytesOf(imageBytes))
 
-	err = util.GzipIOReader2File(imageRC, testTarGzPath)
-	util.SilentPanicError(err)
+	err = util.TarIOReader2File(imageRC, testTarGzPath)
+	util.SilentPanic(err)
 	stdlog.InfoF("success save tar file: %s", testTarGzPath)
 }
 
 // +failed
 func TestClient_ImportImage(t *testing.T) {
 	initFunc()
-	imageFile, err := util.OSOpenFileWithCreate(testTarGZPathExportedByLinux)
-	util.SilentPanicError(err)
+	imageFile, err := os.Open(testTarGzPath)
+	util.SilentPanic(err)
 	_, err = testNewClient.ImportImage(imageRef.String(), imageFile)
-	util.SilentPanicError(err)
+	util.SilentPanic(err)
 }
 
 // +passed
@@ -54,7 +55,7 @@ func TestClient_ExportImageImportImage(t *testing.T) {
 	}
 
 	//imageBytes, err := io.ReadAll(imageRC)
-	defer util.HandleCloseError("image read error", imageRC)
+	defer util.SilentCloseIO("image read error", imageRC)
 	//stdlog.InfoF("size of image amd64 %s is: %d", imageRef.String(), len(imageBytes))
 
 	newImageRef := kubedockertypes.ImageRef{
@@ -64,7 +65,7 @@ func TestClient_ExportImageImportImage(t *testing.T) {
 		Tag:        "wiwi-x",
 	}
 	importResp, err := testNewClient.ImportImage(newImageRef.String(), imageRC)
-	defer util.HandleCloseError("import resp", importResp)
+	defer util.SilentCloseIO("import resp", importResp)
 	stdlog.Info(docker_internal.GetStatusFromImagePushResp(importResp))
-	util.SilentPanicError(err)
+	util.SilentPanic(err)
 }

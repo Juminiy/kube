@@ -62,7 +62,7 @@ func (c *Client) ImportImage(absRefStr string, input io.Reader) (io.ReadCloser, 
 	if err != nil {
 		return nil, err
 	}
-	defer util.HandleCloseError("docker image load", loadResp.Body)
+	defer util.SilentCloseIO("docker image load", loadResp.Body)
 
 	// get Loaded image: name:tag or ID
 	var loadedImageRefStr string

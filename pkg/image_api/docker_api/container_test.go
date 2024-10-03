@@ -12,12 +12,12 @@ import (
 func TestClient_ListContainers(t *testing.T) {
 	initFunc()
 	containers, err := testNewClient.ListContainers()
-	util.SilentPanicError(err)
+	util.SilentPanic(err)
 	str := strings.Builder{}
 	encoder := json.NewEncoder(&str)
 	encoder.SetIndent(util.JSONMarshalPrefix, util.JSONMarshalIndent)
 	err = encoder.Encode(containers)
-	util.SilentPanicError(err)
+	util.SilentPanic(err)
 	stdlog.Debug(str.String())
 }
 
@@ -25,7 +25,7 @@ func TestClient_ListContainers(t *testing.T) {
 func TestClient_ListContainerIds(t *testing.T) {
 	initFunc()
 	ids, err := testNewClient.ListContainerIds()
-	util.SilentPanicError(err)
+	util.SilentPanic(err)
 	stdlog.Info(ids)
 }
 
@@ -33,6 +33,6 @@ func TestClient_ListContainerIds(t *testing.T) {
 func TestClient_ListContainerNames(t *testing.T) {
 	initFunc()
 	names, err := testNewClient.ListContainerNames()
-	util.SilentPanicError(err)
+	util.SilentPanic(err)
 	stdlog.Info(names)
 }

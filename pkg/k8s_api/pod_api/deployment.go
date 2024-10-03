@@ -6,6 +6,8 @@ import (
 	"errors"
 	"github.com/Juminiy/kube/pkg/image_api/harbor_api"
 	"github.com/Juminiy/kube/pkg/k8s_api"
+	"github.com/Juminiy/kube/pkg/k8s_api/instance_api/cmd_args"
+	k8sinternal "github.com/Juminiy/kube/pkg/k8s_api/internal_api"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -18,7 +20,6 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	k8scli "k8s.io/client-go/kubernetes"
 	typedappsv1 "k8s.io/client-go/kubernetes/typed/apps/v1"
 )
 
@@ -28,14 +29,12 @@ const (
 	ContainerLimitDiskCacheDefaultGi = 8   // ephemeral 8 GiB
 )
 
-var (
-	internalImageRegistry = k8s_api.GetImageRegistry()
-)
-
 type (
 	DeploymentConfig struct {
-		Namespace          string
-		MetaName           string
+		Namespace  string
+		MetaName   string
+		MetaLabels map[string]string
+
 		SpecReplicas       int32
 		SpecSelectorLabels map[string]string
 		SpecTemplateLabels map[string]string
@@ -43,19 +42,12 @@ type (
 
 		Container *ContainerConfig
 
-		// do after kube api
-		CallBack *CallBack `json:"CallBack,omitempty"`
-
-		// global cli
-		cliSet *k8scli.Clientset
-		cli    typedappsv1.DeploymentInterface
-		app    *appsv1.Deployment
-
-		// context in k8e
+		cli typedappsv1.DeploymentInterface
+		app *appsv1.Deployment
 		ctx context.Context
+		cbk *k8sinternal.CallBack
 	}
 
-	// Container Config Declaration in Pod
 	ContainerConfig struct {
 		Name            string
 		Image           string
@@ -64,10 +56,9 @@ type (
 		Ports           []corev1.ContainerPort
 		Resource        *ResourceConfig
 		SecurityContext *corev1.SecurityContext
-		UserHost        *UserHostConfig
+		UserHost        *cmd_args.UserHostConfig
 	}
 
-	// Container Resource Declaration in Pod
 	ResourceConfig struct {
 		CPU       float64 // VCPU Logical 					 	/Core
 		GPU       float64 // VGPU 							 	/Core
@@ -79,21 +70,6 @@ type (
 		BindGPU   bool
 		BindMount bool
 	}
-
-	// User Host Declaration in Pod
-	UserHostConfig struct {
-		HostName string
-		UserName string
-		Password string
-	}
-
-	CallBack struct {
-		latest any
-		Create util.Func
-		Update util.Func
-		Delete util.Func
-		List   util.Func
-	}
 )
 
 func NewDeployment(c *DeploymentConfig) error {
@@ -101,9 +77,7 @@ func NewDeployment(c *DeploymentConfig) error {
 		return validErr
 	}
 
-	c.cliSet = k8s_api.GetClientSet()
-
-	c.cli = c.cliSet.AppsV1().Deployments(c.Namespace)
+	c.cli = k8s_api.GetClientSet().AppsV1().Deployments(c.Namespace)
 
 	c.app = &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
@@ -128,19 +102,7 @@ func NewDeployment(c *DeploymentConfig) error {
 
 	c.ctx = util.TODOContext()
 
-	defaultCallBackFunc := func() error {
-		if c.CallBack.latest != nil {
-			stdlog.Info(c.CallBack.latest)
-		}
-		c.CallBack.latest = nil
-		return nil
-	}
-	c.CallBack = &CallBack{
-		Create: defaultCallBackFunc,
-		Update: defaultCallBackFunc,
-		Delete: defaultCallBackFunc,
-		List:   defaultCallBackFunc,
-	}
+	c.cbk = k8sinternal.LogLatestCallBack()
 
 	return nil
 }
@@ -198,8 +160,8 @@ func (c *DeploymentConfig) CancelCmdArgs(ok bool) *DeploymentConfig {
 	return c
 }
 
-func (c *DeploymentConfig) WithUserHost(uh UserHostConfig) *DeploymentConfig {
-	c.Container.UserHost = &uh
+func (c *DeploymentConfig) WithUserHost(uh *cmd_args.UserHostConfig) *DeploymentConfig {
+	c.Container.UserHost = uh
 	return c
 }
 
@@ -224,29 +186,27 @@ func (c *DeploymentConfig) validate() error {
 }
 
 func (c *DeploymentConfig) Create() error {
-	var createErr error
-	c.CallBack.latest, createErr = c.cli.Create(c.ctx, c.app, metav1.CreateOptions{})
-	if createErr != nil {
-		return createErr
+	c.cbk.Latest, c.cbk.LatestErr = c.cli.Create(c.ctx, c.app, metav1.CreateOptions{})
+	if c.cbk.LatestErr != nil {
+		return c.cbk.LatestErr
 	}
 
-	return c.CallBack.Create()
+	return c.cbk.Create()
 }
 
 func (c *DeploymentConfig) Update() error {
 	retryErr := retry.RetryOnConflict(
 		retry.DefaultRetry,
 		func() error {
-			var updateErr error
-			c.CallBack.latest, updateErr = c.cli.Update(c.ctx, c.app, metav1.UpdateOptions{})
-			return updateErr
+			c.cbk.Latest, c.cbk.LatestErr = c.cli.Update(c.ctx, c.app, metav1.UpdateOptions{})
+			return c.cbk.LatestErr
 		},
 	)
 	if retryErr != nil {
 		return retryErr
 	}
 
-	return c.CallBack.Update()
+	return c.cbk.Update()
 }
 
 func (c *DeploymentConfig) Delete() error {
@@ -257,17 +217,16 @@ func (c *DeploymentConfig) Delete() error {
 		return deleteErr
 	}
 
-	return c.CallBack.Delete()
+	return c.cbk.Delete()
 }
 
 func (c *DeploymentConfig) List() error {
-	var listErr error
-	c.CallBack.latest, listErr = c.cli.List(c.ctx, metav1.ListOptions{})
-	if listErr != nil {
-		return listErr
+	c.cbk.Latest, c.cbk.LatestErr = c.cli.List(c.ctx, metav1.ListOptions{})
+	if c.cbk.LatestErr != nil {
+		return c.cbk.LatestErr
 	}
 
-	return c.CallBack.List()
+	return c.cbk.List()
 }
 
 func (c *DeploymentConfig) Stop() (string, error) {
@@ -293,7 +252,7 @@ func (c *DeploymentConfig) JSONMarshal() string {
 // SaveConfig
 // after SaveConfig, CallBack is nil
 func (c *DeploymentConfig) SaveConfig() string {
-	c.CallBack = nil
+	c.cbk = nil
 	bs, err := json.Marshal(c)
 	if err != nil {
 		stdlog.ErrorF("deployment config json marshal error: %s", err.Error())
@@ -307,7 +266,7 @@ func (c *DeploymentConfig) SaveConfig() string {
 // harbor.local:8662/kubesphere-io-centos7/haproxy:2.9.6-alpine
 func GetImageURL(arti harbor_api.ArtifactURI) string {
 	return strings.Join(
-		[]string{internalImageRegistry, arti.String()},
+		[]string{k8s_api.GetImageRegistry(), arti.String()},
 		"/",
 	)
 }

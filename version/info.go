@@ -8,21 +8,6 @@ import (
 	"github.com/Juminiy/kube/pkg/util"
 )
 
-type (
-	infoType struct {
-		GitMajor     string
-		GitMinor     string
-		GitPatch     string
-		GitVersion   string
-		GitCommit    string
-		GitTreeState string
-		BuildDate    string
-		GoVersion    string
-		Compiler     string
-		Platform     string
-	}
-)
-
 var (
 	GitMajor     string // major version, always numeric
 	GitMinor     string // minor version, numeric possibly followed by "+"
@@ -31,19 +16,33 @@ var (
 	GitCommit    string // sha1 from git, output of $(git rev-parse HEAD)
 	GitTreeState string // state of git tree, either "clean" or "dirty"
 	BuildDate    string // build date in ISO8601 format, output of $(date -u +'%Y-%m-%dT%H:%M:%SZ')
-	info         = infoType{
-		GitMajor:     GitMajor,
-		GitMinor:     GitMinor,
-		GitPatch:     GitPatch,
-		GitVersion:   GitVersion,
-		GitCommit:    GitCommit,
-		GitTreeState: GitTreeState,
-		BuildDate:    BuildDate,
-		GoVersion:    runtime.Version(),
-		Compiler:     runtime.Compiler,
-		Platform:     fmt.Sprintf("%s/%s", runtime.GOOS, runtime.GOARCH),
-	}
 )
+
+var info = infoType{
+	GitMajor:     GitMajor,
+	GitMinor:     GitMinor,
+	GitPatch:     GitPatch,
+	GitVersion:   GitVersion,
+	GitCommit:    GitCommit,
+	GitTreeState: GitTreeState,
+	BuildDate:    BuildDate,
+	GoVersion:    runtime.Version(),
+	Compiler:     runtime.Compiler,
+	Platform:     fmt.Sprintf("%s/%s", runtime.GOOS, runtime.GOARCH),
+}
+
+type infoType struct {
+	GitMajor     string
+	GitMinor     string
+	GitPatch     string
+	GitVersion   string
+	GitCommit    string
+	GitTreeState string
+	BuildDate    string
+	GoVersion    string
+	Compiler     string
+	Platform     string
+}
 
 func Info(version *bool) {
 	if version != nil && *version {

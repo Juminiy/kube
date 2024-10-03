@@ -19,49 +19,6 @@ import (
 	"os"
 )
 
-func main() {
-	initFlag()
-	ldversion.Info(version)
-	initGlobalConfig()
-
-	util.SeqRun(
-		initLog,
-		initHarbor,
-		initDocker,
-		initKubernetes,
-		initMinio,
-	)
-
-	var (
-		setting                   string
-		moduleOf, appOf, actionOf string
-	)
-
-	for {
-		fmt.Printf("setting [help | quit | next]: ")
-		if _, err := fmt.Scanf("%s", &setting); err != nil {
-			fmt.Printf("error setting: %v\n", err)
-		}
-		if helpMenu(setting) == helpRetCode {
-			continue
-		}
-		fmt.Printf("module [cluster | deploy | harbor]: ")
-		if _, err := fmt.Scanf("%s %s %s", &moduleOf, &appOf, &actionOf); err != nil {
-			fmt.Printf("error input: %v\n", err)
-			return
-		}
-		switch moduleOf {
-		case "cluster":
-			k8smenu.Menu(appOf, actionOf)
-		case "deploy":
-			instancemenu.Menu(appOf, actionOf)
-		case "harbor":
-			harbormenu.Menu(appOf, actionOf)
-		}
-	}
-
-}
-
 const (
 	helpRetCode int8 = 0
 	nextRetCode int8 = 1
@@ -83,7 +40,50 @@ func helpMenu(s ...string) int8 {
 	return nextRetCode
 }
 
-func prepare() {
+func main() {
+
+	var (
+		setting                   string
+		moduleOf, appOf, actionOf string
+	)
+
+	for {
+		fmt.Printf("setting [help | quit | next]: ")
+		if _, err := fmt.Scanf("%s", &setting); err != nil {
+			fmt.Printf("error setting: %v\n", err)
+		}
+		if helpMenu(setting) == helpRetCode {
+			continue
+		}
+		fmt.Printf("module [cluster | deploy | harbor | app]: ")
+		if _, err := fmt.Scanf("%s %s %s", &moduleOf, &appOf, &actionOf); err != nil {
+			fmt.Printf("error input: %v\n", err)
+			return
+		}
+		switch moduleOf {
+		case "cluster":
+			k8smenu.Menu(appOf, actionOf)
+		case "deploy":
+			instancemenu.Menu(appOf, actionOf)
+		case "harbor":
+			harbormenu.Menu(appOf, actionOf)
+		case "app":
+			instancemenu.AppMenu(appOf, actionOf)
+		}
+	}
+
+}
+
+func init() {
+	initFlag()
+	ldversion.Info(version)
+	initGlobalConfig()
+
+	util.SeqRun(
+		initLog,
+		initKubernetes,
+	)
+
 }
 
 // global Flags
@@ -98,6 +98,7 @@ func initFlag() {
 	flag.Parse()
 }
 
+// global config
 var (
 	_globalConfig config.Config
 )
@@ -127,6 +128,13 @@ func initLog() {
 	stdlog.Info("zaplog init success")
 }
 
+func initKubernetes() {
+	k8s_api.WithKubeConfigPath(_globalConfig.Kubernetes.KubeConfigPath)
+	k8s_api.WithImageRegistry(_globalConfig.Harbor.Registry)
+	k8s_api.Load()
+	stdlog.Info("kubernetes client init success")
+}
+
 func initHarbor() {
 	harbor_inst.New().
 		WithRegistry(_globalConfig.Harbor.Registry).
@@ -142,13 +150,6 @@ func initDocker() {
 		WithVersion(_globalConfig.Docker.Version).
 		Load()
 	stdlog.Info("docker client init success")
-}
-
-func initKubernetes() {
-	k8s_api.WithKubeConfigPath(_globalConfig.Kubernetes.KubeConfigPath)
-	k8s_api.WithImageRegistry(_globalConfig.Harbor.Registry)
-	k8s_api.Load()
-	stdlog.Info("kubernetes client init success")
 }
 
 func initMinio() {

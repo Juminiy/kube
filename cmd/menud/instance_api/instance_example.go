@@ -28,7 +28,7 @@ func Menu(s ...string) {
 
 	switch appOf {
 	case "nginx":
-		dConf = nginx.NewNginxDeployment()
+		dConf = nginx.NewDeployment()
 	case "ubuntu":
 		dConf = ubuntu.NewUbuntuDeployment()
 	//case "centos":

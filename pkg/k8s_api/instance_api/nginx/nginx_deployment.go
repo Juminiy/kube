@@ -8,26 +8,26 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
-// NewNginxDeployment
-// Example:
-// 1Pod 1Container 1PortExpose
-func NewNginxDeployment() *pod_api.DeploymentConfig {
-	dConf := pod_api.DeploymentConfig{
-		Namespace:          corev1.NamespaceDefault,
-		MetaName:           "nginx-pod-example",
+func NewDeployment() *pod_api.DeploymentConfig {
+	dConf := &pod_api.DeploymentConfig{
+		Namespace:  corev1.NamespaceDefault,
+		MetaName:   "nginx-pod-example",
+		MetaLabels: map[string]string{"app.kubernetes.io/name": "expose-proxy"},
+
 		SpecReplicas:       2,
 		SpecSelectorLabels: map[string]string{"app": "nginx-example"},
 		SpecTemplateLabels: map[string]string{"app": "nginx-example"},
+
 		Container: &pod_api.ContainerConfig{
 			Name: "nginx-web-app",
 			Image: pod_api.GetImageURL(harbor_api.ArtifactURI{
-				Project:    "kubesphere-io-centos7",
+				Project:    "k8e",
 				Repository: "nginx",
 				Tag:        "1.14-alpine",
 			}),
 			Command: []string{"sh", "-c", "while true; do sleep 3600; done"},
 			Ports: []corev1.ContainerPort{
-				corev1.ContainerPort{
+				{
 					Name:          "http",
 					HostPort:      8080,
 					ContainerPort: 80,
@@ -41,10 +41,11 @@ func NewNginxDeployment() *pod_api.DeploymentConfig {
 			},
 		},
 	}
-	err := pod_api.NewDeployment(&dConf)
+
+	err := pod_api.NewDeployment(dConf)
 	if err != nil {
 		stdlog.ErrorF("nginx deployment error: %s", err.Error())
 	}
 
-	return &dConf
+	return dConf
 }

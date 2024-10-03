@@ -43,16 +43,16 @@ type Manifest struct {
 
 func (g *Manifest) Do() {
 	if len(g.DstFilePath) == 0 {
-		util.SilentPanicError(fmt.Errorf("DstFilePath is nil, do nothing, exit 1"))
+		util.SilentPanic(fmt.Errorf("DstFilePath is nil, do nothing, exit 1"))
 	}
 	errorOf := util.OSRemoveFile(g.DstFilePath)
-	util.SilentPanicError(errorOf)
+	util.SilentPanic(errorOf)
 	g.file, errorOf = util.OSOpenFileWithCreate(g.DstFilePath)
-	util.SilentPanicError(errorOf)
+	util.SilentPanic(errorOf)
 	_, g.fileName = g.getDstPkgAndFileName()
 
 	if g.InstanceOf == nil {
-		util.SilentPanicError(fmt.Errorf("InstanceOf is nil, do nothing, exit 1"))
+		util.SilentPanic(fmt.Errorf("InstanceOf is nil, do nothing, exit 1"))
 	}
 	g.reflectType.inst = g.InstanceOf
 	g.reflectType.parse()
@@ -203,9 +203,9 @@ func (g *Manifest) getDstPkgAndFileName() (string, string) {
 
 func (g *Manifest) write(s string) *Manifest {
 	_, err := g.file.WriteString(s)
-	util.SilentPanicError(err)
+	util.SilentPanic(err)
 	_, err = g.file.WriteString(" ")
-	util.SilentPanicError(err)
+	util.SilentPanic(err)
 	return g
 }
 
@@ -218,7 +218,7 @@ func (g *Manifest) writes(s ...string) *Manifest {
 
 func (g *Manifest) nextLine() *Manifest {
 	_, err := g.file.WriteString("\n")
-	util.SilentPanicError(err)
+	util.SilentPanic(err)
 	return g
 }
 

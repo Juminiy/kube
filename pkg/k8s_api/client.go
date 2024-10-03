@@ -35,8 +35,7 @@ func Load() {
 		}
 		stdlog.InfoF("init kubernetes client with kubeConfigPath: %s", _kubeConfigPath)
 
-		restConfig, err := clientcmd.BuildConfigFromFlags(
-			"", _kubeConfigPath)
+		restConfig, err := clientcmd.BuildConfigFromFlags("", _kubeConfigPath)
 		if err != nil {
 			stdlog.FatalF("init k8s client error: %s, kube config file path: %s", err.Error(), _kubeConfigPath)
 		}

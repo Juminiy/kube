@@ -10,7 +10,7 @@ import (
 
 // +passed
 func TestClient_MakeBucket(t *testing.T) {
-	util.SilentHandleError("create bucket error",
+	util.SilentFatalf("create bucket error",
 		testMinioClient.MakeBucket(&BucketConfig{
 			Quota: util.Gi * 30,
 			BusinessUser: BusinessUser{
@@ -21,7 +21,7 @@ func TestClient_MakeBucket(t *testing.T) {
 
 // +passed
 func TestClient_UpdateBucketQuota(t *testing.T) {
-	util.SilentHandleError("update quota error",
+	util.SilentFatalf("update quota error",
 		testMinioClient.UpdateBucketQuota(&BucketConfig{
 			Quota:      util.Gi * 60,
 			BucketName: "s3fs-mount-bucket-chisato",
@@ -31,7 +31,7 @@ func TestClient_UpdateBucketQuota(t *testing.T) {
 
 // +passed
 func TestClient_RemoveBucket(t *testing.T) {
-	util.SilentHandleError("remove bucket error",
+	util.SilentFatalf("remove bucket error",
 		testMinioClient.RemoveBucket(&BucketConfig{
 			BucketName: "s3fs-mount-bucket-chisato",
 		}),
@@ -40,7 +40,7 @@ func TestClient_RemoveBucket(t *testing.T) {
 
 // +passed
 func TestClient_SetBucketPolicy(t *testing.T) {
-	util.SilentHandleError("create bucket policy error", testMinioClient.SetBucketPolicy(
+	util.SilentFatalf("create bucket policy error", testMinioClient.SetBucketPolicy(
 		&PolicyConfig{
 			BusinessUser: BusinessUser{
 				Name: "chisato",
@@ -68,7 +68,7 @@ func TestClient_BucketWorkflow(t *testing.T) {
 		Quota:        util.Gi * 114514,
 		BusinessUser: businessUser,
 	}
-	util.SilentHandleError("create bucket error", testMinioClient.MakeBucket(&bucketConfig))
+	util.SilentFatalf("create bucket error", testMinioClient.MakeBucket(&bucketConfig))
 	stdlog.Info(bucketConfig)
 
 	policyConfig := PolicyConfig{
@@ -80,6 +80,6 @@ func TestClient_BucketWorkflow(t *testing.T) {
 	}
 
 	//create bucket policy
-	util.SilentHandleError("create bucket policy error", testMinioClient.SetBucketPolicy(&policyConfig))
+	util.SilentFatalf("create bucket policy error", testMinioClient.SetBucketPolicy(&policyConfig))
 
 }

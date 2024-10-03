@@ -5,28 +5,28 @@ log:
     caller: true
     stacktrace: true
     path:
-      - /Users/Juminiy/go/src/kube/cmd/menud/log/app.log
+      - /Users/chisato/go/src/kube/cmd/menud/log/app.log
     internalPath:
-      - /Users/Juminiy/go/src/kube/cmd/menud/log/app_zero.log
+      - /Users/chisato/go/src/kube/cmd/menud/log/app_zero.log
   zero:
     level:
     path:
 
+kubernetes:
+  kubeConfigPath: ~/.kube/config
+
 harbor:
-  registry: http://harbor.local:80
+  registry: http://harbor.local:8111
   username: admin
   password: Harbor12345
   public: library
 
 docker:
   host: tcp://docker.local:2375
-  version: 1.43
-
-kubernetes:
-  kubeConfigPath: ~/.kube/config
+  version: 1.47
 
 minio:
-  endpoint: 192.168.31.254:9000
+  endpoint: minio.local:9000
   accessKeyID: minioadmin
   secretAccessKey: minioadmin
   secure: false

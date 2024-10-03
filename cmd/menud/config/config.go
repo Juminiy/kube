@@ -2,9 +2,9 @@ package config
 
 type Config struct {
 	Log        Log        `yaml:"log"`
+	Kubernetes Kubernetes `yaml:"kubernetes"`
 	Harbor     Harbor     `yaml:"harbor"`
 	Docker     Docker     `yaml:"docker"`
-	Kubernetes Kubernetes `yaml:"kubernetes"`
 	Minio      Minio      `yaml:"minio"`
 }
 
@@ -23,26 +23,26 @@ type Log struct {
 	} `yaml:"zero"`
 }
 
+type Kubernetes struct {
+	KubeConfigPath string `yaml:"kubeConfigPath"`
+}
+
 type Harbor struct {
-	Registry string
-	Username string
-	Password string
-	Public   string
+	Registry string `yaml:"registry"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
+	Public   string `yaml:"public"`
 }
 
 type Docker struct {
-	Host    string
-	Version string
-}
-
-type Kubernetes struct {
-	KubeConfigPath string
+	Host    string `yaml:"host"`
+	Version string `yaml:"version"`
 }
 
 type Minio struct {
-	Endpoint        string
-	AccessKeyID     string
-	SecretAccessKey string
-	SessionToken    string
-	Secure          bool
+	Endpoint        string `yaml:"endpoint"`
+	AccessKeyID     string `yaml:"accessKeyID"`
+	SecretAccessKey string `yaml:"secretAccessKey"`
+	SessionToken    string `yaml:"sessionToken"`
+	Secure          bool   `yaml:"secure"`
 }
