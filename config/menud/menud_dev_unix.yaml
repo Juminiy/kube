@@ -7,7 +7,7 @@ log:
     path:
       - /Users/chisato/go/src/kube/cmd/menud/log/app.log
     internalPath:
-      - /Users/chisato/go/src/kube/cmd/menud/log/app_zero.log
+      - /Users/chisato/go/src/kube/cmd/menud/log/app_internal.log
   zero:
     level:
     path:

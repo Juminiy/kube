@@ -1,6 +1,7 @@
 package internal_api
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -103,4 +104,8 @@ func GetWorkPath(s ...string) (string, error) {
 
 func filePathJoin(base string, s ...string) string {
 	return filepath.Join(base, filepath.Join(s...))
+}
+
+func notAbsPathErr(pathOrDir string) error {
+	return fmt.Errorf("error path: %s, path must be an absolute path", pathOrDir)
 }

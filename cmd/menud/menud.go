@@ -81,7 +81,7 @@ func init() {
 
 	util.SeqRun(
 		initLog,
-		initKubernetes,
+		//initKubernetes,
 	)
 
 }
@@ -125,14 +125,14 @@ func initLog() {
 		WithOutputPaths(_globalConfig.Log.Zap.Path...).
 		WithErrorOutputPaths(_globalConfig.Log.Zap.InternalPath...).
 		Load()
-	stdlog.Info("zaplog init success")
+	zaplog.Info("zaplog init success")
 }
 
 func initKubernetes() {
 	k8s_api.WithKubeConfigPath(_globalConfig.Kubernetes.KubeConfigPath)
 	k8s_api.WithImageRegistry(_globalConfig.Harbor.Registry)
 	k8s_api.Load()
-	stdlog.Info("kubernetes client init success")
+	zaplog.Info("kubernetes client init success")
 }
 
 func initHarbor() {
@@ -141,7 +141,7 @@ func initHarbor() {
 		WithUsername(_globalConfig.Harbor.Username).
 		WithPassword(_globalConfig.Harbor.Password).
 		Load()
-	stdlog.Info("harbor client init success")
+	zaplog.Info("harbor client init success")
 }
 
 func initDocker() {
@@ -149,7 +149,7 @@ func initDocker() {
 		WithHost(_globalConfig.Docker.Host).
 		WithVersion(_globalConfig.Docker.Version).
 		Load()
-	stdlog.Info("docker client init success")
+	zaplog.Info("docker client init success")
 }
 
 func initMinio() {
@@ -158,5 +158,5 @@ func initMinio() {
 		WithAccessKeyID(_globalConfig.Minio.AccessKeyID).
 		WithSecretAccessKey(_globalConfig.Minio.SecretAccessKey).
 		Load()
-	stdlog.Info("minio client init success")
+	zaplog.Info("minio client init success")
 }

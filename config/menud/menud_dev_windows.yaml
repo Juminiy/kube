@@ -1,0 +1,32 @@
+log:
+  engine: zap
+  zap:
+    level: info
+    caller: true
+    stacktrace: true
+    path:
+      - C:\Users\chisato\go\src\kube\cmd\menud\log\app.log
+    internalPath:
+      - C:\Users\chisato\go\src\kube\cmd\menud\log\app.log
+  zero:
+    level:
+    path:
+
+kubernetes:
+  kubeConfigPath: C:\Users\chisato\.kube\config
+
+harbor:
+  registry: http://harbor.local:8111
+  username: admin
+  password: Harbor12345
+  public: library
+
+docker:
+  host: tcp://docker.local:2375
+  version: 1.47
+
+minio:
+  endpoint: minio.local:9000
+  accessKeyID: minioadmin
+  secretAccessKey: minioadmin
+  secure: false

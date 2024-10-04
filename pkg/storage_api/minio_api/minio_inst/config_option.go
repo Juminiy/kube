@@ -3,6 +3,7 @@ package minio_inst
 
 import (
 	"github.com/Juminiy/kube/pkg/internal"
+	"github.com/Juminiy/kube/pkg/util"
 	"sync"
 )
 
@@ -27,7 +28,7 @@ func (o *ConfigOption) Load() {
 }
 
 func (o *ConfigOption) WithEndpoint(endpoint string) *ConfigOption {
-	_minioEndpoint = endpoint
+	_minioEndpoint = util.LookupIP(endpoint)
 	return o
 }
 
