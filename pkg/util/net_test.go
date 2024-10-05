@@ -2,6 +2,7 @@ package util
 
 import "testing"
 
+// +passed
 func TestLookupIP(t *testing.T) {
 	t.Log(LookupIP("harbor.local"))
 	t.Log(LookupIP("harbor.local:18111"))

@@ -2,6 +2,7 @@ package internal_api
 
 import (
 	"fmt"
+	//"github.com/Juminiy/kube/pkg/util"
 	"os"
 	"path/filepath"
 	"strings"
@@ -14,7 +15,7 @@ const (
 
 func DirExist(dir string) bool {
 	_, err := os.Stat(dir)
-	return os.IsExist(err)
+	return err == nil || os.IsExist(err)
 }
 
 func DirNotExist(dir string) bool {
@@ -38,7 +39,7 @@ func DeleteDir(dir string) error {
 
 func FileExist(filePath string) bool {
 	_, err := os.Stat(filePath)
-	return os.IsExist(err)
+	return err == nil || os.IsExist(err)
 }
 
 func FileNotExist(filePath string) bool {
@@ -46,16 +47,39 @@ func FileNotExist(filePath string) bool {
 	return os.IsNotExist(err)
 }
 
-func OpenFileIfExist(filePath string) (*os.File, error) {
-	dir, _ := SplitDirAndFileName(filePath)
-	if DirExist(dir) && FileExist(filePath) {
-		return openFile(filePath)
+//func CreateFile(filePath string) error {
+//	filePtr, err := os.Create(filePath)
+//	defer filePtr.Close()
+//	return err
+//}
+
+func DeleteFile(filePath string) error {
+	if FileExist(filePath) {
+		return os.Remove(filePath)
 	}
-	return nil, os.ErrNotExist
+	return nil
 }
 
-func OpenFileWithCreateIfNotExist(filePath string) (*os.File, error) {
-	dir, _ := SplitDirAndFileName(filePath)
+func AppendFile(filePath string) (*os.File, error) {
+	return os.OpenFile(filePath, os.O_RDWR|os.O_APPEND, FilePerm)
+}
+
+func OverwriteFile(filePath string) (*os.File, error) {
+	return os.OpenFile(filePath, os.O_RDWR|os.O_TRUNC, FilePerm)
+}
+
+//func AppendFileIfExist(filePath string) (*os.File, error) {
+//	dir, _ := splitDirAndFileName(filePath)
+//	if DirExist(dir) && FileExist(filePath) {
+//		return AppendFile(filePath)
+//	}
+//	return nil, os.ErrNotExist
+//}
+
+// AppendCreateFile
+// append file if exist and create file if not exist
+func AppendCreateFile(filePath string) (*os.File, error) {
+	dir, _ := splitDirAndFileName(filePath)
 	if DirNotExist(dir) {
 		err := CreateDir(dir)
 		if err != nil {
@@ -65,14 +89,23 @@ func OpenFileWithCreateIfNotExist(filePath string) (*os.File, error) {
 	if FileNotExist(filePath) {
 		return os.Create(filePath)
 	}
-	return openFile(filePath)
+	return AppendFile(filePath)
 }
 
-func DeleteFile(filePath string) error {
-	if FileExist(filePath) {
-		return os.Remove(filePath)
+// OverwriteCreateFile
+// overwrite file if exist and create file if not exist
+func OverwriteCreateFile(filePath string) (*os.File, error) {
+	dir, _ := splitDirAndFileName(filePath)
+	if DirNotExist(dir) {
+		err := CreateDir(dir)
+		if err != nil {
+			return nil, err
+		}
 	}
-	return nil
+	if FileNotExist(filePath) {
+		return os.Create(filePath)
+	}
+	return OverwriteFile(filePath)
 }
 
 // SplitDirAndFileName
@@ -81,17 +114,13 @@ func DeleteFile(filePath string) error {
 // "a/b" -> "a", "b"
 // "a/b/c.d" -> "a/b","c.d"
 // "/a/b/c.d" -> "/a/b","c.d"
-func SplitDirAndFileName(filePath string) (string, string) {
+func splitDirAndFileName(filePath string) (string, string) {
 	lastSlashIndex := strings.LastIndex(filePath, slash)
 	if lastSlashIndex == -1 {
 		return "", filePath
 	}
 	return filePath[:lastSlashIndex], // dir
 		filePath[lastSlashIndex+1:] // fileName
-}
-
-func openFile(filePath string) (*os.File, error) {
-	return os.OpenFile(filePath, os.O_RDWR|os.O_APPEND, FilePerm)
 }
 
 func GetWorkPath(s ...string) (string, error) {

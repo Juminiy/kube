@@ -24,7 +24,7 @@ func OSCreateAbsolutePath(filePath string) error {
 	if err := internal_api.IsAbsolutePath(filePath); err != nil {
 		return err
 	}
-	filePtr, err := internal_api.OpenFileWithCreateIfNotExist(filePath)
+	filePtr, err := internal_api.AppendCreateFile(filePath)
 	defer SilentCloseIO("file ptr", filePtr)
 	return err
 }
@@ -34,7 +34,7 @@ func OSFilePathExists(filePath string) bool {
 }
 
 func OSOpenFileWithCreate(filePath string) (*os.File, error) {
-	return internal_api.OpenFileWithCreateIfNotExist(filePath)
+	return internal_api.AppendCreateFile(filePath)
 }
 
 func OSRemoveFile(filePath string) error {

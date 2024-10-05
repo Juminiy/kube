@@ -3,7 +3,7 @@ package stdlog
 
 import (
 	"fmt"
-	internalapi "github.com/Juminiy/kube/pkg/internal_api"
+	"github.com/Juminiy/kube/pkg/internal_api"
 	"log"
 	"os"
 )
@@ -64,7 +64,7 @@ func Init() {
 
 	// use util.OSOpenFileWithCreate
 	// import cycle, use func internal directly
-	logFilePtr, err := internalapi.OpenFileWithCreateIfNotExist(_logPath)
+	logFilePtr, err := internal_api.AppendCreateFile(_logPath)
 	if err != nil {
 		fmt.Printf("open or create stdlog filepath: %s, error: %s\n", _logPath, err.Error())
 		// if any error use default by config

@@ -2,6 +2,8 @@
 
 package internal_api
 
+import "path/filepath"
+
 const (
 	Slash = slash
 	slash = "/"

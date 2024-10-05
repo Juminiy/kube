@@ -53,8 +53,10 @@ func SilentErrorf(detail string, err error) {
 // SilentCloseIO
 // handle io closer error
 func SilentCloseIO(msg string, closer io.Closer) {
-	err := closer.Close()
-	if err != nil {
-		stdlog.ErrorF(msg+" instance: %#v close error: %s", closer, err.Error())
+	if closer != nil {
+		err := closer.Close()
+		if err != nil {
+			stdlog.ErrorF(msg+" instance: %#v close error: %s", closer, err.Error())
+		}
 	}
 }
