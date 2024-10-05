@@ -46,3 +46,7 @@ func cstLocation() *time.Location {
 	}
 	return cstLoc
 }
+
+func TimeSecond(sec int) time.Duration {
+	return time.Duration(sec) * time.Second
+}

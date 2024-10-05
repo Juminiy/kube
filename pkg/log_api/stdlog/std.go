@@ -74,3 +74,7 @@ func Init() {
 
 	_logger = log.New(logFilePtr, "", lFlag)
 }
+
+func Get() *log.Logger {
+	return _logger
+}
