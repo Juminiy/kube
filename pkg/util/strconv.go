@@ -2,6 +2,7 @@ package util
 
 import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
+	"reflect"
 	"strconv"
 )
 
@@ -55,4 +56,12 @@ func AtoF32(s string) float32 {
 		return 0.0
 	}
 	return float32(f64)
+}
+
+func Ptr2a(v any) string {
+	valOf := reflect.ValueOf(v)
+	if valOf.Kind() == reflect.Pointer {
+		return strconv.FormatUint(uint64(valOf.Pointer()), 16)
+	}
+	return ""
 }

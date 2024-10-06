@@ -11,6 +11,10 @@ type ClientInterface interface {
 	GCable
 }
 
+type GCable interface {
+	GC(...util.Func)
+}
+
 type LevelLogger interface {
 	Debug(...any)
 	Info(...any)
@@ -20,6 +24,16 @@ type LevelLogger interface {
 	Panic(...any)
 }
 
-type GCable interface {
-	GC(...util.Func)
+type InternalLogger interface {
+	Info(...any)
+	Infof(string, ...any)
+	Error(...any)
+	Errorf(string, ...any)
+}
+
+type InternalLoggerV2 interface {
+	Info(...any)
+	InfoF(string, ...any)
+	Error(...any)
+	ErrorF(string, ...any)
 }

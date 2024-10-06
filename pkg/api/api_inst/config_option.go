@@ -21,3 +21,13 @@ func (o *ConfigOption) WithLogger(levelLogger kubeapi.LevelLogger) *ConfigOption
 	_logger = levelLogger
 	return o
 }
+
+func (o *ConfigOption) WithInternalLogger(iLogger kubeapi.InternalLogger) *ConfigOption {
+	_iLogger = iLogger
+	return o
+}
+
+func (o *ConfigOption) WithInternalLoggerV2(iLoggerV2 kubeapi.InternalLoggerV2) *ConfigOption {
+	_iLoggerV2 = iLoggerV2
+	return o
+}

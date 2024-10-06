@@ -10,7 +10,9 @@ var ()
 
 // global var
 var (
-	_logger kubeapi.LevelLogger
+	_logger    kubeapi.LevelLogger
+	_iLogger   kubeapi.InternalLogger
+	_iLoggerV2 kubeapi.InternalLoggerV2
 )
 
 func Init() {
