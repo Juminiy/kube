@@ -5,8 +5,8 @@ import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	psnvgpu "github.com/mindprince/gonvml"
-	pscpu "github.com/shirou/gopsutil/cpu"
-	psdisk "github.com/shirou/gopsutil/disk"
+	pscpu "github.com/shirou/gopsutil/v4/cpu"
+	psdisk "github.com/shirou/gopsutil/v4/disk"
 	"net"
 	"runtime"
 )
@@ -24,7 +24,11 @@ type (
 	}
 
 	sysGPU struct {
-		Nvidia []psnvgpu.Device `json:"nvidia"`
+		Nvidia   []psnvgpu.Device `json:"nvidia"` // Nvidia GPU
+		Apple    []struct{}       `json:"apple"`  // Apple Silicon MPS
+		Amd      []struct{}       `json:"amd"`
+		Intel    []struct{}       `json:"intel"`
+		Qualcomm []struct{}       `json:"qualcomm"`
 	}
 )
 

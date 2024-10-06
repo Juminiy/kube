@@ -3,7 +3,7 @@ package psutil
 import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	kubereflect "github.com/Juminiy/kube/pkg/util/reflect"
-	psmem "github.com/shirou/gopsutil/v3/mem"
+	psmem "github.com/shirou/gopsutil/v4/mem"
 )
 
 type mem struct {

@@ -2,7 +2,7 @@ package psutil
 
 import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
-	psdisk "github.com/shirou/gopsutil/disk"
+	psdisk "github.com/shirou/gopsutil/v4/disk"
 )
 
 func disk() []psdisk.PartitionStat {

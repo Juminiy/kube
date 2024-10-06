@@ -1,6 +1,8 @@
 package muxhandler
 
 import (
+	"github.com/Juminiy/kube/pkg/httpserver/stdserver"
+	"github.com/Juminiy/kube/pkg/util"
 	"github.com/Juminiy/kube/pkg/util/psutil"
 	"net/http"
 	"testing"
@@ -20,4 +22,11 @@ func TestMuxHandler(t *testing.T) {
 		}
 		respW.WriteHeader(http.StatusOK)
 	})
+
+	stdserver.New().
+		WithHandler(muxHandler).
+		WithHost("0.0.0.0").WithPort(8080).
+		WithMaxHeaderBytes(16*util.Mi).
+		WithTimeoutSec(10, 10).
+		Load()
 }

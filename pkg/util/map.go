@@ -8,3 +8,7 @@ func MapOk[Map ~map[K]V, K comparable, V any](m Map, k K) bool {
 	_, ok := m[k]
 	return ok
 }
+
+const (
+	MagicMapCap = (iota + 1) << 4
+)

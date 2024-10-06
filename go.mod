@@ -10,9 +10,11 @@ require (
 	github.com/docker/docker v27.3.1+incompatible
 	github.com/goharbor/go-client v0.210.0
 	github.com/google/uuid v1.6.0
+	github.com/mindprince/gonvml v0.0.0-20211002210717-ac0b66419a41
 	github.com/minio/madmin-go/v3 v3.0.64
 	github.com/minio/minio-go/v7 v7.0.76
 	github.com/opencontainers/image-spec v1.1.0
+	github.com/shirou/gopsutil/v4 v4.24.9
 	github.com/teris-io/shortid v0.0.0-20220617161101-71ec9f2aa569
 	go.uber.org/zap v1.27.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -39,11 +41,13 @@ require (
 	github.com/containerd/platforms v0.2.1 // indirect
 	github.com/containerd/ttrpc v1.2.5 // indirect
 	github.com/containerd/typeurl/v2 v2.2.0 // indirect
+	github.com/creack/pty v1.1.20 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/docker/distribution v2.8.3+incompatible // indirect
 	github.com/docker/go-connections v0.5.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
+	github.com/ebitengine/purego v0.8.0 // indirect
 	github.com/emicklei/go-restful/v3 v3.11.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/fxamacker/cbor/v2 v2.7.0 // indirect
@@ -79,7 +83,6 @@ require (
 	github.com/lufia/plan9stats v0.0.0-20230110061619-bbe2e5e100de // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
-	github.com/mindprince/gonvml v0.0.0-20211002210717-ac0b66419a41 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/moby/docker-image-spec v1.3.1 // indirect
@@ -110,7 +113,6 @@ require (
 	github.com/rs/xid v1.6.0 // indirect
 	github.com/safchain/ethtool v0.3.0 // indirect
 	github.com/secure-io/sio-go v0.3.1 // indirect
-	github.com/shirou/gopsutil v3.21.11+incompatible // indirect
 	github.com/shirou/gopsutil/v3 v3.23.12 // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
@@ -120,7 +122,7 @@ require (
 	github.com/tklauser/numcpus v0.6.1 // indirect
 	github.com/vbatts/tar-split v0.11.6 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
-	github.com/yusufpapurcu/wmi v1.2.3 // indirect
+	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.mongodb.org/mongo-driver v1.7.3 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.55.0 // indirect
@@ -130,14 +132,15 @@ require (
 	go.opentelemetry.io/otel/sdk v1.29.0 // indirect
 	go.opentelemetry.io/otel/trace v1.30.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/crypto v0.26.0 // indirect
-	golang.org/x/net v0.28.0 // indirect
+	golang.org/x/crypto v0.28.0 // indirect
+	golang.org/x/net v0.30.0 // indirect
 	golang.org/x/oauth2 v0.22.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
-	golang.org/x/sys v0.25.0 // indirect
-	golang.org/x/term v0.23.0 // indirect
-	golang.org/x/text v0.17.0 // indirect
+	golang.org/x/sys v0.26.0 // indirect
+	golang.org/x/term v0.25.0 // indirect
+	golang.org/x/text v0.19.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
+	golang.org/x/tools v0.26.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240924160255-9d4c2d233b61 // indirect
 	google.golang.org/grpc v1.67.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect

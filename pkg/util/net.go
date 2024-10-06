@@ -34,3 +34,40 @@ func LookupIP(host string) string {
 
 	return ip
 }
+
+func IPStringFromAddr(addr []net.Addr) []string {
+	ip := make([]string, len(addr))
+	for addrI, addrE := range addr {
+		ip[addrI] = addrE.String()
+	}
+	return ip
+}
+
+func IPFromAddr(addr net.Addr) net.IP {
+	var ip net.IP
+	switch addr.(type) {
+	case *net.IPAddr:
+		ip = addr.(*net.IPAddr).IP
+	case *net.IPNet:
+		ip = addr.(*net.IPNet).IP
+	case *net.TCPAddr:
+		ip = addr.(*net.TCPAddr).IP
+	case *net.UDPAddr:
+		ip = addr.(*net.UDPAddr).IP
+	case *net.UnixAddr:
+		ip = addr.(*net.IPAddr).IP
+	}
+	return ip
+}
+
+// IsIPv4
+// TODO: fixbug
+func IsIPv4(addr net.Addr) bool {
+	return len(IPFromAddr(addr)) == net.IPv4len
+}
+
+// IsIPv6
+// TODO: fixbug
+func IsIPv6(addr net.Addr) bool {
+	return len(IPFromAddr(addr)) == net.IPv6len
+}

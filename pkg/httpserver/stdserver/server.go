@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
+	"github.com/Juminiy/kube/pkg/util/psutil"
 	"log"
+	"net"
 	"net/http"
 )
 
@@ -46,6 +48,7 @@ func Init() {
 		_server.ErrorLog = stdlog.Get()
 	}
 
+	ListenAndServeInfo(_tls, _port)
 	var serveErr error
 	if _tls {
 		serveErr = _server.ListenAndServeTLS(_tlsCertFilePath, _tlsKeyFilePath)
@@ -57,4 +60,22 @@ func Init() {
 		stdlog.ErrorF("http server: stdserver serve error: %s", serveErr.Error())
 	}
 
+}
+
+func ListenAndServeInfo(tls bool, port int) {
+	appProto := "http"
+	if tls {
+		appProto = "https"
+	}
+	ipList := psutil.HostIP(
+		func(intf net.Interface) bool {
+			return (psutil.RunningInterface(intf) && psutil.UpInterface(intf)) ||
+				psutil.LoopbackInterface(intf)
+		},
+		util.IsIPv6,
+	)
+
+	for _, ip := range ipList {
+		stdlog.InfoF("listen and serve %s://%s:%d", appProto, ip, port)
+	}
 }

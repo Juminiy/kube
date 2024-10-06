@@ -2,7 +2,7 @@ package psutil
 
 import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
-	pscpu "github.com/shirou/gopsutil/cpu"
+	pscpu "github.com/shirou/gopsutil/v4/cpu"
 )
 
 func cpu() []pscpu.InfoStat {
