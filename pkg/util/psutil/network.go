@@ -111,7 +111,7 @@ func ipFromAddr(addr []net.Addr, filter AddrFilter) []string {
 	ip := make([]string, 0, len(addr))
 	for _, addrE := range addr {
 		if filter(addrE) {
-			ip = append(ip, addrE.String())
+			ip = append(ip, util.TrimNetMask(addrE.String()))
 		}
 	}
 	return ip

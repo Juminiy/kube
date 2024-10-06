@@ -12,7 +12,7 @@ func TestMuxHandler(t *testing.T) {
 	muxHandler := http.NewServeMux()
 	muxHandler.HandleFunc("/api/v1/sys", func(respW http.ResponseWriter, req *http.Request) {
 		if req.Method != http.MethodGet {
-			respW.WriteHeader(http.StatusBadRequest)
+			respW.WriteHeader(http.StatusNotFound)
 			return
 		}
 		_, err := respW.Write(psutil.Marshal())

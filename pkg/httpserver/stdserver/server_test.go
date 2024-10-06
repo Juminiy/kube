@@ -3,6 +3,7 @@ package stdserver
 import "testing"
 
 // could not debug in darwin why?
+// +passed windows
 func TestListenAndServeInfo(t *testing.T) {
-	ListenAndServeInfo(false, 9090)
+	ListenAndServeInfoF(false, 9090)
 }

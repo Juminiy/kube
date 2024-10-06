@@ -48,7 +48,7 @@ func Init() {
 		_server.ErrorLog = stdlog.Get()
 	}
 
-	ListenAndServeInfo(_tls, _port)
+	ListenAndServeInfoF(_tls, _port)
 	var serveErr error
 	if _tls {
 		serveErr = _server.ListenAndServeTLS(_tlsCertFilePath, _tlsKeyFilePath)
@@ -62,7 +62,7 @@ func Init() {
 
 }
 
-func ListenAndServeInfo(tls bool, port int) {
+func ListenAndServeInfoF(tls bool, port int) {
 	appProto := "http"
 	if tls {
 		appProto = "https"
@@ -72,7 +72,7 @@ func ListenAndServeInfo(tls bool, port int) {
 			return (psutil.RunningInterface(intf) && psutil.UpInterface(intf)) ||
 				psutil.LoopbackInterface(intf)
 		},
-		util.IsIPv6,
+		util.IsIPv4,
 	)
 
 	for _, ip := range ipList {

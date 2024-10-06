@@ -51,3 +51,35 @@ func BytesMB(bs []byte) float64 {
 func BytesGB(bs []byte) float64 {
 	return float64(len(bs)) / (1.0 * Gi)
 }
+
+func MeasureOf(size int) string {
+	var (
+		appr float64 = 0.0
+		meas string  = "B"
+	)
+	switch {
+	case size < 0:
+		return ""
+	case size < Ki:
+		appr = float64(size)
+	case size < Mi:
+		appr = float64(size) / (1.0 * Ki)
+		meas = "KiB"
+	case size < Gi:
+		appr = float64(size) / (1.0 * Mi)
+		meas = "MiB"
+	case size < Ti:
+		appr = float64(size) / (1.0 * Gi)
+		meas = "GiB"
+	case size < Pi:
+		appr = float64(size) / (1.0 * Ti)
+		meas = "TiB"
+	case size < Ei:
+		appr = float64(size) / (1.0 * Pi)
+		meas = "Pi"
+	default:
+		stdlog.WarnF("too much byte %d B, do not convert", size)
+		return strconv.Itoa(size) + meas
+	}
+	return F64toa(appr) + meas
+}

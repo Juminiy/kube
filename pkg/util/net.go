@@ -60,14 +60,22 @@ func IPFromAddr(addr net.Addr) net.IP {
 	return ip
 }
 
-// IsIPv4
-// TODO: fixbug
 func IsIPv4(addr net.Addr) bool {
-	return len(IPFromAddr(addr)) == net.IPv4len
+	return IPFromAddr(addr).To4() != nil
 }
 
-// IsIPv6
-// TODO: fixbug
 func IsIPv6(addr net.Addr) bool {
-	return len(IPFromAddr(addr)) == net.IPv6len
+	return IPFromAddr(addr).To16() != nil
+}
+
+func TrimNetMask(ip string) string {
+	ipMask := strings.Split(ip, "/")
+	switch len(ipMask) {
+	default:
+		return ""
+	case 1:
+		return ip
+	case 2:
+		return ipMask[0]
+	}
 }

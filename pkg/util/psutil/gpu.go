@@ -1,22 +1,14 @@
+//go:build !(arm64 && darwin)
+
 package psutil
 
 import (
-	internaldev "github.com/Juminiy/kube/pkg/internal/device"
-	"github.com/Juminiy/kube/pkg/internal_api"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	psnvgpu "github.com/mindprince/gonvml"
-	"runtime"
 )
 
 func gpu() *sysGPU {
-	sysgpu := &sysGPU{}
-	switch {
-	case runtime.GOOS == internal_api.Darwin && runtime.GOARCH == internal_api.Arm64:
-		sysgpu.Apple = internaldev.MPS()
-	default:
-		sysgpu.Nvidia = nvidiaGPU()
-	}
-	return sysgpu
+	return &sysGPU{Nvidia: nvidiaGPU()}
 }
 
 func nvidiaGPU() []psnvgpu.Device {
