@@ -9,14 +9,18 @@ const (
 	TimeLocationAsiaShanghai = "Asia/Shanghai"
 )
 
+// for human read
 const (
-	DurationMinute  = time.Second * 60
-	DurationHour    = DurationMinute * 60
-	DurationHalfDay = DurationHour * 12
-	DurationDay     = DurationHalfDay * 2
-	DurationWeek    = DurationDay * 7
-	DurationMonth   = DurationDay * 30
-	DurationYear    = DurationDay * 365
+	DurationMinute      = time.Second * 60
+	DurationHour        = DurationMinute * 60
+	DurationHalfDay     = DurationHour * 12
+	DurationDay         = DurationHalfDay * 2
+	DurationWeek        = DurationDay * 7
+	DurationMonth       = DurationDay * 30
+	DurationYear        = DurationDay * 365
+	DurationEra         = DurationYear * 10
+	DurationHalfCentury = DurationEra * 5
+	DurationCentury     = DurationHalfCentury * 2
 )
 
 // CST2Timestamp
@@ -49,4 +53,51 @@ func cstLocation() *time.Location {
 
 func TimeSecond(sec int) time.Duration {
 	return time.Duration(sec) * time.Second
+}
+
+func MeasureTime(dur time.Duration) string {
+	var (
+		appr = float64(dur)
+		meas = "ns"
+	)
+	switch {
+	case dur <= 0:
+		return ""
+	case dur <= time.Microsecond:
+		appr /= float64(time.Nanosecond)
+
+	case dur <= time.Millisecond:
+		appr /= float64(time.Microsecond)
+		meas = "µs"
+
+	case dur <= time.Second:
+		appr /= float64(time.Millisecond)
+		meas = "ms"
+
+	case dur <= time.Minute:
+		appr /= float64(time.Second)
+		meas = "s"
+
+	case dur <= time.Hour:
+		appr /= float64(time.Minute)
+		meas = "min"
+
+	case dur <= DurationDay:
+		appr /= float64(time.Hour)
+		meas = "hour"
+
+	case dur <= DurationYear:
+		appr /= float64(DurationDay)
+		meas = "day"
+
+	case dur <= DurationCentury:
+		appr /= float64(DurationYear)
+		meas = "year"
+
+	default:
+		stdlog.WarnF("too long time: %d, do not convert", dur)
+		return I64toa(int64(dur)) + meas
+	}
+
+	return F64toa(appr) + meas
 }

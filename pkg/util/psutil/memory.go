@@ -18,9 +18,9 @@ type mem struct {
 }
 
 func (m *mem) setHumanRead() *mem {
-	m.TotalSize = util.MeasureOf(util.U64toI(m.Total))
-	m.AvailableSize = util.MeasureOf(util.U64toI(m.Available))
-	m.UsedSize = util.MeasureOf(util.U64toI(m.Used))
+	m.TotalSize = util.MeasureByte(util.U64toI(m.Total))
+	m.AvailableSize = util.MeasureByte(util.U64toI(m.Available))
+	m.UsedSize = util.MeasureByte(util.U64toI(m.Used))
 	return m
 }
 

@@ -52,7 +52,7 @@ func BytesGB(bs []byte) float64 {
 	return float64(len(bs)) / (1.0 * Gi)
 }
 
-func MeasureOf(size int) string {
+func MeasureByte(size int) string {
 	var (
 		appr float64 = 0.0
 		meas string  = "B"

@@ -60,3 +60,9 @@ func SilentCloseIO(msg string, closer io.Closer) {
 		}
 	}
 }
+
+func Must(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
