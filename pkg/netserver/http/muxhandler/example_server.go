@@ -1,7 +1,7 @@
 package muxhandler
 
 import (
-	"github.com/Juminiy/kube/pkg/httpserver/stdserver"
+	"github.com/Juminiy/kube/pkg/netserver/http/stdserver"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/Juminiy/kube/pkg/util/psutil"
 	"net/http"
