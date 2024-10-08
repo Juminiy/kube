@@ -29,3 +29,7 @@ func StringReplaceAlls(s, to string, from ...string) string {
 	}
 	return s
 }
+
+func StringQuote(s string) string {
+	return StringConcat("\"", s, "\"")
+}

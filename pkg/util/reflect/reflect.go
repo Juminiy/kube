@@ -1,6 +1,8 @@
 package reflect
 
-import "reflect"
+import (
+	"reflect"
+)
 
 func underlyingStruct(v reflect.Value) bool {
 	return deref2NoPointer(v).Kind() == reflect.Struct
@@ -54,6 +56,52 @@ func cast2Pointer(v any, capV int) any {
 	return vPtr
 }
 
-func String(v any) string {
-	return ""
+// unused, none-sense
+func derefInterfacePointer(v reflect.Value) reflect.Value {
+	for v.Kind() == reflect.Interface ||
+		v.Kind() == reflect.Pointer {
+		switch v.Kind() {
+		case reflect.Interface:
+			vInst := v.Interface()
+			return reflect.ValueOf(vInst)
+
+		case reflect.Pointer:
+			v = deref2NoPointer(v)
+
+		default:
+			return v
+		}
+	}
+	return reflect.Value{}
+}
+
+var (
+	_nilValue = reflect.Value{}
+)
+
+func mapKeyExistAssign(v reflect.Value, mapKey, mapVal any) {
+	v = deref2NoPointer(v)
+	if v.Kind() != reflect.Map || v.IsNil() {
+		return
+	}
+
+	mapKeyV, mapValV := reflect.ValueOf(mapKey), reflect.ValueOf(mapVal)
+	if oldMapVal := v.MapIndex(mapKeyV); oldMapVal == _nilValue {
+		return
+	}
+
+	v.SetMapIndex(mapKeyV, mapValV)
+}
+
+func mapDryAssign(v reflect.Value, mapKey, mapVal any) {
+	v = deref2NoPointer(v)
+	if v.Kind() != reflect.Map || v.IsNil() {
+		return
+	}
+
+	v.SetMapIndex(reflect.ValueOf(mapKey), reflect.ValueOf(mapVal))
+}
+
+func mapDryDelete(v reflect.Value, mapKey any) {
+	mapDryAssign(v, mapKey, nil)
 }

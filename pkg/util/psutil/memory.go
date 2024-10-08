@@ -4,6 +4,7 @@ import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	kubereflect "github.com/Juminiy/kube/pkg/util/reflect"
+	"github.com/Juminiy/kube/pkg/util/safe_cast"
 	psmem "github.com/shirou/gopsutil/v4/mem"
 )
 
@@ -18,9 +19,9 @@ type mem struct {
 }
 
 func (m *mem) setHumanRead() *mem {
-	m.TotalSize = util.MeasureByte(util.U64toI(m.Total))
-	m.AvailableSize = util.MeasureByte(util.U64toI(m.Available))
-	m.UsedSize = util.MeasureByte(util.U64toI(m.Used))
+	m.TotalSize = util.MeasureByte(safe_cast.U64toI(m.Total))
+	m.AvailableSize = util.MeasureByte(safe_cast.U64toI(m.Available))
+	m.UsedSize = util.MeasureByte(safe_cast.U64toI(m.Used))
 	return m
 }
 

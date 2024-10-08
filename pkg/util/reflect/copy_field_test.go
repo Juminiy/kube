@@ -2,7 +2,6 @@ package reflect
 
 import (
 	"github.com/Juminiy/kube/pkg/util"
-	"reflect"
 	"strconv"
 	"testing"
 )
@@ -56,16 +55,4 @@ func TestCopyFieldValue(t *testing.T) {
 	t.Logf("src1: %s -> %s", src1S, src1.String())
 	t.Logf("dst1: %s -> %s", dst1S, dst1.String())
 	t.Logf("dst2: %s -> %s", dst2S, dst2.String())
-}
-
-// +passed
-func TestDeref(t *testing.T) {
-	var i32 int32 = 10
-	i32Ptr := &i32
-	i32PPtr := &i32Ptr
-	i32PPPtr := &i32PPtr
-
-	t.Logf("before deref type: %v", reflect.TypeOf(i32PPPtr).String())
-	t.Logf("after deref type: %v", deref2OnePointer(reflect.ValueOf(i32PPPtr)).Type().String())
-	t.Logf("after deref type: %v", deref2NoPointer(reflect.ValueOf(i32PPPtr)).Type().String())
 }
