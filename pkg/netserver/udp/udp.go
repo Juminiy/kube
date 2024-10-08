@@ -11,7 +11,7 @@ func ParseUDPAddr(addr string) *net.UDPAddr {
 }
 
 const (
-	HeartBeatMsgStr = "Ciallo~"
+	HeartBeatMsgStr = "Ciallo~\n"
 	NetworkUDP      = "udp"
 	NetworkUDP4     = "udp4"
 	NetworkUDP6     = "udp6"

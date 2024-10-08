@@ -26,7 +26,7 @@ func IPv4Server(addr string) {
 		}
 		util.PutBuffer(buf)
 
-		_, err = udpConn.WriteToUDP(str2Bs(HeartBeatMsgStr), ParseUDPAddr(clientAddr.String()))
+		_, err = udpConn.WriteToUDP(str2Bs(HeartBeatMsgStr), clientAddr)
 		if err != nil {
 			util.SilentErrorf("write to udp", err)
 			continue

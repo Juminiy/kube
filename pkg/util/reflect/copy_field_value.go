@@ -16,11 +16,11 @@ func CopyFieldValue(src any, dst any) {
 	dstVal := deref2OnePointer(reflect.ValueOf(dst))
 	srcTyp := srcVal.Type()
 
-	srcFieldMap := make(map[string]typVal, fieldSize(srcVal))
+	srcFieldMap := make(map[string]typVal, fieldLen(srcVal))
 
 	switch {
 	case srcVal.Kind() == reflect.Struct &&
-		underlyingStruct(dstVal) &&
+		underlyingIsStruct(dstVal) &&
 		dstVal.Kind() == reflect.Pointer: // dstVal.CanAddr() && dstVal.CanSet()
 		for srcI := range srcTyp.NumField() {
 			srcFi := srcTyp.Field(srcI)

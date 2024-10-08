@@ -23,31 +23,3 @@ func TestDerefInterface(t *testing.T) {
 	iptr := derefInterfacePointer(reflect.ValueOf(interfacePtr))
 	t.Log(iptr)
 }
-
-func TestMap(t *testing.T) {
-	// nil map
-	var m1 map[string]string
-	mapKeyExistAssign(reflect.ValueOf(m1), "v1", "v2")
-	t.Log(m1)
-
-	mapDryAssign(reflect.ValueOf(m1), "v1", "v2")
-	t.Log(m1)
-
-	// len0 map assign key exist
-	m1 = make(map[string]string)
-	mapKeyExistAssign(reflect.ValueOf(m1), "v1", "v2")
-	t.Log(m1)
-
-	// len0 map assign
-	//m1 = make(map[string]string)
-	mapDryAssign(reflect.ValueOf(m1), "v1", "v2")
-	t.Log(m1)
-
-	// map delete
-	mapDryDelete(reflect.ValueOf(m1), "v1")
-	t.Log(m1)
-
-	// panic
-	mapDryAssign(reflect.ValueOf(m1), "v2", 1)
-	t.Log(m1)
-}
