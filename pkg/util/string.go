@@ -33,3 +33,16 @@ func StringReplaceAlls(s, to string, from ...string) string {
 func StringQuote(s string) string {
 	return StringConcat("\"", s, "\"")
 }
+
+func StringSQuote(s string) string {
+	return StringConcat("'", s, "'")
+}
+
+func StringPrefixIn(s string, p ...string) bool {
+	for _, sp := range p {
+		if strings.HasPrefix(s, sp) {
+			return true
+		}
+	}
+	return false
+}

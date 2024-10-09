@@ -1,9 +1,13 @@
 package stdserver
 
-import "testing"
+import (
+	"github.com/Juminiy/kube/pkg/util"
+	"testing"
+)
 
-// could not debug in darwin why?
-// +passed windows
+// +passed windows darwin
 func TestListenAndServeInfo(t *testing.T) {
-	ListenAndServeInfoF(false, 9090)
+	ListenAndServeInfoF(false, 9090, util.IsIPv6)
+
+	ListenAndServeInfoF(false, 9090, util.IsIPv4)
 }

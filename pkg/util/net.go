@@ -61,11 +61,33 @@ func IPFromAddr(addr net.Addr) net.IP {
 }
 
 func IsIPv4(addr net.Addr) bool {
-	return IPFromAddr(addr).To4() != nil
+	ipTo4 := IPFromAddr(addr).To4()
+	return ipTo4 != nil &&
+		(len(ipTo4) == net.IPv4len ||
+			len(ipTo4) == net.IPv6len && ElemsIn(ipTo4[:12], []byte{0})) &&
+		IsIPv(ipTo4.String()) == 4 // most obvious character
 }
 
 func IsIPv6(addr net.Addr) bool {
-	return IPFromAddr(addr).To16() != nil
+	ipTo16 := IPFromAddr(addr).To16()
+	return ipTo16 != nil &&
+		//len(ipTo16) == net.IPv6len && !ElemsIn(ipTo16[:12], []byte{0}) && //local mismatch
+		IsIPv(ipTo16.String()) == 6 // most obvious character
+}
+
+func IsIPv(ip string) uint8 {
+	if strings.Contains(ip, ":") {
+		return 6
+	}
+	return 4
+}
+
+func GetIPv4Str(addr net.Addr) string {
+	return IPFromAddr(addr).To4().String()
+}
+
+func GetIPv6Str(addr net.Addr) string {
+	return IPFromAddr(addr).To16().String()
 }
 
 func TrimNetMask(ip string) string {

@@ -62,20 +62,32 @@ func Init() {
 
 }
 
-func ListenAndServeInfoF(tls bool, port int) {
+func ListenAndServeInfoF(tls bool, port int, addrFilter ...psutil.AddrFilter) {
 	appProto := "http"
 	if tls {
 		appProto = "https"
+	}
+	ipFuncV := func(addr net.Addr) bool {
+		for _, ipfn := range addrFilter {
+			if !ipfn(addr) {
+				return false
+			}
+		}
+		return HostListenIPFilter(addr)
 	}
 	ipList := psutil.HostIP(
 		func(intf net.Interface) bool {
 			return (psutil.RunningInterface(intf) && psutil.UpInterface(intf)) ||
 				psutil.LoopbackInterface(intf)
 		},
-		util.IsIPv4,
+		ipFuncV,
 	)
 
 	for _, ip := range ipList {
-		stdlog.InfoF("listen and serve %s://%s:%d", appProto, ip, port)
+		if util.IsIPv(ip) == 6 {
+			stdlog.InfoF("listen and serve %s://[%s]:%d", appProto, ip, port)
+		} else {
+			stdlog.InfoF("listen and serve %s://%s:%d", appProto, ip, port)
+		}
 	}
 }
