@@ -76,17 +76,17 @@ func safeCastIntLike() {
 // const: must not be assigned
 var (
 	intLikeTVMap = map[string]kubereflect.TypVal{
-		"int":     kubereflect.Parse2NoPointer(safe_cast.InvalidI),
-		"int8":    kubereflect.Parse2NoPointer(safe_cast.InvalidI8),
-		"int16":   kubereflect.Parse2NoPointer(safe_cast.InvalidI16),
-		"int32":   kubereflect.Parse2NoPointer(safe_cast.InvalidI32),
-		"int64":   kubereflect.Parse2NoPointer(safe_cast.InvalidI64),
-		"uint":    kubereflect.Parse2NoPointer(safe_cast.InvalidU),
-		"uint8":   kubereflect.Parse2NoPointer(safe_cast.InvalidU8),
-		"uint16":  kubereflect.Parse2NoPointer(safe_cast.InvalidU16),
-		"uint32":  kubereflect.Parse2NoPointer(safe_cast.InvalidU32),
-		"uint64":  kubereflect.Parse2NoPointer(safe_cast.InvalidU64),
-		"uintptr": kubereflect.Parse2NoPointer(safe_cast.InvalidUPtr),
+		"int":     kubereflect.IndirectOf(safe_cast.InvalidI),
+		"int8":    kubereflect.IndirectOf(safe_cast.InvalidI8),
+		"int16":   kubereflect.IndirectOf(safe_cast.InvalidI16),
+		"int32":   kubereflect.IndirectOf(safe_cast.InvalidI32),
+		"int64":   kubereflect.IndirectOf(safe_cast.InvalidI64),
+		"uint":    kubereflect.IndirectOf(safe_cast.InvalidU),
+		"uint8":   kubereflect.IndirectOf(safe_cast.InvalidU8),
+		"uint16":  kubereflect.IndirectOf(safe_cast.InvalidU16),
+		"uint32":  kubereflect.IndirectOf(safe_cast.InvalidU32),
+		"uint64":  kubereflect.IndirectOf(safe_cast.InvalidU64),
+		"uintptr": kubereflect.IndirectOf(safe_cast.InvalidUPtr),
 	}
 	intLikeShortMap = map[string]string{
 		"int":     "i",

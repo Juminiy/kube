@@ -17,7 +17,7 @@ func TestDeref(t *testing.T) {
 	t.Logf("after deref type: %v", deref2NoPointer(reflect.ValueOf(i32PPPtr)).Type().String())
 }
 
-// +unpassed
+// +unpassed no-sense
 func TestDerefInterface(t *testing.T) {
 	interfacePtr := cast2Pointer(3, 1)
 	iptr := derefInterfacePointer(reflect.ValueOf(interfacePtr))

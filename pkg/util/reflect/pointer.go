@@ -2,15 +2,10 @@ package reflect
 
 import "reflect"
 
-func Parse2NoPointer(v any) (tv TypVal) {
-	if v == nil {
-		return
-	}
-	tv = TypVal{}
-
-	tv.Val = deref2NoPointer(reflect.ValueOf(v))
+func (tv *TypVal) noPointer() reflect.Value {
+	tv.Val = deref2NoPointer(tv.Val)
 	tv.Typ = tv.Val.Type()
-	return
+	return tv.Val
 }
 
 // dereference _ -> _
@@ -44,7 +39,7 @@ func cast2Pointer(v any, capV int) any {
 	}
 
 	var vPtr = v
-	for _ = range capV {
+	for range capV {
 		vPtr = &vPtr
 	}
 	return vPtr
@@ -66,5 +61,5 @@ func derefInterfacePointer(v reflect.Value) reflect.Value {
 			return v
 		}
 	}
-	return reflect.Value{}
+	return _nilValue
 }
