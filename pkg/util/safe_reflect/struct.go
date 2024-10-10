@@ -1,16 +1,45 @@
-package reflect
+package safe_reflect
 
 import (
 	"reflect"
 	"strings"
 )
 
+// Struct API underlyingIsStructVal type and its attribute type can indirect
+// reflect.Struct is value
+
+func (tv TypVal) StructSet(underlyingIsStructVal any) {
+	v := tv.noPointer()
+	if v.Kind() != reflect.Struct {
+		return
+	}
+
+	vTyp, vVal := indirectTV(underlyingIsStructVal)
+	if tv.Typ == vTyp && v.CanSet() {
+		v.Set(vVal)
+	}
+}
+
+func (tv TypVal) StructSetFields(fields map[string]any) {
+	v := tv.noPointer()
+	if v.Kind() != reflect.Struct {
+		return
+	}
+
+	for fieldName, fieldVal := range fields {
+		srcTyp, srcVal := indirectTV(fieldVal)
+		dstVal := deref2NoPointer(v.FieldByName(fieldName))
+		if dstVal.Type() == srcTyp && dstVal.CanSet() {
+			dstVal.Set(srcVal)
+		}
+	}
+}
+
 // ParseStructTag
 // +example
 // `app1:"tag_val1" app2:"tag_val2" app3:"tag_val3"`
 func (tv TypVal) ParseStructTag(app string) (tagMap TagMap) {
-	v := deref2NoPointer(tv.Val)
-
+	v := tv.noPointer()
 	if v.Kind() != reflect.Struct {
 		return
 	}
@@ -43,16 +72,4 @@ func (m TagMap) ParseGetTagValV(field, key string) string {
 		}
 	}
 	return ""
-}
-
-func (tv TypVal) StructSetField(fields map[string]any) {
-	tv.noPointer()
-
-	for fieldName, fieldsVal := range fields {
-		tv.Val.FieldByName(fieldName).Set(reflect.ValueOf(fieldsVal))
-	}
-}
-
-func (tv TypVal) structCanOpt(v any) bool {
-	return tv.Typ == reflect.TypeOf(v)
 }

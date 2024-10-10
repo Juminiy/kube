@@ -1,6 +1,8 @@
-package reflect
+package safe_reflect
 
 import "reflect"
+
+// Pointer API is for pointer, or pointer to pointer, or p to ppp....
 
 func (tv *TypVal) noPointer() reflect.Value {
 	tv.Val = deref2NoPointer(tv.Val)
@@ -19,6 +21,18 @@ func deref2NoPointer(v reflect.Value) reflect.Value {
 	return v
 }
 
+func deref2Underlying(t reflect.Type) reflect.Type {
+	for t.Kind() == reflect.Pointer {
+		t = t.Elem()
+	}
+	return t
+}
+
+func underlyingTypeEq(t0, t1 reflect.Type) bool {
+	return deref2Underlying(t0) == deref2Underlying(t1)
+}
+
+// unused, none-sense yet
 // dereference _ -> _
 // dereference * -> *
 // dereference ** -> *

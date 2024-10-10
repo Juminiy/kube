@@ -3,8 +3,8 @@ package psutil
 import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
-	kubereflect "github.com/Juminiy/kube/pkg/util/reflect"
 	"github.com/Juminiy/kube/pkg/util/safe_cast"
+	"github.com/Juminiy/kube/pkg/util/safe_reflect"
 	psmem "github.com/shirou/gopsutil/v4/mem"
 )
 
@@ -32,6 +32,6 @@ func vmem() *mem {
 		return nil
 	}
 	memPtr := &mem{}
-	kubereflect.CopyFieldValue(vmemStat, memPtr)
+	safe_reflect.CopyFieldValue(vmemStat, memPtr)
 	return memPtr.setHumanRead()
 }

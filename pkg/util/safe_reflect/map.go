@@ -1,8 +1,11 @@
-package reflect
+package safe_reflect
 
 import (
 	"reflect"
 )
+
+// Map API key type and elem type must direct, because of key and elem alignment
+// reflect.Map is pointer
 
 // MapAssign key exist assign
 func (tv TypVal) MapAssign(key, elem any) {

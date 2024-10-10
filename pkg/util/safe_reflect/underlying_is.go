@@ -1,4 +1,4 @@
-package reflect
+package safe_reflect
 
 import (
 	"github.com/Juminiy/kube/pkg/util"

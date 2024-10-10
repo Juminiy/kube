@@ -1,4 +1,4 @@
-package reflect
+package safe_reflect
 
 import (
 	"github.com/Juminiy/kube/pkg/util"
@@ -36,14 +36,38 @@ func IndirectOf(v any) TypVal {
 	return tv
 }
 
+func indirectTV(v any) (typ reflect.Type, val reflect.Value) {
+	val = deref2NoPointer(reflect.ValueOf(v))
+	typ = val.Type()
+	return
+}
+
+func indirectT(v any) (typ reflect.Type) {
+	return deref2Underlying(reflect.TypeOf(v))
+}
+
+func indirectV(v any) (val reflect.Value) {
+	return deref2NoPointer(reflect.ValueOf(v))
+}
+
+func of(v reflect.Value) TypVal {
+	typOf := v.Type()
+	return TypVal{
+		Typ: typOf,
+		Val: v,
+		typ: typOf,
+		val: v,
+	}
+}
+
 func (tv TypVal) FieldLen() int {
 	return fieldLen(tv.Val)
 }
 
-func (tv TypVal) CanAssign() bool {
+// CanDirectAssign only use Type not use flag, a bit of incoming rule
+func (tv TypVal) CanDirectAssign() bool {
 	return util.ElemIn(tv.typ.Kind(),
 		reflect.Chan,
-		reflect.Func,
 		reflect.Interface,
 		reflect.Map,
 		reflect.Pointer,

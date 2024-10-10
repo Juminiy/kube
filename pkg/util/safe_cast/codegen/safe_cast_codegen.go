@@ -4,8 +4,8 @@ import (
 	"github.com/Juminiy/kube/pkg/internal_api"
 	"github.com/Juminiy/kube/pkg/util"
 	kubefile "github.com/Juminiy/kube/pkg/util/file"
-	kubereflect "github.com/Juminiy/kube/pkg/util/reflect"
 	"github.com/Juminiy/kube/pkg/util/safe_cast"
+	"github.com/Juminiy/kube/pkg/util/safe_reflect"
 	"strings"
 )
 
@@ -75,18 +75,18 @@ func safeCastIntLike() {
 
 // const: must not be assigned
 var (
-	intLikeTVMap = map[string]kubereflect.TypVal{
-		"int":     kubereflect.IndirectOf(safe_cast.InvalidI),
-		"int8":    kubereflect.IndirectOf(safe_cast.InvalidI8),
-		"int16":   kubereflect.IndirectOf(safe_cast.InvalidI16),
-		"int32":   kubereflect.IndirectOf(safe_cast.InvalidI32),
-		"int64":   kubereflect.IndirectOf(safe_cast.InvalidI64),
-		"uint":    kubereflect.IndirectOf(safe_cast.InvalidU),
-		"uint8":   kubereflect.IndirectOf(safe_cast.InvalidU8),
-		"uint16":  kubereflect.IndirectOf(safe_cast.InvalidU16),
-		"uint32":  kubereflect.IndirectOf(safe_cast.InvalidU32),
-		"uint64":  kubereflect.IndirectOf(safe_cast.InvalidU64),
-		"uintptr": kubereflect.IndirectOf(safe_cast.InvalidUPtr),
+	intLikeTVMap = map[string]safe_reflect.TypVal{
+		"int":     safe_reflect.IndirectOf(safe_cast.InvalidI),
+		"int8":    safe_reflect.IndirectOf(safe_cast.InvalidI8),
+		"int16":   safe_reflect.IndirectOf(safe_cast.InvalidI16),
+		"int32":   safe_reflect.IndirectOf(safe_cast.InvalidI32),
+		"int64":   safe_reflect.IndirectOf(safe_cast.InvalidI64),
+		"uint":    safe_reflect.IndirectOf(safe_cast.InvalidU),
+		"uint8":   safe_reflect.IndirectOf(safe_cast.InvalidU8),
+		"uint16":  safe_reflect.IndirectOf(safe_cast.InvalidU16),
+		"uint32":  safe_reflect.IndirectOf(safe_cast.InvalidU32),
+		"uint64":  safe_reflect.IndirectOf(safe_cast.InvalidU64),
+		"uintptr": safe_reflect.IndirectOf(safe_cast.InvalidUPtr),
 	}
 	intLikeShortMap = map[string]string{
 		"int":     "i",
