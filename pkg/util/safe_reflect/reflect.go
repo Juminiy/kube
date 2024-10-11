@@ -37,25 +37,35 @@ func IndirectOf(v any) TypVal {
 }
 
 func indirectTV(v any) (typ reflect.Type, val reflect.Value) {
-	val = deref2NoPointer(reflect.ValueOf(v))
+	val = noPointer(reflect.ValueOf(v))
 	typ = val.Type()
 	return
 }
 
 func indirectT(v any) (typ reflect.Type) {
-	return deref2Underlying(reflect.TypeOf(v))
+	return underlying(reflect.TypeOf(v))
 }
 
 func indirectV(v any) (val reflect.Value) {
-	return deref2NoPointer(reflect.ValueOf(v))
+	return noPointer(reflect.ValueOf(v))
 }
 
-func of(v reflect.Value) TypVal {
+func direct(v reflect.Value) TypVal {
 	typOf := v.Type()
 	return TypVal{
 		Typ: typOf,
 		Val: v,
 		typ: typOf,
+		val: v,
+	}
+}
+
+func indirect(v reflect.Value) TypVal {
+	dv := noPointer(v)
+	return TypVal{
+		Typ: dv.Type(),
+		Val: dv,
+		typ: v.Type(),
 		val: v,
 	}
 }
@@ -97,4 +107,78 @@ func Marshal(v any) []byte { return nil }
 // Copy to new a same instance with v
 func Copy(v any) any {
 	return nil
+}
+
+func HasField(v any, fieldName string, fieldVal any) (ok bool) {
+	tv := IndirectOf(v)
+	switch tv.Typ.Kind() {
+	case reflect.Struct:
+		structField, exist := tv.Typ.FieldByName(fieldName)
+		ok = exist && structField.Type == reflect.TypeOf(fieldVal)
+
+	case reflect.Array, reflect.Slice:
+		structField, exist := tv.Typ.Elem().FieldByName(fieldName)
+		ok = exist && structField.Type == reflect.TypeOf(fieldVal)
+
+	case reflect.Map:
+		ok = tv.mapCanOpt2(fieldName, fieldVal) && tv.mapKeyExist(reflect.ValueOf(fieldName))
+
+	default:
+		ok = false
+	}
+	return
+}
+
+func HasFields(v any, fields map[string]any) bool {
+	for fieldName, fieldVal := range fields {
+		if !HasField(v, fieldName, fieldVal) {
+			return false
+		}
+	}
+	return true
+}
+
+func SetField(v any, fieldName string, fieldVal any) {
+	tv := IndirectOf(v)
+
+	fields := map[string]any{fieldName: fieldVal}
+	switch tv.Typ.Kind() {
+	case reflect.Struct:
+		tv.StructSetFields(fields)
+
+	case reflect.Array:
+		tv.ArraySetStructFields(fields)
+
+	case reflect.Slice:
+		tv.SliceSetStructFields(fields)
+
+	case reflect.Map:
+		tv.MapAssign(fieldName, fieldVal)
+
+	default:
+
+	}
+}
+
+func SetFields(v any, fields map[string]any) {
+	tv := IndirectOf(v)
+
+	switch tv.Typ.Kind() {
+	case reflect.Struct:
+		tv.StructSetFields(fields)
+
+	case reflect.Array:
+		tv.ArraySetStructFields(fields)
+
+	case reflect.Slice:
+		tv.SliceSetStructFields(fields)
+
+	case reflect.Map:
+		for fieldName, fieldVal := range fields {
+			tv.MapAssign2(fieldName, fieldVal)
+		}
+
+	default:
+
+	}
 }

@@ -10,7 +10,7 @@ func IsBool(v reflect.Value) bool {
 }
 
 func underlyingIsBool(v reflect.Value) bool {
-	return deref2NoPointer(v).Kind() == reflect.Bool
+	return noPointer(v).Kind() == reflect.Bool
 }
 
 func IsInt(v reflect.Value) bool {
@@ -18,7 +18,7 @@ func IsInt(v reflect.Value) bool {
 }
 
 func underlyingIsInt(v reflect.Value) bool {
-	return util.ElemIn(deref2NoPointer(v).Kind(),
+	return util.ElemIn(noPointer(v).Kind(),
 		reflect.Int,
 		reflect.Int8,
 		reflect.Int16,
@@ -31,7 +31,7 @@ func IsUint(v reflect.Value) bool {
 }
 
 func underlyingIsUint(v reflect.Value) bool {
-	return util.ElemIn(deref2NoPointer(v).Kind(),
+	return util.ElemIn(noPointer(v).Kind(),
 		reflect.Uint,
 		reflect.Uint8,
 		reflect.Uint16,
@@ -45,7 +45,7 @@ func IsFloat(v reflect.Value) bool {
 }
 
 func underlyingIsFloat(v reflect.Value) bool {
-	return util.ElemIn(deref2NoPointer(v).Kind(), reflect.Float32, reflect.Float64)
+	return util.ElemIn(noPointer(v).Kind(), reflect.Float32, reflect.Float64)
 }
 
 func IsArray(v reflect.Value) bool {
@@ -53,7 +53,7 @@ func IsArray(v reflect.Value) bool {
 }
 
 func underlyingIsArray(v reflect.Value) bool {
-	return deref2NoPointer(v).Kind() == reflect.Array
+	return noPointer(v).Kind() == reflect.Array
 }
 
 func IsChan(v reflect.Value) bool {
@@ -61,7 +61,7 @@ func IsChan(v reflect.Value) bool {
 }
 
 func underlyingIsChan(v reflect.Value) bool {
-	return deref2NoPointer(v).Kind() == reflect.Chan
+	return noPointer(v).Kind() == reflect.Chan
 }
 
 func IsFunc(v reflect.Value) bool {
@@ -69,7 +69,7 @@ func IsFunc(v reflect.Value) bool {
 }
 
 func underlyingIsFunc(v reflect.Value) bool {
-	return deref2NoPointer(v).Kind() == reflect.Func
+	return noPointer(v).Kind() == reflect.Func
 }
 
 func IsMap(v reflect.Value) bool {
@@ -77,7 +77,7 @@ func IsMap(v reflect.Value) bool {
 }
 
 func underlyingIsMap(v reflect.Value) bool {
-	return deref2NoPointer(v).Kind() == reflect.Map
+	return noPointer(v).Kind() == reflect.Map
 }
 
 func IsSlice(v reflect.Value) bool {
@@ -85,7 +85,7 @@ func IsSlice(v reflect.Value) bool {
 }
 
 func underlyingIsSlice(v reflect.Value) bool {
-	return deref2NoPointer(v).Kind() == reflect.Slice
+	return noPointer(v).Kind() == reflect.Slice
 }
 
 func IsString(v reflect.Value) bool {
@@ -93,7 +93,7 @@ func IsString(v reflect.Value) bool {
 }
 
 func underlyingIsString(v reflect.Value) bool {
-	return deref2NoPointer(v).Kind() == reflect.String
+	return noPointer(v).Kind() == reflect.String
 }
 
 func IsStruct(v reflect.Value) bool {
@@ -101,5 +101,5 @@ func IsStruct(v reflect.Value) bool {
 }
 
 func underlyingIsStruct(v reflect.Value) bool {
-	return deref2NoPointer(v).Kind() == reflect.Struct
+	return noPointer(v).Kind() == reflect.Struct
 }

@@ -5,7 +5,7 @@ import "reflect"
 // Pointer API is for pointer, or pointer to pointer, or p to ppp....
 
 func (tv *TypVal) noPointer() reflect.Value {
-	tv.Val = deref2NoPointer(tv.Val)
+	tv.Val = noPointer(tv.Val)
 	tv.Typ = tv.Val.Type()
 	return tv.Val
 }
@@ -14,22 +14,22 @@ func (tv *TypVal) noPointer() reflect.Value {
 // dereference * -> _
 // dereference ** -> _
 // dereference ***... -> _
-func deref2NoPointer(v reflect.Value) reflect.Value {
+func noPointer(v reflect.Value) reflect.Value {
 	for v.Kind() == reflect.Pointer {
 		v = reflect.Indirect(v)
 	}
 	return v
 }
 
-func deref2Underlying(t reflect.Type) reflect.Type {
+func underlying(t reflect.Type) reflect.Type {
 	for t.Kind() == reflect.Pointer {
 		t = t.Elem()
 	}
 	return t
 }
 
-func underlyingTypeEq(t0, t1 reflect.Type) bool {
-	return deref2Underlying(t0) == deref2Underlying(t1)
+func underlyingEqual(t0, t1 reflect.Type) bool {
+	return (t0) == (t1)
 }
 
 // unused, none-sense yet
@@ -37,7 +37,7 @@ func underlyingTypeEq(t0, t1 reflect.Type) bool {
 // dereference * -> *
 // dereference ** -> *
 // dereference ***... -> *
-func deref2OnePointer(v reflect.Value) reflect.Value {
+func onePointer(v reflect.Value) reflect.Value {
 	preV := v
 	for v.Kind() == reflect.Pointer {
 		preV = v
@@ -60,7 +60,7 @@ func cast2Pointer(v any, capV int) any {
 }
 
 // unused, none-sense
-func derefInterfacePointer(v reflect.Value) reflect.Value {
+func interfacePointer(v reflect.Value) reflect.Value {
 	for v.Kind() == reflect.Interface ||
 		v.Kind() == reflect.Pointer {
 		switch v.Kind() {
@@ -69,7 +69,7 @@ func derefInterfacePointer(v reflect.Value) reflect.Value {
 			return reflect.ValueOf(vInst)
 
 		case reflect.Pointer:
-			v = deref2NoPointer(v)
+			v = noPointer(v)
 
 		default:
 			return v

@@ -42,6 +42,7 @@ func TestTypVal_FuncSet2(t *testing.T) {
 	fn()
 }
 
+// +passed
 func TestTypVal_FuncSet3(t *testing.T) {
 	testFnV := testFn
 

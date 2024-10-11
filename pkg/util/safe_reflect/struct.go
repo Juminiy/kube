@@ -28,9 +28,13 @@ func (tv TypVal) StructSetFields(fields map[string]any) {
 
 	for fieldName, fieldVal := range fields {
 		srcTyp, srcVal := indirectTV(fieldVal)
-		dstVal := deref2NoPointer(v.FieldByName(fieldName))
-		if dstVal.Type() == srcTyp && dstVal.CanSet() {
-			dstVal.Set(srcVal)
+		dstTypOfStructField, dstTypOk := v.Type().FieldByName(fieldName)
+		if !dstTypOk || dstTypOfStructField.Type != srcTyp {
+			continue
+		}
+		dstTv := indirect(v.FieldByName(fieldName))
+		if dstTv.Typ == srcTyp && dstTv.Val.CanSet() {
+			dstTv.Val.Set(srcVal)
 		}
 	}
 }
