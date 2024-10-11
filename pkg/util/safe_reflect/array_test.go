@@ -32,6 +32,15 @@ func TestTypVal_ArraySet2(t *testing.T) {
 	// pointer
 	Of(&arrp).ArraySet(3, util.NewString("xxx"))
 	t.Logf("pointer %v", arrp)
+
+	t.Logf("before %v %v", *arrp[2], arrp)
+	// no pointer
+	Of(arrp).ArraySet(2, util.NewString("mmm"))
+	t.Logf("no pointer %v %v", *arrp[2], arrp)
+
+	// pointer
+	Of(&arrp).ArraySet(2, util.NewString("nnn"))
+	t.Logf("pointer %v %v", *arrp[2], arrp)
 }
 
 // +passed all
@@ -42,6 +51,7 @@ func TestTypVal_ArraySetStructFields(t *testing.T) {
 	//srcPPtr := &srcPtr                  // pp
 
 	Of(arr).ArraySetStructFields(map[string]any{
+		"F2": -123,
 		"F0": "field F0",
 		"F1": "999", // value_type mismatch
 	})

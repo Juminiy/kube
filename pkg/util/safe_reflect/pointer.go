@@ -29,7 +29,7 @@ func underlying(t reflect.Type) reflect.Type {
 }
 
 func underlyingEqual(t0, t1 reflect.Type) bool {
-	return (t0) == (t1)
+	return underlying(t0) == underlying(t1)
 }
 
 // unused, none-sense yet

@@ -5,6 +5,8 @@ import "reflect"
 // Func API fn type can indirect
 // reflect.Func is value not pointer
 
+// FuncSet
+// set func self to fn
 func (tv TypVal) FuncSet(fn any) {
 	v := tv.noPointer()
 

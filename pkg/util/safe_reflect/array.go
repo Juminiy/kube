@@ -5,6 +5,8 @@ import "reflect"
 // Array API elem type can indirect
 // reflect.Array is value not pointer
 
+// ArraySet
+// set array index to elem -> arr[index] = elem
 func (tv TypVal) ArraySet(index int, elem any) {
 	v := tv.noPointer()
 
@@ -16,9 +18,11 @@ func (tv TypVal) ArraySet(index int, elem any) {
 	}
 }
 
+// ArraySetStructFields
+// set array struct fields fieldName to fieldVal
 func (tv TypVal) ArraySetStructFields(fields map[string]any) {
 	v := tv.noPointer()
-	if tv.Typ.Kind() != reflect.Array &&
+	if v.Kind() != reflect.Array ||
 		!v.CanSet() {
 		return
 	}

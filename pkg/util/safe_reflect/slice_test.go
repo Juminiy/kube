@@ -27,11 +27,11 @@ func TestTypVal_SliceSet2(t *testing.T) {
 
 	// no pointer
 	Of(arrp).SliceSet(2, util.NewString("vvv"))
-	t.Logf("no pointer %v", *arrp[2])
+	t.Logf("no pointer %v %v", *arrp[2], arrp)
 
 	// pointer
 	Of(&arrp).SliceSet(2, util.NewString("xxx"))
-	t.Logf("pointer %v", *arrp[2])
+	t.Logf("pointer %v %v", *arrp[2], arrp)
 }
 
 // +passed all
@@ -58,4 +58,17 @@ func TestTypVal_SliceSetStructFields(t *testing.T) {
 		"F1": 999,                                // value_type ok
 	})
 	t.Log(arr)
+}
+
+func TestTypVal_SliceSetOob(t *testing.T) {
+	arrp := []*string{util.NewString("aaa"), util.NewString("bbb"), util.NewString("ccc"), nil}
+	t.Logf("before %v", *arrp[2])
+
+	// no pointer
+	Of(arrp).SliceSetOob(3, util.NewString("vvv"))
+	t.Logf("no pointer %v", arrp)
+
+	// pointer
+	Of(&arrp).SliceSetOob(3, util.NewString("xxx"))
+	t.Logf("pointer %v", arrp)
 }

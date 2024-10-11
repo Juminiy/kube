@@ -41,3 +41,10 @@ func CopyFieldValue(src any, dst any) {
 
 	}
 }
+
+func set(src, dst any) {
+	sOf, dOf := Of(src), Of(dst)
+	if sOf.Typ == dOf.Typ && sOf.Val.CanSet() {
+		sOf.Val.Set(dOf.Val)
+	}
+}
