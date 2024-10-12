@@ -129,7 +129,7 @@ func TestTypVal_SliceSetLen(t *testing.T) {
 	Of(&sl).SliceSetLen(9)
 	t.Log(len(sl), cap(sl))
 
-	Of(&sl).SliceShift2Cap()
+	Of(&sl).SliceShiftLen2Cap()
 	t.Log(len(sl), cap(sl))
 
 	sl[7] = 777
@@ -138,7 +138,7 @@ func TestTypVal_SliceSetLen(t *testing.T) {
 	Of(&sl).SliceSetLen(5)
 	t.Log(len(sl), cap(sl))
 
-	Of(&sl).SliceShift2Cap()
+	Of(&sl).SliceShiftLen2Cap()
 	t.Log(len(sl), cap(sl))
 }
 
