@@ -13,11 +13,14 @@ import (
 func (tv TypVal) SliceSet(index int, elem any) {
 	v := tv.noPointer()
 
-	if tv.sliceCanOpt(elem) && tv.FieldLen() > index {
-		elemV := noPointer(v.Index(index))
-		if elemV.CanSet() {
-			elemV.Set(indirectV(elem))
-		}
+	if v.Kind() != reflect.Slice ||
+		tv.FieldLen() <= index ||
+		!tv.sliceCanOpt(elem) {
+		return
+	}
+
+	if indirIndexV := noPointer(v.Index(index)); indirIndexV.CanSet() {
+		indirIndexV.Set(indirectV(elem))
 	}
 }
 
@@ -25,7 +28,9 @@ func (tv TypVal) SliceSet(index int, elem any) {
 // set slice struct fields fieldName to fieldVal
 func (tv TypVal) SliceSetStructFields(fields map[string]any) {
 	v := tv.noPointer()
-	if v.Kind() != reflect.Slice {
+
+	if v.Kind() != reflect.Slice ||
+		tv.FieldLen() == 0 {
 		return
 	}
 
@@ -37,7 +42,7 @@ func (tv TypVal) SliceSetStructFields(fields map[string]any) {
 func (tv TypVal) sliceCanOpt(elem any) bool {
 	return tv.Typ.Kind() == reflect.Slice &&
 		!tv.Val.IsNil() &&
-		underlyingEqual(tv.Typ.Elem(), reflect.TypeOf(elem))
+		underlyingEqual(tv.Typ.Elem(), directT(elem))
 }
 
 // SliceSetOol
@@ -56,28 +61,32 @@ func (tv TypVal) SliceSetOoc(index int, elem any) {
 
 func (tv TypVal) SliceSetLen(toLen int) {
 	v := tv.noPointer()
-	if v.Kind() == reflect.Slice && v.CanSet() && toLen <= v.Cap() {
+	if v.Kind() == reflect.Slice && v.CanSet() &&
+		toLen <= v.Cap() {
 		v.SetLen(toLen)
 	}
 }
 
 func (tv TypVal) SliceSetCap(toCap int) {
 	v := tv.noPointer()
-	if v.Kind() == reflect.Slice && v.CanSet() && v.Len() <= toCap && toCap <= v.Cap() {
+	if v.Kind() == reflect.Slice && v.CanSet() &&
+		v.Len() <= toCap && toCap <= v.Cap() {
 		v.SetCap(toCap)
 	}
 }
 
 func (tv TypVal) SliceShiftLenInc(toLen int) {
 	v := tv.noPointer()
-	if v.Kind() == reflect.Slice && v.CanSet() && toLen <= v.Cap() && v.Len() < toLen {
+	if v.Kind() == reflect.Slice && v.CanSet() &&
+		toLen <= v.Cap() && v.Len() < toLen {
 		v.SetLen(toLen)
 	}
 }
 
 func (tv TypVal) SliceShiftLenDec(toLen int) {
 	v := tv.noPointer()
-	if v.Kind() == reflect.Slice && v.CanSet() && toLen <= v.Cap() && v.Len() > toLen {
+	if v.Kind() == reflect.Slice && v.CanSet() &&
+		toLen <= v.Cap() && v.Len() > toLen {
 		v.SetLen(toLen)
 	}
 }

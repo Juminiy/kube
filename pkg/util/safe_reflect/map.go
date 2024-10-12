@@ -25,7 +25,7 @@ func (tv TypVal) MapDelete(key any) {
 
 // MapKeyOk key exist
 func (tv TypVal) MapKeyOk(key any) bool {
-	return tv.mapCanOpt(key) && tv.mapKeyExist(reflect.ValueOf(key))
+	return tv.mapCanOpt(key) && tv.mapKeyExist(directV(key))
 }
 
 // v is map
@@ -33,7 +33,7 @@ func (tv TypVal) mapKeyExistAssign(mapKey, mapElem any) {
 	v := tv.noPointer()
 
 	if tv.mapCanOpt2(mapKey, mapElem) {
-		mapKeyV, mapElemV := reflect.ValueOf(mapKey), reflect.ValueOf(mapElem)
+		mapKeyV, mapElemV := directV(mapKey), directV(mapElem)
 		if tv.mapKeyExist(mapKeyV) {
 			v.SetMapIndex(mapKeyV, mapElemV)
 		}
@@ -45,7 +45,7 @@ func (tv TypVal) mapDryAssign(mapKey, mapElem any) {
 	v := tv.noPointer()
 
 	if tv.mapCanOpt2(mapKey, mapElem) {
-		v.SetMapIndex(reflect.ValueOf(mapKey), reflect.ValueOf(mapElem))
+		v.SetMapIndex(directV(mapKey), directV(mapElem))
 	}
 }
 
@@ -54,7 +54,7 @@ func (tv TypVal) mapDryDelete(mapKey any) {
 	v := tv.noPointer()
 
 	if tv.mapCanOpt(mapKey) {
-		v.SetMapIndex(reflect.ValueOf(mapKey), _nilValue)
+		v.SetMapIndex(directV(mapKey), _nilValue)
 	}
 }
 
@@ -62,15 +62,15 @@ func (tv TypVal) mapDryDelete(mapKey any) {
 func (tv TypVal) mapCanOpt(mapKey any) bool {
 	return tv.Typ.Kind() == reflect.Map &&
 		!tv.Val.IsNil() &&
-		tv.Typ.Key() == reflect.TypeOf(mapKey)
+		tv.Typ.Key() == directT(mapKey)
 }
 
 // v is map
 func (tv TypVal) mapCanOpt2(mapKey, mapElem any) bool {
 	return tv.Typ.Kind() == reflect.Map &&
 		!tv.Val.IsNil() &&
-		tv.Typ.Key() == reflect.TypeOf(mapKey) &&
-		tv.Typ.Elem() == reflect.TypeOf(mapElem)
+		tv.Typ.Key() == directT(mapKey) &&
+		tv.Typ.Elem() == directT(mapElem)
 }
 
 // v must be a map

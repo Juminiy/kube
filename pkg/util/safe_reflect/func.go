@@ -11,17 +11,25 @@ import "reflect"
 func (tv TypVal) FuncSet(fn any) {
 	v := tv.noPointer()
 
-	if tv.funcCanOpt(fn) && v.CanSet() {
-		v.Set(indirectV(fn))
+	if v.Kind() != reflect.Func || !v.CanSet() ||
+		!tv.funcCanOpt(fn) {
+		return
 	}
+
+	v.Set(indirectV(fn))
 }
 
 func (tv TypVal) funcCanOpt(fn any) bool {
 	fnTyp := indirectT(fn)
-	if tv.Typ.Kind() != reflect.Func || tv.Val.IsNil() || fnTyp.Kind() != reflect.Func {
+	if tv.Typ.Kind() != reflect.Func || tv.Val.IsNil() ||
+		fnTyp.Kind() != reflect.Func {
 		return false
 	}
 
+	return tv.funcCanOptSlow(fnTyp)
+}
+
+func (tv TypVal) funcCanOptSlow(fnTyp reflect.Type) bool {
 	if tv.Typ.NumIn() != fnTyp.NumIn() ||
 		tv.Typ.NumOut() != fnTyp.NumOut() {
 		return false

@@ -162,10 +162,10 @@ var yn = util.YN
 
 func TestHowAssignable(t *testing.T) {
 	logFCan := func(v any) {
-		dV := Of(v).Val
-		t.Logf("direct type(%10s) CanSet(%1s) CanAddr(%1s)", trimTyp(dV.Type().String()), yn(dV.CanSet()), yn(dV.CanAddr()))
-		iV := IndirectOf(v).Val
-		t.Logf("underl type(%10s) CanSet(%1s) CanAddr(%1s)", trimTyp(iV.Type().String()), yn(iV.CanSet()), yn(iV.CanAddr()))
+		dt, dv := directTV(v)
+		t.Logf("direct type(%10s) CanSet(%1s) CanAddr(%1s)", trimTyp(dt.String()), yn(dv.CanSet()), yn(dv.CanAddr()))
+		it, iv := indirectTV(v)
+		t.Logf("underl type(%10s) CanSet(%1s) CanAddr(%1s)", trimTyp(it.String()), yn(iv.CanSet()), yn(iv.CanAddr()))
 	}
 
 	var (
@@ -271,7 +271,7 @@ func TestHowAssignable2(t *testing.T) {
 
 	// map-key, map-elem
 	logFCan("map key", Of(mapST0).Val.MapKeys()[0])
-	logFCan("map elem", Of(mapST0).Val.MapIndex(reflect.ValueOf("k1")))
+	logFCan("map elem", Of(mapST0).Val.MapIndex(directV("k1")))
 
 	t.Log("----------------------------------------------------------------")
 
@@ -287,5 +287,5 @@ func TestHowAssignable2(t *testing.T) {
 
 	// map-key, map-elem
 	logFCan("map key", IndirectOf(&mapST0).Val.MapKeys()[0])
-	logFCan("map elem", IndirectOf(&mapST0).Val.MapIndex(reflect.ValueOf("k1")))
+	logFCan("map elem", IndirectOf(&mapST0).Val.MapIndex(directV("k1")))
 }

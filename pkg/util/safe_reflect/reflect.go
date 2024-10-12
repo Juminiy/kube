@@ -20,8 +20,8 @@ type TypVal struct {
 }
 
 func Of(v any) TypVal {
-	typOf := reflect.TypeOf(v)
-	valOf := reflect.ValueOf(v)
+	typOf := directT(v)
+	valOf := directV(v)
 	return TypVal{
 		Typ: typOf,
 		Val: valOf,
@@ -37,35 +37,41 @@ func IndirectOf(v any) TypVal {
 }
 
 func indirectTV(v any) (typ reflect.Type, val reflect.Value) {
-	val = noPointer(reflect.ValueOf(v))
-	typ = val.Type()
-	return
+	return indirectT(v), indirectV(v)
 }
 
 func indirectT(v any) (typ reflect.Type) {
-	return underlying(reflect.TypeOf(v))
+	return underlying(directT(v))
 }
 
 func indirectV(v any) (val reflect.Value) {
-	return noPointer(reflect.ValueOf(v))
+	return noPointer(directV(v))
 }
 
-func direct(v reflect.Value) TypVal {
-	typOf := v.Type()
+func indirect(v reflect.Value) TypVal {
+	indirV := noPointer(v)
 	return TypVal{
-		Typ: typOf,
-		Val: v,
-		typ: typOf,
+		Typ: indirV.Type(),
+		Val: indirV,
+		typ: v.Type(),
 		val: v,
 	}
 }
 
-func indirect(v reflect.Value) TypVal {
-	dv := noPointer(v)
+func directTV(v any) (typ reflect.Type, val reflect.Value) {
+	return directT(v), directV(v)
+}
+
+func directT(v any) (typ reflect.Type) { return reflect.TypeOf(v) }
+
+func directV(v any) (val reflect.Value) { return reflect.ValueOf(v) }
+
+func direct(v reflect.Value) TypVal {
+	t := v.Type()
 	return TypVal{
-		Typ: dv.Type(),
-		Val: dv,
-		typ: v.Type(),
+		Typ: t,
+		Val: v,
+		typ: t,
 		val: v,
 	}
 }
@@ -78,9 +84,7 @@ func (tv TypVal) FieldLen() int {
 func (tv TypVal) CanDirectAssign() bool {
 	return util.ElemIn(tv.typ.Kind(),
 		reflect.Chan,
-		reflect.Interface,
 		reflect.Map,
-		reflect.Pointer,
 		reflect.Slice,
 	)
 }
@@ -96,32 +100,19 @@ func fieldLen(v reflect.Value) int {
 	}
 }
 
-// String to kv string format: `type: value`
-func String(v any) string {
-	return ""
-}
-
-// Marshal to json string format: `type: value`
-func Marshal(v any) []byte { return nil }
-
-// Copy to new a same instance with v
-func Copy(v any) any {
-	return nil
-}
-
 func HasField(v any, fieldName string, fieldVal any) (ok bool) {
 	tv := IndirectOf(v)
 	switch tv.Typ.Kind() {
 	case reflect.Struct:
 		structField, exist := tv.Typ.FieldByName(fieldName)
-		ok = exist && structField.Type == reflect.TypeOf(fieldVal)
+		ok = exist && structField.Type == directT(fieldVal)
 
 	case reflect.Array, reflect.Slice:
 		structField, exist := tv.Typ.Elem().FieldByName(fieldName)
-		ok = exist && structField.Type == reflect.TypeOf(fieldVal)
+		ok = exist && structField.Type == directT(fieldVal)
 
 	case reflect.Map:
-		ok = tv.mapCanOpt2(fieldName, fieldVal) && tv.mapKeyExist(reflect.ValueOf(fieldName))
+		ok = tv.mapCanOpt2(fieldName, fieldVal) && tv.mapKeyExist(directV(fieldName))
 
 	default:
 		ok = false
@@ -181,4 +172,17 @@ func SetFields(v any, fields map[string]any) {
 	default:
 
 	}
+}
+
+// String to kv string format: `type: value`
+func String(v any) string {
+	return ""
+}
+
+// Marshal to json string format: `type: value`
+func Marshal(v any) []byte { return nil }
+
+// Copy to new a same instance with v
+func Copy(v any) any {
+	return nil
 }

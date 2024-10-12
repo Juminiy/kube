@@ -11,31 +11,45 @@ import (
 
 func (tv TypVal) StructSet(underlyingIsStructVal any) {
 	v := tv.noPointer()
-	if v.Kind() != reflect.Struct {
+
+	if v.Kind() != reflect.Struct || !v.CanSet() {
 		return
 	}
 
-	vTyp, vVal := indirectTV(underlyingIsStructVal)
-	if tv.Typ == vTyp && v.CanSet() {
-		v.Set(vVal)
+	indirSrcT, indirSrcV := indirectTV(underlyingIsStructVal)
+	if tv.Typ == indirSrcT && v.CanSet() {
+		v.Set(indirSrcV)
 	}
 }
 
 func (tv TypVal) StructSetFields(fields map[string]any) {
 	v := tv.noPointer()
-	if v.Kind() != reflect.Struct {
+
+	if v.Kind() != reflect.Struct || !v.CanSet() {
 		return
 	}
 
 	for fieldName, fieldVal := range fields {
-		srcTyp, srcVal := indirectTV(fieldVal)
-		dstTypOfStructField, dstTypOk := v.Type().FieldByName(fieldName)
-		if !dstTypOk || dstTypOfStructField.Type != srcTyp {
+		// old-version: worked
+		//srcTyp, srcVal := indirectTV(fieldVal)
+		//dstTypOfStructField, dstTypOk := v.Type().FieldByName(fieldName)
+		//if !dstTypOk || dstTypOfStructField.Type != srcTyp {
+		//	continue
+		//}
+		//dstTv := indirect(v.FieldByName(fieldName))
+		//if dstTv.Typ == srcTyp && dstTv.Val.CanSet() {
+		//	dstTv.Val.Set(srcVal)
+		//}
+
+		// new-version: worked, optimized compare to old-version
+		indirSrcT, indirSrcV := indirectTV(fieldVal) // src can indirect
+		fieldIndex := tv.fieldIndexByName(fieldName)
+		if len(fieldIndex) == 0 {
 			continue
 		}
-		dstTv := indirect(v.FieldByName(fieldName))
-		if dstTv.Typ == srcTyp && dstTv.Val.CanSet() {
-			dstTv.Val.Set(srcVal)
+		indirDst := indirect(v.FieldByIndex(fieldIndex))
+		if indirSrcT == indirDst.Typ && indirDst.Val.CanSet() {
+			indirDst.Val.Set(indirSrcV) // dst can indirect
 		}
 	}
 }
@@ -45,11 +59,12 @@ func (tv TypVal) StructSetFields(fields map[string]any) {
 // `app1:"tag_val1" app2:"tag_val2" app3:"tag_val3"`
 func (tv TypVal) ParseStructTag(app string) (tagMap TagMap) {
 	v := tv.noPointer()
+
 	if v.Kind() != reflect.Struct {
 		return
 	}
 
-	typ := v.Type()
+	typ := tv.Typ
 	tagMap = make(TagMap, typ.NumField())
 	for i := range typ.NumField() {
 		fieldI := typ.Field(i)
@@ -77,4 +92,16 @@ func (m TagMap) ParseGetTagValV(field, key string) string {
 		}
 	}
 	return ""
+}
+
+func (tv TypVal) fieldIndexByName(fieldName string) []int {
+	if tv.noPointer().Kind() != reflect.Struct {
+		return nil
+	}
+	for i := range tv.Typ.NumField() {
+		if fTyp := tv.Typ.Field(i); fTyp.Name == fieldName {
+			return fTyp.Index
+		}
+	}
+	return nil
 }

@@ -67,7 +67,7 @@ func interfacePointer(v reflect.Value) reflect.Value {
 		switch v.Kind() {
 		case reflect.Interface:
 			vInst := v.Interface()
-			return reflect.ValueOf(vInst)
+			return directV(vInst)
 
 		case reflect.Pointer:
 			v = noPointer(v)

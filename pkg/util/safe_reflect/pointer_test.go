@@ -1,7 +1,6 @@
 package safe_reflect
 
 import (
-	"reflect"
 	"testing"
 )
 
@@ -12,14 +11,14 @@ func TestDeref(t *testing.T) {
 	i32PPtr := &i32Ptr
 	i32PPPtr := &i32PPtr
 
-	t.Logf("before deref type: %v", reflect.TypeOf(i32PPPtr).String())
-	t.Logf("after deref type: %v", onePointer(reflect.ValueOf(i32PPPtr)).Type().String())
-	t.Logf("after deref type: %v", noPointer(reflect.ValueOf(i32PPPtr)).Type().String())
+	t.Logf("before deref type: %v", directT(i32PPPtr).String())
+	t.Logf("after deref type: %v", onePointer(directV(i32PPPtr)).Type().String())
+	t.Logf("after deref type: %v", noPointer(directV(i32PPPtr)).Type().String())
 }
 
 // +unpassed no-sense
 func TestDerefInterface(t *testing.T) {
 	interfacePtr := cast2Pointer(3, 1)
-	iptr := interfacePointer(reflect.ValueOf(interfacePtr))
+	iptr := interfacePointer(directV(interfacePtr))
 	t.Log(iptr)
 }

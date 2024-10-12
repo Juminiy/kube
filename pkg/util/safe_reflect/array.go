@@ -11,11 +11,14 @@ import "reflect"
 func (tv TypVal) ArraySet(index int, elem any) {
 	v := tv.noPointer()
 
-	if tv.arrayCanOpt(elem) && v.CanSet() && tv.FieldLen() > index {
-		elemV := noPointer(v.Index(index))
-		if elemV.CanSet() {
-			elemV.Set(indirectV(elem))
-		}
+	if v.Kind() != reflect.Array || !v.CanSet() ||
+		tv.FieldLen() <= index ||
+		!tv.arrayCanOpt(elem) {
+		return
+	}
+
+	if indirIndexV := noPointer(v.Index(index)); indirIndexV.CanSet() {
+		indirIndexV.Set(indirectV(elem))
 	}
 }
 
@@ -23,8 +26,9 @@ func (tv TypVal) ArraySet(index int, elem any) {
 // set array struct fields fieldName to fieldVal
 func (tv TypVal) ArraySetStructFields(fields map[string]any) {
 	v := tv.noPointer()
-	if v.Kind() != reflect.Array ||
-		!v.CanSet() {
+
+	if v.Kind() != reflect.Array || !v.CanSet() ||
+		tv.FieldLen() == 0 {
 		return
 	}
 
@@ -36,5 +40,5 @@ func (tv TypVal) ArraySetStructFields(fields map[string]any) {
 func (tv TypVal) arrayCanOpt(elem any) bool {
 	return tv.Typ.Kind() == reflect.Array &&
 		tv.FieldLen() > 0 &&
-		underlyingEqual(tv.Typ.Elem(), reflect.TypeOf(elem))
+		underlyingEqual(tv.Typ.Elem(), directT(elem))
 }

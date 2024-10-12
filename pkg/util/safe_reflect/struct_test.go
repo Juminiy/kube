@@ -62,20 +62,23 @@ func TestTypVal_StructSetFields(t *testing.T) {
 	tvv := t0{F0: "no pointer", F1: 666}
 
 	Of(tvv).StructSetFields(map[string]any{
-		"F0": "field F0",
-		"F1": "999", // value_type mismatch
+		"F0": "field F0",          // ok
+		"F1": "999",               // value_type mismatch
+		"F3": util.New2[t0](t0{}), // no field
 	})
 	t.Log(tvv)
 
 	Of(&tvv).StructSetFields(map[string]any{
 		"F0": util.NewString("field F0"), // value_type indirect
 		"F1": "999",                      // value_type mismatch
+		"F3": util.New2[t0](t0{}),        // no field
 	})
 	t.Log(tvv)
 
 	Of(&tvv).StructSetFields(map[string]any{
 		"F0": util.NewString("field F0 pointer"), // value_type indirect
 		"F1": 999,                                // value_type ok
+		"F3": util.New2[t0](t0{}),                // no field
 	})
 	t.Log(tvv)
 }
