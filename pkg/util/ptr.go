@@ -27,3 +27,9 @@ func NewString(str string) *string {
 func New[T any](val T) *T {
 	return &val
 }
+
+func New2[T any](val T) **T { return New(New(val)) }
+
+func NewZero[T any](val T) *T {
+	return new(T)
+}

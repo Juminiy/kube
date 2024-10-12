@@ -20,8 +20,8 @@ type TypVal struct {
 }
 
 func Of(v any) TypVal {
+	typOf := reflect.TypeOf(v)
 	valOf := reflect.ValueOf(v)
-	typOf := valOf.Type()
 	return TypVal{
 		Typ: typOf,
 		Val: valOf,
@@ -175,7 +175,7 @@ func SetFields(v any, fields map[string]any) {
 
 	case reflect.Map:
 		for fieldName, fieldVal := range fields {
-			tv.MapAssign2(fieldName, fieldVal)
+			tv.MapAssign(fieldName, fieldVal)
 		}
 
 	default:

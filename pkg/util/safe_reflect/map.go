@@ -4,8 +4,9 @@ import (
 	"reflect"
 )
 
-// Map API key type and elem type must direct, because of key and elem alignment
-// reflect.Map is pointer
+// Map API
+// +param key type and elem type must direct, because of key and elem alignment
+// +desc reflect.Map is pointer
 
 // MapAssign key exist assign
 func (tv TypVal) MapAssign(key, elem any) {

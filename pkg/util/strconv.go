@@ -2,6 +2,7 @@ package util
 
 import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
+	"github.com/spf13/cast"
 	"reflect"
 	"strconv"
 )
@@ -64,4 +65,8 @@ func Ptr2a(v any) string {
 		return strconv.FormatUint(uint64(valOf.Pointer()), 16)
 	}
 	return ""
+}
+
+func Any2a(v any) string {
+	return cast.ToString(v)
 }

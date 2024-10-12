@@ -5,6 +5,10 @@ import (
 	"unsafe"
 )
 
+const (
+	MagicStr = "Ciallo~"
+)
+
 func String2BytesNoCopy(s string) []byte {
 	sh := (*[2]uintptr)(unsafe.Pointer(&s))
 	bh := [3]uintptr{sh[0], sh[1], sh[1]}
@@ -45,4 +49,11 @@ func StringPrefixIn(s string, p ...string) bool {
 		}
 	}
 	return false
+}
+
+func StringDelete(s string, from ...string) string {
+	for _, fe := range from {
+		s = strings.ReplaceAll(s, fe, "")
+	}
+	return s
 }

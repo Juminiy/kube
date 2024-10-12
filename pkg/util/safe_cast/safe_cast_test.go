@@ -29,4 +29,9 @@ func TestSafeCast(t *testing.T) {
 
 	// bound reach overflow: equal abi.Type.Size_ but unsigned to signed bound lost
 	castLog("uint", "int", u, int(u), UtoI(u))
+
+	var f64 = math.MaxFloat64
+	castLog("float64", "float32", f64, float32(f64), F64tof32(f64))
+	f64 = 3.3
+	castLog("float64", "float32", f64, float32(f64), F64tof32(f64))
 }

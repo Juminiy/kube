@@ -5,8 +5,9 @@ import (
 	"strings"
 )
 
-// Struct API underlyingIsStructVal type and its attribute type can indirect
-// reflect.Struct is value
+// Struct API
+// +param underlyingIsStructVal type and its attribute type can indirect
+// +desc reflect.Struct is value
 
 func (tv TypVal) StructSet(underlyingIsStructVal any) {
 	v := tv.noPointer()

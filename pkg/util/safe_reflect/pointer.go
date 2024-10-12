@@ -2,7 +2,8 @@ package safe_reflect
 
 import "reflect"
 
-// Pointer API is for pointer, or pointer to pointer, or p to ppp....
+// Pointer API
+// +desc is for pointer, or pointer to pointer, or p to ppp....
 
 func (tv *TypVal) noPointer() reflect.Value {
 	tv.Val = noPointer(tv.Val)

@@ -2,15 +2,16 @@ package safe_reflect
 
 import "reflect"
 
-// Array API elem type can indirect
-// reflect.Array is value not pointer
+// Array API
+// +param elem type can indirect
+// +desc reflect.Array is value not pointer
 
 // ArraySet
 // set array index to elem -> arr[index] = elem
 func (tv TypVal) ArraySet(index int, elem any) {
 	v := tv.noPointer()
 
-	if tv.arrayCanOpt(elem) && tv.FieldLen() > index {
+	if tv.arrayCanOpt(elem) && v.CanSet() && tv.FieldLen() > index {
 		elemV := noPointer(v.Index(index))
 		if elemV.CanSet() {
 			elemV.Set(indirectV(elem))

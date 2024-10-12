@@ -7,68 +7,209 @@ import (
 
 // +passed array and pointer to array
 func TestTypVal_SliceSet(t *testing.T) {
-	arr := []string{"aaa", "bbb", "ccc"}
-	t.Logf("before %v", arr)
+	sl := []string{"aaa", "bbb", "ccc"}
+	t.Logf("before %v", sl)
 
 	// no pointer
-	Of(arr).SliceSet(2, "vvv")
-	t.Logf("no pointer %v", arr)
+	Of(sl).SliceSet(2, "vvv")
+	t.Logf("no pointer %v", sl)
 
 	// pointer
-	Of(&arr).SliceSet(2, "xxx")
-	t.Logf("pointer %v", arr)
+	Of(&sl).SliceSet(2, "xxx")
+	t.Logf("pointer %v", sl)
 
 }
 
 // +passed array pointer and pointer to array pointer
 func TestTypVal_SliceSet2(t *testing.T) {
-	arrp := []*string{util.NewString("aaa"), util.NewString("bbb"), util.NewString("ccc")}
-	t.Logf("before %v", *arrp[2])
+	slp := []*string{util.NewString("aaa"), util.NewString("bbb"), util.NewString("ccc")}
+	t.Logf("before %v", *slp[2])
 
 	// no pointer
-	Of(arrp).SliceSet(2, util.NewString("vvv"))
-	t.Logf("no pointer %v %v", *arrp[2], arrp)
+	Of(slp).SliceSet(2, util.NewString("vvv"))
+	t.Logf("no pointer %v %v", *slp[2], slp)
 
 	// pointer
-	Of(&arrp).SliceSet(2, util.NewString("xxx"))
-	t.Logf("pointer %v %v", *arrp[2], arrp)
+	Of(&slp).SliceSet(2, util.NewString("xxx"))
+	t.Logf("pointer %v %v", *slp[2], slp)
 }
 
 // +passed all
 func TestTypVal_SliceSetStructFields(t *testing.T) {
-	arr := make([]t0, 3)
+	sl := make([]t0, 3)
 	//src := t0{F0: "no pointer", F1: 69} // no pointer
 	//srcPtr := &src                      // p
 	//srcPPtr := &srcPtr                  // pp
 
-	Of(arr).SliceSetStructFields(map[string]any{
+	Of(sl).SliceSetStructFields(map[string]any{
 		"F0": "field F0",
 		"F1": "999", // value_type mismatch
 	})
-	t.Log(arr)
+	t.Log(sl)
 
-	Of(&arr).SliceSetStructFields(map[string]any{
+	Of(&sl).SliceSetStructFields(map[string]any{
 		"F0": util.NewString("field F0 ptr"), // value_type indirect
 		"F1": "999",                          // value_type mismatch
 	})
-	t.Log(arr)
+	t.Log(sl)
 
-	Of(&arr).SliceSetStructFields(map[string]any{
+	Of(&sl).SliceSetStructFields(map[string]any{
 		"F0": util.NewString("field F0 pointer"), // value_type indirect
 		"F1": 999,                                // value_type ok
 	})
-	t.Log(arr)
+	t.Log(sl)
 }
 
-func TestTypVal_SliceSetOob(t *testing.T) {
-	arrp := []*string{util.NewString("aaa"), util.NewString("bbb"), util.NewString("ccc"), nil}
-	t.Logf("before %v", *arrp[2])
+func TestTypVal_SliceSetOol(t *testing.T) {
+	sl := make([]int, 2, 8)
+
+	t.Log(sl)
+	// no pointer
+	Of(sl).SliceSet(3, 333) // out of bound length
+	t.Log(sl)
+
+	Of(sl).SliceSetLen(3) // out of bound length
+	t.Log(sl)
+
+	Of(sl).SliceSetOol(3, 333) // out of bound length
+	t.Log(sl)
+
+	Of(sl).SliceSetOol(7, 777) // out of bound capacity
+	t.Log(sl)
+
+	Of(sl).SliceSetOol(4, 444) // in bound
+	t.Log(sl)
+
+	Of(sl).SliceSet(1, util.New[int](111)) // in bound
+	t.Log(sl)
+
+	Of(sl).SliceSetOol(8, 888) // out of bound capacity
+	t.Log(sl)
+
+	Of(sl).SliceSetOol(9, 999) // out of bound capacity
+	t.Log(sl)
+}
+
+func TestTypVal_SliceSetOol2(t *testing.T) {
+	sl := make([]int, 2, 8)
+
+	t.Log(sl)
+	// no pointer
+	Of(&sl).SliceSet(3, 333) // out of bound length
+	t.Log(sl)
+
+	Of(&sl).SliceSetLen(3) // out of bound length
+	t.Log(sl)
+
+	Of(&sl).SliceSetOol(3, 333) // out of bound length
+	t.Log(sl)
+
+	Of(&sl).SliceSetOol(7, 777) // out of bound capacity
+	t.Log(sl)
+
+	Of(sl).SliceSetOol(4, 444) // in bound
+	t.Log(sl)
+
+	Of(sl).SliceSetOol(1, util.New[int](111)) // in bound
+	t.Log(sl)
+
+	Of(&sl).SliceSetOol(8, 888) // out of bound capacity
+	t.Log(sl)
+
+	Of(&sl).SliceSetOol(9, 999) // out of bound capacity
+	t.Log(sl)
+}
+
+func TestTypVal_SliceSetLen(t *testing.T) {
+	sl := make([]int, 2, 8)
+
+	Of(&sl).SliceSetLen(3)
+	t.Log(len(sl), cap(sl))
+
+	Of(&sl).SliceSetLen(9)
+	t.Log(len(sl), cap(sl))
+
+	Of(&sl).SliceShift2Cap()
+	t.Log(len(sl), cap(sl))
+
+	sl[7] = 777
+	t.Log(len(sl), cap(sl))
+
+	Of(&sl).SliceSetLen(5)
+	t.Log(len(sl), cap(sl))
+
+	Of(&sl).SliceShift2Cap()
+	t.Log(len(sl), cap(sl))
+}
+
+func TestTypVal_SliceSet3(t *testing.T) {
+	sl := make([]int, 2, 8)
 
 	// no pointer
-	Of(arrp).SliceSetOob(3, util.NewString("vvv"))
-	t.Logf("no pointer %v", arrp)
+	Of(sl).SliceSet(1, 111) // in bound length
+	t.Log(sl)
+
+	Of(sl).SliceSet(3, 333) // out of bound length, in bound capacity
+	t.Log(sl)
+
+	Of(sl).SliceSet(9, 999) // out of bound capacity
+	t.Log(sl)
 
 	// pointer
-	Of(&arrp).SliceSetOob(3, util.NewString("xxx"))
-	t.Logf("pointer %v", arrp)
+	Of(&sl).SliceSet(1, 111) // in bound length
+	t.Log(sl)
+
+	Of(&sl).SliceSet(3, 333) // out of bound length, in bound capacity
+	t.Log(sl)
+
+	Of(&sl).SliceSet(9, 999) // out of bound capacity
+	t.Log(sl)
+}
+
+func TestTypVal_SliceSetOol3(t *testing.T) {
+	sl := make([]int, 2, 8)
+
+	// no pointer
+	Of(sl).SliceSetOol(1, 111) // in bound length
+	t.Log(sl)
+
+	Of(sl).SliceSetOol(3, 333) // out of bound length, in bound capacity
+	t.Log(sl)
+
+	Of(sl).SliceSetOol(9, 999) // out of bound capacity
+	t.Log(sl)
+
+	// pointer
+	Of(&sl).SliceSetOol(1, 111) // in bound length
+	t.Log(sl)
+
+	Of(&sl).SliceSetOol(3, 333) // out of bound length, in bound capacity
+	t.Log(sl)
+
+	Of(&sl).SliceSetOol(9, 999) // out of bound capacity
+	t.Log(sl)
+}
+
+func TestTypVal_SliceSetOoc3(t *testing.T) {
+	sl := make([]int, 2, 8)
+
+	// no pointer
+	Of(sl).SliceSetOoc(1, 111) // in bound length
+	t.Log(sl)
+
+	Of(sl).SliceSetOoc(3, 333) // out of bound length, in bound capacity
+	t.Log(sl)
+
+	Of(sl).SliceSetOoc(9, 999) // out of bound capacity
+	t.Log(sl)
+
+	// pointer
+	Of(&sl).SliceSetOoc(1, 111) // in bound length
+	t.Log(sl)
+
+	Of(&sl).SliceSetOoc(3, 333) // out of bound length, in bound capacity
+	t.Log(sl)
+
+	Of(&sl).SliceSetOoc(9, 999) // out of bound capacity
+	t.Log(sl)
 }

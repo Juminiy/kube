@@ -8,6 +8,7 @@ require (
 	github.com/brianvoe/gofakeit/v7 v7.0.4
 	github.com/distribution/reference v0.6.0
 	github.com/docker/docker v27.3.1+incompatible
+	github.com/fatih/color v1.17.0
 	github.com/goharbor/go-client v0.210.0
 	github.com/google/uuid v1.6.0
 	github.com/mindprince/gonvml v0.0.0-20211002210717-ac0b66419a41
@@ -15,6 +16,7 @@ require (
 	github.com/minio/minio-go/v7 v7.0.76
 	github.com/opencontainers/image-spec v1.1.0
 	github.com/shirou/gopsutil/v4 v4.24.9
+	github.com/spf13/cast v1.7.0
 	github.com/teris-io/shortid v0.0.0-20220617161101-71ec9f2aa569
 	go.uber.org/zap v1.27.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -82,6 +84,8 @@ require (
 	github.com/klauspost/cpuid/v2 v2.2.8 // indirect
 	github.com/lufia/plan9stats v0.0.0-20230110061619-bbe2e5e100de // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect

@@ -2,8 +2,9 @@ package safe_reflect
 
 import "reflect"
 
-// Func API fn type can indirect
-// reflect.Func is value not pointer
+// Func API
+// +param fn type can indirect
+// +desc reflect.Func is value not pointer
 
 // FuncSet
 // set func self to fn
