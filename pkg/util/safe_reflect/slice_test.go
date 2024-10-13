@@ -68,7 +68,7 @@ func TestTypVal_SliceSetOol(t *testing.T) {
 	Of(sl).SliceSet(3, 333) // out of bound length
 	t.Log(sl)
 
-	Of(sl).SliceSetLen(3) // out of bound length
+	Of(sl).sliceSetLen(3) // out of bound length
 	t.Log(sl)
 
 	Of(sl).SliceSetOol(3, 333) // out of bound length
@@ -98,7 +98,7 @@ func TestTypVal_SliceSetOol2(t *testing.T) {
 	Of(&sl).SliceSet(3, 333) // out of bound length
 	t.Log(sl)
 
-	Of(&sl).SliceSetLen(3) // out of bound length
+	Of(&sl).sliceSetLen(3) // out of bound length
 	t.Log(sl)
 
 	Of(&sl).SliceSetOol(3, 333) // out of bound length
@@ -123,22 +123,22 @@ func TestTypVal_SliceSetOol2(t *testing.T) {
 func TestTypVal_SliceSetLen(t *testing.T) {
 	sl := make([]int, 2, 8)
 
-	Of(&sl).SliceSetLen(3)
+	Of(&sl).sliceSetLen(3)
 	t.Log(len(sl), cap(sl))
 
-	Of(&sl).SliceSetLen(9)
+	Of(&sl).sliceSetLen(9)
 	t.Log(len(sl), cap(sl))
 
-	Of(&sl).SliceShiftLen2Cap()
+	Of(&sl).sliceShiftLen2Cap()
 	t.Log(len(sl), cap(sl))
 
 	sl[7] = 777
 	t.Log(len(sl), cap(sl))
 
-	Of(&sl).SliceSetLen(5)
+	Of(&sl).sliceSetLen(5)
 	t.Log(len(sl), cap(sl))
 
-	Of(&sl).SliceShiftLen2Cap()
+	Of(&sl).sliceShiftLen2Cap()
 	t.Log(len(sl), cap(sl))
 }
 
@@ -211,5 +211,17 @@ func TestTypVal_SliceSetOoc3(t *testing.T) {
 	t.Log(sl)
 
 	Of(&sl).SliceSetOoc(9, 999) // out of bound capacity
+	t.Log(sl)
+}
+
+func TestTypVal_SliceSetMake(t *testing.T) {
+	var sl []int
+	Of(sl).SliceSetMake(10, 1)
+	t.Log(sl)
+
+	Of(&sl).SliceSetMake(10, "sss")
+	t.Log(sl)
+
+	Of(&sl).SliceSetMake(10, 10)
 	t.Log(sl)
 }

@@ -4,14 +4,14 @@ import "reflect"
 
 // Func API
 // +param fn type can indirect
-// +desc reflect.Func is value not pointer
+// +desc Func is value not pointer
 
 // FuncSet
 // set func self to fn
 func (tv TypVal) FuncSet(fn any) {
 	v := tv.noPointer()
 
-	if v.Kind() != reflect.Func || !v.CanSet() ||
+	if v.Kind() != Func || !v.CanSet() ||
 		!tv.funcCanOpt(fn) {
 		return
 	}
@@ -21,8 +21,8 @@ func (tv TypVal) FuncSet(fn any) {
 
 func (tv TypVal) funcCanOpt(fn any) bool {
 	fnTyp := indirectT(fn)
-	if tv.Typ.Kind() != reflect.Func || tv.Val.IsNil() ||
-		fnTyp.Kind() != reflect.Func {
+	if tv.Typ.Kind() != Func || tv.Val.IsNil() ||
+		fnTyp.Kind() != Func {
 		return false
 	}
 

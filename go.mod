@@ -18,6 +18,7 @@ require (
 	github.com/shirou/gopsutil/v4 v4.24.9
 	github.com/spf13/cast v1.7.0
 	github.com/teris-io/shortid v0.0.0-20220617161101-71ec9f2aa569
+	github.com/valyala/bytebufferpool v1.0.0
 	go.uber.org/zap v1.27.0
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.31.0

@@ -1,18 +1,17 @@
 package safe_reflect
 
 import (
-	"reflect"
 	"strings"
 )
 
 // Struct API
 // +param underlyingIsStructVal type and its attribute type can indirect
-// +desc reflect.Struct is value
+// +desc Struct is value
 
 func (tv TypVal) StructSet(underlyingIsStructVal any) {
 	v := tv.noPointer()
 
-	if v.Kind() != reflect.Struct || !v.CanSet() {
+	if v.Kind() != Struct || !v.CanSet() {
 		return
 	}
 
@@ -25,7 +24,7 @@ func (tv TypVal) StructSet(underlyingIsStructVal any) {
 func (tv TypVal) StructSetFields(fields map[string]any) {
 	v := tv.noPointer()
 
-	if v.Kind() != reflect.Struct || !v.CanSet() {
+	if v.Kind() != Struct || !v.CanSet() {
 		return
 	}
 
@@ -60,7 +59,7 @@ func (tv TypVal) StructSetFields(fields map[string]any) {
 func (tv TypVal) ParseStructTag(app string) (tagMap TagMap) {
 	v := tv.noPointer()
 
-	if v.Kind() != reflect.Struct {
+	if v.Kind() != Struct {
 		return
 	}
 
@@ -95,7 +94,7 @@ func (m TagMap) ParseGetTagValV(field, key string) string {
 }
 
 func (tv TypVal) fieldIndexByName(fieldName string) []int {
-	if tv.noPointer().Kind() != reflect.Struct {
+	if tv.noPointer().Kind() != Struct {
 		return nil
 	}
 	for i := range tv.Typ.NumField() {

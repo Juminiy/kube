@@ -1,19 +1,17 @@
 package safe_reflect
 
-import (
-	"reflect"
-)
+import "reflect"
 
 // Slice API
 // +param elem type can indirect
-// +desc reflect.Slice is pointer
+// +desc Slice is pointer
 
 // SliceSet
 // set slice index to elem -> slice[index] = elem
 func (tv TypVal) SliceSet(index int, elem any) {
 	v := tv.noPointer()
 
-	if v.Kind() != reflect.Slice ||
+	if v.Kind() != Slice ||
 		tv.FieldLen() <= index ||
 		!tv.sliceCanOpt(elem) {
 		return
@@ -29,7 +27,7 @@ func (tv TypVal) SliceSet(index int, elem any) {
 func (tv TypVal) SliceSetStructFields(fields map[string]any) {
 	v := tv.noPointer()
 
-	if v.Kind() != reflect.Slice ||
+	if v.Kind() != Slice ||
 		tv.FieldLen() == 0 {
 		return
 	}
@@ -40,67 +38,93 @@ func (tv TypVal) SliceSetStructFields(fields map[string]any) {
 }
 
 func (tv TypVal) sliceCanOpt(elem any) bool {
-	return tv.Typ.Kind() == reflect.Slice &&
+	return tv.Typ.Kind() == Slice &&
 		!tv.Val.IsNil() &&
-		underlyingEqual(tv.Typ.Elem(), directT(elem))
+		tv.sliceElemTypeEq(elem)
 }
 
 // SliceSetOol
 // set slice index to elem -> slice[index] = elem that allow length out of bound, but capacity inbound
 func (tv TypVal) SliceSetOol(index int, elem any) {
-	tv.SliceShiftLenInc(index + 1)
+	tv.sliceShiftLenInc(index + 1)
 	tv.SliceSet(index, elem)
 }
 
 // SliceSetOoc
 // set slice index to elem -> slice[index] = elem that allow length and capacity out of bound
 func (tv TypVal) SliceSetOoc(index int, elem any) {
-	tv.SliceGrow(index + 1)
+	tv.sliceGrowTo(index + 1)
 	tv.SliceSetOol(index, elem)
 }
 
-func (tv TypVal) SliceSetLen(toLen int) {
+// SliceSetMake
+// set slice index to elem -> slice[index] = elem that allow slice is nil, if slice is nil make a slice
+func (tv TypVal) SliceSetMake(index int, elem any) {
+	tv.sliceNilDrySet(index, elem)
+}
+
+func (tv TypVal) sliceNilDrySet(index int, elem any) {
 	v := tv.noPointer()
-	if v.Kind() == reflect.Slice && v.CanSet() &&
+
+	if v.Kind() != Slice || !tv.sliceElemTypeEq(elem) {
+		return
+	}
+
+	if v.IsNil() && v.CanSet() {
+		v.Set(reflect.MakeSlice(tv.Typ, index+1, (index+1)<<1))
+	}
+
+	if !v.IsNil() {
+		tv.SliceSetOoc(index, elem)
+	}
+}
+
+func (tv TypVal) sliceElemTypeEq(elem any) bool {
+	return underlyingEqual(tv.Typ.Elem(), directT(elem))
+}
+
+func (tv TypVal) sliceSetLen(toLen int) {
+	v := tv.noPointer()
+	if v.Kind() == Slice && v.CanSet() &&
 		toLen <= v.Cap() {
 		v.SetLen(toLen)
 	}
 }
 
-func (tv TypVal) SliceSetCap(toCap int) {
+func (tv TypVal) sliceSetCap(toCap int) {
 	v := tv.noPointer()
-	if v.Kind() == reflect.Slice && v.CanSet() &&
+	if v.Kind() == Slice && v.CanSet() &&
 		v.Len() <= toCap && toCap <= v.Cap() {
 		v.SetCap(toCap)
 	}
 }
 
-func (tv TypVal) SliceShiftLenInc(toLen int) {
+func (tv TypVal) sliceShiftLenInc(toLen int) {
 	v := tv.noPointer()
-	if v.Kind() == reflect.Slice && v.CanSet() &&
+	if v.Kind() == Slice && v.CanSet() &&
 		toLen <= v.Cap() && v.Len() < toLen {
 		v.SetLen(toLen)
 	}
 }
 
-func (tv TypVal) SliceShiftLenDec(toLen int) {
+func (tv TypVal) sliceShiftLenDec(toLen int) {
 	v := tv.noPointer()
-	if v.Kind() == reflect.Slice && v.CanSet() &&
+	if v.Kind() == Slice && v.CanSet() &&
 		toLen <= v.Cap() && v.Len() > toLen {
 		v.SetLen(toLen)
 	}
 }
 
-func (tv TypVal) SliceShiftLen2Cap() {
+func (tv TypVal) sliceShiftLen2Cap() {
 	v := tv.noPointer()
-	if v.Kind() == reflect.Slice && v.CanSet() {
+	if v.Kind() == Slice && v.CanSet() {
 		v.SetLen(v.Cap())
 	}
 }
 
-func (tv TypVal) SliceGrow(toCap int) {
+func (tv TypVal) sliceGrowTo(toCap int) {
 	v := tv.noPointer()
-	if v.Kind() == reflect.Slice && v.CanSet() {
-		v.Grow(toCap)
+	if v.Kind() == Slice && v.CanSet() && toCap > v.Cap() {
+		v.Grow(toCap - v.Cap())
 	}
 }

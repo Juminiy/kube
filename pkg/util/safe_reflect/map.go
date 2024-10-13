@@ -1,16 +1,28 @@
 package safe_reflect
 
 import (
+	"github.com/Juminiy/kube/pkg/util"
 	"reflect"
 )
 
 // Map API
 // +param key type and elem type must direct, because of key and elem alignment
-// +desc reflect.Map is pointer
+// +desc Map is pointer
 
 // MapAssign key exist assign
 func (tv TypVal) MapAssign(key, elem any) {
 	tv.mapKeyExistAssign(key, elem)
+}
+
+func (tv TypVal) mapKeyExistAssign(key, elem any) {
+	v := tv.noPointer()
+
+	if tv.mapCanOpt2(key, elem) {
+		mapKeyV, mapElemV := directV(key), directV(elem)
+		if tv.mapKeyExist(mapKeyV) {
+			v.SetMapIndex(mapKeyV, mapElemV)
+		}
+	}
 }
 
 // MapAssign2 dry assign
@@ -18,9 +30,25 @@ func (tv TypVal) MapAssign2(key, elem any) {
 	tv.mapDryAssign(key, elem)
 }
 
+func (tv TypVal) mapDryAssign(key, elem any) {
+	v := tv.noPointer()
+
+	if tv.mapCanOpt2(key, elem) {
+		v.SetMapIndex(directV(key), directV(elem))
+	}
+}
+
 // MapDelete dry delete
 func (tv TypVal) MapDelete(key any) {
 	tv.mapDryDelete(key)
+}
+
+func (tv TypVal) mapDryDelete(key any) {
+	v := tv.noPointer()
+
+	if tv.mapCanOpt(key) {
+		v.SetMapIndex(directV(key), _zeroValue)
+	}
 }
 
 // MapKeyOk key exist
@@ -28,53 +56,46 @@ func (tv TypVal) MapKeyOk(key any) bool {
 	return tv.mapCanOpt(key) && tv.mapKeyExist(directV(key))
 }
 
-// v is map
-func (tv TypVal) mapKeyExistAssign(mapKey, mapElem any) {
+// call before must call mapCanOpt or mapCanOpt2
+func (tv TypVal) mapKeyExist(vOfKey reflect.Value) bool {
+	return tv.Val.MapIndex(vOfKey) != _zeroValue
+}
+
+// MapAssignMake if nil make map
+func (tv TypVal) MapAssignMake(key, elem any) {
+	tv.mapNilDryAssign(key, elem)
+}
+
+func (tv TypVal) mapNilDryAssign(key, elem any) {
 	v := tv.noPointer()
 
-	if tv.mapCanOpt2(mapKey, mapElem) {
-		mapKeyV, mapElemV := directV(mapKey), directV(mapElem)
-		if tv.mapKeyExist(mapKeyV) {
-			v.SetMapIndex(mapKeyV, mapElemV)
-		}
+	if v.Kind() != Map || !tv.mapKeyElemTypeEq(key, elem) {
+		return
+	}
+
+	if v.IsNil() && v.CanSet() {
+		v.Set(reflect.MakeMapWithSize(tv.Typ, util.MagicMapCap))
+	}
+
+	if !v.IsNil() {
+		v.SetMapIndex(directV(key), directV(elem))
 	}
 }
 
-// v is map
-func (tv TypVal) mapDryAssign(mapKey, mapElem any) {
-	v := tv.noPointer()
-
-	if tv.mapCanOpt2(mapKey, mapElem) {
-		v.SetMapIndex(directV(mapKey), directV(mapElem))
-	}
-}
-
-// v is map
-func (tv TypVal) mapDryDelete(mapKey any) {
-	v := tv.noPointer()
-
-	if tv.mapCanOpt(mapKey) {
-		v.SetMapIndex(directV(mapKey), _nilValue)
-	}
-}
-
-// v is map
-func (tv TypVal) mapCanOpt(mapKey any) bool {
-	return tv.Typ.Kind() == reflect.Map &&
+func (tv TypVal) mapCanOpt(key any) bool {
+	return tv.Typ.Kind() == Map &&
 		!tv.Val.IsNil() &&
-		tv.Typ.Key() == directT(mapKey)
+		tv.Typ.Key() == directT(key)
 }
 
-// v is map
-func (tv TypVal) mapCanOpt2(mapKey, mapElem any) bool {
-	return tv.Typ.Kind() == reflect.Map &&
+func (tv TypVal) mapCanOpt2(key, elem any) bool {
+	return tv.Typ.Kind() == Map &&
 		!tv.Val.IsNil() &&
-		tv.Typ.Key() == directT(mapKey) &&
-		tv.Typ.Elem() == directT(mapElem)
+		tv.mapKeyElemTypeEq(key, elem)
 }
 
-// v must be a map
-// call this before must call mapCanOpt or mapCanOpt2
-func (tv TypVal) mapKeyExist(keyV reflect.Value) bool {
-	return tv.Val.MapIndex(keyV) != _nilValue
+// call before must call noPointer and checkKind
+func (tv TypVal) mapKeyElemTypeEq(key, elem any) bool {
+	return tv.Typ.Key() == directT(key) &&
+		tv.Typ.Elem() == directT(elem)
 }

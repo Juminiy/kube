@@ -1,8 +1,9 @@
 package safe_reflect
 
 import (
-	"github.com/Juminiy/kube/pkg/util"
 	"reflect"
+
+	"github.com/Juminiy/kube/pkg/util"
 )
 
 func IsBool(v reflect.Value) bool {
@@ -10,7 +11,7 @@ func IsBool(v reflect.Value) bool {
 }
 
 func underlyingIsBool(v reflect.Value) bool {
-	return noPointer(v).Kind() == reflect.Bool
+	return noPointer(v).Kind() == Bool
 }
 
 func IsInt(v reflect.Value) bool {
@@ -19,11 +20,7 @@ func IsInt(v reflect.Value) bool {
 
 func underlyingIsInt(v reflect.Value) bool {
 	return util.ElemIn(noPointer(v).Kind(),
-		reflect.Int,
-		reflect.Int8,
-		reflect.Int16,
-		reflect.Int32,
-		reflect.Int64)
+		Int, I8, I16, I32, I64)
 }
 
 func IsUint(v reflect.Value) bool {
@@ -32,12 +29,7 @@ func IsUint(v reflect.Value) bool {
 
 func underlyingIsUint(v reflect.Value) bool {
 	return util.ElemIn(noPointer(v).Kind(),
-		reflect.Uint,
-		reflect.Uint8,
-		reflect.Uint16,
-		reflect.Uint32,
-		reflect.Uint64,
-		reflect.Uintptr)
+		Uint, U8, U16, U32, U64, UPtr)
 }
 
 func IsFloat(v reflect.Value) bool {
@@ -45,7 +37,8 @@ func IsFloat(v reflect.Value) bool {
 }
 
 func underlyingIsFloat(v reflect.Value) bool {
-	return util.ElemIn(noPointer(v).Kind(), reflect.Float32, reflect.Float64)
+	return util.ElemIn(noPointer(v).Kind(),
+		F32, F64)
 }
 
 func IsArray(v reflect.Value) bool {
@@ -53,7 +46,7 @@ func IsArray(v reflect.Value) bool {
 }
 
 func underlyingIsArray(v reflect.Value) bool {
-	return noPointer(v).Kind() == reflect.Array
+	return noPointer(v).Kind() == Arr
 }
 
 func IsChan(v reflect.Value) bool {
@@ -61,7 +54,7 @@ func IsChan(v reflect.Value) bool {
 }
 
 func underlyingIsChan(v reflect.Value) bool {
-	return noPointer(v).Kind() == reflect.Chan
+	return noPointer(v).Kind() == Chan
 }
 
 func IsFunc(v reflect.Value) bool {
@@ -69,7 +62,7 @@ func IsFunc(v reflect.Value) bool {
 }
 
 func underlyingIsFunc(v reflect.Value) bool {
-	return noPointer(v).Kind() == reflect.Func
+	return noPointer(v).Kind() == Func
 }
 
 func IsMap(v reflect.Value) bool {
@@ -77,7 +70,7 @@ func IsMap(v reflect.Value) bool {
 }
 
 func underlyingIsMap(v reflect.Value) bool {
-	return noPointer(v).Kind() == reflect.Map
+	return noPointer(v).Kind() == Map
 }
 
 func IsSlice(v reflect.Value) bool {
@@ -85,7 +78,7 @@ func IsSlice(v reflect.Value) bool {
 }
 
 func underlyingIsSlice(v reflect.Value) bool {
-	return noPointer(v).Kind() == reflect.Slice
+	return noPointer(v).Kind() == Slice
 }
 
 func IsString(v reflect.Value) bool {
@@ -93,7 +86,7 @@ func IsString(v reflect.Value) bool {
 }
 
 func underlyingIsString(v reflect.Value) bool {
-	return noPointer(v).Kind() == reflect.String
+	return noPointer(v).Kind() == String
 }
 
 func IsStruct(v reflect.Value) bool {
@@ -101,5 +94,5 @@ func IsStruct(v reflect.Value) bool {
 }
 
 func underlyingIsStruct(v reflect.Value) bool {
-	return noPointer(v).Kind() == reflect.Struct
+	return noPointer(v).Kind() == Struct
 }

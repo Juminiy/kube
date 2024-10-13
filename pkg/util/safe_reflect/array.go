@@ -1,17 +1,15 @@
 package safe_reflect
 
-import "reflect"
-
 // Array API
 // +param elem type can indirect
-// +desc reflect.Array is value not pointer
+// +desc Arr is pointer but no address
 
 // ArraySet
 // set array index to elem -> arr[index] = elem
 func (tv TypVal) ArraySet(index int, elem any) {
 	v := tv.noPointer()
 
-	if v.Kind() != reflect.Array || !v.CanSet() ||
+	if v.Kind() != Arr || !v.CanSet() ||
 		tv.FieldLen() <= index ||
 		!tv.arrayCanOpt(elem) {
 		return
@@ -27,7 +25,7 @@ func (tv TypVal) ArraySet(index int, elem any) {
 func (tv TypVal) ArraySetStructFields(fields map[string]any) {
 	v := tv.noPointer()
 
-	if v.Kind() != reflect.Array || !v.CanSet() ||
+	if v.Kind() != Arr || !v.CanSet() ||
 		tv.FieldLen() == 0 {
 		return
 	}
@@ -38,7 +36,7 @@ func (tv TypVal) ArraySetStructFields(fields map[string]any) {
 }
 
 func (tv TypVal) arrayCanOpt(elem any) bool {
-	return tv.Typ.Kind() == reflect.Array &&
+	return tv.Typ.Kind() == Arr &&
 		tv.FieldLen() > 0 &&
 		underlyingEqual(tv.Typ.Elem(), directT(elem))
 }

@@ -14,7 +14,7 @@ func IPv4Server(addr string) {
 
 	for {
 		time.Sleep(util.TimeSecond(1))
-		buf := util.GetBuffer()
+		buf := make([]byte, 0, util.MagicBufferCap)
 		_, clientAddr, err := udpConn.ReadFromUDP(buf)
 		if err != nil {
 			util.SilentErrorf("read from udp", err)
@@ -24,7 +24,6 @@ func IPv4Server(addr string) {
 		if len(buf) > 0 {
 			stdlog.InfoF("read from client address: %s content: %s", clientAddr.String(), bs2Str(buf))
 		}
-		util.PutBuffer(buf)
 
 		_, err = udpConn.WriteToUDP(str2Bs(HeartBeatMsgStr), clientAddr)
 		if err != nil {

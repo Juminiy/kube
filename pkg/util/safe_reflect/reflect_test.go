@@ -41,7 +41,12 @@ func TestHasFields(t *testing.T) {
 	t.Log(HasFields(t0{}, map[string]any{
 		"F2": util.NewString("vvv"), // no name
 		"F0": "ccc",                 // has name and type is
-		"F1": 1,                     // has name but type not
+		"F1": "1",                   // has name but type not
+	}))
+
+	t.Log(HasFields(t0{}, map[string]any{
+		"F0": "ccc", // has name and type is
+		"F1": 1,     // has name but type is
 	}))
 }
 
@@ -59,6 +64,13 @@ func TestSetFields(t *testing.T) {
 		"F2": util.NewString("vvv"), // no name
 		"F0": "ccc",                 // has name and type is
 		"F1": util.NewString("mmm"), // has name but type not
+	})
+	t.Log(tval)
+
+	SetFields(&tval, map[string]any{
+		"F2": util.NewString("vvv"), // no name
+		"F0": "vvv",                 // has name and type is
+		"F1": 222,                   // has name and type is
 	})
 	t.Log(tval)
 }
@@ -120,6 +132,12 @@ func TestHasFields2(t *testing.T) {
 
 func TestSetFields2(t *testing.T) {
 	tval := []t0{{}}
+
+	SetFields(tval, map[string]any{
+		"F0": "xxx", // has name and type is
+		"F1": 888,   // has name and type is
+	})
+	t.Log(tval)
 
 	SetFields(tval, map[string]any{
 		"F2": util.NewString("vvv"), // no name

@@ -18,8 +18,8 @@ func CopyFieldValue(src any, dst any) {
 	srcFieldMap := make(map[string]TypVal, fieldLen(srcVal))
 
 	switch {
-	case srcTyp.Kind() == reflect.Struct &&
-		dstTyp.Kind() == reflect.Struct &&
+	case srcTyp.Kind() == Struct &&
+		dstTyp.Kind() == Struct &&
 		dstVal.CanSet():
 		for index := range srcTyp.NumField() {
 			srcFi := srcTyp.Field(index)
@@ -46,5 +46,20 @@ func set(src, dst any) {
 	sOf, dOf := Of(src), Of(dst)
 	if sOf.Typ == dOf.Typ && sOf.Val.CanSet() {
 		sOf.Val.Set(dOf.Val)
+	}
+}
+
+func (tv TypVal) FieldLen() int {
+	return fieldLen(tv.Val)
+}
+
+func fieldLen(v reflect.Value) int {
+	switch v.Kind() {
+	case Struct:
+		return v.NumField()
+	case Arr, Chan, Map, Slice, String:
+		return v.Len()
+	default:
+		return 0
 	}
 }

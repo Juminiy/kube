@@ -6,27 +6,52 @@ import "reflect"
 // +desc is for pointer, or pointer to pointer, or p to ppp....
 
 func (tv *TypVal) noPointer() reflect.Value {
-	tv.Val = noPointer(tv.Val)
-	tv.Typ = tv.Val.Type()
-	return tv.Val
+	v, ok := noPtrOk(tv.Val)
+	if ok {
+		tv.Val = v
+		tv.Typ = v.Type()
+	}
+	return v
 }
 
+// noPointer
 // dereference _ -> _
 // dereference * -> _
 // dereference ** -> _
 // dereference ***... -> _
 func noPointer(v reflect.Value) reflect.Value {
-	for v.Kind() == reflect.Pointer {
-		v = reflect.Indirect(v)
+	for v.Kind() == Ptr {
+		v = v.Elem()
 	}
 	return v
 }
 
+func noPtrOk(v reflect.Value) (reflect.Value, bool) {
+	ok := false
+	for v.Kind() == Ptr {
+		v, ok = v.Elem(), true
+	}
+	return v, ok
+}
+
+// underlying
+// dereference _ -> _
+// dereference * -> _
+// dereference ** -> _
+// dereference ***... -> _
 func underlying(t reflect.Type) reflect.Type {
-	for t.Kind() == reflect.Pointer {
+	for t.Kind() == Ptr {
 		t = t.Elem()
 	}
 	return t
+}
+
+func underOk(t reflect.Type) (reflect.Type, bool) {
+	ok := false
+	for t.Kind() == Ptr {
+		t, ok = t.Elem(), true
+	}
+	return t, ok
 }
 
 func underlyingEqual(t0, t1 reflect.Type) bool {
@@ -40,7 +65,7 @@ func underlyingEqual(t0, t1 reflect.Type) bool {
 // dereference ***... -> *
 func onePointer(v reflect.Value) reflect.Value {
 	preV := v
-	for v.Kind() == reflect.Pointer {
+	for v.Kind() == Ptr {
 		preV = v
 		v = reflect.Indirect(v)
 	}
@@ -48,13 +73,13 @@ func onePointer(v reflect.Value) reflect.Value {
 }
 
 // unused, none-sense
-func cast2Pointer(v any, capV int) any {
+func cast2Pointer(v any, ptrLevel int) any {
 	if v == nil {
 		return nil
 	}
 
 	var vPtr = v
-	for range capV {
+	for range ptrLevel {
 		vPtr = &vPtr
 	}
 	return vPtr
@@ -62,19 +87,19 @@ func cast2Pointer(v any, capV int) any {
 
 // unused, none-sense
 func interfacePointer(v reflect.Value) reflect.Value {
-	for v.Kind() == reflect.Interface ||
-		v.Kind() == reflect.Pointer {
+	for v.Kind() == Any ||
+		v.Kind() == Ptr {
 		switch v.Kind() {
-		case reflect.Interface:
+		case Any:
 			vInst := v.Interface()
 			return directV(vInst)
 
-		case reflect.Pointer:
+		case Ptr:
 			v = noPointer(v)
 
 		default:
 			return v
 		}
 	}
-	return _nilValue
+	return _zeroValue
 }
