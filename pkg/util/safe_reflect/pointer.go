@@ -6,8 +6,8 @@ import "reflect"
 // +desc is for pointer, or pointer to pointer, or p to ppp....
 
 func (tv *TypVal) noPointer() reflect.Value {
-	v, ok := noPtrOk(tv.Val)
-	if ok {
+	v, pointed := noPtrOk(tv.Val)
+	if pointed {
 		tv.Val = v
 		tv.Typ = v.Type()
 	}
@@ -27,11 +27,11 @@ func noPointer(v reflect.Value) reflect.Value {
 }
 
 func noPtrOk(v reflect.Value) (reflect.Value, bool) {
-	ok := false
+	pointed := false
 	for v.Kind() == Ptr {
-		v, ok = v.Elem(), true
+		v, pointed = v.Elem(), true
 	}
-	return v, ok
+	return v, pointed
 }
 
 // underlying
@@ -56,6 +56,29 @@ func underOk(t reflect.Type) (reflect.Type, bool) {
 
 func underlyingEqual(t0, t1 reflect.Type) bool {
 	return underlying(t0) == underlying(t1)
+}
+
+func unpack(v reflect.Value) reflect.Value {
+	for valueCanElem(v) {
+		v = v.Elem()
+	}
+	return v
+}
+
+func unpackOk(v reflect.Value) (reflect.Value, bool) {
+	packed := false
+	for valueCanElem(v) {
+		v, packed = v.Elem(), true
+	}
+	return v, packed
+}
+
+func unpackV(v any) reflect.Value {
+	return unpack(directV(v))
+}
+
+func unpackT(v any) reflect.Type {
+	return unpackV(v).Type()
 }
 
 // unused, none-sense yet

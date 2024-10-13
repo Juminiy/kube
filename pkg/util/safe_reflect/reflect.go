@@ -75,6 +75,45 @@ func direct(v reflect.Value) TypVal {
 	}
 }
 
+func directTs(v []any) []reflect.Type {
+	ts := make([]reflect.Type, len(v))
+	for i := range v {
+		ts[i] = directT(v[i])
+	}
+	return ts
+}
+
+func directVs(v []any) []reflect.Value {
+	vs := make([]reflect.Value, len(v))
+	for i := range v {
+		vs[i] = directV(v[i])
+	}
+	return vs
+}
+
+func InterfaceOf(v reflect.Value) any {
+	if v.CanInterface() {
+		return v.Interface()
+	}
+	return nil
+}
+
+func InterfacesOf(v []reflect.Value) []any {
+	as := make([]any, len(v))
+	for i := range v {
+		as[i] = InterfaceOf(v[i])
+	}
+
+	return as
+}
+
+// HasField
+// check type:
+// 1. struct that do not allow embedded field
+// 2. array elem is struct
+// 3. slice elem is struct
+// 4. map[string]any
+// 5. latter: []map[string]any
 func HasField(v any, fieldName string, fieldVal any) (ok bool) {
 	tv := IndirectOf(v)
 	switch tv.Typ.Kind() {
@@ -83,7 +122,11 @@ func HasField(v any, fieldName string, fieldVal any) (ok bool) {
 		ok = exist && structField.Type == directT(fieldVal)
 
 	case Arr, Slice:
-		structField, exist := tv.Typ.Elem().FieldByName(fieldName)
+		underElemTyp := underlying(tv.Typ.Elem())
+		if underElemTyp.Kind() != Struct {
+			return false
+		}
+		structField, exist := underElemTyp.FieldByName(fieldName)
 		ok = exist && structField.Type == directT(fieldVal)
 
 	case Map:

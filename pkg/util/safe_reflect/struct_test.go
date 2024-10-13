@@ -83,3 +83,71 @@ func TestTypVal_StructSetFields(t *testing.T) {
 	})
 	t.Log(tvv)
 }
+
+func TestStructField(t *testing.T) {
+	type t1 struct {
+		VName  string
+		RIndex int
+	}
+	type t2 struct {
+		How0 int
+		May1 *int
+	}
+	type t3 struct {
+		t1
+		*t2
+		VName  string // same name and same type with embedded struct Field
+		RIndex string // same name but diff type with embedded struct Field
+		How0   int    // same name and same type with embedded pointer Field
+		May1   uint   // same name but diff type with embedded pointer Field
+	}
+
+	t3val := t3{
+		t1:     t1{VName: "t1.VName", RIndex: 111},
+		t2:     &t2{How0: 222, May1: util.New(444)},
+		VName:  "t3.VName",
+		RIndex: "t3.RIndex",
+		How0:   -666,
+		May1:   999,
+	}
+
+	t3t, t3v := directTV(t3val)
+	for tIndex := range t3t.NumField() {
+		tFi := t3t.Field(tIndex)
+		t.Log(tFi.Name, tFi.Type, tFi.Index)
+	}
+
+	util.TestLongHorizontalLine(t)
+	for vIndex := range t3v.NumField() {
+		vFi := t3v.Field(vIndex)
+		t.Log(vFi)
+	}
+
+	util.TestLongHorizontalLine(t)
+	structFi, ok := t3t.FieldByName("t1")
+	if ok {
+		t.Log(structFi.Name, structFi.Type, structFi.Index)
+	}
+	structFi, ok = t3t.FieldByName("VName")
+	if ok {
+		t.Log(structFi.Name, structFi.Type, structFi.Index)
+	}
+	structFi = t3t.FieldByIndex([]int{0})
+	if ok {
+		t.Log(structFi.Name, structFi.Type, structFi.Index)
+	}
+	structFi = t3t.FieldByIndex([]int{0, 1})
+	if ok {
+		t.Log(structFi.Name, structFi.Type, structFi.Index)
+	}
+
+	util.TestLongHorizontalLine(t)
+	vFi := t3v.FieldByName("t1")
+	t.Log(vFi)
+	vFi = t3v.FieldByName("How0")
+	t.Log(vFi)
+	vFi = t3v.FieldByIndex([]int{0})
+	t.Log(vFi)
+	vFi = t3v.FieldByIndex([]int{0, 1}) // show that it is a recursive path t3.[0].[1].[.]...
+	t.Log(vFi)
+}

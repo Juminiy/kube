@@ -14,6 +14,78 @@ func TestHasField(t *testing.T) {
 	t.Log(HasField(t0{}, "F3", 1))  // others
 }
 
+func TestHasField2(t *testing.T) {
+	sl := []t0{{}, {}, {}}
+	t.Log(HasField(sl, "F0", "")) // has name and type is
+	t.Log(HasField(sl, "F1", "")) // has name but type not
+	t.Log(HasField(sl, "F2", "")) // no name
+	t.Log(HasField(sl, "F3", 1))  // others
+
+	// nil
+	sl = nil
+	t.Log(HasField(sl, "F0", "")) // has name and type is
+	t.Log(HasField(sl, "F1", "")) // has name but type not
+	t.Log(HasField(sl, "F2", "")) // no name
+	t.Log(HasField(sl, "F3", 1))  // others
+}
+
+func TestHasField3(t *testing.T) {
+	slI := []int{1, 2, 3}
+	slIPtr := []*int{util.New(1), util.New(2)}
+	slT0 := []t0{}
+	slT0Ptr := []**t0{}
+	t.Log(HasField(slI, "F0", ""))
+	t.Log(HasField(slIPtr, "F0", ""))
+	t.Log(HasField(slT0, "F0", ""))
+	t.Log(HasField(slT0Ptr, "F0", ""))
+	util.TestLongHorizontalLine(t)
+
+	t.Log(HasField(&slI, "F0", ""))
+	t.Log(HasField(&slIPtr, "F0", ""))
+	t.Log(HasField(&slT0, "F0", ""))
+	t.Log(HasField(&slT0Ptr, "F0", ""))
+	util.TestLongHorizontalLine(t)
+
+	arrI := [5]int{1, 2, 3}
+	arrPtr := [5]*int{util.New(1), util.New(2)}
+	arrT0 := [5]t0{}
+	arrT0Ptr := [5]**t0{}
+	t.Log(HasField(arrI, "F0", ""))
+	t.Log(HasField(arrPtr, "F0", ""))
+	t.Log(HasField(arrT0, "F0", ""))
+	t.Log(HasField(arrT0Ptr, "F0", ""))
+	util.TestLongHorizontalLine(t)
+
+	t.Log(HasField(&arrI, "F0", ""))
+	t.Log(HasField(&arrPtr, "F0", ""))
+	t.Log(HasField(&arrT0, "F0", ""))
+	t.Log(HasField(&arrT0Ptr, "F0", ""))
+	util.TestLongHorizontalLine(t)
+
+}
+
+func TestHasField4(t *testing.T) {
+	m := map[string]any{"F0": 1}
+	t.Log(HasField(m, "F0", 0))
+	t.Log(HasField(&m, "F0", ""))
+	t.Log(HasField(m, "F1", 0))
+	t.Log(HasField(&m, "F1", 0))
+	util.TestLongHorizontalLine(t)
+
+	m1 := map[string]int{"F0": 1}
+	t.Log(HasField(m1, "F0", 0))
+	t.Log(HasField(&m1, "F0", ""))
+	t.Log(HasField(m1, "F1", 0))
+	t.Log(HasField(&m1, "F1", 0))
+	util.TestLongHorizontalLine(t)
+
+	m2 := map[string]*int{"F0": util.New(1)}
+	t.Log(HasField(m2, "F0", 0))
+	t.Log(HasField(&m2, "F0", ""))
+	t.Log(HasField(m2, "F1", 0))
+	t.Log(HasField(&m2, "F1", 0))
+}
+
 func TestSetField(t *testing.T) {
 	tval := t0{}
 	t.Log(tval)
@@ -35,59 +107,6 @@ func TestSetField(t *testing.T) {
 	t.Log(tval)
 	SetField(&tval, "F3", "set F3") // others
 	t.Log(tval)
-}
-
-func TestHasFields(t *testing.T) {
-	t.Log(HasFields(t0{}, map[string]any{
-		"F2": util.NewString("vvv"), // no name
-		"F0": "ccc",                 // has name and type is
-		"F1": "1",                   // has name but type not
-	}))
-
-	t.Log(HasFields(t0{}, map[string]any{
-		"F0": "ccc", // has name and type is
-		"F1": 1,     // has name but type is
-	}))
-}
-
-func TestSetFields(t *testing.T) {
-	tval := t0{}
-
-	SetFields(tval, map[string]any{
-		"F2": util.NewString("vvv"), // no name
-		"F0": "ccc",                 // has name and type is
-		"F1": util.NewString("mmm"), // has name but type not
-	})
-	t.Log(tval)
-
-	SetFields(&tval, map[string]any{
-		"F2": util.NewString("vvv"), // no name
-		"F0": "ccc",                 // has name and type is
-		"F1": util.NewString("mmm"), // has name but type not
-	})
-	t.Log(tval)
-
-	SetFields(&tval, map[string]any{
-		"F2": util.NewString("vvv"), // no name
-		"F0": "vvv",                 // has name and type is
-		"F1": 222,                   // has name and type is
-	})
-	t.Log(tval)
-}
-
-func TestHasField2(t *testing.T) {
-	sl := []t0{{}, {}, {}}
-	t.Log(HasField(sl, "F0", "")) // has name and type is
-	t.Log(HasField(sl, "F1", "")) // has name but type not
-	t.Log(HasField(sl, "F2", "")) // no name
-	t.Log(HasField(sl, "F3", 1))  // others
-
-	// nil
-	sl = nil
-	t.Log(HasField(sl, "F0", "")) // has name and type is
-	t.Log(HasField(sl, "F1", "")) // has name but type not
-	t.Log(HasField(sl, "F2", "")) // no name
-	t.Log(HasField(sl, "F3", 1))  // others
 }
 
 func TestSetField2(t *testing.T) {
@@ -124,10 +143,83 @@ func TestSetField2(t *testing.T) {
 	t.Log(tval)
 }
 
+func TestSetField3(t *testing.T) {
+	m := map[string]any{"F0": 1}
+	SetField(m, "F0", 111)
+	t.Log(m)
+	SetField(&m, "F0", "xxx")
+	t.Log(m)
+	SetField(m, "F1", 0)
+	t.Log(m)
+	SetField(&m, "F1", 0)
+	t.Log(m)
+	util.TestLongHorizontalLine(t)
+
+	m1 := map[string]int{"F0": 1}
+	SetField(m1, "F0", 222)
+	t.Log(m1)
+	SetField(&m1, "F0", "kkk")
+	t.Log(m1)
+	SetField(m1, "F1", 0)
+	t.Log(m1)
+	SetField(&m1, "F1", 0)
+	t.Log(m1)
+	util.TestLongHorizontalLine(t)
+
+	// need to support
+	m2 := map[string]*int{"F0": util.New(1)}
+	SetField(m2, "F0", 333)
+	t.Log(m2)
+	SetField(&m2, "F0", "nnn")
+	t.Log(m2)
+	SetField(m2, "F1", 0)
+	t.Log(m2)
+	SetField(&m2, "F1", 0)
+	t.Log(m2)
+}
+
+func TestHasFields(t *testing.T) {
+	t.Log(HasFields(t0{}, map[string]any{
+		"F2": util.NewString("vvv"), // no name
+		"F0": "ccc",                 // has name and type is
+		"F1": "1",                   // has name but type not
+	}))
+
+	t.Log(HasFields(t0{}, map[string]any{
+		"F0": "ccc", // has name and type is
+		"F1": 1,     // has name but type is
+	}))
+}
+
 func TestHasFields2(t *testing.T) {
 	t.Log(HasFields([]t0{}, map[string]any{
 		"F0": "ccc", // has name and type is
 	}))
+}
+
+func TestSetFields(t *testing.T) {
+	tval := t0{}
+
+	SetFields(tval, map[string]any{
+		"F2": util.NewString("vvv"), // no name
+		"F0": "ccc",                 // has name and type is
+		"F1": util.NewString("mmm"), // has name but type not
+	})
+	t.Log(tval)
+
+	SetFields(&tval, map[string]any{
+		"F2": util.NewString("vvv"), // no name
+		"F0": "ccc",                 // has name and type is
+		"F1": util.NewString("mmm"), // has name but type not
+	})
+	t.Log(tval)
+
+	SetFields(&tval, map[string]any{
+		"F2": util.NewString("vvv"), // no name
+		"F0": "vvv",                 // has name and type is
+		"F1": 222,                   // has name and type is
+	})
+	t.Log(tval)
 }
 
 func TestSetFields2(t *testing.T) {
@@ -291,7 +383,7 @@ func TestHowAssignable2(t *testing.T) {
 	logFCan("map key", Of(mapST0).Val.MapKeys()[0])
 	logFCan("map elem", Of(mapST0).Val.MapIndex(directV("k1")))
 
-	t.Log("----------------------------------------------------------------")
+	util.TestLongHorizontalLine(t)
 
 	// pointer
 	// struct-field

@@ -58,7 +58,9 @@ func (tv TypVal) SliceSetOoc(index int, elem any) {
 }
 
 // SliceSetMake
-// set slice index to elem -> slice[index] = elem that allow slice is nil, if slice is nil make a slice
+// set slice index to elem -> slice[index] = elem
+// allow slice is nil, if slice is nil make a slice
+// allow index out of bound capacity, auto resize length and resize capacity
 func (tv TypVal) SliceSetMake(index int, elem any) {
 	tv.sliceNilDrySet(index, elem)
 }

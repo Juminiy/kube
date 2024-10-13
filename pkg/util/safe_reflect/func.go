@@ -46,3 +46,29 @@ func (tv TypVal) funcCanOptSlow(fnTyp reflect.Type) bool {
 	}
 	return true
 }
+
+func (tv TypVal) funcType(in, out []any, variadic bool) reflect.Type {
+	inTyp, outTyp := directTs(in), directTs(out)
+	if len(in) > 0 {
+		variadic = variadic && inTyp[len(in)-1].Kind() == Slice
+	}
+	return reflect.FuncOf(inTyp, outTyp, variadic)
+}
+
+func (tv TypVal) funcMake(in, out []any, variadic bool) any {
+	v := tv.noPointer()
+	if v.Kind() != Func {
+		return nil
+	}
+
+	return nil
+}
+
+func (tv TypVal) funcCall(in []any) []any {
+	v := tv.noPointer()
+
+	if v.Kind() == Func && !v.IsNil() {
+		return InterfacesOf(v.Call(directVs(in)))
+	}
+	return nil
+}
