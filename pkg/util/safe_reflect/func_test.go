@@ -1,6 +1,8 @@
 package safe_reflect
 
 import (
+	"github.com/Juminiy/kube/pkg/util"
+	"reflect"
 	"strconv"
 	"testing"
 )
@@ -61,4 +63,39 @@ func TestTypVal_FuncSet3(t *testing.T) {
 	Of(&testFnV).FuncSet(testFn2) // not set
 	t.Log(testFnV(666, 999))
 	t.Log(testFn(222, 333))
+}
+
+func TestFuncMake(t *testing.T) {
+	t.Log(
+		FuncMake(
+			[]any{int32(1), uint(1)}, []any{uint(0), int32(0)}, false,
+			MetaFunc(func(values []reflect.Value) []reflect.Value {
+				return []reflect.Value{values[1], values[0]}
+			}),
+		).(func(int32, uint) (uint, int32))(10, 11),
+	)
+
+	// let it panic is ok
+	util.Recover(func() {
+		t.Log(
+			FuncMake(
+				[]any{int32(1), uint(1)}, []any{uint(0), int32(0)}, false,
+				MetaFunc(func(values []reflect.Value) []reflect.Value {
+					return []reflect.Value{values[1], values[0]}
+				}),
+			).(func(int32, uint) (int32, int32))(10, 11),
+		)
+	})
+
+}
+
+func TestTypVal_FuncCall(t *testing.T) {
+	tfn := func() { t.Log("test func") }
+	t.Log(Of(&tfn).FuncCall(nil))
+
+	t.Log(Of(&tfn).FuncCall([]any{[]int{10}}))
+
+	t2fn := func(a int, b int) int { return a + b }
+	t.Log(Of(&t2fn).FuncCall([]any{1, 2}))
+
 }

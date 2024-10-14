@@ -44,12 +44,6 @@ func (tv TypVal) CanDirectAssign() bool {
 	)
 }
 
-func valueCanElem(v reflect.Value) bool {
-	return util.ElemIn(v.Kind(),
-		Ptr, Any,
-	)
-}
-
 func typeCanElem(t reflect.Type) bool {
 	return util.ElemIn(t.Kind(),
 		Arr, Chan, Map, Ptr, Slice,

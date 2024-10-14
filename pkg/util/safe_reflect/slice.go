@@ -1,6 +1,9 @@
 package safe_reflect
 
-import "reflect"
+import (
+	"github.com/Juminiy/kube/pkg/util"
+	"reflect"
+)
 
 // Slice API
 // +param elem type can indirect
@@ -129,4 +132,34 @@ func (tv TypVal) sliceGrowTo(toCap int) {
 	if v.Kind() == Slice && v.CanSet() && toCap > v.Cap() {
 		v.Grow(toCap - v.Cap())
 	}
+}
+
+func SliceMake(elem any, length, capacity int) any {
+	if elem == nil {
+		return nil
+	}
+	if capacity <= 0 {
+		capacity = util.MagicSliceCap
+	}
+	if length < 0 {
+		length = 0
+	}
+	if capacity < length {
+		capacity = length
+	}
+
+	//Pointer -> Slice(Addr)
+	// old-version: worked
+	//slOf := reflect.New(sliceType(elem)).Elem()
+	//dirSlOf := direct(slOf)
+	//dirSlOf.sliceGrowTo(capacity)
+	//dirSlOf.sliceSetLen(length)
+
+	// new-version: worked, optimized compare to old-version
+	//Slice-> Slice
+	return reflect.MakeSlice(sliceType(elem), length, capacity).Interface()
+}
+
+func sliceType(elem any) reflect.Type {
+	return reflect.SliceOf(directT(elem))
 }

@@ -1,5 +1,7 @@
 package safe_reflect
 
+import "reflect"
+
 // Array API
 // +param elem type can indirect
 // +desc Arr is pointer but no address
@@ -39,4 +41,15 @@ func (tv TypVal) arrayCanOpt(elem any) bool {
 	return tv.Typ.Kind() == Arr &&
 		tv.FieldLen() > 0 &&
 		underlyingEqual(tv.Typ.Elem(), directT(elem))
+}
+
+func ArrayMake(length int, elem any) any {
+	if elem == nil {
+		return nil
+	}
+	return reflect.New(arrayType(length, elem)).Elem().Interface()
+}
+
+func arrayType(length int, elem any) reflect.Type {
+	return reflect.ArrayOf(length, directT(elem))
 }

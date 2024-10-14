@@ -102,3 +102,14 @@ func (tv TypVal) mapKeyElemTypeEq(key, elem any) bool {
 		(mapElemTyp.Kind() == Any || // map[key_type]any
 			mapElemTyp == directT(elem)) // map[key_type]elem_type
 }
+
+func MapMake(key, elem any, capacity int) any {
+	if key == nil || elem == nil {
+		return nil
+	}
+	return reflect.MakeMapWithSize(mapType(key, elem), capacity).Interface()
+}
+
+func mapType(key, elem any) reflect.Type {
+	return reflect.MapOf(directT(key), directT(elem))
+}

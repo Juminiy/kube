@@ -4,10 +4,6 @@ import (
 	"reflect"
 )
 
-var (
-	_zeroValue = reflect.Value{} // comparable
-)
-
 type TypVal struct {
 	// final Value and final Type
 	Typ reflect.Type

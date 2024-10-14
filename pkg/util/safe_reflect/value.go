@@ -1,6 +1,7 @@
 package safe_reflect
 
 import (
+	"github.com/Juminiy/kube/pkg/util"
 	"reflect"
 )
 
@@ -42,12 +43,23 @@ func CopyFieldValue(src any, dst any) {
 	}
 }
 
-func set(src, dst any) {
+func directSet(src, dst any) {
 	sOf, dOf := Of(src), Of(dst)
-	if sOf.Typ == dOf.Typ && sOf.Val.CanSet() {
-		sOf.Val.Set(dOf.Val)
+	if sOf.Typ == dOf.Typ && dOf.Val.CanSet() {
+		dOf.Val.Set(sOf.Val)
 	}
 }
+
+func indirectSet(src, dst any) {
+	sOf, dOf := IndirectOf(src), IndirectOf(dst)
+	if sOf.Typ == dOf.Typ && dOf.Val.CanSet() {
+		dOf.Val.Set(sOf.Val)
+	}
+}
+
+var (
+	_zeroValue = reflect.Value{} // comparable
+)
 
 func (tv TypVal) FieldLen() int {
 	return fieldLen(tv.Val)
@@ -62,4 +74,10 @@ func fieldLen(v reflect.Value) int {
 	default:
 		return 0
 	}
+}
+
+func valueCanElem(v reflect.Value) bool {
+	return util.ElemIn(v.Kind(),
+		Ptr, Any,
+	)
 }

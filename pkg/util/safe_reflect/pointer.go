@@ -58,29 +58,6 @@ func underlyingEqual(t0, t1 reflect.Type) bool {
 	return underlying(t0) == underlying(t1)
 }
 
-func unpack(v reflect.Value) reflect.Value {
-	for valueCanElem(v) {
-		v = v.Elem()
-	}
-	return v
-}
-
-func unpackOk(v reflect.Value) (reflect.Value, bool) {
-	packed := false
-	for valueCanElem(v) {
-		v, packed = v.Elem(), true
-	}
-	return v, packed
-}
-
-func unpackV(v any) reflect.Value {
-	return unpack(directV(v))
-}
-
-func unpackT(v any) reflect.Type {
-	return unpackV(v).Type()
-}
-
 // unused, none-sense yet
 // dereference _ -> _
 // dereference * -> *

@@ -25,7 +25,6 @@ func (tv TypVal) funcCanOpt(fn any) bool {
 		fnTyp.Kind() != Func {
 		return false
 	}
-
 	return tv.funcCanOptSlow(fnTyp)
 }
 
@@ -47,28 +46,34 @@ func (tv TypVal) funcCanOptSlow(fnTyp reflect.Type) bool {
 	return true
 }
 
-func (tv TypVal) funcType(in, out []any, variadic bool) reflect.Type {
+func (tv TypVal) FuncCall(in []any) ([]any, bool) {
+	v := tv.noPointer()
+	if v.Kind() != Func || v.IsNil() ||
+		tv.Typ.NumIn() != len(in) {
+		return nil, false
+	}
+	inTs := directTs(in)
+	for i := range inTs {
+		if inTs[i] != tv.Typ.In(i) {
+			return nil, false
+		}
+	}
+	return InterfacesOf(v.Call(directVs(in))), true
+}
+
+func FuncMake(in, out []any, variadic bool, metaFunc MetaFunc) any {
+	if metaFunc == nil {
+		return nil
+	}
+	return reflect.MakeFunc(funcType(in, out, variadic), metaFunc).Interface()
+}
+
+type MetaFunc func([]reflect.Value) []reflect.Value
+
+func funcType(in, out []any, variadic bool) reflect.Type {
 	inTyp, outTyp := directTs(in), directTs(out)
 	if len(in) > 0 {
 		variadic = variadic && inTyp[len(in)-1].Kind() == Slice
 	}
 	return reflect.FuncOf(inTyp, outTyp, variadic)
-}
-
-func (tv TypVal) funcMake(in, out []any, variadic bool) any {
-	v := tv.noPointer()
-	if v.Kind() != Func {
-		return nil
-	}
-
-	return nil
-}
-
-func (tv TypVal) funcCall(in []any) []any {
-	v := tv.noPointer()
-
-	if v.Kind() == Func && !v.IsNil() {
-		return InterfacesOf(v.Call(directVs(in)))
-	}
-	return nil
 }

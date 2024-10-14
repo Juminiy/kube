@@ -1,5 +1,11 @@
 package util
 
+import (
+	"github.com/Juminiy/kube/pkg/log_api/stdlog"
+	gostruntime "github.com/dubbogo/gost/runtime"
+	"runtime/debug"
+)
+
 type (
 	Fn   func()
 	Func func() error
@@ -32,4 +38,20 @@ func ConRun(fns ...Fn) {
 	for _, fn := range fns {
 		go fn()
 	}
+}
+
+// Recover any func panic anyway, never hangout
+func Recover(fn Fn) {
+	defer func() {
+		if r := recover(); r != nil {
+			stdlog.ErrorF("hangup from recover panic: %v, stack: %s", r, Bytes2StringNoCopy(debug.Stack()))
+		}
+	}()
+	if fn != nil {
+		fn()
+	}
+}
+
+func GoSafe(fn Fn) {
+	gostruntime.GoSafely(nil, false, fn, nil)
 }

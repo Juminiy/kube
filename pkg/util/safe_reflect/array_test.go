@@ -69,3 +69,8 @@ func TestTypVal_ArraySetStructFields(t *testing.T) {
 	})
 	t.Log(arr)
 }
+
+func TestArrayMake(t *testing.T) {
+	t.Log(ArrayMake(10, 10))
+	t.Log(ArrayMake(10, nil))
+}

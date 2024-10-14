@@ -60,3 +60,11 @@ func TestTypVal_MapAssign2(t *testing.T) {
 	Of(sl).mapNilDryAssign("1", 2)
 	Of(&sl).mapDryAssign(2, "1")
 }
+
+func TestMapMake(t *testing.T) {
+	t.Log(MapMake(nil, nil, 10))
+	t.Log(MapMake(nil, "", 10))
+	t.Log(MapMake("", nil, 10))
+	m := MapMake("", "", 10)
+	t.Log(len(m.(map[string]string)))
+}

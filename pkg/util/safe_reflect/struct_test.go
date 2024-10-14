@@ -13,14 +13,14 @@ type t0 struct {
 // +passed
 func TestTypVal_ParseStructTag(t *testing.T) {
 	// no pointer
-	tagMap := Of(t0{}).ParseStructTag("gorm")
+	tagMap := Of(t0{}).StructParseTag("gorm")
 	t.Log(tagMap)
-	t.Log(tagMap.ParseGetTagValV("F0", "column"))
+	t.Log(tagMap.ParseGetVal("F0", "column"))
 
 	// pointer
-	pTagMap := Of(&t0{}).ParseStructTag("gorm")
+	pTagMap := Of(&t0{}).StructParseTag("gorm")
 	t.Log(pTagMap)
-	t.Log(pTagMap.ParseGetTagValV("F0", "column"))
+	t.Log(pTagMap.ParseGetVal("F0", "column"))
 }
 
 // +passed
@@ -150,4 +150,45 @@ func TestStructField(t *testing.T) {
 	t.Log(vFi)
 	vFi = t3v.FieldByIndex([]int{0, 1}) // show that it is a recursive path t3.[0].[1].[.]...
 	t.Log(vFi)
+}
+
+func TestStructMake(t *testing.T) {
+	t.Log(
+		StructMake([]FieldDesc{
+			{Name: "I32", Value: int32(1), Tag: `json:"i32"`},
+			{Name: "I32", Value: int32(1), Tag: `json:"i32"`},
+			{Name: "I32", Value: int32(1), Tag: `json:"i32"`},
+		}),
+	)
+
+	t.Log(
+		StructMake([]FieldDesc{
+			{Name: "I32", Value: int32(1), Tag: `json:"i32"`},
+			{Name: "F64", Value: 1.23, Tag: `json:"i32"`},
+			{Name: "String", Value: "vvv", Tag: `json:"i32"`},
+		}),
+	)
+}
+
+func TestTypVal_StructParseTag(t *testing.T) {
+	type t5 struct {
+		Vx  bool
+		V1  int    `app:"unique:1;union_unique:0;field:name;follow::"`
+		V19 int    `app:"unique:1;union_unique:0;field:name;follow:"`
+		V2  string `app:"unique:1;union_unique:1;field:name_part1;follow:ASCII-Colon"`
+	}
+
+	tm := Of(t5{}).StructParseTag("gorm")
+	t.Logf("no-app: %v", tm.ParseGetVal("V1", "unique")) // no app
+
+	tagMap := Of(t5{}).StructParseTag("app")
+	t.Logf("no-field: (%v)", tagMap.ParseGetVal("Vo", "unique"))                  // no field
+	t.Logf("no-tag: (%v)", tagMap.ParseGetVal("Vx", "unique"))                    // no tag
+	t.Logf("all-ok: (%v)", tagMap.ParseGetVal("V1", "unique"))                    // app-ok field-ok tag-ok
+	t.Logf("all-ok: (%v)", tagMap.ParseGetVal("V1", "union_unique"))              // app-ok field-ok tag-ok
+	t.Logf("no-tag-key: (%v)", tagMap.ParseGetVal("V1", "field1"))                // no-tag-key
+	t.Logf("no-tag-key: (%v)", tagMap.ParseGetVal("V1", "field2"))                // no-tag-key
+	t.Logf("all-ok: (%v)", tagMap.ParseGetVal("V1", "field"))                     // app-ok field-ok tag-ok
+	t.Logf("all-ok, with(value=Colon): (%v)", tagMap.ParseGetVal("V1", "follow")) // app-ok field-ok tag-ok, with :
+	t.Logf("all-ok, with(value=()): (%v)", tagMap.ParseGetVal("V19", "follow"))   // app-ok field-ok tag-ok, with :
 }

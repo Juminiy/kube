@@ -225,3 +225,10 @@ func TestTypVal_SliceSetMake(t *testing.T) {
 	Of(&sl).SliceSetMake(10, 10)
 	t.Log(sl)
 }
+
+func TestSliceMake(t *testing.T) {
+	t.Log(SliceMake(nil, 10, 20))
+	t.Log(SliceMake(nil, 5, -1))
+	sl := SliceMake(t0{}, 10, 20)
+	t.Log(len(sl.([]t0)), cap(sl.([]t0)))
+}

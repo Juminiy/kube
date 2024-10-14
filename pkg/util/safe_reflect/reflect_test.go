@@ -399,3 +399,38 @@ func TestHowAssignable2(t *testing.T) {
 	logFCan("map key", IndirectOf(&mapST0).Val.MapKeys()[0])
 	logFCan("map elem", IndirectOf(&mapST0).Val.MapIndex(directV("k1")))
 }
+
+func TestVVV(t *testing.T) {
+	// package `of api`, include at least once
+	//reflect.ArrayOf()
+	//reflect.ChanOf()
+	//reflect.FuncOf()
+	//reflect.MapOf()
+	//reflect.SliceOf()
+	//reflect.StructOf()
+	//reflect.TypeOf()
+	//reflect.ValueOf()
+
+	// package `make api`, include at least once
+	//reflect.MakeChan()
+	//reflect.MakeFunc()
+	//reflect.MakeMapWithSize()
+	//reflect.MakeMap()
+	//reflect.MakeSlice()
+
+	//
+	//reflect.New()
+	//reflect.Append()
+	//reflect.AppendSlice()
+	//reflect.Copy()
+	//reflect.NewAt()
+	//reflect.PointerTo()
+	//reflect.Select()
+	//reflect.SliceAt()
+	//reflect.TypeFor()
+	//reflect.Zero()
+	//reflect.DeepEqual()
+	//reflect.Swapper()
+	//reflect.VisibleFields()
+	//reflect.Indirect()
+}
