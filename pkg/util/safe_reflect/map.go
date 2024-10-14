@@ -6,9 +6,8 @@ import (
 )
 
 // Map API
-// +param key type must direct (most often is string)
-// +param elem type must direct
-// +param elem type can indirect, pointer or any(interface), is a tough job, need to fix
+// +param key type must direct, because of comparable
+// +param elem type must direct, because of alignment and ptr
 // +desc Map is pointer
 
 // MapAssign key exist assign
@@ -101,5 +100,5 @@ func (tv TypVal) mapKeyElemTypeEq(key, elem any) bool {
 	mapElemTyp := tv.Typ.Elem()
 	return tv.Typ.Key() == directT(key) &&
 		(mapElemTyp.Kind() == Any || // map[key_type]any
-			underlyingEqual(mapElemTyp, unpackT(elem))) // map[key_type]elem_type
+			mapElemTyp == directT(elem)) // map[key_type]elem_type
 }
