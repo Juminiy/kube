@@ -92,8 +92,9 @@ type TagMap map[string]string
 // +example
 // `gorm:"column:user_name;type:varchar(128);comment:user's name, account's name"`
 // +example
-// `app:"unique:1;union_unique:0;field:name;follow::"`
-// `app:"unique:1;union_unique:1;field:name_part1;follow:ASCII-Colon"`
+// `app:"unique:1;union_unique:0;field:name;"`
+// `app:"unique:0;union_unique:1;field:name_part1;follow:-"`
+// `app:"unique:0;union_unique:1;field:name_part1;follow:+"`
 func (m TagMap) ParseGetVal(field, key string) string {
 	if len(m) == 0 {
 		return ""

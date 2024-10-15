@@ -134,6 +134,37 @@ func (tv TypVal) sliceGrowTo(toCap int) {
 	}
 }
 
+func (tv TypVal) SliceAppend(elem any) {
+	v := tv.noPointer()
+	if v.Kind() != Slice || !v.CanSet() ||
+		directT(elem) != tv.Typ.Elem() {
+		return
+	}
+	v.Set(reflect.Append(v, directV(elem)))
+}
+
+func (tv TypVal) SliceAppends(elem ...any) {
+	v := tv.noPointer()
+	if v.Kind() != Slice || !v.CanSet() {
+		return
+	}
+	for i := range elem {
+		if directT(elem[i]) == tv.Typ.Elem() {
+			v.Set(reflect.Append(v, directV(elem[i])))
+		}
+	}
+}
+
+func (tv TypVal) SliceAppendSlice(sl any) {
+	v := tv.noPointer()
+	slOf := Of(sl)
+	if v.Kind() != Slice || !v.CanSet() ||
+		slOf.Typ != tv.Typ || slOf.Typ.Elem() != tv.Typ.Elem() {
+		return
+	}
+	v.Set(reflect.AppendSlice(v, slOf.Val))
+}
+
 func SliceMake(elem any, length, capacity int) any {
 	if elem == nil {
 		return nil

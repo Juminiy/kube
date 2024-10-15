@@ -232,3 +232,40 @@ func TestSliceMake(t *testing.T) {
 	sl := SliceMake(t0{}, 10, 20)
 	t.Log(len(sl.([]t0)), cap(sl.([]t0)))
 }
+
+func TestTypVal_SliceAppend(t *testing.T) {
+	var sl []int
+	Of(sl).SliceAppend(1)
+	t.Log(sl)
+
+	Of(&sl).SliceAppend(2)
+	t.Log(sl)
+
+	Of(&sl).SliceAppend("sss")
+	t.Log(sl)
+}
+
+func TestTypVal_SliceAppendSlice(t *testing.T) {
+	var sl []int
+	Of(sl).SliceAppendSlice([]int{1, 2, 3})
+	t.Log(sl)
+
+	Of(&sl).SliceAppendSlice([]int{1, 2, 3})
+	t.Log(sl)
+
+	Of(&sl).SliceAppendSlice([]string{"111", "222", "333"})
+	t.Log(sl)
+}
+
+func TestTypVal_SliceAppends(t *testing.T) {
+	var sl []int
+
+	Of(sl).SliceAppends(1, 2, 3)
+	t.Log(sl)
+
+	Of(&sl).SliceAppends(1, 2, 3)
+	t.Log(sl)
+
+	Of(&sl).SliceAppends("111", "222", "333")
+	t.Log(sl)
+}

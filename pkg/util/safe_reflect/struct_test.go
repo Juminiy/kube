@@ -192,3 +192,30 @@ func TestTypVal_StructParseTag(t *testing.T) {
 	t.Logf("all-ok, with(value=Colon): (%v)", tagMap.ParseGetVal("V1", "follow")) // app-ok field-ok tag-ok, with :
 	t.Logf("all-ok, with(value=()): (%v)", tagMap.ParseGetVal("V19", "follow"))   // app-ok field-ok tag-ok, with :
 }
+
+func TestTypVal_StructParseTag2(t *testing.T) {
+	type t5 struct {
+		TenantID       bool
+		BusinessName   string `gorm:"column:business_name;type:varchar(123);" app:"unique:1;union_unique:0;field:name;follow::"`
+		UnionNamePart1 string `gorm:"column:uname_x;type:varchar(123);" app:"unique:0;union_unique:1;field:fvip;index:0;follow::"`
+		UnionNamePart2 string `gorm:"column:uname_y;type:varchar(123);" app:"unique:0;union_unique:1;field:fvip;index:1;follow:-"`
+	}
+
+	oft5 := Of(t5{})
+	appTagMap := oft5.StructParseTag("app")
+	gormTagMap := oft5.StructParseTag("gorm")
+
+	selectFields := make([]string, 0, len(appTagMap))
+	//uniqueMap := make(map[string][]string, len(appTagMap))
+	for fieldName := range appTagMap {
+		uniqueOk := appTagMap.ParseGetVal(fieldName, "unique") == "1"
+		unionUniqueOk := appTagMap.ParseGetVal(fieldName, "union_unique") == "1"
+		if uniqueOk || unionUniqueOk {
+			selectFields = append(selectFields, gormTagMap.ParseGetVal(fieldName, "column"))
+		}
+		if uniqueOk {
+			//uniqueMap[appTagMap.ParseGetVal(fieldName, "field")] =
+		}
+	}
+
+}

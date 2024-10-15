@@ -103,3 +103,11 @@ func interfacePointer(v reflect.Value) reflect.Value {
 	}
 	return _zeroValue
 }
+
+func pointerType(v any, ptrLevel int) reflect.Type {
+	vTyp := directT(v)
+	for range ptrLevel {
+		vTyp = reflect.PointerTo(vTyp)
+	}
+	return vTyp
+}
