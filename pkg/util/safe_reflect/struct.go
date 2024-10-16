@@ -118,6 +118,20 @@ func (tv TypVal) StructFieldsType() map[string]reflect.Type {
 	return fieldTypeMap
 }
 
+func (tv TypVal) StructFieldValue(fieldName string) any {
+	v := tv.noPointer()
+
+	if v.Kind() != Struct {
+		return nil
+	}
+
+	fieldValue := v.FieldByName(fieldName)
+	if fieldValue != _zeroValue && fieldValue.CanInterface() {
+		return fieldValue.Interface()
+	}
+	return nil
+}
+
 func (tv TypVal) StructFieldsValues(fields map[string][]int) map[string]map[any]struct{} {
 	v := tv.noPointer()
 
@@ -132,14 +146,17 @@ func (tv TypVal) StructFieldsValues(fields map[string][]int) map[string]map[any]
 
 	fieldsValues := make(map[string]map[any]struct{}, len(fieldsIndex))
 	for fieldName, fieldIndex := range fieldsIndex {
-		fieldsValues[fieldName] = map[any]struct{}{
-			v.FieldByIndex(fieldIndex).Interface(): {},
+		if fi := v.FieldByIndex(fieldIndex); fi.CanInterface() {
+			fieldsValues[fieldName] = map[any]struct{}{
+				fi.Interface(): {},
+			}
 		}
+
 	}
 	return fieldsValues
 }
 
-func (tv TypVal) StructFieldsStrValues(fieldsIndex map[string][]int) map[string]string {
+/*func (tv TypVal) StructFieldsStrValues(fieldsIndex map[string][]int) map[string]string {
 	v := tv.noPointer()
 
 	if v.Kind() != Struct {
@@ -155,7 +172,7 @@ func (tv TypVal) StructFieldsStrValues(fieldsIndex map[string][]int) map[string]
 	}
 
 	return fieldsValues
-}
+}*/
 
 // TagMap in an app -> map[field]tag_val
 type TagMap map[string]string

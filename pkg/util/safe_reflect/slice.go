@@ -165,6 +165,30 @@ func (tv TypVal) SliceAppendSlice(sl any) {
 	v.Set(reflect.AppendSlice(v, slOf.Val))
 }
 
+func (tv TypVal) SliceStructFieldValues(fieldName string) map[any]struct{} {
+	v := tv.noPointer()
+
+	if v.Kind() != Slice ||
+		tv.FieldLen() == 0 {
+		return nil
+	}
+	directElem0 := direct(v.Index(0))
+
+	fieldIndex := directElem0.structFieldIndexByName(fieldName)
+	if len(fieldIndex) == 0 {
+		return nil
+	}
+	fieldValues := make(map[any]struct{}, tv.FieldLen())
+	for index := range tv.FieldLen() {
+		if elemI := v.Index(index); elemI.Kind() == Struct {
+			if elemIFi := elemI.FieldByIndex(fieldIndex); elemIFi.CanInterface() {
+				fieldValues[elemIFi.Interface()] = struct{}{}
+			}
+		}
+	}
+	return fieldValues
+}
+
 func (tv TypVal) SliceStructFieldsValues(fields map[string]struct{}) map[string]map[any]struct{} {
 	v := tv.noPointer()
 
@@ -172,14 +196,15 @@ func (tv TypVal) SliceStructFieldsValues(fields map[string]struct{}) map[string]
 		tv.FieldLen() == 0 {
 		return nil
 	}
+	directElem0 := direct(v.Index(0))
 
 	// all field list
-	fieldsIndex := direct(v.Index(0)).StructFieldsIndex()
+	fieldsIndex := directElem0.StructFieldsIndex()
 
 	// common field list
 	util.MapEvict(fieldsIndex, fields)
 
-	fieldsValues := indirect(v.Index(0)).StructFieldsValues(fieldsIndex)
+	fieldsValues := directElem0.StructFieldsValues(fieldsIndex)
 	for index := range tv.FieldLen() {
 		util.MapMerge(fieldsValues, indirect(v.Index(index)).StructFieldsValues(fieldsIndex))
 	}

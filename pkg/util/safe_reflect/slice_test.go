@@ -273,15 +273,15 @@ func TestTypVal_SliceAppends(t *testing.T) {
 func TestTypVal_SliceStructFieldsValues(t *testing.T) {
 	var sl []int
 
-	Of(sl).SliceStructFieldsValues(map[string]struct{}{
+	t.Log(Of(sl).SliceStructFieldsValues(map[string]struct{}{
 		"F0": {},
 		"F1": {},
-	})
+	}))
 
-	Of(&sl).SliceStructFieldsValues(map[string]struct{}{
+	t.Log(Of(&sl).SliceStructFieldsValues(map[string]struct{}{
 		"F0": {},
 		"F1": {},
-	})
+	}))
 
 	var t0sl = []t0{{F0: "v1", F1: 1}, {F0: "v2", F1: 2}}
 	t.Log(Of(t0sl).SliceStructFieldsValues(map[string]struct{}{}))
@@ -295,4 +295,8 @@ func TestTypVal_SliceStructFieldsValues(t *testing.T) {
 		"F0": {},
 		"F1": {},
 	}))
+
+	t.Log(Of(&t0sl).SliceStructFieldValues("F0"))
+	t.Log(Of(&t0sl).SliceStructFieldValues("F1"))
+	t.Log(Of(&t0sl).SliceStructFieldValues("Fx"))
 }

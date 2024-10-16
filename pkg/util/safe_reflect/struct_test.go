@@ -240,6 +240,14 @@ func TestTypVal_StructFieldsValues(t *testing.T) {
 	t.Log(t0Of.StructFieldsValues(map[string][]int{
 		"Ciallo": nil,
 		"Fake":   nil,
-		"F0":     {0},
+		"F0":     nil,
 	}))
+
+	t.Log(t0Of.StructFieldValue("F0")) // string
+
+	t.Log(t0Of.StructFieldValue("F1")) // int
+
+	t.Log(t0Of.StructFieldValue("F2")) // nil
+
+	t.Log(t0Of.StructFieldValue("")) // nil
 }
