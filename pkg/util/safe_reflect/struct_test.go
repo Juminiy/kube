@@ -251,3 +251,20 @@ func TestTypVal_StructFieldsValues(t *testing.T) {
 
 	t.Log(t0Of.StructFieldValue("")) // nil
 }
+
+func TestTypVal_Struct2Map(t *testing.T) {
+	t0Of := Of(t0{
+		F0: "avl",
+		F1: 111,
+	})
+
+	t.Log(t0Of.Struct2Map(map[string]struct{}{}))
+	t.Log(t0Of.Struct2Map(map[string]struct{}{
+		"F0": {}, "F1": {},
+	}))
+
+	t.Log(t0Of.Struct2Map(map[string]struct{}{}))
+	t.Log(t0Of.Struct2Map(map[string]struct{}{
+		"F0": {}, "F1": {},
+	}))
+}

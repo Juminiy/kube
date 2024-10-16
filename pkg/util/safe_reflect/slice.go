@@ -206,9 +206,24 @@ func (tv TypVal) SliceStructFieldsValues(fields map[string]struct{}) map[string]
 
 	fieldsValues := directElem0.StructFieldsValues(fieldsIndex)
 	for index := range tv.FieldLen() {
-		util.MapMerge(fieldsValues, indirect(v.Index(index)).StructFieldsValues(fieldsIndex))
+		util.MapMerge(fieldsValues, direct(v.Index(index)).StructFieldsValues(fieldsIndex))
 	}
 	return fieldsValues
+}
+
+func (tv TypVal) SliceStruct2SliceMap(fields map[string]struct{}) []map[string]any {
+	v := tv.noPointer()
+
+	if v.Kind() != Slice ||
+		tv.FieldLen() == 0 {
+		return nil
+	}
+
+	recordValues := make([]map[string]any, tv.FieldLen())
+	for index := range tv.FieldLen() {
+		recordValues[index] = direct(v.Index(index)).Struct2Map(fields)
+	}
+	return recordValues
 }
 
 func SliceMake(elem any, length, capacity int) any {

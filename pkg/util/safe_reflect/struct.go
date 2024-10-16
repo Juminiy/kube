@@ -174,6 +174,27 @@ func (tv TypVal) StructFieldsValues(fields map[string][]int) map[string]map[any]
 	return fieldsValues
 }*/
 
+func (tv TypVal) Struct2Map(fields map[string]struct{}) map[string]any {
+	v := tv.noPointer()
+
+	if v.Kind() != Struct {
+		return nil
+	}
+
+	// all field list
+	fieldsIndex := tv.StructFieldsIndex()
+	// common field list
+	util.MapEvict(fieldsIndex, fields)
+
+	structMap := make(map[string]any, tv.FieldLen())
+	for fieldName, fieldIndex := range fieldsIndex {
+		if fi := v.FieldByIndex(fieldIndex); fi.CanInterface() {
+			structMap[fieldName] = fi.Interface()
+		}
+	}
+	return structMap
+}
+
 // TagMap in an app -> map[field]tag_val
 type TagMap map[string]string
 
