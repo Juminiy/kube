@@ -1,6 +1,7 @@
 package safe_reflect
 
 import (
+	"github.com/Juminiy/kube/pkg/util"
 	"reflect"
 	"strings"
 )
@@ -83,6 +84,77 @@ func (tv TypVal) StructParseTag(app string) (tagMap TagMap) {
 		tagMap[fieldI.Name] = fieldI.Tag.Get(app)
 	}
 	return
+}
+
+func (tv TypVal) StructFieldsIndex() map[string][]int {
+	v := tv.noPointer()
+
+	if v.Kind() != Struct {
+		return nil
+	}
+
+	typ := tv.Typ
+	indexMap := make(map[string][]int, typ.NumField())
+	for i := range typ.NumField() {
+		fieldI := typ.Field(i)
+		indexMap[fieldI.Name] = fieldI.Index
+	}
+	return indexMap
+}
+
+func (tv TypVal) StructFieldsType() map[string]reflect.Type {
+	v := tv.noPointer()
+
+	if v.Kind() != Struct {
+		return nil
+	}
+
+	typ := tv.Typ
+	fieldTypeMap := make(map[string]reflect.Type, typ.NumField())
+	for i := range typ.NumField() {
+		fieldI := typ.Field(i)
+		fieldTypeMap[fieldI.Name] = fieldI.Type
+	}
+	return fieldTypeMap
+}
+
+func (tv TypVal) StructFieldsValues(fields map[string][]int) map[string]map[any]struct{} {
+	v := tv.noPointer()
+
+	if v.Kind() != Struct {
+		return nil
+	}
+
+	// all field list
+	fieldsIndex := tv.StructFieldsIndex()
+	// common field list
+	util.MapEvict(fieldsIndex, fields)
+
+	fieldsValues := make(map[string]map[any]struct{}, len(fieldsIndex))
+	for fieldName, fieldIndex := range fieldsIndex {
+		fieldsValues[fieldName] = map[any]struct{}{
+			v.FieldByIndex(fieldIndex).Interface(): {},
+		}
+	}
+	return fieldsValues
+}
+
+func (tv TypVal) StructFieldsStrValues(fieldsIndex map[string][]int) map[string]string {
+	v := tv.noPointer()
+
+	if v.Kind() != Struct {
+		return nil
+	}
+
+	fieldsValues := make(map[string]string, len(fieldsIndex))
+	for fieldName, fieldIndex := range fieldsIndex {
+		fieldI := v.FieldByIndex(fieldIndex)
+		if fieldI.Kind() == String {
+			fieldsValues[fieldName] = fieldI.Interface().(string)
+		}
+	}
+
+	return fieldsValues
 }
 
 // TagMap in an app -> map[field]tag_val

@@ -219,3 +219,27 @@ func TestTypVal_StructParseTag2(t *testing.T) {
 	}
 
 }
+
+func TestTypVal_StructFieldIndex(t *testing.T) {
+	t.Log(Of(t0{}).StructFieldsIndex())
+	t.Log(Of(t0{}).StructFieldsType())
+
+	t.Log(Of(&t0{}).StructFieldsIndex())
+	t.Log(Of(&t0{}).StructFieldsType())
+}
+
+func TestTypVal_StructFieldsValues(t *testing.T) {
+	t0Of := Of(t0{
+		F0: "avl",
+		F1: 111,
+	})
+	fieldsIndex := t0Of.StructFieldsIndex()
+
+	t.Log(t0Of.StructFieldsValues(fieldsIndex))
+
+	t.Log(t0Of.StructFieldsValues(map[string][]int{
+		"Ciallo": nil,
+		"Fake":   nil,
+		"F0":     {0},
+	}))
+}

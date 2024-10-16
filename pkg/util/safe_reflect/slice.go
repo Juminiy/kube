@@ -165,6 +165,27 @@ func (tv TypVal) SliceAppendSlice(sl any) {
 	v.Set(reflect.AppendSlice(v, slOf.Val))
 }
 
+func (tv TypVal) SliceStructFieldsValues(fields map[string]struct{}) map[string]map[any]struct{} {
+	v := tv.noPointer()
+
+	if v.Kind() != Slice ||
+		tv.FieldLen() == 0 {
+		return nil
+	}
+
+	// all field list
+	fieldsIndex := direct(v.Index(0)).StructFieldsIndex()
+
+	// common field list
+	util.MapEvict(fieldsIndex, fields)
+
+	fieldsValues := indirect(v.Index(0)).StructFieldsValues(fieldsIndex)
+	for index := range tv.FieldLen() {
+		util.MapMerge(fieldsValues, indirect(v.Index(index)).StructFieldsValues(fieldsIndex))
+	}
+	return fieldsValues
+}
+
 func SliceMake(elem any, length, capacity int) any {
 	if elem == nil {
 		return nil

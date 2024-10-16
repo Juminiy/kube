@@ -49,3 +49,23 @@ func typeCanElem(t reflect.Type) bool {
 		Arr, Chan, Map, Ptr, Slice,
 	)
 }
+
+func (tv TypVal) CanDirectCompare() bool {
+	return util.ElemIn(tv.Typ.Kind(),
+		Bool,
+		Int,
+		I8,
+		I16,
+		I32,
+		I64,
+		Uint,
+		U8,
+		U16,
+		U32,
+		U64,
+		UPtr,
+		F32,
+		F64,
+		String,
+	)
+}
