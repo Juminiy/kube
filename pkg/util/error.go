@@ -1,7 +1,10 @@
 package util
 
 import (
+	"errors"
+	"fmt"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
+	valyalabuffer "github.com/valyala/bytebufferpool"
 	"io"
 )
 
@@ -65,4 +68,24 @@ func Must(err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func MergeError(err ...error) error {
+	var (
+		hasErr bool
+		errStr string
+	)
+	DoWithBuffer(func(buf *valyalabuffer.ByteBuffer) {
+		for i := range err {
+			if err[i] != nil {
+				_, _ = buf.WriteString(fmt.Sprintf("error[%d]: %s\n", i, err[i].Error()))
+				hasErr = true
+			}
+		}
+		errStr = buf.String()
+	})
+	if hasErr {
+		return errors.New(errStr)
+	}
+	return nil
 }

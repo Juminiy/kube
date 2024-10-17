@@ -28,3 +28,14 @@ func GetBuffer() *valyalabuffer.ByteBuffer {
 func PutBuffer(bb *valyalabuffer.ByteBuffer) {
 	valyalabuffer.Put(bb)
 }
+
+type WithBufferFn func(*valyalabuffer.ByteBuffer)
+
+func DoWithBuffer(fn WithBufferFn) {
+	buf := GetBuffer()
+	defer PutBuffer(buf)
+
+	if fn != nil {
+		fn(buf)
+	}
+}
