@@ -7,17 +7,17 @@ import (
 )
 
 // Struct API
-// +param underlyingIsStructVal type and its attribute type can indirect
+// +param srcV type and its attribute type can indirect
 // +desc Struct is value
 
-func (tv TypVal) StructSet(underlyingIsStructVal any) {
+func (tv TypVal) StructSet(srcV any) {
 	v := tv.noPointer()
 
 	if v.Kind() != Struct || !v.CanSet() {
 		return
 	}
 
-	indirSrcT, indirSrcV := indirectTV(underlyingIsStructVal)
+	indirSrcT, indirSrcV := indirectTV(srcV)
 	if tv.Typ == indirSrcT && v.CanSet() {
 		v.Set(indirSrcV)
 	}
@@ -67,25 +67,6 @@ func (tv TypVal) structFieldIndexByName(fieldName string) []int {
 	return nil
 }
 
-// StructParseTag
-// +example
-// `app1:"tag_val1" app2:"tag_val2" app3:"tag_val3"`
-func (tv TypVal) StructParseTag(app string) (tagMap TagMap) {
-	v := tv.noPointer()
-
-	if v.Kind() != Struct {
-		return
-	}
-
-	typ := tv.Typ
-	tagMap = make(TagMap, typ.NumField())
-	for i := range typ.NumField() {
-		fieldI := typ.Field(i)
-		tagMap[fieldI.Name] = fieldI.Tag.Get(app)
-	}
-	return
-}
-
 func (tv TypVal) StructFieldsIndex() map[string][]int {
 	v := tv.noPointer()
 
@@ -104,18 +85,21 @@ func (tv TypVal) StructFieldsIndex() map[string][]int {
 
 func (tv TypVal) StructFieldsType() map[string]reflect.Type {
 	v := tv.noPointer()
-
 	if v.Kind() != Struct {
 		return nil
 	}
 
-	typ := tv.Typ
-	fieldTypeMap := make(map[string]reflect.Type, typ.NumField())
+	return structFieldsTypeMap(tv.Typ)
+}
+
+// no check Kind
+func structFieldsTypeMap(typ reflect.Type) map[string]reflect.Type {
+	fieldsTypeMap := make(map[string]reflect.Type, typ.NumField())
 	for i := range typ.NumField() {
 		fieldI := typ.Field(i)
-		fieldTypeMap[fieldI.Name] = fieldI.Type
+		fieldsTypeMap[fieldI.Name] = fieldI.Type
 	}
-	return fieldTypeMap
+	return fieldsTypeMap
 }
 
 func (tv TypVal) StructFieldValue(fieldName string) any {
@@ -195,6 +179,53 @@ func (tv TypVal) Struct2Map(fields map[string]struct{}) map[string]any {
 	return structMap
 }
 
+// StructHasFields
+// match all fields by FieldName and FieldType
+// fields FieldValue must direct
+func (tv TypVal) StructHasFields(fields map[string]any) map[string]struct{} {
+	v := tv.noPointer()
+	if v.Kind() != Struct {
+		return nil
+	}
+
+	return structHasFields(tv.Typ, fields)
+}
+
+func structHasFields(typ reflect.Type, fields map[string]any) map[string]struct{} {
+	fieldsTypeMap := structFieldsTypeMap(typ)
+	if len(fieldsTypeMap) == 0 {
+		return nil
+	}
+	okMap := make(map[string]struct{}, len(fieldsTypeMap))
+	for fieldName, fieldValue := range fields {
+		if fieldTyp, ok := fieldsTypeMap[fieldName]; ok { // has FieldName
+			if directT(fieldValue) == fieldTyp { // direct match FiledType
+				okMap[fieldName] = struct{}{}
+			}
+		}
+	}
+	return okMap
+}
+
+// StructParseTag
+// +example
+// `app1:"tag_val1" app2:"tag_val2" app3:"tag_val3"`
+func (tv TypVal) StructParseTag(app string) (tagMap TagMap) {
+	v := tv.noPointer()
+
+	if v.Kind() != Struct {
+		return
+	}
+
+	typ := tv.Typ
+	tagMap = make(TagMap, typ.NumField())
+	for i := range typ.NumField() {
+		fieldI := typ.Field(i)
+		tagMap[fieldI.Name] = fieldI.Tag.Get(app)
+	}
+	return
+}
+
 // TagMap in an app -> map[field]tag_val
 type TagMap map[string]string
 
@@ -262,4 +293,12 @@ func (f FieldDesc) StructField() reflect.StructField {
 		Type: directT(f.Value),
 		Tag:  f.Tag,
 	}
+}
+
+func (tv TypVal) underlyMustStruct() (reflect.Value, bool) {
+	v := tv.noPointer()
+	if v.Kind() != Struct {
+		return _zeroValue, false
+	}
+	return v, true
 }

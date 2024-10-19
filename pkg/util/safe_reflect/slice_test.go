@@ -344,3 +344,115 @@ func TestTypVal_StructMakeSlice2(t *testing.T) {
 	vassertV[8] = t0{F0: "8f0", F1: 888}
 	t.Log(v)
 }
+
+func TestTypVal_SliceOrArrayStructHasFields(t *testing.T) {
+	var sl = []t0{}
+	//var slptr = &sl
+	//var arr = [5]t0{}
+	//var arrptr = &arr
+
+	t.Log(Of(sl).SliceOrArrayStructHasFields(map[string]any{
+		"F0": 1,
+		"F1": "",
+	}))
+
+	t.Log(Of(sl).SliceOrArrayStructHasFields(map[string]any{
+		"F0": "xsss",
+		"F1": 1,
+	}))
+
+	t.Log(Of(sl).SliceOrArrayStructHasFields(map[string]any{
+		"F2": 1,
+		"F3": "",
+	}))
+
+	t.Log(Of(sl).SliceOrArrayStructHasFields(map[string]any{
+		"F1": 1,
+		"F3": "",
+	}))
+
+}
+
+func TestTypVal_SliceOrArrayStructHasFields2(t *testing.T) {
+	var sl = []t0{}
+	var slptr = &sl
+	//var arr = [5]t0{}
+	//var arrptr = &arr
+
+	t.Log(Of(slptr).SliceOrArrayStructHasFields(map[string]any{
+		"F0": 1,
+		"F1": "",
+	}))
+
+	t.Log(Of(slptr).SliceOrArrayStructHasFields(map[string]any{
+		"F0": "xsss",
+		"F1": 1,
+	}))
+
+	t.Log(Of(slptr).SliceOrArrayStructHasFields(map[string]any{
+		"F2": 1,
+		"F3": "",
+	}))
+
+	t.Log(Of(slptr).SliceOrArrayStructHasFields(map[string]any{
+		"F1": 1,
+		"F3": "",
+	}))
+
+}
+
+func TestTypVal_SliceOrArrayStructHasFields3(t *testing.T) {
+	//var sl = []t0{}
+	//var slptr = &sl
+	var arr = [5]t0{}
+	//var arrptr = &arr
+
+	t.Log(Of(arr).SliceOrArrayStructHasFields(map[string]any{
+		"F0": 1,
+		"F1": "",
+	}))
+
+	t.Log(Of(arr).SliceOrArrayStructHasFields(map[string]any{
+		"F0": "xsss",
+		"F1": 1,
+	}))
+
+	t.Log(Of(arr).SliceOrArrayStructHasFields(map[string]any{
+		"F2": 1,
+		"F3": "",
+	}))
+
+	t.Log(Of(arr).SliceOrArrayStructHasFields(map[string]any{
+		"F1": 1,
+		"F3": "",
+	}))
+
+}
+
+func TestTypVal_SliceOrArrayStructHasFields4(t *testing.T) {
+	//var sl = []t0{}
+	//var slptr = &sl
+	var arr = [5]t0{}
+	var arrptr = &arr
+
+	t.Log(Of(arrptr).SliceOrArrayStructHasFields(map[string]any{
+		"F0": 1,
+		"F1": "",
+	}))
+
+	t.Log(Of(arrptr).SliceOrArrayStructHasFields(map[string]any{
+		"F0": "xsss",
+		"F1": 1,
+	}))
+
+	t.Log(Of(arrptr).SliceOrArrayStructHasFields(map[string]any{
+		"F2": 1,
+		"F3": "",
+	}))
+
+	t.Log(Of(arrptr).SliceOrArrayStructHasFields(map[string]any{
+		"F1": 1,
+		"F3": "",
+	}))
+
+}

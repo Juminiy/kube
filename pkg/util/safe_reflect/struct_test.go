@@ -268,3 +268,45 @@ func TestTypVal_Struct2Map(t *testing.T) {
 		"F0": {}, "F1": {},
 	}))
 }
+
+func TestTypVal_StructHasFields(t *testing.T) {
+	t.Log(Of(t0{}).StructHasFields(map[string]any{
+		"F0": 1,
+		"F1": "",
+	}))
+
+	t.Log(Of(t0{}).StructHasFields(map[string]any{
+		"F0": "xsss",
+		"F1": 1,
+	}))
+
+	t.Log(Of(t0{}).StructHasFields(map[string]any{
+		"F2": 1,
+		"F3": "",
+	}))
+
+	t.Log(Of(t0{}).StructHasFields(map[string]any{
+		"F1": 1,
+		"F3": "",
+	}))
+
+	t.Log(Of(&t0{}).StructHasFields(map[string]any{
+		"F0": 1,
+		"F1": "",
+	}))
+
+	t.Log(Of(&t0{}).StructHasFields(map[string]any{
+		"F0": "xsss",
+		"F1": 1,
+	}))
+
+	t.Log(Of(&t0{}).StructHasFields(map[string]any{
+		"F2": 1,
+		"F3": "",
+	}))
+
+	t.Log(Of(&t0{}).StructHasFields(map[string]any{
+		"F1": 1,
+		"F3": "",
+	}))
+}

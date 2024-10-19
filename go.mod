@@ -8,6 +8,7 @@ require (
 	github.com/brianvoe/gofakeit/v7 v7.0.4
 	github.com/distribution/reference v0.6.0
 	github.com/docker/docker v27.3.1+incompatible
+	github.com/dubbogo/gost v1.14.0
 	github.com/fatih/color v1.17.0
 	github.com/goharbor/go-client v0.210.0
 	github.com/google/uuid v1.6.0
@@ -49,7 +50,6 @@ require (
 	github.com/docker/distribution v2.8.3+incompatible // indirect
 	github.com/docker/go-connections v0.5.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
-	github.com/dubbogo/gost v1.14.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/ebitengine/purego v0.8.0 // indirect
 	github.com/emicklei/go-restful/v3 v3.11.0 // indirect
@@ -150,8 +150,6 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240924160255-9d4c2d233b61 // indirect
 	google.golang.org/grpc v1.67.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
-	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
-	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gotest.tools/v3 v3.5.1 // indirect

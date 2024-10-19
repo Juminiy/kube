@@ -235,6 +235,20 @@ func (tv TypVal) StructMakeSlice(length, capacity int) any {
 	return reflect.MakeSlice(reflect.SliceOf(tv.Typ), length, capacity).Interface()
 }
 
+// like TypVal.StructHasFields only check type not value
+func (tv TypVal) SliceOrArrayStructHasFields(fields map[string]any) map[string]struct{} {
+	v := tv.noPointer()
+	if v.Kind() != Slice && v.Kind() != Arr {
+		return nil
+	}
+
+	underElemTyp := underlying(tv.Typ.Elem())
+	if underElemTyp.Kind() != Struct {
+		return nil
+	}
+	return structHasFields(underElemTyp, fields)
+}
+
 func SliceMake(elem any, length, capacity int) any {
 	if elem == nil {
 		return nil

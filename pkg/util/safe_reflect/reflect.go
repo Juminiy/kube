@@ -1,3 +1,25 @@
+// Package safe_reflect
+
+// API operation
+
+// Type API
+// (1). Type Get
+
+// (2). Type Make
+
+// (3). Type Wrapper
+
+// Value API
+// (1). Value Get
+
+// (2). Value Make
+
+// (3). Value Set Self
+
+// (4). Value Set FieldValue, ElemValue
+
+// (5). Value Wrapper
+
 package safe_reflect
 
 import (

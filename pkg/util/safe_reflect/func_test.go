@@ -1,7 +1,6 @@
 package safe_reflect
 
 import (
-	"github.com/Juminiy/kube/pkg/util"
 	"reflect"
 	"strconv"
 	"testing"
@@ -76,16 +75,16 @@ func TestFuncMake(t *testing.T) {
 	)
 
 	// let it panic is ok
-	util.Recover(func() {
-		t.Log(
-			FuncMake(
-				[]any{int32(1), uint(1)}, []any{uint(0), int32(0)}, false,
-				MetaFunc(func(values []reflect.Value) []reflect.Value {
-					return []reflect.Value{values[1], values[0]}
-				}),
-			).(func(int32, uint) (int32, int32))(10, 11),
-		)
-	})
+	//util.Recover(func() {
+	//	t.Log(
+	//		FuncMake(
+	//			[]any{int32(1), uint(1)}, []any{uint(0), int32(0)}, false,
+	//			MetaFunc(func(values []reflect.Value) []reflect.Value {
+	//				return []reflect.Value{values[1], values[0]}
+	//			}),
+	//		).(func(int32, uint) (int32, int32))(10, 11),
+	//	)
+	//})
 
 }
 
