@@ -226,19 +226,21 @@ func (tv TypVal) SliceStruct2SliceMap(fields map[string]struct{}) []map[string]a
 	return recordValues
 }
 
+func (tv TypVal) StructMakeSlice(length, capacity int) any {
+	v := tv.noPointer()
+	if v.Kind() != Struct {
+		return nil
+	}
+	avaLenCap(&length, &capacity)
+	return reflect.MakeSlice(reflect.SliceOf(tv.Typ), length, capacity).Interface()
+}
+
 func SliceMake(elem any, length, capacity int) any {
 	if elem == nil {
 		return nil
 	}
-	if capacity <= 0 {
-		capacity = util.MagicSliceCap
-	}
-	if length < 0 {
-		length = 0
-	}
-	if capacity < length {
-		capacity = length
-	}
+
+	avaLenCap(&length, &capacity)
 
 	//Pointer -> Slice(Addr)
 	// old-version: worked
@@ -254,4 +256,16 @@ func SliceMake(elem any, length, capacity int) any {
 
 func sliceType(elem any) reflect.Type {
 	return reflect.SliceOf(directT(elem))
+}
+
+func avaLenCap(length, capacity *int) {
+	if *capacity <= 0 {
+		*capacity = util.MagicSliceCap
+	}
+	if *length < 0 {
+		*length = 0
+	}
+	if *capacity < *length {
+		*capacity = *length
+	}
 }

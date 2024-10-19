@@ -328,3 +328,19 @@ func TestTypVal_SliceStruct2SliceMap(t *testing.T) {
 	}))
 
 }
+
+func TestTypVal_StructMakeSlice(t *testing.T) {
+	v := Of(t0{}).StructMakeSlice(10, 10)
+	vassertV := v.([]t0)
+	vassertV[1] = t0{F0: "1f0", F1: 111}
+	vassertV[8] = t0{F0: "8f0", F1: 888}
+	t.Log(v)
+}
+
+func TestTypVal_StructMakeSlice2(t *testing.T) {
+	v := Of(&t0{}).StructMakeSlice(10, 10)
+	vassertV := v.([]t0)
+	vassertV[1] = t0{F0: "1f0", F1: 111}
+	vassertV[8] = t0{F0: "8f0", F1: 888}
+	t.Log(v)
+}
