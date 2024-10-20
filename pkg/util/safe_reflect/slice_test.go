@@ -456,3 +456,10 @@ func TestTypVal_SliceOrArrayStructHasFields4(t *testing.T) {
 	}))
 
 }
+
+func TestTypVal_StructMakeSlice3(t *testing.T) {
+	t0sl := Of(&t0{}).StructMakeSlice(10, 20)
+	t.Log(t0sl)
+	unpackOf(&t0sl).sliceSetLen(20)
+	t.Log(t0sl)
+}

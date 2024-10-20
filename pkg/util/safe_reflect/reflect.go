@@ -3,6 +3,7 @@
 // API operation
 
 // Type API
+
 // (1). Type Get
 
 // (2). Type Make
@@ -10,6 +11,7 @@
 // (3). Type Wrapper
 
 // Value API
+
 // (1). Value Get
 
 // (2). Value Make
@@ -53,62 +55,6 @@ func IndirectOf(v any) TypVal {
 	return tv
 }
 
-func indirectTV(v any) (typ reflect.Type, val reflect.Value) {
-	return indirectT(v), indirectV(v)
-}
-
-func indirectT(v any) (typ reflect.Type) {
-	return underlying(directT(v))
-}
-
-func indirectV(v any) (val reflect.Value) {
-	return noPointer(directV(v))
-}
-
-func indirect(v reflect.Value) TypVal {
-	indirV := noPointer(v)
-	return TypVal{
-		Typ: indirV.Type(),
-		Val: indirV,
-		typ: v.Type(),
-		val: v,
-	}
-}
-
-func directTV(v any) (typ reflect.Type, val reflect.Value) {
-	return directT(v), directV(v)
-}
-
-func directT(v any) (typ reflect.Type) { return reflect.TypeOf(v) }
-
-func directV(v any) (val reflect.Value) { return reflect.ValueOf(v) }
-
-func direct(v reflect.Value) TypVal {
-	t := v.Type()
-	return TypVal{
-		Typ: t,
-		Val: v,
-		typ: t,
-		val: v,
-	}
-}
-
-func directTs(v []any) []reflect.Type {
-	ts := make([]reflect.Type, len(v))
-	for i := range v {
-		ts[i] = directT(v[i])
-	}
-	return ts
-}
-
-func directVs(v []any) []reflect.Value {
-	vs := make([]reflect.Value, len(v))
-	for i := range v {
-		vs[i] = directV(v[i])
-	}
-	return vs
-}
-
 func InterfaceOf(v reflect.Value) any {
 	if v.CanInterface() {
 		return v.Interface()
@@ -121,7 +67,6 @@ func InterfacesOf(v []reflect.Value) []any {
 	for i := range v {
 		as[i] = InterfaceOf(v[i])
 	}
-
 	return as
 }
 

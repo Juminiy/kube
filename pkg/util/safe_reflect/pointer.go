@@ -58,6 +58,23 @@ func underlyingEqual(t0, t1 reflect.Type) bool {
 	return underlying(t0) == underlying(t1)
 }
 
+func pointerType(v any, ptrLevel int) reflect.Type {
+	vTyp := directT(v)
+	for range ptrLevel {
+		vTyp = reflect.PointerTo(vTyp)
+	}
+	return vTyp
+}
+
+// WARNING: may cause dead-loop
+func pointerCast(v any, ptrLevel int) any {
+	for range ptrLevel {
+		v = &v
+	}
+	return v
+}
+
+// Deprecated
 // unused, none-sense yet
 // dereference _ -> _
 // dereference * -> *
@@ -72,6 +89,7 @@ func onePointer(v reflect.Value) reflect.Value {
 	return preV
 }
 
+// Deprecated
 // unused, none-sense
 func cast2Pointer(v any, ptrLevel int) any {
 	if v == nil {
@@ -85,6 +103,7 @@ func cast2Pointer(v any, ptrLevel int) any {
 	return vPtr
 }
 
+// Deprecated
 // unused, none-sense
 func interfacePointer(v reflect.Value) reflect.Value {
 	for v.Kind() == Any ||
@@ -102,12 +121,4 @@ func interfacePointer(v reflect.Value) reflect.Value {
 		}
 	}
 	return _zeroValue
-}
-
-func pointerType(v any, ptrLevel int) reflect.Type {
-	vTyp := directT(v)
-	for range ptrLevel {
-		vTyp = reflect.PointerTo(vTyp)
-	}
-	return vTyp
 }

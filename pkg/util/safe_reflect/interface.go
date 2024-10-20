@@ -4,6 +4,25 @@ import "reflect"
 
 // interface is equal to any to say: recommend any
 
+// WARNING: maybe cause dead-loop, be careful when use them
+
+// unpackOf
+// do not export
+func unpackOf(v any) TypVal {
+	tv := Of(v)
+	tv.unpack()
+	return tv
+}
+
+func (tv *TypVal) unpack() reflect.Value {
+	v, packed := unpackOk(tv.Val)
+	if packed {
+		tv.Val = v
+		tv.Typ = v.Type()
+	}
+	return v
+}
+
 func unpack(v reflect.Value) reflect.Value {
 	for valueCanElem(v) {
 		v = v.Elem()
@@ -25,4 +44,8 @@ func unpackV(v any) reflect.Value {
 
 func unpackT(v any) reflect.Type {
 	return unpackV(v).Type()
+}
+
+func unpackEqual(v0, v1 any) bool {
+	return unpackV(v0) == unpackV(v1)
 }

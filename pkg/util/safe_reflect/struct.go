@@ -294,11 +294,3 @@ func (f FieldDesc) StructField() reflect.StructField {
 		Tag:  f.Tag,
 	}
 }
-
-func (tv TypVal) underlyMustStruct() (reflect.Value, bool) {
-	v := tv.noPointer()
-	if v.Kind() != Struct {
-		return _zeroValue, false
-	}
-	return v, true
-}
