@@ -10,6 +10,22 @@ type t0 struct {
 	F1 int    `app:"i"`
 }
 
+func (t0) v() {
+
+}
+
+func (*t0) k() {
+
+}
+
+func (t0) V() {
+
+}
+
+func (*t0) K() {
+
+}
+
 // +passed
 func TestTypVal_ParseStructTag(t *testing.T) {
 	// no pointer
@@ -309,4 +325,22 @@ func TestTypVal_StructHasFields(t *testing.T) {
 		"F1": 1,
 		"F3": "",
 	}))
+}
+
+type t1 struct {
+	Name        string `gorm:"column:off_name"`
+	Desc        string `gorm:"column:com_desc"`
+	NoTag       string
+	TagNoKey    string `gorm:""`
+	TagKeyNoKey string `gorm:"column"`
+}
+
+func TestTypVal_Struct2TagKeyMap(t *testing.T) {
+	t.Log(IndirectOf(&t1{
+		Name:        "vivid",
+		Desc:        "no desc",
+		NoTag:       "no tag",
+		TagNoKey:    "tag no key",
+		TagKeyNoKey: "tagKeyNoKey",
+	}).Struct2TagKeyMap("gorm", "column"))
 }

@@ -29,7 +29,7 @@ func PutBuffer(bb *valyalabuffer.ByteBuffer) {
 	valyalabuffer.Put(bb)
 }
 
-type WithBufferFn func(*valyalabuffer.ByteBuffer)
+type WithBufferFn func(buf *valyalabuffer.ByteBuffer)
 
 func DoWithBuffer(fn WithBufferFn) {
 	buf := GetBuffer()

@@ -1,6 +1,8 @@
 package safe_reflect
 
-import "reflect"
+import (
+	"reflect"
+)
 
 // Func API
 // +param fn type can indirect
@@ -29,21 +31,42 @@ func (tv TypVal) funcCanOpt(fn any) bool {
 }
 
 func (tv TypVal) funcCanOptSlow(fnTyp reflect.Type) bool {
-	if tv.Typ.NumIn() != fnTyp.NumIn() ||
-		tv.Typ.NumOut() != fnTyp.NumOut() {
+	return tv.funcInOutEq(funcInType(fnTyp), funcOutType(fnTyp))
+}
+
+func (tv TypVal) funcInOutEq(in, out []reflect.Type) bool {
+	typ := tv.Typ
+	if typ.NumIn() != len(in) ||
+		typ.NumOut() != len(out) {
 		return false
 	}
-	for inI := range tv.Typ.NumIn() {
-		if tv.Typ.In(inI) != fnTyp.In(inI) {
+	for i := range typ.NumIn() {
+		if typ.In(i) != in[i] {
 			return false
 		}
 	}
-	for outI := range tv.Typ.NumOut() {
-		if tv.Typ.Out(outI) != fnTyp.Out(outI) {
+	for i := range typ.NumOut() {
+		if typ.Out(i) != out[i] {
 			return false
 		}
 	}
 	return true
+}
+
+func funcInType(typ reflect.Type) []reflect.Type {
+	inTyp := make([]reflect.Type, typ.NumIn())
+	for i := range typ.NumIn() {
+		inTyp[i] = typ.In(i)
+	}
+	return inTyp
+}
+
+func funcOutType(typ reflect.Type) []reflect.Type {
+	outTyp := make([]reflect.Type, typ.NumOut())
+	for i := range typ.NumOut() {
+		outTyp[i] = typ.Out(i)
+	}
+	return outTyp
 }
 
 func (tv TypVal) FuncCall(in []any) ([]any, bool) {
@@ -59,6 +82,17 @@ func (tv TypVal) FuncCall(in []any) ([]any, bool) {
 		}
 	}
 	return InterfacesOf(v.Call(directVs(in))), true
+}
+
+func (tv TypVal) HasMethod(methodName string, in, out []any) bool {
+	tv.noPointer()
+
+	typ := tv.Typ
+	method, ok := typ.MethodByName(methodName)
+	if !ok {
+		return false
+	}
+	return direct(method.Func).funcInOutEq(directTs(in), directTs(out))
 }
 
 func FuncMake(in, out []any, variadic bool, metaFunc MetaFunc) any {

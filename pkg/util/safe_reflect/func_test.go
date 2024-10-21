@@ -1,6 +1,7 @@
 package safe_reflect
 
 import (
+	"github.com/Juminiy/kube/pkg/util"
 	"reflect"
 	"strconv"
 	"testing"
@@ -97,4 +98,23 @@ func TestTypVal_FuncCall(t *testing.T) {
 	t2fn := func(a int, b int) int { return a + b }
 	t.Log(Of(&t2fn).FuncCall([]any{1, 2}))
 
+}
+
+func TestTypVal_HasMethod(t *testing.T) {
+	t.Log(Of(&t0{}).HasMethod("v", []any{}, []any{})) // unexported value-receiver
+	t.Log(Of(&t0{}).HasMethod("k", []any{}, []any{})) // unexported pointer-receiver
+	t.Log(Of(&t0{}).HasMethod("V", []any{}, []any{})) // exported value-receiver
+	t.Log(Of(&t0{}).HasMethod("K", []any{}, []any{})) // exported pointer-receiver
+
+	util.TestLongHorizontalLine(t)
+	t.Log(Of(&t0{}).HasMethod("v", []any{t0{}}, []any{})) // unexported value-receiver
+	t.Log(Of(&t0{}).HasMethod("k", []any{t0{}}, []any{})) // unexported pointer-receiver
+	t.Log(Of(&t0{}).HasMethod("V", []any{t0{}}, []any{})) // exported value-receiver
+	t.Log(Of(&t0{}).HasMethod("K", []any{t0{}}, []any{})) // exported pointer-receiver
+
+	util.TestLongHorizontalLine(t)
+	t.Log(Of(&t0{}).HasMethod("v", []any{&t0{}}, []any{})) // unexported value-receiver
+	t.Log(Of(&t0{}).HasMethod("k", []any{&t0{}}, []any{})) // unexported pointer-receiver
+	t.Log(Of(&t0{}).HasMethod("V", []any{&t0{}}, []any{})) // exported value-receiver
+	t.Log(Of(&t0{}).HasMethod("K", []any{&t0{}}, []any{})) // exported pointer-receiver
 }

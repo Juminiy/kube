@@ -85,6 +85,7 @@ func (tv TypVal) StructFieldsIndex() map[string][]int {
 
 func (tv TypVal) StructFieldsType() map[string]reflect.Type {
 	v := tv.noPointer()
+
 	if v.Kind() != Struct {
 		return nil
 	}
@@ -184,6 +185,7 @@ func (tv TypVal) Struct2Map(fields map[string]struct{}) map[string]any {
 // fields FieldValue must direct
 func (tv TypVal) StructHasFields(fields map[string]any) map[string]struct{} {
 	v := tv.noPointer()
+
 	if v.Kind() != Struct {
 		return nil
 	}
@@ -205,6 +207,26 @@ func structHasFields(typ reflect.Type, fields map[string]any) map[string]struct{
 		}
 	}
 	return okMap
+}
+
+// Struct2TagKeyMap
+// +example
+// `app:"unique:1;union_unique:0;field:name;"`
+// `app:"unique:0;union_unique:1;field:name_part1;follow:-"`
+// `app:"unique:0;union_unique:1;field:name_part1;follow:+"`
+func (tv TypVal) Struct2TagKeyMap(app, key string) map[string]any {
+	v := tv.noPointer()
+	if v.Kind() != Struct {
+		return nil
+	}
+	tagKeyMap := make(map[string]any, tv.FieldLen())
+	tagMap := tv.StructParseTag(app)
+	for fieldName := range tagMap {
+		if tagKey := tagMap.ParseGetVal(fieldName, key); len(tagKey) > 0 {
+			tagKeyMap[tagKey] = tv.StructFieldValue(fieldName)
+		}
+	}
+	return tagKeyMap
 }
 
 // StructParseTag
