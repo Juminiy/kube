@@ -85,5 +85,5 @@ func valueCanElem(v reflect.Value) bool {
 // a type's zero value
 // return a reflect.Value has an abi.Type and flag, not the reflect.Value{}
 func typeZeroValue(v any) reflect.Value {
-	return reflect.Zero(directT(v))
+	return reflect.Zero(unpackT(v))
 }

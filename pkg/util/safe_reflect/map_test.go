@@ -68,3 +68,20 @@ func TestMapMake(t *testing.T) {
 	m := MapMake("", "", 10)
 	t.Log(len(m.(map[string]string)))
 }
+
+func TestTypVal_MapDeleteElemIsZeroKeys(t *testing.T) {
+	v0 := map[string]any{
+		"intzero":      int(0),
+		"uintzero":     uint(0),
+		"stringzero":   "",
+		"intnoozero":   int(-1),
+		"uintnozero":   uint(9),
+		"stringnozero": "sss",
+	}
+
+	t.Log(v0)
+
+	Of(v0).MapDeleteElemIsZeroKeys()
+
+	t.Log(v0)
+}

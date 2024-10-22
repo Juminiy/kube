@@ -6,6 +6,10 @@ import "reflect"
 
 // WARNING: maybe cause dead-loop, be careful when use them
 
+const (
+	_unpackLoopMax = 8 // safe_guard
+)
+
 // unpackOf
 // do not export
 func unpackOf(v any) TypVal {
@@ -24,7 +28,7 @@ func (tv *TypVal) unpack() reflect.Value {
 }
 
 func unpack(v reflect.Value) reflect.Value {
-	for valueCanElem(v) {
+	for i := 0; valueCanElem(v) && i < _unpackLoopMax; i++ {
 		v = v.Elem()
 	}
 	return v
@@ -32,7 +36,7 @@ func unpack(v reflect.Value) reflect.Value {
 
 func unpackOk(v reflect.Value) (reflect.Value, bool) {
 	packed := false
-	for valueCanElem(v) {
+	for i := 0; valueCanElem(v) && i < _unpackLoopMax; i++ {
 		v, packed = v.Elem(), true
 	}
 	return v, packed

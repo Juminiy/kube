@@ -103,6 +103,26 @@ func (tv TypVal) mapKeyElemTypeEq(key, elem any) bool {
 			mapElemTyp == directT(elem)) // map[key_type]elem_type
 }
 
+// Only support any-int, any-uint, any-string
+func (tv TypVal) MapDeleteElemIsZeroKeys() {
+	v := tv.noPointer()
+	if v.Kind() != Map || v.IsNil() {
+		return
+	}
+
+	mapKeys := v.MapKeys()
+	deleteIndex := make([]int, 0, len(mapKeys))
+	for i := range mapKeys {
+		unpackMapElem := unpack(v.MapIndex(mapKeys[i]))
+		if CanDirectCompare(unpackMapElem.Type()) && unpackMapElem.IsZero() {
+			deleteIndex = append(deleteIndex, i)
+		}
+	}
+	for i := range deleteIndex {
+		v.SetMapIndex(mapKeys[deleteIndex[i]], _zeroValue)
+	}
+}
+
 func MapMake(key, elem any, capacity int) any {
 	if key == nil || elem == nil {
 		return nil

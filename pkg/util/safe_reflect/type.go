@@ -51,7 +51,11 @@ func typeCanElem(t reflect.Type) bool {
 }
 
 func (tv TypVal) CanDirectCompare() bool {
-	return util.ElemIn(tv.typ.Kind(),
+	return CanDirectCompare(tv.Typ)
+}
+
+func CanDirectCompare(typ reflect.Type) bool {
+	return util.ElemIn(typ.Kind(),
 		Bool,
 		Int, I8, I16, I32, I64,
 		Uint, U8, U16, U32, U64, UPtr,
