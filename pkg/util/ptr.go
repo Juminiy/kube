@@ -33,3 +33,19 @@ func New2[T any](val T) **T { return New(New(val)) }
 func NewZero[T any](val T) *T {
 	return new(T)
 }
+
+func ToElemPtrSlice[ElemSlice []E, ElemPtrSlice []*E, E any](s ElemSlice) ElemPtrSlice {
+	eps := make(ElemPtrSlice, len(s))
+	for i := range s {
+		eps[i] = New(s[i])
+	}
+	return eps
+}
+
+func ToElemPtrMap[ElemMap map[K]E, ElemPtrMap map[K]*E, K comparable, E any](m ElemMap) ElemPtrMap {
+	epm := make(ElemPtrMap, len(m))
+	for k, v := range m {
+		epm[k] = New(v)
+	}
+	return epm
+}
