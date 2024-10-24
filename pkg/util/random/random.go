@@ -5,6 +5,7 @@ import (
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/teris-io/shortid"
+	valyalabuffer "github.com/valyala/bytebufferpool"
 	"math/rand"
 	"strings"
 )
@@ -61,4 +62,22 @@ func FileNameString(ext string) string {
 		URLSafeString(rand.Intn(magicFix8)),
 		ext,
 	)
+}
+
+// Integer
+// size = 1 -> 0~9
+// size = 2 -> 10~99
+// size = 3 -> 100~999
+// ...
+// size = n -> 10^(n-1) ~ 10^(n)-1
+// or only byte + '0'
+func Integer(size int) string {
+	var integerStr string
+	util.DoWithBuffer(func(buf *valyalabuffer.ByteBuffer) {
+		for range size {
+			_ = buf.WriteByte(byte(rand.Intn(10) + '0'))
+		}
+		integerStr = buf.String()
+	})
+	return integerStr
 }
