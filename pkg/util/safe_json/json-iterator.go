@@ -15,7 +15,7 @@ var (
 		EscapeHTML:                    false,  // no escape for HTML, because no-need html
 		SortMapKeys:                   false,  // no need sorted map keys
 		UseNumber:                     true,   // must use number
-		DisallowUnknownFields:         true,   // reject unknown field when unmarshal
+		DisallowUnknownFields:         false,  // unknown field unmarshal, but not error
 		TagKey:                        "json", // default tag is json
 		OnlyTaggedField:               false,  // allow exported but no tagged field
 		ValidateJsonRawMessage:        false,  // no valid, none-sense valid before unmarshal, return error anyway

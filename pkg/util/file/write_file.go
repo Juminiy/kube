@@ -20,8 +20,12 @@ func (w *Writer) Line() *Writer {
 	return w
 }
 
-func (w *Writer) Word(s string) *Writer {
-	return w.words(s)
+func (w *Writer) Word(s ...string) *Writer {
+	for i := range s {
+		_, err := w.fptr.WriteString(s[i])
+		util.Must(err)
+	}
+	return w
 }
 
 func (w *Writer) Words(s ...string) *Writer {
