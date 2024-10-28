@@ -37,6 +37,11 @@ const (
 	UnsafePtr
 )
 
+const (
+	EFace = Any
+	IFace = Any
+)
+
 // CanDirectAssign only use Type not use flag, a bit of incoming rule
 func (tv TypVal) CanDirectAssign() bool {
 	return util.ElemIn(tv.typ.Kind(),

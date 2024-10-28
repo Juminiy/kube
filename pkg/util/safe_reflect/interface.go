@@ -1,6 +1,8 @@
 package safe_reflect
 
-import "reflect"
+import (
+	"reflect"
+)
 
 // interface is equal to any to say: recommend any
 
@@ -52,4 +54,13 @@ func unpackT(v any) reflect.Type {
 
 func unpackEqual(v0, v1 any) bool {
 	return unpackV(v0) == unpackV(v1)
+}
+
+func Impl(typePtr any, iFace any) bool {
+	iFaceTyp := reflect.TypeOf(iFace)
+	if !typeCanElem(iFaceTyp) || iFaceTyp.Elem().Kind() != IFace {
+		return false
+	}
+
+	return reflect.TypeOf(typePtr).Implements(iFaceTyp.Elem())
 }
