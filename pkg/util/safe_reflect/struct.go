@@ -234,12 +234,14 @@ func (tv TypVal) Struct2TagKeyMap(app, key string) map[string]any {
 // `app1:"tag_val1" app2:"tag_val2" app3:"tag_val3"`
 func (tv TypVal) StructParseTag(app string) (tagMap TagMap) {
 	v := tv.noPointer()
-
 	if v.Kind() != Struct {
 		return
 	}
 
-	typ := tv.Typ
+	return structParseTag(tv.Typ, app)
+}
+
+func structParseTag(typ reflect.Type, app string) (tagMap TagMap) {
 	tagMap = make(TagMap, typ.NumField())
 	for i := range typ.NumField() {
 		fieldI := typ.Field(i)

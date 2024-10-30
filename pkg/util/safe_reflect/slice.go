@@ -259,10 +259,7 @@ func (tv TypVal) SliceOrArrayStructGetTagVal(app, key string) []string {
 	if underElemTyp.Kind() != Struct {
 		return nil
 	}
-	if tv.FieldLen() == 0 {
-		return nil
-	}
-	return direct(v.Index(0)).StructParseTag(app).GetValList(key)
+	return structParseTag(underElemTyp, app).GetValList(key)
 }
 
 func SliceMake(elem any, length, capacity int) any {

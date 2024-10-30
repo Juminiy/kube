@@ -481,3 +481,21 @@ func TestTypVal_SliceOrArrayStructGetTagVal(t *testing.T) {
 	t.Log(IndirectOf(&[]t1{{}}).SliceOrArrayStructGetTagVal("gorm", ""))
 	t.Log(IndirectOf(&[]t1{{}}).SliceOrArrayStructGetTagVal("gorm", "column"))
 }
+
+func TestTypVal_SliceOrArrayStructGetTagVal2(t *testing.T) {
+	t.Log(IndirectOf([5]t1{}).SliceOrArrayStructGetTagVal("", ""))
+	t.Log(IndirectOf([2]t1{}).SliceOrArrayStructGetTagVal("gorm", ""))
+	t.Log(IndirectOf([1]t1{}).SliceOrArrayStructGetTagVal("gorm", "column"))
+
+	t.Log(IndirectOf([]t1{}).SliceOrArrayStructGetTagVal("", ""))
+	t.Log(IndirectOf([]t1{}).SliceOrArrayStructGetTagVal("gorm", ""))
+	t.Log(IndirectOf([]t1{}).SliceOrArrayStructGetTagVal("gorm", "column"))
+
+	t.Log(IndirectOf(&[5]t1{}).SliceOrArrayStructGetTagVal("", ""))
+	t.Log(IndirectOf(&[2]t1{}).SliceOrArrayStructGetTagVal("gorm", ""))
+	t.Log(IndirectOf(&[1]t1{}).SliceOrArrayStructGetTagVal("gorm", "column"))
+
+	t.Log(IndirectOf(&[]t1{}).SliceOrArrayStructGetTagVal("", ""))
+	t.Log(IndirectOf(&[]t1{}).SliceOrArrayStructGetTagVal("gorm", ""))
+	t.Log(IndirectOf(&[]t1{}).SliceOrArrayStructGetTagVal("gorm", "column"))
+}
