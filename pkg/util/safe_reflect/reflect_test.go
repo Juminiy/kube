@@ -434,3 +434,44 @@ func TestVVV(t *testing.T) {
 	//reflect.VisibleFields()
 	//reflect.Indirect()
 }
+
+func TestGetTags(t *testing.T) {
+
+	t.Log("Struct")
+	t.Log(GetTags(t0{}, "gorm", "column"))
+
+	t.Log(GetTags(&t0{}, "gorm", "column"))
+
+	t.Log(GetTags(t1{}, "gorm", "column"))
+
+	t.Log(GetTags(&t1{}, "gorm", "column"))
+	util.TestLongHorizontalLine(t)
+
+	t.Log("Array")
+	t.Log(GetTags([2]t0{}, "gorm", "column"))
+
+	t.Log(GetTags(&[2]t0{}, "gorm", "column"))
+	t.Log(GetTags(&[2]*t0{}, "gorm", "column"))
+	t.Log(GetTags(&[2]**t0{}, "gorm", "column"))
+
+	t.Log(GetTags([3]t1{}, "gorm", "column"))
+
+	t.Log(GetTags(&[5]t1{}, "gorm", "column"))
+	t.Log(GetTags(&[5]*t1{}, "gorm", "column"))
+	t.Log(GetTags(&[5]**t1{}, "gorm", "column"))
+	util.TestLongHorizontalLine(t)
+
+	t.Log("Slice")
+	t.Log(GetTags([]t0{}, "gorm", "column"))
+
+	t.Log(GetTags(&[]t0{}, "gorm", "column"))
+	t.Log(GetTags(&[]*t0{}, "gorm", "column"))
+	t.Log(GetTags(&[]**t0{}, "gorm", "column"))
+
+	t.Log(GetTags([]t1{}, "gorm", "column"))
+
+	t.Log(GetTags(&[]t1{}, "gorm", "column"))
+	t.Log(GetTags(&[]*t1{}, "gorm", "column"))
+	t.Log(GetTags(&[]**t1{}, "gorm", "column"))
+	util.TestLongHorizontalLine(t)
+}

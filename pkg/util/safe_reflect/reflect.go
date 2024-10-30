@@ -155,6 +155,21 @@ func SetFields(v any, fields map[string]any) {
 	}
 }
 
+func GetTags(v any, app, key string) []string {
+	tv := IndirectOf(v)
+
+	switch tv.Typ.Kind() {
+	case Struct:
+		return tv.StructParseTag(app).GetValList(key)
+
+	case Arr, Slice:
+		return tv.SliceOrArrayStructGetTagVal(app, key)
+
+	default:
+		return nil
+	}
+}
+
 // comment of unused and unrealized function
 /*// String to kv string format: `type: value`
 func String(v any) string {
