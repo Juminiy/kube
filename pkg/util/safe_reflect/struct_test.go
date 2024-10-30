@@ -344,3 +344,8 @@ func TestTypVal_Struct2TagKeyMap(t *testing.T) {
 		TagKeyNoKey: "tagKeyNoKey",
 	}).Struct2TagKeyMap("gorm", "column"))
 }
+
+func TestTypVal_StructParseTag3(t *testing.T) {
+	t.Log(IndirectOf(t1{}).StructParseTag("gorm").GetValList("column"))
+	t.Log(IndirectOf(&t1{}).StructParseTag("gorm").GetValList("column"))
+}

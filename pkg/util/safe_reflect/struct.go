@@ -282,6 +282,14 @@ func (m TagMap) ParseGetVal(field, key string) string {
 	return ""
 }
 
+func (m TagMap) GetValList(key string) []string {
+	valList := make([]string, 0, len(m))
+	for fieldName := range m {
+		valList = append(valList, m.ParseGetVal(fieldName, key))
+	}
+	return valList
+}
+
 func StructMake(fields []FieldDesc) any {
 	structTyp := structType(fields)
 	if structTyp == nil {

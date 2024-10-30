@@ -249,6 +249,22 @@ func (tv TypVal) SliceOrArrayStructHasFields(fields map[string]any) map[string]s
 	return structHasFields(underElemTyp, fields)
 }
 
+func (tv TypVal) SliceOrArrayStructGetTagVal(app, key string) []string {
+	v := tv.noPointer()
+	if v.Kind() != Slice && v.Kind() != Arr {
+		return nil
+	}
+
+	underElemTyp := underlying(tv.Typ.Elem())
+	if underElemTyp.Kind() != Struct {
+		return nil
+	}
+	if tv.FieldLen() == 0 {
+		return nil
+	}
+	return direct(v.Index(0)).StructParseTag(app).GetValList(key)
+}
+
 func SliceMake(elem any, length, capacity int) any {
 	if elem == nil {
 		return nil
