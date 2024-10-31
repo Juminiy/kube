@@ -250,6 +250,66 @@ func structParseTag(typ reflect.Type, app string) (tagMap TagMap) {
 	return
 }
 
+func (tv TypVal) StructParseTag2(app0, key0, app1, key1 string) (vv0, vv1 TagVV) {
+	if tv.noPointer().Kind() != Struct {
+		return
+	}
+
+	return structParseTag2(tv.Typ, app0, key0, app1, key1)
+}
+
+type TagVV map[string]string
+
+// Name string `gorm:"column:name" app:"field:af"`
+// Name -> name; Name -> af
+func structParseTag2(typ reflect.Type, srcApp, srcKey, dstApp, dstKey string) (srcMap, dstMap TagVV) {
+	srcMap, dstMap = make(TagVV, typ.NumField()), make(TagVV, typ.NumField())
+	for i := range typ.NumField() {
+		fieldI := typ.Field(i)
+		srcv := parseTagKV(fieldI.Tag.Get(srcApp))[srcKey]
+		dstv := parseTagKV(fieldI.Tag.Get(dstApp))[dstKey]
+
+		//if len(srcv) == 0 {
+		//	srcv = srcKey
+		//}
+		//if len(dstv) == 0 {
+		//	dstv = dstKey
+		//}
+
+		srcMap[fieldI.Name] = srcv
+		dstMap[fieldI.Name] = dstv
+	}
+	return
+}
+
+// TagKV
+// as parseTagKV description
+type TagKV map[string]string
+
+// `app:"k1:v1;k2:v2;k3:v3;key;val"`
+func parseTagKV(tagValue string) (tagKv TagKV) {
+	tagKv = make(TagKV, util.MagicMapCap)
+
+	kvs := strings.Split(tagValue, ";")
+	for _, kv := range kvs {
+		keyVal := strings.Split(kv, ":")
+		switch len(keyVal) {
+		case 0:
+
+		case 1:
+			tagKv[keyVal[0]] = keyVal[0]
+
+		case 2:
+			tagKv[keyVal[0]] = keyVal[1]
+
+		default:
+			tagKv[keyVal[0]] = util.StringJoin(":", keyVal[1:]...)
+		}
+	}
+
+	return
+}
+
 // TagMap in an app -> map[field]tag_val
 type TagMap map[string]string
 

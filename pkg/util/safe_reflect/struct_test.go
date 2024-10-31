@@ -349,3 +349,44 @@ func TestTypVal_StructParseTag3(t *testing.T) {
 	t.Log(IndirectOf(t1{}).StructParseTag("gorm").GetValList("column"))
 	t.Log(IndirectOf(&t1{}).StructParseTag("gorm").GetValList("column"))
 }
+
+type t3 struct {
+	Name string `json:"uname" gorm:"column:name" app:"unique:af;"`
+	Desc string `json:"udesc" gorm:"column:desc" app:"unique:az"`
+	Ref1 string `json:"ref1" gorm:"column:ref_1" app:"unique:ref"`
+	Ref2 string `json:"ref2" gorm:"column:ref_2" app:"unique:ref"`
+	K1   string `json:"k1" gorm:"column:k_1" app:"unique:k"`
+	K2   string `json:"k2" gorm:"column:k_2" app:"unique:k"`
+	K3   string `json:"k3" gorm:"column:k_3" app:"unique:k"`
+}
+
+// create check:
+// SELECT COUNT(0)
+// FROM `tbl_xxx`
+// WHERE `project_id` = 1
+// AND ( (`name` = 'v0') OR (`desc` = 'v1') OR (`ref_1` = 'v2' AND `ref_2` = 'v3') OR (`k_1` = 'v4' AND `k_2` = 'v5' AND `k_3` = 'v6') )
+
+// update check:
+// SELECT COUNT(0)
+// FROM `tbl_xxx`
+// WHERE NOT (`bus_id` = 2 AND `other_clause` ....)
+// AND `project_id` = 1
+// AND ( (`name` = 'v0') OR (`desc` = 'v1') OR (`ref_1` = 'v2' AND `ref_2` = 'v3') OR (`k_1` = 'v4' AND `k_2` = 'v5' AND `k_3` = 'v6') )
+
+// if a group has one field: EXAMPLE af:`name`
+//		if value is null("", 0), then omit it, also omit the group
+// if a group has more-than-one fields: EXAMPLE ref: (`ref_1`, `ref_2`)
+//		if all values are null, then omit them, also omit the group
+//		if some values are null, some values are not-null, from business level to fix it
+
+func TestStructParseTag2(t *testing.T) {
+	t.Log(Of(t3{}).StructParseTag2(
+		"app", "unique", // Name->af,Desc->az; Name->name,Desc->desc
+		"gorm", "column"),
+	)
+
+	t.Log(Of(t3{}).StructParseTag2(
+		"app", "unique",
+		"json", ""), // try best none-zero
+	)
+}
