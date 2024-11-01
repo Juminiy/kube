@@ -282,6 +282,26 @@ func structParseTag2(typ reflect.Type, srcApp, srcKey, dstApp, dstKey string) (s
 	return
 }
 
+func (tv TypVal) StructParseTagKV(app string) (fieldTagKv FieldTagKV) {
+	if tv.noPointer().Kind() != Struct {
+		return
+	}
+
+	return structParseTagKV(tv.Typ, app)
+}
+
+type FieldTagKV map[string]TagKV
+
+func structParseTagKV(typ reflect.Type, app string) (fieldTagKv FieldTagKV) {
+	fieldTagKv = make(FieldTagKV, typ.NumField())
+	for i := range typ.NumField() {
+		field := typ.Field(i)
+
+		fieldTagKv[field.Name] = parseTagKV(field.Tag.Get(app))
+	}
+	return
+}
+
 // TagKV
 // as parseTagKV description
 type TagKV map[string]string

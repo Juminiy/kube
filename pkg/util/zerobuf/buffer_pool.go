@@ -10,8 +10,11 @@ type Pooler interface {
 	Free()
 }
 
+type Kind int
+
 const (
-	Tiny = iota + 1
+	Default Kind = iota
+	Tiny
 	Small
 	Medium
 	Large
@@ -32,6 +35,32 @@ var (
 	extraLargePool = newApBufferPool(size16M)
 )
 
-func Get() String {
-	return newApBufferPool(size256B).get()
+func Get(size ...Kind) String {
+	sz := Default
+	if len(size) > 0 {
+		sz = size[0]
+	}
+	return getPool(sz)
+}
+
+func getPool(size Kind) String {
+	switch size {
+	case Tiny:
+		return tinyPool.get()
+
+	case Small:
+		return smallPool.get()
+
+	case Medium:
+		return mediumPool.get()
+
+	case Large:
+		return largePool.get()
+
+	case ExtraLarge:
+		return extraLargePool.get()
+
+	default:
+		return tinyPool.get()
+	}
 }

@@ -3,6 +3,7 @@ package safe_json
 import (
 	"encoding/json"
 	"github.com/Juminiy/kube/pkg/util"
+	"github.com/Juminiy/kube/pkg/util/random/mock"
 	"testing"
 	"time"
 )
@@ -41,4 +42,26 @@ func TestSafeJSONIteratorMarshal(t *testing.T) {
 func TestSafeDecoder(t *testing.T) {
 	v1 := util.DeepCopyByJSON(safeConfig, v0)
 	t.Log(v1)
+}
+
+type t0 struct {
+	ID        uint
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt time.Time
+	Name      string
+	Desc      string
+	Category  int
+	BusVal0   string
+	BusVal1   string
+	BusVal2   string
+	Bus1Val0  uint
+	Bus2Val1  uint
+}
+
+func TestSafeEncoder(t *testing.T) {
+	t0Slice := make([]t0, 32)
+	mock.Slice(&t0Slice)
+	bs, _ := SafeMarshal(t0Slice)
+	t.Log(len(bs))
 }
