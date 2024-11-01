@@ -55,21 +55,6 @@ func IndirectOf(v any) TypVal {
 	return tv
 }
 
-func InterfaceOf(v reflect.Value) any {
-	if v.CanInterface() {
-		return v.Interface()
-	}
-	return nil
-}
-
-func InterfacesOf(v []reflect.Value) []any {
-	as := make([]any, len(v))
-	for i := range v {
-		as[i] = InterfaceOf(v[i])
-	}
-	return as
-}
-
 // HasField
 // check type:
 // 1. struct that do not allow embedded field

@@ -118,3 +118,19 @@ func mapInsert[Map ~map[E]struct{}, E comparable](m Map, e ...E) {
 		m[e[i]] = struct{}{}
 	}
 }
+
+func MapKeyMap[Map ~map[K]V, KeyMap ~map[K]struct{}, K comparable, V any](m Map) KeyMap {
+	keyMap := make(KeyMap, len(m))
+	for key := range m {
+		keyMap[key] = struct{}{}
+	}
+	return keyMap
+}
+
+func MapValueMap[Map ~map[K]V, ValueMap ~map[V]struct{}, K, V comparable](m Map) ValueMap {
+	valueMap := make(ValueMap, len(m))
+	for key := range m {
+		valueMap[m[key]] = struct{}{}
+	}
+	return valueMap
+}

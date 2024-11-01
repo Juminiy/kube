@@ -37,3 +37,8 @@ func TestSafeJSONIteratorMarshal(t *testing.T) {
 	bs, err := SafeMarshalPretty(v0)
 	t.Log(util.Bytes2StringNoCopy(bs), err)
 }
+
+func TestSafeDecoder(t *testing.T) {
+	v1 := util.DeepCopyByJSON(safeConfig, v0)
+	t.Log(v1)
+}

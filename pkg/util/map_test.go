@@ -114,3 +114,20 @@ func TestMapInsert(t *testing.T) {
 	isl := []int{10, 10, 10}
 	t.Log(Slice2Map[[]int, map[int]struct{}, int](isl))
 }
+
+func TestMapKeyMap(t *testing.T) {
+	m := map[string]string{
+		"k1": "v1",
+		"k2": "v2",
+		"k3": "v3",
+	}
+	//t.Log(MapKeyMap[map[string]string](m)) // error
+	t.Log(MapKeyMap[map[string]string, map[string]struct{}](m))                 // ok
+	t.Log(MapKeyMap[map[string]string, map[string]struct{}, string](m))         // ok
+	t.Log(MapKeyMap[map[string]string, map[string]struct{}, string, string](m)) // ok
+
+	//t.Log(MapValueMap[map[string]string](m))                                    // error
+	t.Log(MapValueMap[map[string]string, map[string]struct{}](m))                 // ok
+	t.Log(MapValueMap[map[string]string, map[string]struct{}, string](m))         // ok
+	t.Log(MapValueMap[map[string]string, map[string]struct{}, string, string](m)) // ok
+}

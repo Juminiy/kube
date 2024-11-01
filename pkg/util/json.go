@@ -58,7 +58,7 @@ type Sizer interface {
 }
 
 // DeepCopyByJSON
-// no tested yet
+// tested is ok
 func DeepCopyByJSON(stdJSON StdJSON, v any) any {
 	bs, encodeErr := stdJSON.Marshal(v)
 	if encodeErr != nil {

@@ -47,7 +47,7 @@ func ArrayMake(length int, elem any) any {
 	if elem == nil {
 		return nil
 	}
-	return reflect.New(arrayType(length, elem)).Elem().Interface()
+	return NewOf(arrayType(length, elem))
 }
 
 func arrayType(length int, elem any) reflect.Type {

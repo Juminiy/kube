@@ -170,19 +170,19 @@ func TestStructField(t *testing.T) {
 
 func TestStructMake(t *testing.T) {
 	t.Log(
-		StructMake([]FieldDesc{
+		util.MarshalJSONPretty(StructMake([]FieldDesc{
 			{Name: "I32", Value: int32(1), Tag: `json:"i32"`},
 			{Name: "I32", Value: int32(1), Tag: `json:"i32"`},
 			{Name: "I32", Value: int32(1), Tag: `json:"i32"`},
-		}),
+		})),
 	)
 
 	t.Log(
-		StructMake([]FieldDesc{
+		util.MarshalJSONPretty(StructMake([]FieldDesc{
 			{Name: "I32", Value: int32(1), Tag: `json:"i32"`},
 			{Name: "F64", Value: 1.23, Tag: `json:"i32"`},
 			{Name: "String", Value: "vvv", Tag: `json:"i32"`},
-		}),
+		})),
 	)
 }
 

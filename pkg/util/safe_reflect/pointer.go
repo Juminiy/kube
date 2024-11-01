@@ -78,8 +78,6 @@ func pointerCast(v any, ptrLevel int) any {
 	return v
 }
 
-// Deprecated
-// unused, none-sense yet
 // dereference _ -> _
 // dereference * -> *
 // dereference ** -> *
@@ -88,7 +86,7 @@ func onePointer(v reflect.Value) reflect.Value {
 	preV := v
 	for i := 0; v.Kind() == Ptr && i < _noPtrLoopMax; i++ {
 		preV = v
-		v = reflect.Indirect(v)
+		v = v.Elem()
 	}
 	return preV
 }

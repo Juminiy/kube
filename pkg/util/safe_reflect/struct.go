@@ -357,7 +357,7 @@ func StructMake(fields []FieldDesc) any {
 	if structTyp == nil {
 		return nil
 	}
-	return reflect.New(structTyp).Elem().Interface()
+	return NewOf(structTyp)
 }
 
 func structType(fields []FieldDesc) reflect.Type {
