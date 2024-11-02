@@ -131,3 +131,13 @@ func TestMapKeyMap(t *testing.T) {
 	t.Log(MapValueMap[map[string]string, map[string]struct{}, string](m))         // ok
 	t.Log(MapValueMap[map[string]string, map[string]struct{}, string, string](m)) // ok
 }
+
+func TestMapsMerges(t *testing.T) {
+	t.Log(
+		MapsMerge(
+			map[string]string{"k1": "v1"},
+			map[string]string{"k2": "v2"},
+			map[string]string{"k3": "v3"},
+			map[string]string{"k4": "v4"},
+		))
+}

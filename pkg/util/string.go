@@ -57,3 +57,14 @@ func StringDelete(s string, from ...string) string {
 	}
 	return s
 }
+
+// a bit wrong?
+func StringSlice2RuneSlice(s []string) []rune {
+	rs := make([]rune, len(s))
+	for i := range s {
+		if len(s[i]) > 0 {
+			rs[i] = rune(s[i][0])
+		}
+	}
+	return rs
+}

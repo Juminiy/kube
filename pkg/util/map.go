@@ -134,3 +134,13 @@ func MapValueMap[Map ~map[K]V, ValueMap ~map[V]struct{}, K, V comparable](m Map)
 	}
 	return valueMap
 }
+
+func MapsMerge[Map ~map[K]V, K comparable, V any](m ...Map) Map {
+	all := make(Map, len(m)*MagicMapCap)
+
+	for i := range m {
+		all = MapCopy(all, m[i])
+	}
+
+	return all
+}

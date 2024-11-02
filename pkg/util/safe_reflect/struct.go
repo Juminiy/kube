@@ -23,6 +23,9 @@ func (tv TypVal) StructSet(srcV any) {
 	}
 }
 
+// StructSetFields
+// +param:
+// fieldName -> fieldValue
 func (tv TypVal) StructSetFields(fields map[string]any) {
 	v := tv.noPointer()
 
@@ -67,6 +70,9 @@ func (tv TypVal) structFieldIndexByName(fieldName string) []int {
 	return nil
 }
 
+// StructFieldsIndex
+// +result:
+// fieldName -> fieldIndex
 func (tv TypVal) StructFieldsIndex() map[string][]int {
 	v := tv.noPointer()
 
@@ -83,6 +89,9 @@ func (tv TypVal) StructFieldsIndex() map[string][]int {
 	return indexMap
 }
 
+// StructFieldsType
+// +result:
+// fieldName -> fieldType
 func (tv TypVal) StructFieldsType() map[string]reflect.Type {
 	v := tv.noPointer()
 
@@ -117,7 +126,7 @@ func (tv TypVal) StructFieldValue(fieldName string) any {
 	return nil
 }
 
-func (tv TypVal) StructFieldsValues(fields map[string][]int) map[string]map[any]struct{} {
+func (tv TypVal) StructFieldsValues(fieldIndex map[string][]int) map[string]map[any]struct{} {
 	v := tv.noPointer()
 
 	if v.Kind() != Struct {
@@ -127,7 +136,7 @@ func (tv TypVal) StructFieldsValues(fields map[string][]int) map[string]map[any]
 	// all field list
 	fieldsIndex := tv.StructFieldsIndex()
 	// common field list
-	util.MapEvict(fieldsIndex, fields)
+	util.MapEvict(fieldsIndex, fieldIndex)
 
 	fieldsValues := make(map[string]map[any]struct{}, len(fieldsIndex))
 	for fieldName, fieldIndex := range fieldsIndex {
@@ -282,6 +291,9 @@ func structParseTag2(typ reflect.Type, srcApp, srcKey, dstApp, dstKey string) (s
 	return
 }
 
+// StructParseTagKV
+// +param: an app
+// +result: FieldTagKV
 func (tv TypVal) StructParseTagKV(app string) (fieldTagKv FieldTagKV) {
 	if tv.noPointer().Kind() != Struct {
 		return
@@ -290,6 +302,8 @@ func (tv TypVal) StructParseTagKV(app string) (fieldTagKv FieldTagKV) {
 	return structParseTagKV(tv.Typ, app)
 }
 
+// FieldTagKV
+// fieldName -> TagKV
 type FieldTagKV map[string]TagKV
 
 func structParseTagKV(typ reflect.Type, app string) (fieldTagKv FieldTagKV) {
@@ -304,9 +318,24 @@ func structParseTagKV(typ reflect.Type, app string) (fieldTagKv FieldTagKV) {
 
 // TagKV
 // as parseTagKV description
+// +example:
+// `app:"k1:v1;k2:v2;k3:v3;key;val"`
+// +result:
+// k1 -> v1
+// k2 -> v2
+// k3 -> v3
+// key -> key
+// val -> val
 type TagKV map[string]string
 
+// +example:
 // `app:"k1:v1;k2:v2;k3:v3;key;val"`
+// +result:
+// k1 -> v1
+// k2 -> v2
+// k3 -> v3
+// key -> key
+// val -> val
 func parseTagKV(tagValue string) (tagKv TagKV) {
 	tagKv = make(TagKV, util.MagicMapCap)
 
@@ -330,10 +359,16 @@ func parseTagKV(tagValue string) (tagKv TagKV) {
 	return
 }
 
-// TagMap in an app -> map[field]tag_val
+// TagMap
+// in an app, fieldName -> fieldTag
+// +example:
+// Field0 string `app:"k1:v1;k2:v2;k3:v3;key;val"`
+// +result:
+// Field0 -> k1:v1;k2:v2;k3:v3;key;val
 type TagMap map[string]string
 
 // ParseGetVal
+// get val in an app's, field's, key's val
 // +example
 // `gorm:"column:user_name;type:varchar(128);comment:user's name, account's name"`
 // +example
@@ -364,6 +399,14 @@ func (m TagMap) ParseGetVal(field, key string) string {
 	return ""
 }
 
+// GetValList
+// +example:
+// Field0 string `app:"k1:v1;k2:v2;k3:v3;key;val"`
+// Field1 string `app:"k1:v4;key-val"`
+// +param:
+// key = k1
+// +result:
+// []string{v1, v4}
 func (m TagMap) GetValList(key string) []string {
 	valList := make([]string, 0, len(m))
 	for fieldName := range m {
