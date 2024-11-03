@@ -6,7 +6,7 @@ import (
 	"github.com/Juminiy/kube/pkg/image_api/harbor_api"
 	"github.com/Juminiy/kube/pkg/image_api/harbor_api/harbor_inst"
 	"github.com/Juminiy/kube/pkg/util"
-	"reflect"
+	"github.com/Juminiy/kube/pkg/util/zero_reflect"
 )
 
 func Menu(s ...string) {
@@ -75,7 +75,7 @@ func Menu(s ...string) {
 func printBinaryMarshaller(bm encoding.BinaryMarshaler) {
 	bs, err := bm.MarshalBinary()
 	if err != nil {
-		fmt.Printf("harbor list %v error: %v\n", reflect.TypeOf(bm).String(), bs)
+		fmt.Printf("harbor list %v error: %v\n", zero_reflect.TypeOf(bm).String(), bs)
 		return
 	}
 	fmt.Println(util.Bytes2StringNoCopy(bs))
@@ -85,7 +85,7 @@ func printBinaryMarshallerList(bm []encoding.BinaryMarshaler) {
 	for _, elem := range bm {
 		bs, err := elem.MarshalBinary()
 		if err != nil {
-			fmt.Printf("harbor list %v error: %v\n", reflect.TypeOf(bm).String(), bs)
+			fmt.Printf("harbor list %v error: %v\n", zero_reflect.TypeOf(bm).String(), bs)
 			return
 		}
 		fmt.Println(util.Bytes2StringNoCopy(bs))

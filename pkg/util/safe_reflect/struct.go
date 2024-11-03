@@ -269,8 +269,14 @@ func (tv TypVal) StructParseTag2(app0, key0, app1, key1 string) (vv0, vv1 TagVV)
 
 type TagVV map[string]string
 
-// Name string `gorm:"column:name" app:"field:af"`
-// Name -> name; Name -> af
+// +example:
+//
+//	type T1 struct {
+//		Name string `gorm:"column:name" app:"field:af"`
+//	}
+//
+// +param: srcApp=gorm, srcKey=column, dstApp=app, dstKey=field
+// +result: srcMap={"Name": "name"}, dstMap={"Name": "af"}
 func structParseTag2(typ reflect.Type, srcApp, srcKey, dstApp, dstKey string) (srcMap, dstMap TagVV) {
 	srcMap, dstMap = make(TagVV, typ.NumField()), make(TagVV, typ.NumField())
 	for i := range typ.NumField() {
@@ -329,18 +335,47 @@ func structParseTagKV(typ reflect.Type, app string) (fieldTagKv FieldTagKV) {
 type TagKV map[string]string
 
 // +example:
-// `app:"k1:v1;k2:v2;k3:v3;key;val"`
+// TagKV.parseOmitComma
+// TagKV.parseSemicolonAndColon
+func parseTagKV(tagValue string) (tagKv TagKV) {
+	tagKv = make(TagKV, util.MagicMapCap)
+
+	tagKv.parseSemicolonAndColon(tagValue)
+	tagKv.parseOmitComma(tagValue)
+
+	return
+}
+
+// parseOmitComma
+// +example:
+// `json:"name,omitempty"`
+// +result:
+// set {"name": "name"}
+func (tagKv TagKV) parseOmitComma(tagValue string) {
+	if util.StringContainAny(tagValue, ";", ":") {
+		return
+	}
+	commas := strings.Split(tagValue, ",")
+	if len(commas) > 0 && len(commas[0]) > 0 {
+		tagKv[commas[0]] = commas[0]
+	}
+}
+
+// parseTagKVSemicolonAndColon
+// +example:
+// `app:"k1:v1;k2:v2;k3:v3;key;val;"`
 // +result:
 // k1 -> v1
 // k2 -> v2
 // k3 -> v3
 // key -> key
 // val -> val
-func parseTagKV(tagValue string) (tagKv TagKV) {
-	tagKv = make(TagKV, util.MagicMapCap)
-
+func (tagKv TagKV) parseSemicolonAndColon(tagValue string) {
 	kvs := strings.Split(tagValue, ";")
 	for _, kv := range kvs {
+		if len(kv) == 0 { // skip ""
+			continue
+		}
 		keyVal := strings.Split(kv, ":")
 		switch len(keyVal) {
 		case 0:
@@ -355,8 +390,6 @@ func parseTagKV(tagValue string) (tagKv TagKV) {
 			tagKv[keyVal[0]] = util.StringJoin(":", keyVal[1:]...)
 		}
 	}
-
-	return
 }
 
 // TagMap

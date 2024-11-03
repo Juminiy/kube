@@ -4,6 +4,7 @@ import (
 	kubeinternal "github.com/Juminiy/kube/pkg/internal_api"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util/codegen/example"
+	"github.com/Juminiy/kube/pkg/util/zero_reflect"
 	"reflect"
 	"testing"
 )
@@ -62,10 +63,10 @@ func TestManifest_Do_differ_slice_and_variable_length_param(t *testing.T) {
 	func1 := func(v ...int) {}
 	func2 := func(v []int) {}
 
-	typeOfF1 := reflect.TypeOf(func1)
+	typeOfF1 := zero_reflect.TypeOf(func1)
 	valueOfF1 := reflect.ValueOf(func1)
 
-	typeOfF2 := reflect.TypeOf(func2)
+	typeOfF2 := zero_reflect.TypeOf(func2)
 	valueOfF2 := reflect.ValueOf(func2)
 
 	//isVariableLengthParamIn := func(typ reflect.Type) bool {

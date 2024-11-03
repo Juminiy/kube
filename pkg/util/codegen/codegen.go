@@ -5,6 +5,7 @@ import (
 	kubeinternal "github.com/Juminiy/kube/pkg/internal_api"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
+	"github.com/Juminiy/kube/pkg/util/zero_reflect"
 	"os"
 	"reflect"
 	"strconv"
@@ -254,7 +255,7 @@ type reflectType struct {
 
 func (t *reflectType) parse() {
 	if t.inst != nil {
-		t.typ = reflect.TypeOf(t.inst)
+		t.typ = zero_reflect.TypeOf(t.inst)
 	}
 	if t.typ == nil {
 		stdlog.Error("nil typ either elem nor none-elem")

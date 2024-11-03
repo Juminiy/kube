@@ -58,7 +58,7 @@ func StringDelete(s string, from ...string) string {
 	return s
 }
 
-// a bit wrong?
+// a bit of wrong for type:rune or type:byte?
 func StringSlice2RuneSlice(s []string) []rune {
 	rs := make([]rune, len(s))
 	for i := range s {
@@ -67,4 +67,30 @@ func StringSlice2RuneSlice(s []string) []rune {
 		}
 	}
 	return rs
+}
+
+func String2RuneSlice(s string) []rune {
+	rs := make([]rune, len(s))
+	for i := range s {
+		rs[i] = rune(s[i])
+	}
+	return rs
+}
+
+func StringContainAny(s string, e ...string) bool {
+	for i := range e {
+		if strings.Contains(s, e[i]) {
+			return true
+		}
+	}
+	return false
+}
+
+func StringContainsAll(s string, e ...string) bool {
+	for i := range e {
+		if !strings.Contains(s, e[i]) {
+			return false
+		}
+	}
+	return true
 }

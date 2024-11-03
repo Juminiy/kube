@@ -36,6 +36,20 @@ func SafeMarshalPretty(v any) ([]byte, error) {
 	return safeConfig.MarshalIndent(v, util.JSONMarshalPrefix, util.JSONMarshalIndent)
 }
 
+func From(s string, v any) {
+	_ = SafeUnmarshal(util.String2BytesNoCopy(s), v)
+}
+
+func String(v any) string {
+	bs, _ := SafeMarshal(v)
+	return util.Bytes2StringNoCopy(bs)
+}
+
+func Pretty(v any) string {
+	bs, _ := SafeMarshalPretty(v)
+	return util.Bytes2StringNoCopy(bs)
+}
+
 func SafeEncoder(wr io.Writer) *jsoniterator.Encoder {
 	return safeConfig.NewEncoder(wr)
 }

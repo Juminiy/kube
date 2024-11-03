@@ -5,6 +5,7 @@ import (
 	"github.com/brianvoe/gofakeit/v7"
 )
 
+// before call with slice must use with randT(v...)
 func randT[T any](v ...T) T {
 	if len(v) == 0 {
 		return util.Zero[T]()

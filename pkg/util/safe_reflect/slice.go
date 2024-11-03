@@ -134,6 +134,8 @@ func (tv TypVal) sliceGrowTo(toCap int) {
 	}
 }
 
+// SliceAppend
+// stand for: sl = append(sl, elem)
 func (tv TypVal) SliceAppend(elem any) {
 	v := tv.noPointer()
 	if v.Kind() != Slice || !v.CanSet() ||
@@ -143,6 +145,8 @@ func (tv TypVal) SliceAppend(elem any) {
 	v.Set(reflect.Append(v, directV(elem)))
 }
 
+// SliceAppends
+// stand for: sl = append(sl, elem...)
 func (tv TypVal) SliceAppends(elem ...any) {
 	v := tv.noPointer()
 	if v.Kind() != Slice || !v.CanSet() {
@@ -155,9 +159,11 @@ func (tv TypVal) SliceAppends(elem ...any) {
 	}
 }
 
-func (tv TypVal) SliceAppendSlice(sl any) {
+// SliceAppendSlice
+// stand for: sl = append(sl, slAdd...)
+func (tv TypVal) SliceAppendSlice(slAdd any) {
 	v := tv.noPointer()
-	slOf := Of(sl)
+	slOf := Of(slAdd)
 	if v.Kind() != Slice || !v.CanSet() ||
 		slOf.Typ != tv.Typ || slOf.Typ.Elem() != tv.Typ.Elem() {
 		return
@@ -165,6 +171,8 @@ func (tv TypVal) SliceAppendSlice(sl any) {
 	v.Set(reflect.AppendSlice(v, slOf.Val))
 }
 
+// SliceStructFieldValues
+// []Struct get field(fieldName) values
 func (tv TypVal) SliceStructFieldValues(fieldName string) map[any]struct{} {
 	v := tv.noPointer()
 
@@ -189,6 +197,8 @@ func (tv TypVal) SliceStructFieldValues(fieldName string) map[any]struct{} {
 	return fieldValues
 }
 
+// SliceStructFieldsValues
+// []Struct get fields(fieldNames) values
 func (tv TypVal) SliceStructFieldsValues(fields map[string]struct{}) map[string]map[any]struct{} {
 	v := tv.noPointer()
 
@@ -211,6 +221,8 @@ func (tv TypVal) SliceStructFieldsValues(fields map[string]struct{}) map[string]
 	return fieldsValues
 }
 
+// SliceStruct2SliceMap
+// Struct to map[fieldName]fieldValue
 func (tv TypVal) SliceStruct2SliceMap(fields map[string]struct{}) []map[string]any {
 	v := tv.noPointer()
 
@@ -226,6 +238,8 @@ func (tv TypVal) SliceStruct2SliceMap(fields map[string]struct{}) []map[string]a
 	return recordValues
 }
 
+// StructMakeSlice
+// Type Struct -> return []Struct
 func (tv TypVal) StructMakeSlice(length, capacity int) any {
 	v := tv.noPointer()
 	if v.Kind() != Struct {
@@ -235,7 +249,8 @@ func (tv TypVal) StructMakeSlice(length, capacity int) any {
 	return reflect.MakeSlice(reflect.SliceOf(tv.Typ), length, capacity).Interface()
 }
 
-// like TypVal.StructHasFields only check type not value
+// SliceOrArrayStructHasFields
+// like StructHasFields only check type not value
 func (tv TypVal) SliceOrArrayStructHasFields(fields map[string]any) map[string]struct{} {
 	v := tv.noPointer()
 	if v.Kind() != Slice && v.Kind() != Arr {
@@ -249,6 +264,8 @@ func (tv TypVal) SliceOrArrayStructHasFields(fields map[string]any) map[string]s
 	return structHasFields(underElemTyp, fields)
 }
 
+// SliceOrArrayStructGetTagVal
+// get slice-struct or array-struct fields app key tag value
 func (tv TypVal) SliceOrArrayStructGetTagVal(app, key string) []string {
 	v := tv.noPointer()
 	if v.Kind() != Slice && v.Kind() != Arr {

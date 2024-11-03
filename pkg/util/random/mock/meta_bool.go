@@ -10,10 +10,6 @@ var boolFunc = map[string]BoolFunc{
 
 var defaultBool = gofakeit.Bool
 
-const (
-	boolDefault = defaultKey
-)
-
 var boolRule = rule{
 	"bool:true":  true,
 	"bool:false": false,

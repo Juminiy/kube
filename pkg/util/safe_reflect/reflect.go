@@ -35,7 +35,7 @@ type TypVal struct {
 
 	// original Type and original Value
 	typ reflect.Type
-	val reflect.Value
+	//val reflect.Value
 }
 
 func Of(v any) TypVal {
@@ -45,7 +45,7 @@ func Of(v any) TypVal {
 		Typ: typOf,
 		Val: valOf,
 		typ: typOf,
-		val: valOf,
+		//val: valOf,
 	}
 }
 
@@ -140,6 +140,16 @@ func SetFields(v any, fields map[string]any) {
 	}
 }
 
+// GetTags
+// +example:
+//
+//	type T1 struct {
+//		Name string `gorm:"column:name"`
+//		Desc string `gorm:"column:desc"`
+//	}
+//
+// +param: v=T1{}, app="gorm", key="column"
+// +result: {"name", "desc"}
 func GetTags(v any, app, key string) []string {
 	tv := IndirectOf(v)
 

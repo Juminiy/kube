@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
+	"github.com/Juminiy/kube/pkg/util/zero_reflect"
 	"reflect"
 )
 
@@ -65,7 +66,7 @@ func DeepCopyByJSON(stdJSON StdJSON, v any) any {
 		stdlog.ErrorF("deepcopy encode value: %v json marshal error: %s", v, encodeErr.Error())
 		return nil
 	}
-	newV := reflect.New(reflect.TypeOf(v)).Interface()
+	newV := reflect.New(zero_reflect.TypeOf(v)).Interface()
 	decodeErr := stdJSON.Unmarshal(bs, &newV)
 	if decodeErr != nil {
 		stdlog.ErrorF("deepcopy decode value: %v json unmarshal error: %s", newV, decodeErr.Error())

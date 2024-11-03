@@ -20,7 +20,7 @@ func indirect(v reflect.Value) TypVal {
 		Typ: indirV.Type(),
 		Val: indirV,
 		typ: v.Type(),
-		val: v,
+		//val: v,
 	}
 }
 

@@ -9,6 +9,19 @@ import (
 
 const defaultKey = "~default~"
 
+func specialRule(tagkv safe_reflect.TagKV) any {
+	for tag := range tagkv {
+		switch tag {
+		case "uuid", "UUID":
+			return stringFunc["uuid"]()
+
+		default:
+			return nil
+		}
+	}
+	return nil
+}
+
 var _defaultRule = util.MapsMerge(
 	boolRule,
 	intRule,
@@ -121,14 +134,37 @@ func (r *Rule) parseEnum(tag, rv string) {
 	}
 }
 
+var _defaultValue = map[tKind]any{
+	tBool:   defaultBool(),
+	tInt:    cast.ToInt(defaultInt()),
+	tI8:     cast.ToInt8(defaultI8()),
+	tI16:    cast.ToInt16(defaultInt()),
+	tI32:    cast.ToInt32(defaultInt()),
+	tI64:    defaultInt(),
+	tUint:   cast.ToUint(defaultUint()),
+	tU8:     cast.ToUint8(defaultU8()),
+	tU16:    cast.ToUint16(defaultUint()),
+	tU32:    cast.ToUint32(defaultUint()),
+	tU64:    defaultUint(),
+	tUPtr:   uintptr(defaultUint()),
+	tF32:    cast.ToFloat32(defaultFloat()),
+	tF64:    defaultFloat(),
+	tString: defaultString(),
+}
+
 func (r *Rule) value() map[tKind]any {
-	return map[tKind]any{
-		tBool:   defaultBool(),
-		tInt:    defaultInt(),
-		tUint:   defaultUint(),
-		tF64:    defaultFloat(),
-		tString: defaultString(),
-	}
+	val := maps.Clone(_defaultValue)
+	r.r.setValue(val)
+	return val
+}
+
+func isNum(kind tKind) bool {
+	return util.ElemIn(kind,
+		tBool,
+		tInt, tI8, tI16, tI32, tI64,
+		tUint, tU8, tU16, tU32, tU64, tUPtr,
+		tF32, tF64,
+	)
 }
 
 func isMeta(kind tKind) bool {
@@ -138,6 +174,18 @@ func isMeta(kind tKind) bool {
 		tUint, tU8, tU16, tU32, tU64, tUPtr,
 		tF32, tF64,
 		tString,
-		tUnsafePtr,
 	)
+}
+
+func castFunc(src, dst any) any {
+	switch dst.(type) {
+	case uint64:
+		return cast.ToUint64(src)
+	case int64:
+		return cast.ToInt64(src)
+	case float64:
+		return cast.ToFloat64(src)
+	default:
+		return cast.ToString(src)
+	}
 }

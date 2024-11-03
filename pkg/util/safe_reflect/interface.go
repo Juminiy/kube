@@ -27,10 +27,15 @@ func InterfacesOf(v []reflect.Value) []any {
 	return as
 }
 
+// NewOf
+// new value for type:typ no pointer
 func NewOf(typ reflect.Type) any {
 	return reflect.New(typ).Elem().Interface()
 }
 
+// NewOf2
+// new value for type:typ pointer
+// sometimes useful
 func NewOf2(typ reflect.Type) any {
 	return reflect.New(typ).Interface()
 }

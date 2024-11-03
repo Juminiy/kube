@@ -69,6 +69,8 @@ func funcOutType(typ reflect.Type) []reflect.Type {
 	return outTyp
 }
 
+// FuncCall
+// use param (in []any), to call func, result is ([]any, called)
 func (tv TypVal) FuncCall(in []any) ([]any, bool) {
 	v := tv.noPointer()
 	if v.Kind() != Func || v.IsNil() ||
@@ -84,6 +86,8 @@ func (tv TypVal) FuncCall(in []any) ([]any, bool) {
 	return InterfacesOf(v.Call(directVs(in))), true
 }
 
+// HasMethod
+// check if Typ has method by methodName and in: methodParamInType, out: methodResultOut
 func (tv TypVal) HasMethod(methodName string, in, out []any) bool {
 	tv.noPointer()
 
