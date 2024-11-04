@@ -7,12 +7,12 @@ import (
 )
 
 type t0 struct {
-	ID        uint      `mock:"range:1~1024;"`
+	ID        uint      `mock:"range:1~11022;"`
 	CreatedAt time.Time `mock:"now;"`
 	UpdatedAt time.Time `mock:"null;"`
 	DeletedAt time.Time `mock:"null;"`
 	Category  int       `mock:"enum:1,2,3"`
-	Name      string    `mock:"len:1~1024"`
+	Name      string    `mock:"len:1~32"`
 	Desc      string    `mock:"regexp:'[012]*'"`
 	BusVal0   string    `mock:"uuid;"`
 	BusVal1   string    `mock:"alpha"`
@@ -34,4 +34,10 @@ func TestStruct(t *testing.T) {
 	Struct(&v1)
 	t.Log(safe_json.Pretty(v0))
 	t.Log(safe_json.Pretty(v1))
+}
+
+func TestSlice(t *testing.T) {
+	t0sl := make([]t0, 32)
+	Slice(t0sl)
+	t.Log(len(safe_json.String(t0sl)))
 }

@@ -20,9 +20,10 @@ type EFace struct {
 }
 
 // EFaceOf
-// +param: vp stand for value pointer
-func EFaceOf(vp *any) *EFace {
-	return (*EFace)(Tp2Up(vp)).WithValuePtr(vp)
+// v is typed
+func EFaceOf(v any) *EFace {
+	vPtr := &v
+	return (*EFace)(Tp2Up(vPtr)).WithValuePtr(vPtr)
 }
 
 func (e *EFace) WithValuePtr(vp *any) *EFace {
@@ -33,6 +34,8 @@ func (e *EFace) WithValuePtr(vp *any) *EFace {
 func (e *EFace) Type() uintptr {
 	return Up2Ui(e.Typ)
 }
+
+func (e *EFace) Value() uintptr { return Up2Ui(e.Data) }
 
 func (e *EFace) Any() any {
 	if e.vp != nil {

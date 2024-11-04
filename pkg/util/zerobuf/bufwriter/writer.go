@@ -17,9 +17,8 @@ func New() *Writer {
 }
 
 func (w *Writer) String() string {
-	str := w.buf.UnsafeString()
-	w.buf.Free()
-	return str
+	defer w.buf.Free()
+	return w.buf.String()
 }
 
 func (w *Writer) Line() *Writer {

@@ -46,16 +46,16 @@ func newRule(tagkv safe_reflect.TagKV) *Rule {
 func (r *Rule) parse() *Rule {
 	for rk, rv := range r.t {
 		switch rk {
-		case "range", // int, uint, time.Time
+		case "range", // int, uint, float, time.Time
 			"len",                    // string
 			"now", "before", "after": // time.Time
 			r.parseRange(rv)
 
-		case "min", "max": // int, uint
+		case "min", "max": // int, uint, float
 			r.parseNum(rk, rv)
 
-		case "positive", // int, uint
-			"negative",      // int
+		case "positive", // int, uint, float
+			"negative",      // int, float
 			"regexp",        // string
 			"uuid",          // string
 			"alpha",         // string
@@ -65,9 +65,10 @@ func (r *Rule) parse() *Rule {
 			"octal", "oct", // string
 			"hexadecimal", "hex", //string
 			"timestamp": //string
-			r.r[rk] = util.NilStruct()
+			r.parseString(rk)
 
-		case "char", "enum": //string
+		case "char", // string
+			"enum": // any
 			r.parseEnum(rk, rv)
 		}
 	}
@@ -134,6 +135,10 @@ func (r *Rule) parseEnum(tag, rv string) {
 	}
 }
 
+func (r *Rule) parseString(tag string) {
+	r.r.applyStringTag(tag)
+}
+
 var _defaultValue = map[tKind]any{
 	tBool:   defaultBool(),
 	tInt:    cast.ToInt(defaultInt()),
@@ -156,36 +161,4 @@ func (r *Rule) value() map[tKind]any {
 	val := maps.Clone(_defaultValue)
 	r.r.setValue(val)
 	return val
-}
-
-func isNum(kind tKind) bool {
-	return util.ElemIn(kind,
-		tBool,
-		tInt, tI8, tI16, tI32, tI64,
-		tUint, tU8, tU16, tU32, tU64, tUPtr,
-		tF32, tF64,
-	)
-}
-
-func isMeta(kind tKind) bool {
-	return util.ElemIn(kind,
-		tBool,
-		tInt, tI8, tI16, tI32, tI64,
-		tUint, tU8, tU16, tU32, tU64, tUPtr,
-		tF32, tF64,
-		tString,
-	)
-}
-
-func castFunc(src, dst any) any {
-	switch dst.(type) {
-	case uint64:
-		return cast.ToUint64(src)
-	case int64:
-		return cast.ToInt64(src)
-	case float64:
-		return cast.ToFloat64(src)
-	default:
-		return cast.ToString(src)
-	}
 }

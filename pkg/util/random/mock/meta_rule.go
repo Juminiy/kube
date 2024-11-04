@@ -1,13 +1,15 @@
 package mock
 
 import (
-	"github.com/Juminiy/kube/pkg/util"
 	"github.com/brianvoe/gofakeit/v7"
 	"math"
 )
 
 type rule map[string]any
 
+/*
+ * apply rule
+ */
 func (r *rule) applyRangeFns() []func(minval, maxval string) {
 	return []func(string, string){
 		r.applyInt,
@@ -32,10 +34,13 @@ func (r *rule) applyMax(maxval int64) {
 	r.applyFloat(minvalstr, maxvalstr)
 }
 
+/*
+ * setValue from rule
+ */
 func (r *rule) setValue(val map[tKind]any) {
-	r.rangeValue(val)
-	r.stringValue(val)
-	r.enumValue(val)
+	r.rangeValue(val)  // priority 2
+	r.stringValue(val) // priority 1
+	r.enumValue(val)   // priority 0
 }
 
 func (r *rule) rangeValue(val map[tKind]any) {
@@ -91,13 +96,4 @@ func (r *rule) enumValue(val map[tKind]any) {
 			}
 		}
 	}
-}
-
-func (r *rule) stringValue(val map[tKind]any) {
-	size := gofakeit.IntRange(pairToInt((*r)["string:len:min"], (*r)["string:len:max"]))
-	runes := (*r)["string:char"].([]rune)
-	if len(runes) == 0 {
-		r.applyStringCharset(util.String2RuneSlice(alphaNumericStr)...)
-	}
-	val[tString] = stringByRunes((*r)["string:char"].([]rune), size)
 }

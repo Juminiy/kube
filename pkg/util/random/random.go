@@ -110,6 +110,5 @@ func fromString(s string, size int) string {
 		vbuf.WriteByte(s[rand.IntN(len(s))])
 	}
 
-	vstr := vbuf.UnsafeString()
-	return vstr
+	return vbuf.String()
 }

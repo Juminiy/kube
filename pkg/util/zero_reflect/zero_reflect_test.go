@@ -16,6 +16,9 @@ func TestGetSet(t *testing.T) {
 	t.Log(reflect2.TypeOf(nil))
 
 	t.Log(reflect2.TypeOf(10))
+
+	reflect2.TypeOf(i).Set(&i, &j)
+	t.Log()
 }
 
 func printBinary(v any) {

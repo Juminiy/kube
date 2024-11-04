@@ -6,6 +6,11 @@ import "reflect"
 // +param elem type can indirect
 // +desc Arr is pointer but no address
 
+func (tv TypVal) ArrayCanSet() bool {
+	v := tv.noPointer()
+	return v.Kind() == Arr && v.CanSet()
+}
+
 // ArraySet
 // set array index to elem -> arr[index] = elem
 func (tv TypVal) ArraySet(index int, elem any) {

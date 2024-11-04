@@ -6,7 +6,9 @@ var (
 )
 
 const (
-	_noPointer = iota + 1
+	_invalid = iota
+	_direct
+	_noPointer
 	_structSpec
 	_mustComparable
 )

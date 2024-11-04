@@ -6,6 +6,9 @@ type Allocator interface {
 	Grow(int)
 }
 
+// Pooler
+// can use Free() by
+// defer Pooler.Free()
 type Pooler interface {
 	Free()
 }

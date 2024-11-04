@@ -1,7 +1,9 @@
 package mock
 
 import (
+	"github.com/Juminiy/kube/pkg/util"
 	"github.com/Juminiy/kube/pkg/util/safe_reflect"
+	"github.com/Juminiy/kube/pkg/util/zero_reflect"
 	"github.com/spf13/cast"
 	"reflect"
 	"strings"
@@ -50,40 +52,6 @@ const (
 const (
 	tTime tKind = iota + 27
 )
-
-// short for safe_reflect.IndirectOf
-var indir = safe_reflect.IndirectOf
-
-var split = strings.Split
-
-var _timeTyp = safe_reflect.Of(time.Now()).Typ
-
-var pairToStr = func(v0, v1 any) (string, string) {
-	return cast.ToString(v0), cast.ToString(v1)
-}
-
-var pairToInt = func(v0, v1 any) (int, int) {
-	return cast.ToInt(v0), cast.ToInt(v1)
-}
-
-var pairToUInt = func(v0, v1 any) (uint, uint) {
-	return cast.ToUint(v0), cast.ToUint(v1)
-}
-
-var pairToInt64 = func(v0, v1 any) (int64, int64) {
-	return cast.ToInt64(v0), cast.ToInt64(v1)
-}
-
-var pairToUInt64 = func(v0, v1 any) (uint64, uint64) {
-	return cast.ToUint64(v0), cast.ToUint64(v1)
-}
-var pairToF32 = func(v0, v1 any) (float32, float32) {
-	return cast.ToFloat32(v0), cast.ToFloat32(v1)
-}
-
-var pairToF64 = func(v0, v1 any) (float64, float64) {
-	return cast.ToFloat64(v0), cast.ToFloat64(v1)
-}
 
 func (k tKind) zero() any {
 	switch k {
@@ -152,5 +120,74 @@ func (k tKind) cast(v any) any {
 		return cast.ToFloat64(v)
 	default:
 		return cast.ToString(v)
+	}
+}
+
+func (k tKind) isNum() bool {
+	return util.ElemIn(k,
+		tBool,
+		tInt, tI8, tI16, tI32, tI64,
+		tUint, tU8, tU16, tU32, tU64, tUPtr,
+		tF32, tF64,
+	)
+}
+
+func (k tKind) isMeta() bool {
+	return util.ElemIn(k,
+		tBool,
+		tInt, tI8, tI16, tI32, tI64,
+		tUint, tU8, tU16, tU32, tU64, tUPtr,
+		tF32, tF64,
+		tString,
+	)
+}
+
+// short for safe_reflect.IndirectOf
+var indir = safe_reflect.IndirectOf
+
+var typeof = zero_reflect.TypeOf
+
+var split = strings.Split
+
+var _timeTyp = safe_reflect.Of(time.Now()).Typ
+
+var pairToStr = func(v0, v1 any) (string, string) {
+	return cast.ToString(v0), cast.ToString(v1)
+}
+
+var pairToInt = func(v0, v1 any) (int, int) {
+	return cast.ToInt(v0), cast.ToInt(v1)
+}
+
+var pairToUInt = func(v0, v1 any) (uint, uint) {
+	return cast.ToUint(v0), cast.ToUint(v1)
+}
+
+var pairToInt64 = func(v0, v1 any) (int64, int64) {
+	return cast.ToInt64(v0), cast.ToInt64(v1)
+}
+
+var pairToUInt64 = func(v0, v1 any) (uint64, uint64) {
+	return cast.ToUint64(v0), cast.ToUint64(v1)
+}
+
+var pairToF32 = func(v0, v1 any) (float32, float32) {
+	return cast.ToFloat32(v0), cast.ToFloat32(v1)
+}
+
+var pairToF64 = func(v0, v1 any) (float64, float64) {
+	return cast.ToFloat64(v0), cast.ToFloat64(v1)
+}
+
+func castFunc(src, dst any) any {
+	switch dst.(type) {
+	case uint64:
+		return cast.ToUint64(src)
+	case int64:
+		return cast.ToInt64(src)
+	case float64:
+		return cast.ToFloat64(src)
+	default:
+		return cast.ToString(src)
 	}
 }

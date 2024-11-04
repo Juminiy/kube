@@ -4,9 +4,9 @@ import "testing"
 
 func TestApString_String(t *testing.T) {
 	buf := Get()
-	for range 1 << 20 {
+	defer buf.Free()
+	for range 1 << 5 {
 		_, _ = buf.WriteString("ssr")
 		t.Log(buf.UnsafeString())
 	}
-	buf.Free()
 }

@@ -10,6 +10,11 @@ import (
 // +param srcV type and its attribute type can indirect
 // +desc Struct is value
 
+func (tv TypVal) StructCanSet() bool {
+	v := tv.noPointer()
+	return v.Kind() == Struct && v.CanSet()
+}
+
 func (tv TypVal) StructSet(srcV any) {
 	v := tv.noPointer()
 

@@ -11,11 +11,15 @@ func Struct(v any) {
 	cacheKey, tv, ok := structCache(v)
 	structSet(tv.val, tv.typ)
 	if !ok {
-		_global.Store(cacheKey, tv.typ)
+		cachePut(cacheKey, tv.typ)
 	}
 }
 
-func structCache(v any) (uintptr, tStructTv, bool) {
+func structCache(v any) (
+	uintptr, // cacheKey
+	tStructTv, // cachedValue
+	bool, // ifCached
+) {
 	indirTv := indir(v)
 	cacheKey, cacheVal := cacheGet(v)
 	if cacheVal != nil {
@@ -32,6 +36,14 @@ func structCache(v any) (uintptr, tStructTv, bool) {
 			FieldRule:  make(map[string]*Rule, indirTv.FieldLen()),
 		},
 	}, false
+}
+
+func structCached(t reflect.Type) *tStructTyp {
+	_, cacheVal := cacheByTyp(t)
+	if cacheVal != nil {
+		return cacheVal.(*tStructTyp)
+	}
+	return nil
 }
 
 func structSet(indirTv safe_reflect.TypVal, structOf *tStructTyp) {
@@ -57,7 +69,7 @@ func structSet(indirTv safe_reflect.TypVal, structOf *tStructTyp) {
 		}
 
 		switch {
-		case isMeta(kind):
+		case kind.isMeta():
 			indirTv.StructSetFields(map[string]any{name: fieldValue})
 
 		case typ == _timeTyp:
@@ -72,9 +84,9 @@ func structSet(indirTv safe_reflect.TypVal, structOf *tStructTyp) {
 
 type tStructTv struct {
 	// by indir
-	val safe_reflect.TypVal
+	val safe_reflect.TypVal // no cached
 	// struct typ info
-	typ *tStructTyp
+	typ *tStructTyp // cached
 }
 
 type tStructTyp struct {

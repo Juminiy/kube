@@ -38,3 +38,15 @@ func directVs(v []any) []reflect.Value {
 	}
 	return vs
 }
+
+func Wrap(val reflect.Value) TypVal {
+	return direct(val)
+}
+
+func Wrap2(typ reflect.Type, val reflect.Value) TypVal {
+	return TypVal{
+		Typ: typ,
+		Val: val,
+		typ: typ,
+	}
+}

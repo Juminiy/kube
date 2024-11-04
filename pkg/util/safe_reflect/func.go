@@ -8,6 +8,11 @@ import (
 // +param fn type can indirect
 // +desc Func is value not pointer
 
+func (tv TypVal) FuncCanSet() bool {
+	v := tv.noPointer()
+	return v.Kind() == Func && v.CanSet()
+}
+
 // FuncSet
 // set func self to fn
 func (tv TypVal) FuncSet(fn any) {

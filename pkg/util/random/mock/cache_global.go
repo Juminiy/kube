@@ -8,7 +8,7 @@ import (
 var _global = sync.Map{}
 
 func cacheGet(v any) (uintptr, any) {
-	vTypKey := runtimeutil.EFaceOf(&v).Type()
+	vTypKey := runtimeutil.EFaceOf(v).Type()
 	vInfoCache, ok := _global.Load(vTypKey)
 	if ok {
 		return vTypKey, vInfoCache
@@ -18,4 +18,13 @@ func cacheGet(v any) (uintptr, any) {
 
 func cachePut(k uintptr, v any) {
 	_global.Store(k, v)
+}
+
+func cacheByTyp(t any) (uintptr, any) {
+	tValKey := runtimeutil.EFaceOf(t).Value()
+	vInfoCache, ok := _global.Load(tValKey)
+	if ok {
+		return tValKey, vInfoCache
+	}
+	return tValKey, nil
 }

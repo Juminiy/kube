@@ -17,6 +17,7 @@ type Builder interface {
 
 type Stringer interface {
 	Builder
+	// Deprecated no-safe
 	UnsafeString() string
 }
 

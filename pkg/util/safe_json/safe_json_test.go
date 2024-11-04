@@ -3,7 +3,6 @@ package safe_json
 import (
 	"encoding/json"
 	"github.com/Juminiy/kube/pkg/util"
-	"github.com/Juminiy/kube/pkg/util/random/mock"
 	"testing"
 	"time"
 )
@@ -45,23 +44,23 @@ func TestSafeDecoder(t *testing.T) {
 }
 
 type t0 struct {
-	ID        uint
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt time.Time
-	Name      string
-	Desc      string
-	Category  int
-	BusVal0   string
-	BusVal1   string
-	BusVal2   string
-	Bus1Val0  uint
-	Bus2Val1  uint
+	ID        uint      `mock:"range:1~1000"`
+	CreatedAt time.Time `mock:"now"`
+	UpdatedAt time.Time `mock:"null"`
+	DeletedAt time.Time `mock:"null"`
+	Name      string    `mock:"len:1~16"`
+	Desc      string    `mock:"len:16~32"`
+	Category  int       `mock:"enum:1,2,3"`
+	BusVal0   string    `mock:"uuid"`
+	BusVal1   string    `mock:"len:1~128;alpha;numeric"`
+	BusVal2   string    `mock:"len:64~128;symbol"`
+	Bus1Val0  uint      `mock:"len:1024~1444;alpha"`
+	Bus2Val1  uint      `mock:"len:1000;char:<,>,?"`
 }
 
 func TestSafeEncoder(t *testing.T) {
 	t0Slice := make([]t0, 32)
-	mock.Slice(&t0Slice)
-	bs, _ := SafeMarshal(t0Slice)
-	t.Log(len(bs))
+	//mock.Slice(&t0Slice)
+	//t.Log(Pretty(t0Slice))
+	t.Log(len(String(t0Slice))) // 12 field mixed-type, slice len 32: size: 15000B ~ 14KiB
 }
