@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util/zero_reflect"
+	"io"
 	"reflect"
 )
 
@@ -13,39 +14,39 @@ const (
 	JSONMarshalIndent = "  "
 )
 
-type StdJSONEncoder interface {
+type JSONMarshaler interface {
 	Marshal(v any) ([]byte, error)
+	MarshalIndent(v any, prefix, indent string) ([]byte, error)
 }
 
-type StdJSONDecoder interface {
+type JSONUnmarshaler interface {
 	Unmarshal(data []byte, v any) error
 }
 
-type StdJSON interface {
-	StdJSONEncoder
-	StdJSONDecoder
-}
-
 type JSONEncoder interface {
-	Marshal(v any) []byte
+	Encode(v any) error
+	SetIndent(prefix, indent string)
+	SetEscapeHTML(on bool)
 }
 
 type JSONDecoder interface {
-	Unmarshal(b []byte, v any)
+	Decode(v any) error
+	More() bool
+	Buffered() io.Reader
+	UseNumber()
+	DisallowUnknownFields()
 }
 
 type JSONer interface {
+	JSONMarshaler
+	JSONUnmarshaler
 	JSONEncoder
 	JSONDecoder
 }
 
-func MarshalJSONPretty(v any) (string, error) {
-	jsonBytes, err := marshalJSONPretty(&v)
-	return Bytes2StringNoCopy(jsonBytes), err
-}
-
-func marshalJSONPretty(v any) ([]byte, error) {
-	return json.MarshalIndent(&v, JSONMarshalPrefix, JSONMarshalIndent)
+type JSONLite interface {
+	JSONMarshaler
+	JSONUnmarshaler
 }
 
 type Stringer fmt.Stringer
@@ -58,9 +59,18 @@ type Sizer interface {
 	Size() int64
 }
 
+func MarshalJSONPretty(v any) (string, error) {
+	jsonBytes, err := marshalJSONPretty(&v)
+	return Bytes2StringNoCopy(jsonBytes), err
+}
+
+func marshalJSONPretty(v any) ([]byte, error) {
+	return json.MarshalIndent(&v, JSONMarshalPrefix, JSONMarshalIndent)
+}
+
 // DeepCopyByJSON
 // tested is ok
-func DeepCopyByJSON(stdJSON StdJSON, v any) any {
+func DeepCopyByJSON(stdJSON JSONLite, v any) any {
 	bs, encodeErr := stdJSON.Marshal(v)
 	if encodeErr != nil {
 		stdlog.ErrorF("deepcopy encode value: %v json marshal error: %s", v, encodeErr.Error())

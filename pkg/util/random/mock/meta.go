@@ -158,6 +158,9 @@ var _defaultValue = map[tKind]any{
 }
 
 func (r *Rule) value() map[tKind]any {
+	if Default {
+		return _defaultValue
+	}
 	val := maps.Clone(_defaultValue)
 	r.r.setValue(val)
 	return val

@@ -19,8 +19,8 @@ func sliceOrArraySet(indirTv safe_reflect.TypVal) {
 		cachedVal := structCached(elemTv.Typ)
 		if cachedVal == nil {
 			Struct(elemTv.Val.Interface())
+			cachedVal = structCached(elemTv.Typ)
 		}
-		cachedVal = structCached(elemTv.Typ)
 		structSet(elemTv, cachedVal)
 	}
 }

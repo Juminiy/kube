@@ -64,6 +64,6 @@ func getPool(size Kind) String {
 		return extraLargePool.get()
 
 	default:
-		return tinyPool.get()
+		return extraLargePool.get()
 	}
 }

@@ -1,13 +1,21 @@
-package mock
+package main
 
 import (
+	"github.com/Juminiy/kube/pkg/log_api/stdlog"
+	"github.com/Juminiy/kube/pkg/util/random/mock"
 	"github.com/Juminiy/kube/pkg/util/safe_json"
-	"testing"
 	"time"
 )
 
-type t0 struct {
-	ID        uint      `mock:"range:1~11022;"`
+func main() {
+	mock.Default = true
+	t0sl := make([]T0, 32)
+	mock.Slice(t0sl)
+	stdlog.Info(len(safe_json.String(t0sl)))
+}
+
+type T0 struct {
+	ID        uint      `mock:"range:1~1024;"`
 	CreatedAt time.Time `mock:"now;"`
 	UpdatedAt time.Time `mock:"null;"`
 	DeletedAt time.Time `mock:"null;"`
@@ -25,19 +33,4 @@ type t0 struct {
 	BusVal9   string    `mock:"timestamp"`
 	Latitude  float32   `mock:"range:1~1024"`
 	Longitude float64   `mock:"range:-9~22"`
-}
-
-func TestStruct(t *testing.T) {
-	v0 := t0{}
-	v1 := t0{}
-	Struct(&v0)
-	Struct(&v1)
-	t.Log(safe_json.Pretty(v0))
-	t.Log(safe_json.Pretty(v1))
-}
-
-func TestSlice(t *testing.T) {
-	t0sl := make([]t0, 32)
-	Slice(t0sl)
-	t.Log(len(safe_json.String(t0sl)))
 }

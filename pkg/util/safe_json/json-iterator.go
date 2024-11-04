@@ -2,14 +2,15 @@ package safe_json
 
 import (
 	"github.com/Juminiy/kube/pkg/util"
-	jsoniterator "github.com/json-iterator/go"
+	jsoniter "github.com/json-iterator/go"
 	"io"
 )
 
+// json-iterator is unsafe
 var (
-	stdConfig  = jsoniterator.ConfigCompatibleWithStandardLibrary
-	fastConfig = jsoniterator.ConfigFastest
-	safeConfig = jsoniterator.Config{
+	stdConfig  = jsoniter.ConfigCompatibleWithStandardLibrary
+	fastConfig = jsoniter.ConfigFastest
+	safeConfig = jsoniter.Config{
 		IndentionStep:                 0,      // for json pretty
 		MarshalFloatWith6Digits:       true,   // low accuracy float
 		EscapeHTML:                    false,  // no escape for HTML, because no-need html
@@ -24,36 +25,22 @@ var (
 	}.Froze()
 )
 
-func SafeMarshal(v any) ([]byte, error) {
+func unsafeMarshal(v any) ([]byte, error) {
 	return safeConfig.Marshal(v)
 }
 
-func SafeUnmarshal(b []byte, v any) error {
-	return safeConfig.Unmarshal(b, v)
-}
-
-func SafeMarshalPretty(v any) ([]byte, error) {
+func unsafeMarshalIndent(v any) ([]byte, error) {
 	return safeConfig.MarshalIndent(v, util.JSONMarshalPrefix, util.JSONMarshalIndent)
 }
 
-func From(s string, v any) {
-	_ = SafeUnmarshal(util.String2BytesNoCopy(s), v)
+func unsafeUnmarshal(b []byte, v any) error {
+	return safeConfig.Unmarshal(b, v)
 }
 
-func String(v any) string {
-	bs, _ := SafeMarshal(v)
-	return util.Bytes2StringNoCopy(bs)
-}
-
-func Pretty(v any) string {
-	bs, _ := SafeMarshalPretty(v)
-	return util.Bytes2StringNoCopy(bs)
-}
-
-func SafeEncoder(wr io.Writer) *jsoniterator.Encoder {
+func unsafeEncoder(wr io.Writer) util.JSONEncoder {
 	return safeConfig.NewEncoder(wr)
 }
 
-func SafeDecoder(rd io.Reader) *jsoniterator.Decoder {
+func unsafeDecoder(rd io.Reader) util.JSONDecoder {
 	return safeConfig.NewDecoder(rd)
 }
