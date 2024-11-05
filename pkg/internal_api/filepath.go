@@ -138,3 +138,18 @@ func filePathJoin(base string, s ...string) string {
 func notAbsPathErr(pathOrDir string) error {
 	return fmt.Errorf("error path: %s, path must be an absolute path", pathOrDir)
 }
+
+func GetDirFileNames(dir string) ([]string, error) {
+	entrys, err := os.ReadDir(dir)
+	if err != nil {
+		return nil, err
+	}
+
+	names := make([]string, 0, len(entrys))
+	for _, entry := range entrys {
+		if !entry.IsDir() {
+			names = append(names, entry.Name())
+		}
+	}
+	return names, nil
+}

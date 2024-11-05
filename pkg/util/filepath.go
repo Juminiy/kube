@@ -40,3 +40,9 @@ func OSOpenFileWithCreate(filePath string) (*os.File, error) {
 func OSRemoveFile(filePath string) error {
 	return internal_api.DeleteFile(filePath)
 }
+
+func GetWorkPath(s ...string) string {
+	wd, err := internal_api.GetWorkPath(s...)
+	Must(err)
+	return wd
+}
