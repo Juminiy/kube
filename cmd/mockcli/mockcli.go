@@ -2,16 +2,30 @@ package main
 
 import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
-	"github.com/Juminiy/kube/pkg/util/random/mock"
+	"github.com/Juminiy/kube/pkg/util"
+	"github.com/Juminiy/kube/pkg/util/file"
+	mockv2 "github.com/Juminiy/kube/pkg/util/random/mock/v2"
 	"github.com/Juminiy/kube/pkg/util/safe_json"
 	"time"
 )
 
 func main() {
-	mock.Default = true
-	t0sl := make([]T0, 32)
-	mock.Slice(t0sl)
-	stdlog.Info(len(safe_json.String(t0sl)))
+	stdlog.Info("begin")
+
+	t0sl := make([]T0, 20)
+	stdlog.Info("alloc slice memory")
+
+	mockv2.Slice(t0sl)
+	stdlog.Info("ruled value assign")
+
+	jstr := safe_json.String(t0sl)
+	stdlog.Info("marshal json string")
+
+	file.NewWriter(util.GetWorkPath("cmd", "mockcli", "res.json")).
+		Word(jstr).Done()
+	stdlog.Info("write to file")
+
+	stdlog.InfoF("cal size: %s", util.MeasureByte(len(jstr)))
 }
 
 type T0 struct {

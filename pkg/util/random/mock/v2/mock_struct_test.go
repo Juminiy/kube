@@ -2,7 +2,7 @@
 package mockv2
 
 import (
-	"github.com/Juminiy/kube/pkg/util/safe_json"
+	"github.com/Juminiy/kube/pkg/util"
 	"testing"
 	"time"
 )
@@ -29,16 +29,11 @@ type t0 struct {
 }
 
 func TestStruct(t *testing.T) {
-	v0 := t0{}
-	v1 := t0{}
-	Struct(&v0)
-	Struct(&v1)
-	t.Log(safe_json.Pretty(v0))
-	t.Log(safe_json.Pretty(v1))
-}
-
-func TestSlice(t *testing.T) {
-	t0sl := make([]t0, 32)
-	Slice(t0sl)
-	t.Log(len(safe_json.String(t0sl)))
+	util.Recover(func() {
+		for range 1000 {
+			v0 := t0{}
+			Struct(&v0)
+			//t.Log(i)
+		}
+	})
 }

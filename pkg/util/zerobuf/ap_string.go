@@ -46,6 +46,10 @@ func (ap *apString) String() string {
 // Deprecated
 func (ap *apString) UnsafeString() string { return unsafe.String(unsafe.SliceData(ap.b), len(ap.b)) }
 
+func (ap *apString) Bytes() []byte {
+	return ap.b
+}
+
 func (ap *apString) Reset() {
 	ap.b = ap.b[:0]
 }

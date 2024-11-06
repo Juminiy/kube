@@ -9,42 +9,23 @@ import (
 )
 
 func Struct(v any) {
-	cacheKey, tv, ok := structCache(v)
-	structSet(tv.val, tv.typ)
-	if !ok {
-		cachePut(cacheKey, tv.typ)
+	indirTv := indir(v)
+	if !indirTv.StructCanSet() {
+		return
 	}
+	tv := structTv(indirTv)
+	structSet(tv.val, tv.typ)
 }
 
-func structCache(v any) (
-	uintptr, // cacheKey
-	tStructTv, // cachedValue
-	bool, // ifCached
-) {
-	indirTv := indir(v)
-	cacheKey, cacheVal := cacheGet(v)
-	if cacheVal != nil {
-		return cacheKey, tStructTv{
-			val: indirTv,
-			typ: cacheVal.(*tStructTyp),
-		}, true
-	}
-	return cacheKey, tStructTv{
+func structTv(indirTv safe_reflect.TypVal) *tStructTv {
+	return &tStructTv{
 		val: indirTv,
 		typ: &tStructTyp{
 			FieldTyp:   indirTv.StructFieldsType(),
 			FieldTagKv: indirTv.StructParseTagKV(mockTag),
 			FieldRule:  make(map[string]*Rule, indirTv.FieldLen()),
 		},
-	}, false
-}
-
-func structCached(t reflect.Type) *tStructTyp {
-	_, cacheVal := cacheByTyp(t)
-	if cacheVal != nil {
-		return cacheVal.(*tStructTyp)
 	}
-	return nil
 }
 
 func structSet(indirTv safe_reflect.TypVal, structOf *tStructTyp) {

@@ -17,11 +17,6 @@ func Slice(v any) {
 func sliceOrArraySet(indirTv safe_reflect.TypVal) {
 	for i := range indirTv.FieldLen() {
 		elemTv := safe_reflect.Wrap(indirTv.Val.Index(i))
-		cachedVal := structCached(elemTv.Typ)
-		if cachedVal == nil {
-			Struct(elemTv.Val.Interface())
-			cachedVal = structCached(elemTv.Typ)
-		}
-		structSet(elemTv, cachedVal)
+		structSet(elemTv, structTv(elemTv).typ)
 	}
 }

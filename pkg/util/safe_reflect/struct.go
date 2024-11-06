@@ -346,7 +346,7 @@ func parseTagKV(tagValue string) (tagKv TagKV) {
 	tagKv = make(TagKV, util.MagicMapCap)
 
 	tagKv.parseSemicolonAndColon(tagValue)
-	tagKv.parseOmitComma(tagValue)
+	tagKv.parseComma(tagValue)
 
 	return
 }
@@ -355,14 +355,23 @@ func parseTagKV(tagValue string) (tagKv TagKV) {
 // +example:
 // `json:"name,omitempty"`
 // +result:
-// set {"name": "name"}
-func (tagKv TagKV) parseOmitComma(tagValue string) {
+// set {"key": "name", "omitempty": "-"}
+func (tagKv TagKV) parseComma(tagValue string) {
 	if util.StringContainAny(tagValue, ";", ":") {
 		return
 	}
 	commas := strings.Split(tagValue, ",")
-	if len(commas) > 0 && len(commas[0]) > 0 {
-		tagKv[commas[0]] = commas[0]
+	for i := range commas {
+		switch {
+		case len(commas[i]) == 0:
+			continue
+
+		case commas[i] == "omitempty":
+			tagKv[commas[i]] = "-"
+
+		default:
+			tagKv["key"] = commas[i]
+		}
 	}
 }
 
