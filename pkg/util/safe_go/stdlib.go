@@ -7,18 +7,6 @@ import (
 	"sync"
 )
 
-/*
- * Runner
- * 1. context injection
- * 2. goroutine limit control
- * 3. error catch mode:
- * 	(1). one error cancel all: return error
- * 	(2). any error dry run: collect errors, return mergedError
- *  (3). any panic recover: collect errors, return mergedError, collect stacktrace, log stacktrace
- * 4. timeout control
- * 5. progress report
- */
-
 func Run(fns ...util.Func) error {
 	grp, ctx := errgroup.WithContext(util.TODOContext())
 	defer ctx.Done()

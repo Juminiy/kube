@@ -2,6 +2,7 @@ package safe_go
 
 import (
 	"errors"
+	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	"strconv"
 	"testing"
@@ -18,16 +19,20 @@ func TestDryRun(t *testing.T) {
 
 func testRunT(t *testing.T, runner func(...util.Func) error) {
 	defer func() {
-		t.Log("TestRun end")
+		stdlog.Info("TestRun end")
 	}()
-	t.Log("TestRun start")
+	stdlog.Info("TestRun start")
 
 	fns := make([]util.Func, 1024)
 	//fakedErr := errors.New("faked error")
 	for i := range fns {
 		fns[i] = func() error {
-			if i > 0 && i%7 == 0 {
+			if i == 0 {
+				return nil
+			} else if i%7 == 0 {
 				return errors.New("faked error index: " + strconv.Itoa(i) + "")
+			} else if i%227 == 0 {
+				panic("faked panic index: " + strconv.Itoa(i) + "")
 			}
 			return nil
 		}
@@ -35,7 +40,7 @@ func testRunT(t *testing.T, runner func(...util.Func) error) {
 
 	err := runner(fns...)
 	if err != nil {
-		t.Log(err.Error())
+		stdlog.Error(err.Error())
 		return
 	}
 
