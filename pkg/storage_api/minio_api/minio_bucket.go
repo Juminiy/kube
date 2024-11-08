@@ -2,6 +2,8 @@ package minio_api
 
 import (
 	"errors"
+	"github.com/Juminiy/kube/pkg/util"
+	"github.com/Juminiy/kube/pkg/util/safe_go"
 	"github.com/minio/madmin-go/v3"
 	"github.com/minio/minio-go/v7"
 	"strings"
@@ -9,14 +11,23 @@ import (
 
 type BucketConfig struct {
 	// username to make bucket
+	// +required BusinessUser.ID
 	BusinessUser BusinessUser
 
 	// restrict bucket Quota size: /Byte
+	// +required
 	Quota uint64
 
 	// bucket name to get, delete, update
+	// +optional
 	BucketName string
 }
+
+var (
+	errBucketConfigNull  = errors.New("bucket config is null")
+	errBucketConfigName  = errors.New("bucket config bucket name error")
+	errBucketConfigQuota = errors.New("bucket config bucket quota error")
+)
 
 // +self define
 // v1.1.1->v1.1.2 update name rule
@@ -34,6 +45,12 @@ func (c *BucketConfig) setDefaultBucketName() {
 // 2. set bucket quota: size(B)
 // 3. set bucket access policy
 func (c *Client) MakeBucket(bucketConfig *BucketConfig) error {
+	if len(bucketConfig.BusinessUser.ID) == 0 && len(bucketConfig.BucketName) == 0 {
+		return errBucketConfigName
+	}
+	if bucketConfig.Quota <= 0 {
+		return errBucketConfigQuota
+	}
 	if len(bucketConfig.BucketName) == 0 {
 		bucketConfig.setDefaultBucketName()
 	}
@@ -55,10 +72,16 @@ func (c *Client) MakeBucket(bucketConfig *BucketConfig) error {
 	return nil
 }
 
-func (c *Client) RemoveBucket(bucketConfig *BucketConfig) error {
-	return c.mc.RemoveBucket(
+var _forcedRemoveBucket = minio.RemoveBucketOptions{ForceDelete: true}
+
+// RemoveBucket
+// Remove Bucket itself and Bucket Objects, Versions, Markers
+// All objects (including all object versions and delete markers)
+func (c *Client) RemoveBucket(bucketName string) error {
+	return c.mc.RemoveBucketWithOptions(
 		c.ctx,
-		bucketConfig.BucketName,
+		bucketName,
+		_forcedRemoveBucket,
 	)
 }
 
@@ -67,10 +90,11 @@ func (c *Client) UpdateBucketQuota(bucketConfig *BucketConfig) error {
 }
 
 func (c *Client) setBucketQuota(bucketConfig *BucketConfig) error {
-	if bucketConfig == nil ||
-		(len(bucketConfig.BusinessUser.Name) == 0 && len(bucketConfig.BucketName) == 0) ||
-		bucketConfig.Quota <= 0 {
-		return errors.New("bucket config error")
+	if len(bucketConfig.BusinessUser.ID) == 0 && len(bucketConfig.BucketName) == 0 {
+		return errBucketConfigName
+	}
+	if bucketConfig.Quota <= 0 {
+		return errBucketConfigQuota
 	}
 	if len(bucketConfig.BucketName) == 0 {
 		bucketConfig.setDefaultBucketName()
@@ -100,6 +124,25 @@ func (c *Client) SetBucketPolicy(policyConfig *PolicyConfig) error {
 	)
 }
 
-func (c *Client) ListBucket() {}
+func (c *Client) ListBucket() ([]minio.BucketInfo, error) {
+	bucketsInfo, err := c.mc.ListBuckets(c.ctx)
+	if err != nil {
+		return nil, err
+	}
 
-func (c *Client) BatchDeleteBucket() {}
+	limitSize := c.page.SizeIntValue()
+	if limitSize >= len(bucketsInfo) {
+		return bucketsInfo, nil
+	}
+	return bucketsInfo[:limitSize], nil
+}
+
+func (c *Client) BatchRemoveBucket(bucketNames map[string]struct{}) error {
+	fns := make([]util.Func, 0, len(bucketNames))
+	for bucketName := range bucketNames {
+		fns = append(fns, func() error {
+			return c.RemoveBucket(bucketName)
+		})
+	}
+	return safe_go.DryRun(fns...)
+}

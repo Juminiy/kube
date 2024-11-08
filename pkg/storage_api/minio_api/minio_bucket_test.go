@@ -3,7 +3,10 @@ package minio_api
 import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
+	"github.com/Juminiy/kube/pkg/util/random"
+	"github.com/brianvoe/gofakeit/v7"
 	miniocred "github.com/minio/minio-go/v7/pkg/credentials"
+	"github.com/minio/minio-go/v7/pkg/s3utils"
 	"strconv"
 	"testing"
 )
@@ -32,9 +35,7 @@ func TestClient_UpdateBucketQuota(t *testing.T) {
 // +passed
 func TestClient_RemoveBucket(t *testing.T) {
 	util.SilentFatalf("remove bucket error",
-		testMinioClient.RemoveBucket(&BucketConfig{
-			BucketName: "s3fs-mount-bucket-chisato",
-		}),
+		testMinioClient.RemoveBucket("s3fs-mount-bucket-chisato"),
 	)
 }
 
@@ -82,4 +83,32 @@ func TestClient_BucketWorkflow(t *testing.T) {
 	//create bucket policy
 	util.SilentFatalf("create bucket policy error", testMinioClient.SetBucketPolicy(&policyConfig))
 
+}
+
+// +passed
+func TestClient_ListBucket(t *testing.T) {
+	buckets, err := testMinioClient.WithPage(util.NewPageConfig(0, 128)).ListBucket()
+	util.Must(err)
+
+	t.Log(buckets)
+}
+
+func TestClient_BatchRemoveBucket(t *testing.T) {
+	bucketName := make([]string, 0, util.MagicSliceCap)
+	for range 32 {
+		namei := random.Integer(8)
+		util.Must(s3utils.CheckValidBucketNameStrict(namei))
+		bucketName = append(bucketName, namei)
+	}
+
+	for i, namei := range bucketName {
+		util.Must(testMinioClient.MakeBucket(&BucketConfig{
+			BusinessUser: BusinessUser{ID: "test_minio" + strconv.Itoa(i), Name: gofakeit.Username()},
+			Quota:        100 * util.Ki,
+			BucketName:   namei,
+		}))
+	}
+	util.TestLongHorizontalLine(t)
+
+	t.Log(testMinioClient.BatchRemoveBucket(util.Slice2Map[[]string, map[string]struct{}](bucketName)))
 }

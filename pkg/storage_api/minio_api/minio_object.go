@@ -3,6 +3,7 @@ package minio_api
 import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
+	"github.com/Juminiy/kube/pkg/util/safe_go"
 	"net/url"
 	"strings"
 	"time"
@@ -66,6 +67,21 @@ func (c *Client) TempPutObject(objectConfig *ObjectConfig, expiry time.Duration)
 		stdlog.ErrorF("minio presigned put object: %s error: %s", objectConfig.ObjectAbsPath(), err.Error())
 	}
 	return presignedURL, err
+}
+
+func (c *Client) TempGetObjectList(objectConfigs []ObjectConfig, expiry time.Duration) ([]*url.URL, error) {
+	tempURLs := make([]*url.URL, len(objectConfigs))
+	fns := make([]util.Func, len(objectConfigs))
+	for i, config := range objectConfigs {
+		fns[i] = func() error {
+			var tempErr error
+			tempURLs[i], tempErr = c.TempGetObject(&config, expiry)
+			return tempErr
+		}
+	}
+
+	err := safe_go.DryRun(fns...)
+	return tempURLs, err
 }
 
 // Deprecated

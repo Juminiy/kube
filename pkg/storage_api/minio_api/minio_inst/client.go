@@ -5,6 +5,7 @@ import (
 	"context"
 	"github.com/Juminiy/kube/pkg/storage_api/minio_api"
 	"github.com/Juminiy/kube/pkg/util"
+	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"net/url"
 	"time"
@@ -22,12 +23,12 @@ func BatchDeleteAccessKey() {
 	_minioClient.BatchDeleteAccessKey()
 }
 
-func BatchDeleteBucket() {
-	_minioClient.BatchDeleteBucket()
-}
-
 func BatchDeletePolicy() {
 	_minioClient.BatchDeletePolicy()
+}
+
+func BatchRemoveBucket(_mapstringstruct map[string]struct{}) error {
+	return _minioClient.BatchRemoveBucket(_mapstringstruct)
 }
 
 func CreateAccessKey() (credentials.Value, error) {
@@ -50,8 +51,8 @@ func ListAccessKey() {
 	_minioClient.ListAccessKey()
 }
 
-func ListBucket() {
-	_minioClient.ListBucket()
+func ListBucket() ([]minio.BucketInfo, error) {
+	return _minioClient.ListBucket()
 }
 
 func ListCannedPolicy() {
@@ -62,8 +63,8 @@ func MakeBucket(bucketConfig *minio_api.BucketConfig) error {
 	return _minioClient.MakeBucket(bucketConfig)
 }
 
-func RemoveBucket(bucketConfig *minio_api.BucketConfig) error {
-	return _minioClient.RemoveBucket(bucketConfig)
+func RemoveBucket(_string string) error {
+	return _minioClient.RemoveBucket(_string)
 }
 
 func RemoveIAMUser(_string string) error {
@@ -82,6 +83,10 @@ func TempGetObject(objectConfig *minio_api.ObjectConfig, duration time.Duration)
 	return _minioClient.TempGetObject(objectConfig, duration)
 }
 
+func TempGetObjectList(objectConfig []minio_api.ObjectConfig, duration time.Duration) ([]*url.URL, error) {
+	return _minioClient.TempGetObjectList(objectConfig, duration)
+}
+
 func TempPutObject(objectConfig *minio_api.ObjectConfig, duration time.Duration) (*url.URL, error) {
 	return _minioClient.TempPutObject(objectConfig, duration)
 }
@@ -92,4 +97,8 @@ func UpdateBucketQuota(bucketConfig *minio_api.BucketConfig) error {
 
 func WithContext(context context.Context) *minio_api.Client {
 	return _minioClient.WithContext(context)
+}
+
+func WithPage(page *util.Page) *minio_api.Client {
+	return _minioClient.WithPage(page)
 }

@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	endpoint        = "192.168.3.2:9000"
+	endpoint        = "192.168.31.131:9000"
 	accessKeyID     = "minioadmin"
 	secretAccessKey = "minioadmin"
 	sessionToken    = ""

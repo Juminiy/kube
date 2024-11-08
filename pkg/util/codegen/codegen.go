@@ -136,7 +136,8 @@ func (g *Manifest) genFunc() {
 			paramInTypeId := paramInTyp.pkgTypeName
 			// 1. fix example like: func fn_xxx(type_xxx1 type_xxx, type_xxx2 *type_xxx) {}, ptr type and value type conflict
 			// 2. fix example like: func fn_xxx(func type_xxx, func type_xxx)
-			paramInVarName := paramInTyp.varName
+			// 3. fix example like: func fn_xxx(var_a map[string]struct{})
+			paramInVarName := util.StringDelete(paramInTyp.varName, "{", "}", "[", "]", "...")
 			if inTypTh, inTypExists := fullTypeNames[paramInTypeId]; inTypExists {
 				paramInVarName += strconv.Itoa(inTypTh + 1)
 				fullTypeNames[paramInTypeId] = inTypTh + 1

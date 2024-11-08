@@ -20,9 +20,10 @@ type Client struct {
 	miniocred.Value
 	Secure bool
 
-	mc  *minio.Client
-	ma  *madmin.AdminClient
-	ctx context.Context
+	mc   *minio.Client
+	ma   *madmin.AdminClient
+	ctx  context.Context
+	page *util.Page
 }
 
 func New(
@@ -49,14 +50,20 @@ func New(
 	}
 
 	return &Client{
-		mc:  mc,
-		ma:  ma,
-		ctx: util.TODOContext(),
+		mc:   mc,
+		ma:   ma,
+		ctx:  util.TODOContext(),
+		page: util.DefaultPage(),
 	}, nil
 }
 
 func (c *Client) WithContext(ctx context.Context) *Client {
 	c.ctx = ctx
+	return c
+}
+
+func (c *Client) WithPage(page *util.Page) *Client {
+	c.page = page
 	return c
 }
 
@@ -161,7 +168,7 @@ setAccessPolicyRollback:
 createAccessKeyRollback:
 	c.DeleteAccessKey(credValue.AccessKeyID)
 makeBucketRollback:
-	c.RemoveBucket(&bucketConfig)
+	c.RemoveBucket(bucketConfig.BucketName)
 
 	return
 }

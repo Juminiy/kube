@@ -43,9 +43,7 @@ func ConRun(fns ...Fn) {
 // Recover any func panic anyway, never hangout
 func Recover(fn Fn) {
 	defer func() {
-		if r := recover(); r != nil {
-			stdlog.ErrorF("hangup from recover panic: %v, stack: %s", r, Bytes2StringNoCopy(debug.Stack()))
-		}
+		PanicHandler()
 	}()
 	if fn != nil {
 		fn()
@@ -54,4 +52,10 @@ func Recover(fn Fn) {
 
 func GoSafe(fn Fn) {
 	gostruntime.GoSafely(nil, false, fn, nil)
+}
+
+func PanicHandler(v ...any) {
+	if r := recover(); r != nil {
+		stdlog.ErrorF("panic sth: %v, hangup from recover panic: %v, stack: %s", v, r, Bytes2StringNoCopy(debug.Stack()))
+	}
 }
