@@ -12,4 +12,5 @@ func TestInternalKeywordSizeOf(t *testing.T) {
 	println(unsafe.Sizeof(func() {}))                                     // 8B
 	println(unsafe.Sizeof([]int{}))                                       // 24B
 	println(unsafe.Sizeof([5]int{}))                                      // len*type_size B
+	println(unsafe.Sizeof(bool(true)))                                    // 1B
 }

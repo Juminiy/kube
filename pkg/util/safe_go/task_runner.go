@@ -1,6 +1,7 @@
 package safe_go
 
 import (
+	"errors"
 	"github.com/Juminiy/kube/pkg/util"
 	"sync"
 )
@@ -37,6 +38,7 @@ func NewRunner(tasks []util.Func, options ...Option) *Runner {
 		options[i](r)
 	}
 
+	r.flagBitSet()
 	return r
 }
 
@@ -68,10 +70,38 @@ func newDefaultRunner(tasks []util.Func) *Runner {
 }
 
 func (r *Runner) Error() string {
+	switch {
+	case r.errCancel:
+		return errString(r.err)
+
+	case r.errDryRun, r.panicRecover:
+		return errString(util.MergeError(r.errs...))
+
+	default:
+		return ""
+	}
+}
+
+func errString(err error) string {
+	if err != nil {
+		return err.Error()
+	}
 	return ""
 }
 
+var _configDoNotSupport = errors.New("config do not support")
+
 func (r *Runner) Go() *Runner {
+	switch r.flag {
+	case flagErrCancel:
+		r.run2()
+
+	case flagLimit | flagPanicRecover | flagProgressBar:
+		r.run73()
+
+	default:
+		r.err = _configDoNotSupport
+	}
 
 	return r
 }

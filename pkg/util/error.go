@@ -71,6 +71,10 @@ func Must(err error) {
 }
 
 func MergeError(err ...error) error {
+	return mergeErrorSep(", ", err...)
+}
+
+func mergeErrorSep(sep string, err ...error) error {
 	var (
 		hasErr bool
 		errStr string
@@ -78,7 +82,7 @@ func MergeError(err ...error) error {
 	DoWithBuffer(func(buf *valyalabuffer.ByteBuffer) {
 		for i := range err {
 			if err[i] != nil {
-				_, _ = buf.WriteString(fmt.Sprintf("error[%d]: %s\n", i, err[i].Error()))
+				_, _ = buf.WriteString(fmt.Sprintf("error[%d]: %s%s", i, err[i].Error(), sep))
 				hasErr = true
 			}
 		}

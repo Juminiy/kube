@@ -6,7 +6,6 @@ import (
 	"github.com/Juminiy/kube/pkg/util"
 	"strconv"
 	"testing"
-	"time"
 )
 
 func TestRun(t *testing.T) {
@@ -23,6 +22,16 @@ func testRunT(t *testing.T, runner func(...util.Func) error) {
 	}()
 	stdlog.Info("TestRun start")
 
+	err := runner(getTestTasks()...)
+	if err != nil {
+		stdlog.Error(err.Error())
+		return
+	}
+
+	//time.Sleep(util.TimeSecond(10))
+}
+
+func getTestTasks() []util.Func {
 	fns := make([]util.Func, 1024)
 	//fakedErr := errors.New("faked error")
 	for i := range fns {
@@ -31,18 +40,11 @@ func testRunT(t *testing.T, runner func(...util.Func) error) {
 				return nil
 			} else if i%7 == 0 {
 				return errors.New("faked error index: " + strconv.Itoa(i) + "")
-			} else if i%227 == 0 {
+			} else if i%555 == 0 {
 				panic("faked panic index: " + strconv.Itoa(i) + "")
 			}
 			return nil
 		}
 	}
-
-	err := runner(fns...)
-	if err != nil {
-		stdlog.Error(err.Error())
-		return
-	}
-
-	time.Sleep(util.TimeSecond(10))
+	return fns
 }

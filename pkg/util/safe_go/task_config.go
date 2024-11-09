@@ -76,7 +76,7 @@ func WithProgressReport(bar chan<- int) Option {
 	}
 }
 
-// 8B
+// 16B
 type config struct {
 	limit          bool
 	errCancel      bool // mutual-exclusion with errDryRun, panicRecover
@@ -86,6 +86,44 @@ type config struct {
 	progressReport bool
 	deadlineCancel bool
 	_              bool // bool_align
+	flag           int64
+}
+
+const (
+	flagInvalid = 0
+	flagLimit   = 1 << (iota - 1)
+	flagErrCancel
+	flagErrDryRun
+	flagPanicRecover
+	flagTimeoutCancel
+	flagDeadlineCancel
+	flagProgressBar
+)
+
+func (c *config) flagBitSet() {
+	if c.limit {
+		c.flag |= flagLimit
+	}
+
+	if c.errCancel {
+		c.flag |= flagErrCancel
+	} else if c.errDryRun {
+		c.flag |= flagErrDryRun
+	} else if c.panicRecover {
+		c.flag |= flagPanicRecover
+	}
+
+	if c.timeoutCancel {
+		c.flag |= flagTimeoutCancel
+	}
+
+	if c.deadlineCancel {
+		c.flag |= flagDeadlineCancel
+	}
+
+	if c.progressReport {
+		c.flag |= flagProgressBar
+	}
 }
 
 // 64B
@@ -100,13 +138,15 @@ type option struct {
 
 const noGoLimit = -1
 
-// 64B
+// 96B
 type runner struct {
-	wgroup *sync.WaitGroup
-	egroup *errgroup.Group // for align, always nil
+	wgroup *sync.WaitGroup // for errorDryRun, panicRecover
+	egroup *errgroup.Group // for errorCancel
 
-	golaunchtime time.Time
-	gofinishtime time.Time
+	golaunchtimestart time.Time // the first task start launch
+	golaunchtimeend   time.Time // the last task finish launch
+	gofinishtime      time.Time // the last task finish
+	_                 time.Time // time align
 }
 
 // 8B
