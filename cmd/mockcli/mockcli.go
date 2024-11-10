@@ -6,6 +6,7 @@ import (
 	"github.com/Juminiy/kube/pkg/util/file"
 	mockv2 "github.com/Juminiy/kube/pkg/util/random/mock/v2"
 	"github.com/Juminiy/kube/pkg/util/safe_json"
+	"github.com/fatih/color"
 	"time"
 )
 
@@ -26,6 +27,11 @@ func main() {
 	stdlog.Info("write to file")
 
 	stdlog.InfoF("cal size: %s", util.MeasureByte(len(jstr)))
+	util.Colorf(
+		util.ColorValue{Color: color.FgGreen, Value: "OK"},
+		util.ColorValue{Color: color.FgCyan, Value: "OO"},
+		util.ColorValue{Color: color.FgRed, Value: "NO"},
+	)
 }
 
 type T0 struct {

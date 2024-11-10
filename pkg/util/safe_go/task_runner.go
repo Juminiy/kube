@@ -3,7 +3,10 @@ package safe_go
 import (
 	"errors"
 	"github.com/Juminiy/kube/pkg/util"
+	"github.com/Juminiy/kube/pkg/util/safe_cast"
+	"github.com/Juminiy/kube/pkg/util/safe_json"
 	"sync"
+	"time"
 )
 
 // Runner
@@ -104,6 +107,60 @@ func (r *Runner) Go() *Runner {
 	}
 
 	return r
+}
+
+func (r *Runner) Report() string {
+	taskReport := &report{
+		TotalTask:       0,
+		SuccessTask:     0,
+		FailureTask:     0,
+		ErrorList:       nil,
+		PanicStacktrace: nil,
+		FirstTaskLaunch: time.Time{},
+		LastTaskLaunch:  time.Time{},
+		LastTaskFinish:  time.Time{},
+	}
+
+	if r.progressReport {
+		taskReport.TotalTask = r.tot.Load()
+		taskReport.SuccessTask = r.success.Load()
+		taskReport.FailureTask = r.failure.Load()
+	} else {
+		taskReport.TotalTask = safe_cast.ItoI64(r.tasksz)
+		if len(r.Error()) == 0 {
+			taskReport.SuccessTask = taskReport.TotalTask
+		} else {
+			taskReport.FailureTask = taskReport.TotalTask
+		}
+	}
+
+	if r.errCancel && r.err != nil {
+		taskReport.ErrorList = append(taskReport.ErrorList, r.err.Error())
+	} else if r.errDryRun || r.panicRecover {
+		for i := range r.errs {
+			if r.errs[i] != nil {
+				taskReport.ErrorList = append(taskReport.ErrorList, r.errs[i].Error())
+			}
+		}
+	}
+
+	if r.panicRecover {
+		var panicsz int64
+		for i := range r.panicstack {
+			if len(r.panicstack[i]) != 0 {
+				panicsz++
+				taskReport.PanicStacktrace = append(taskReport.PanicStacktrace, string(r.panicstack[i]))
+			}
+		}
+		taskReport.SuccessTask -= panicsz
+		taskReport.FailureTask += panicsz
+	}
+
+	taskReport.FirstTaskLaunch = r.golaunchtimestart
+	taskReport.LastTaskLaunch = r.golaunchtimeend
+	taskReport.LastTaskFinish = r.gofinishtime
+
+	return safe_json.Pretty(taskReport)
 }
 
 func TaskConverter(fns ...util.Fn) []util.Func {

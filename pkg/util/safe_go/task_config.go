@@ -29,6 +29,7 @@ func WithErrCancel() Option {
 		r.errCancel = true
 		r.errDryRun = false
 		r.panicRecover = false
+		r.errOnce = &sync.Once{}
 	}
 }
 
@@ -46,6 +47,7 @@ func WithPanicRecover() Option {
 		r.errCancel = false
 		r.errDryRun = false
 		r.panicRecover = true
+		r.errs = make([]error, r.tasksz)
 		r.panicstack = make([][]byte, r.tasksz)
 	}
 }
@@ -173,6 +175,17 @@ type progress struct {
 	tot     atomic.Int64
 	success atomic.Int64
 	failure atomic.Int64
+}
+
+type report struct {
+	TotalTask       int64     `json:"total_task"`
+	SuccessTask     int64     `json:"success_task"`
+	FailureTask     int64     `json:"failure_task"`
+	ErrorList       []string  `json:"error_list"`
+	PanicStacktrace []string  `json:"panic_stacktrace"`
+	FirstTaskLaunch time.Time `json:"first_task_launch"`
+	LastTaskLaunch  time.Time `json:"last_task_launch"`
+	LastTaskFinish  time.Time `json:"last_task_finish"`
 }
 
 type volatile struct {
