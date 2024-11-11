@@ -1,0 +1,58 @@
+{
+  "fInt": -6,
+  "fFloat": -6.66,
+  "fString": "phone",
+  "fTrue": true,
+  "fFalse": false,
+  "fNull": null,
+  "fArray0":[],
+  "fArray1": ["strElem0"],
+  "fArray2": [1, 2, 3],
+  "fArray3": [{},{},{}],
+  "fObject0": {},
+  "fObject1": {
+    "f10Object": {
+      "f100Float": -9.99,
+      "f101Array": [ {}, {}, {} ]
+    },
+    "f11Array": [
+      {
+        "f110Array": [
+          {
+            "f1100Object": {
+              "f110000Array": [
+                [],
+                {},
+                {},
+                {
+                  "f100002Object": {
+                    "i32": -902,
+                    "fNArray": [{}],
+                    "ffNNArray": [[[[[[[[[[[[[[[{"elem": "__nani__?"}]]]]]]]]]]]]]]]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "f1100Object": {
+              "f110000Array": [
+                [],
+                {},
+                {},
+                {
+                  "f100002Object": {
+                    "i32": 633,
+                    "fNArray": [{}],
+                    "ffNNArray": [[[[[[[[[[[[[[[{"elem": "__ok__?"}]]]]]]]]]]]]]]]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
+
