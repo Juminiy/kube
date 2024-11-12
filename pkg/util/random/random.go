@@ -22,36 +22,53 @@ func URLSafeString(size int) string {
 	urlSafeString, err := shortid.Generate()
 	if err != nil {
 		stdlog.ErrorF("generate url safe string error: %s", err.Error())
-		return password(size)
+		return AlphaNumericString(size)
 	}
 	return urlSafeString
 }
 
 func IDString(size int) string {
-	return password(size)
+	return AlphaNumericString(size)
 }
 
 func ID() string {
-	return password(magicFix8)
+	return AlphaNumericString(magicFix8)
 }
 
 func PasswordString(size int) string {
-	return password(size)
+	return AlphaNumericString(size)
 }
 
 func Password() string {
-	return password(magicFix8)
+	return AlphaNumericString(magicFix8)
 }
 
-func password(size int) string {
-	return gofakeit.Password(
-		true,
-		true,
-		true,
-		false,
-		false,
-		size,
-	)
+func LowerCaseString(size int) string {
+	return gofakeit.Password(true, false, false, false, false, size)
+}
+
+func UpperCaseString(size int) string {
+	return gofakeit.Password(false, true, false, false, false, size)
+}
+
+func AlphaString(size int) string {
+	return gofakeit.Password(true, true, false, false, false, size)
+}
+
+func NumericString(size int) string {
+	return gofakeit.Password(false, false, true, false, false, size)
+}
+
+func AlphaNumericString(size int) string {
+	return gofakeit.Password(true, true, true, false, false, size)
+}
+
+func SymbolString(size int) string {
+	return gofakeit.Password(true, true, true, true, false, size)
+}
+
+func AllString(size int) string {
+	return gofakeit.Password(true, true, true, true, true, size)
 }
 
 func FileNameString(ext string) string {

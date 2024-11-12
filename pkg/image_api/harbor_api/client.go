@@ -6,17 +6,19 @@ import (
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/goharbor/go-client/pkg/harbor"
 	v2client "github.com/goharbor/go-client/pkg/sdk/v2.0/client"
-	"github.com/goharbor/go-client/pkg/sdk/v2.0/models"
 	"net/http"
+	"time"
 )
 
 type Client struct {
 	// global variant
-	v2Cli      *v2client.HarborAPI
-	ctx        context.Context
-	httpCli    *http.Client
-	pageConfig *util.Page
+	v2Cli       *v2client.HarborAPI
+	ctx         context.Context
+	httpCli     *http.Client
+	httpTimeout time.Duration
+	pageConfig  *util.Page
 
+	// Deprecated
 	// callback variant
 	CallBack *CallBack
 }
@@ -33,9 +35,10 @@ func New(
 		Password: harborPassword,
 	}
 	c := &Client{
-		ctx:        util.TODOContext(),
-		httpCli:    util.DefaultHTTPClient(),
-		pageConfig: util.DefaultPage(),
+		ctx:         util.TODOContext(),
+		httpCli:     util.DefaultHTTPClient(),
+		httpTimeout: util.TimeSecond(600),
+		pageConfig:  util.DefaultPage(),
 	}
 	hCli, err := harbor.NewClientSet(csc)
 	if err != nil {
@@ -43,15 +46,6 @@ func New(
 	}
 	c.v2Cli = hCli.V2()
 	return c, nil
-}
-
-func NewProjectReq(reqCfg ProjectReqConfig) *models.ProjectReq {
-	return &models.ProjectReq{
-		Metadata:     &models.ProjectMetadata{Public: reqCfg.MetaDataPublic},
-		ProjectName:  reqCfg.ProjectName,
-		RegistryID:   util.NewInt64(reqCfg.RegistryId),
-		StorageLimit: util.NewInt64(reqCfg.StorageLimit),
-	}
 }
 
 func (c *Client) WithContext(ctx context.Context) *Client {
@@ -69,11 +63,17 @@ func (c *Client) WithPageConfig(pCfg *util.Page) *Client {
 	return c
 }
 
-func (c *Client) WithCallBack(callback *CallBack) *Client {
-	c.CallBack = callback
+func (c *Client) WithTimeout(httpTimeout time.Duration) *Client {
+	c.httpTimeout = httpTimeout
 	return c
 }
 
 func (c *Client) GC(gcFn ...util.Func) {
 
+}
+
+// Deprecated
+func (c *Client) WithCallBack(callback *CallBack) *Client {
+	c.CallBack = callback
+	return c
 }

@@ -29,6 +29,7 @@ func (c *Client) ListArtifacts(artifactURI ArtifactURI) (*artifact.ListArtifacts
 		artifact.NewListArtifactsParams().
 			WithContext(c.ctx).
 			WithHTTPClient(c.httpCli).
+			WithTimeout(c.httpTimeout).
 			WithProjectName(artifactURI.Project).
 			WithRepositoryName(artifactURI.Repository).
 			WithPage(c.pageConfig.Page()).
@@ -43,6 +44,7 @@ func (c *Client) CopyArtifact(toArtifactURI, fromArtifactURI ArtifactURI) (*arti
 		artifact.NewCopyArtifactParams().
 			WithContext(c.ctx).
 			WithHTTPClient(c.httpCli).
+			WithTimeout(c.httpTimeout).
 			WithProjectName(toArtifactURI.Project).
 			WithRepositoryName(toArtifactURI.Repository).
 			WithFrom(fromArtifactURI.String()),
@@ -55,6 +57,7 @@ func (c *Client) GetArtifact(artifactURI ArtifactURI) (*artifact.GetArtifactOK, 
 		artifact.NewGetArtifactParams().
 			WithContext(c.ctx).
 			WithHTTPClient(c.httpCli).
+			WithTimeout(c.httpTimeout).
 			WithProjectName(artifactURI.Project).
 			WithRepositoryName(artifactURI.Repository).
 			WithReference(artifactURI.Tag).
@@ -68,9 +71,26 @@ func (c *Client) DeleteArtifact(artifactURI ArtifactURI) (*artifact.DeleteArtifa
 		artifact.NewDeleteArtifactParams().
 			WithContext(c.ctx).
 			WithHTTPClient(c.httpCli).
+			WithTimeout(c.httpTimeout).
 			WithProjectName(artifactURI.Project).
 			WithRepositoryName(artifactURI.Repository).
 			WithReference(artifactURI.Tag),
+	)
+}
+
+func (c *Client) ListArtifactTags(artifactURI ArtifactURI, queryStr string) (*artifact.ListTagsOK, error) {
+	return c.v2Cli.Artifact.ListTags(
+		c.ctx,
+		artifact.NewListTagsParams().
+			WithContext(c.ctx).
+			WithHTTPClient(c.httpCli).
+			WithTimeout(c.httpTimeout).
+			WithProjectName(artifactURI.Project).
+			WithRepositoryName(artifactURI.Repository).
+			WithReference(artifactURI.Tag).
+			WithPage(c.pageConfig.Page()).
+			WithPageSize(c.pageConfig.Size()).
+			WithQ(util.NewString(queryStr)),
 	)
 }
 
@@ -80,6 +100,7 @@ func (c *Client) CreateArtifactTag(toArtifactURI, fromArtifactURI ArtifactURI) (
 		artifact.NewCreateTagParams().
 			WithContext(c.ctx).
 			WithHTTPClient(c.httpCli).
+			WithTimeout(c.httpTimeout).
 			WithProjectName(fromArtifactURI.Project).
 			WithRepositoryName(fromArtifactURI.Repository).
 			WithReference(fromArtifactURI.Tag).
@@ -87,6 +108,19 @@ func (c *Client) CreateArtifactTag(toArtifactURI, fromArtifactURI ArtifactURI) (
 				Immutable: false,
 				Name:      toArtifactURI.Tag,
 			}),
+	)
+}
+
+func (c *Client) DeleteArtifactTag(artifactURI ArtifactURI) (*artifact.DeleteTagOK, error) {
+	return c.v2Cli.Artifact.DeleteTag(
+		c.ctx,
+		artifact.NewDeleteTagParams().
+			WithContext(c.ctx).
+			WithHTTPClient(c.httpCli).
+			WithTimeout(c.httpTimeout).
+			WithProjectName(artifactURI.Project).
+			WithRepositoryName(artifactURI.Repository).
+			WithReference(artifactURI.Tag),
 	)
 }
 

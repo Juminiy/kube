@@ -23,6 +23,7 @@ require (
 	github.com/spf13/cast v1.7.0
 	github.com/teris-io/shortid v0.0.0-20220617161101-71ec9f2aa569
 	github.com/valyala/bytebufferpool v1.0.0
+	github.com/valyala/fastjson v1.6.4
 	go.uber.org/zap v1.27.0
 	golang.org/x/sync v0.9.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -128,7 +129,6 @@ require (
 	github.com/tinylib/msgp v1.1.8 // indirect
 	github.com/tklauser/go-sysconf v0.3.12 // indirect
 	github.com/tklauser/numcpus v0.6.1 // indirect
-	github.com/valyala/fastjson v1.6.4 // indirect
 	github.com/vbatts/tar-split v0.11.6 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
