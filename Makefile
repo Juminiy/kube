@@ -74,3 +74,18 @@ codegen: set
 	git add pkg/image_api/docker_api/docker_inst/client.go
 	git add pkg/image_api/harbor_api/harbor_inst/client.go
 	git add pkg/storage_api/minio_api/minio_inst/client.go
+
+.PHONY: codegendocker
+codegendocker: set
+	go run cmd/codegencli/codegencli.go -gen docker
+	git add pkg/image_api/docker_api/docker_inst/client.go
+
+.PHONY: codegenharbor
+codegenharbor: set
+	go run cmd/codegencli/codegencli.go -gen harbor
+	git add pkg/image_api/harbor_api/harbor_inst/client.go
+
+.PHONY: codegenminio
+codegenminio: set
+	go run cmd/codegencli/codegencli.go -gen minio
+	git add pkg/storage_api/minio_api/minio_inst/client.go

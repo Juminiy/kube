@@ -11,7 +11,16 @@ import (
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/client/user"
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/models"
 	"net/http"
+	"time"
 )
+
+func AdminCreateUser(userCreationReq *models.UserCreationReq) (*user.CreateUserCreated, error) {
+	return _harborClient.AdminCreateUser(userCreationReq)
+}
+
+func AdminDeleteUser(_int64 int64) (*user.DeleteUserOK, error) {
+	return _harborClient.AdminDeleteUser(_int64)
+}
 
 func CopyArtifact(artifactURI harbor_api.ArtifactURI, artifactURI2 harbor_api.ArtifactURI) (*artifact.CopyArtifactCreated, error) {
 	return _harborClient.CopyArtifact(artifactURI, artifactURI2)
@@ -37,8 +46,20 @@ func DeleteArtifact(artifactURI harbor_api.ArtifactURI) (*artifact.DeleteArtifac
 	return _harborClient.DeleteArtifact(artifactURI)
 }
 
+func DeleteArtifactTag(artifactURI harbor_api.ArtifactURI) (*artifact.DeleteTagOK, error) {
+	return _harborClient.DeleteArtifactTag(artifactURI)
+}
+
 func DeleteProject(_string string) (*project.DeleteProjectOK, error) {
 	return _harborClient.DeleteProject(_string)
+}
+
+func DeleteRepository(_string string, _string2 string) (*repository.DeleteRepositoryOK, error) {
+	return _harborClient.DeleteRepository(_string, _string2)
+}
+
+func ErrorDetail(_error error) string {
+	return _harborClient.ErrorDetail(_error)
 }
 
 func ExportArtifact() (string, error) {
@@ -61,20 +82,36 @@ func GetAuth() (string, error) {
 	return _harborClient.GetAuth()
 }
 
+func GetProject(_string string) (*project.GetProjectOK, error) {
+	return _harborClient.GetProject(_string)
+}
+
+func GetRepository(_string string, _string2 string) (*repository.GetRepositoryOK, error) {
+	return _harborClient.GetRepository(_string, _string2)
+}
+
 func ImportOfflineArtifact() error {
 	return _harborClient.ImportOfflineArtifact()
+}
+
+func ListArtifactTags(artifactURI harbor_api.ArtifactURI, _string string) (*artifact.ListTagsOK, error) {
+	return _harborClient.ListArtifactTags(artifactURI, _string)
 }
 
 func ListArtifacts(artifactURI harbor_api.ArtifactURI) (*artifact.ListArtifactsOK, error) {
 	return _harborClient.ListArtifacts(artifactURI)
 }
 
-func ListProjects() (*project.ListProjectsOK, error) {
-	return _harborClient.ListProjects()
+func ListProjects(_bool bool) (*project.ListProjectsOK, error) {
+	return _harborClient.ListProjects(_bool)
 }
 
 func ListRepositories(_string string) (*repository.ListRepositoriesOK, error) {
 	return _harborClient.ListRepositories(_string)
+}
+
+func UpdateProjectStorageLimit(projectReqConfig *harbor_api.ProjectReqConfig) (*project.UpdateProjectOK, error) {
+	return _harborClient.UpdateProjectStorageLimit(projectReqConfig)
 }
 
 func WithCallBack(callBack *harbor_api.CallBack) *harbor_api.Client {
@@ -91,4 +128,8 @@ func WithHttpClient(client *http.Client) *harbor_api.Client {
 
 func WithPageConfig(page *util.Page) *harbor_api.Client {
 	return _harborClient.WithPageConfig(page)
+}
+
+func WithTimeout(duration time.Duration) *harbor_api.Client {
+	return _harborClient.WithTimeout(duration)
 }
