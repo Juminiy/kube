@@ -8,6 +8,7 @@ import (
 	"github.com/minio/madmin-go/v3"
 	"github.com/minio/minio-go/v7"
 	miniocred "github.com/minio/minio-go/v7/pkg/credentials"
+	"github.com/spf13/cast"
 )
 
 const (
@@ -119,7 +120,7 @@ func (c *Client) AtomicWorkflow(req Req) (resp Resp, err error) {
 	policyConfig := PolicyConfig{}
 
 	progErrFn := func(step int, desc string, err error) {
-		stdlog.ErrorF("minio atomic workflow progress %d/4, step %d desc: %s error: %s", step-1, step, desc, err.Error())
+		stdlog.ErrorF("create minio atomic workflow progress %d/4, step %d desc: %s error: %s", step-1, step, desc, err.Error())
 	}
 
 	//1.
@@ -171,6 +172,35 @@ makeBucketRollback:
 	c.RemoveBucket(bucketConfig.BucketName)
 
 	return
+}
+
+func (c *Client) AtomicDeleteFlow(resp Resp) {
+	progErrFn := func(step int, desc string, err error) {
+		stdlog.ErrorF("delete minio atomic workflow progress %d/3, step %d desc: %s error: %s", step-1, step, desc, err.Error())
+	}
+
+	err := c.DeleteAccessPolicy(&PolicyConfig{
+		BusinessUser: BusinessUser{
+			ID:   cast.ToString(resp.UserID),
+			Name: resp.UserName,
+		},
+		Cred:       resp.CredValue,
+		BucketName: resp.BucketName,
+		PolicyName: resp.CredPolicyName,
+	})
+	if err != nil {
+		progErrFn(1, "delete access policy", err)
+	}
+
+	err = c.DeleteAccessKey(resp.CredValue.AccessKeyID)
+	if err != nil {
+		progErrFn(2, "delete access key", err)
+	}
+
+	err = c.RemoveBucket(resp.BucketName)
+	if err != nil {
+		progErrFn(3, "remove bucket", err)
+	}
 }
 
 // GC

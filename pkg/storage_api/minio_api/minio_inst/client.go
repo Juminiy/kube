@@ -15,6 +15,10 @@ func AddIAMUser(value *credentials.Value) error {
 	return _minioClient.AddIAMUser(value)
 }
 
+func AtomicDeleteFlow(resp minio_api.Resp) {
+	_minioClient.AtomicDeleteFlow(resp)
+}
+
 func AtomicWorkflow(req minio_api.Req) (minio_api.Resp, error) {
 	return _minioClient.AtomicWorkflow(req)
 }
