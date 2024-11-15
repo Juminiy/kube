@@ -3,6 +3,7 @@ package safe_json
 import (
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/valyala/fastjson"
+	"os"
 	"testing"
 )
 
@@ -14,4 +15,11 @@ func TestFastJSON(t *testing.T) {
 	t.Log(fobj)
 	k2k2 := fval.Get("k2", "k2")
 	t.Log(k2k2)
+}
+
+func TestExpandFromBytes(t *testing.T) {
+	bs, err := os.ReadFile(".\\testdata\\embed_0.json")
+	util.Must(err)
+	expansion := ExpandFromBytes(bs)
+	t.Log(util.Bytes2StringNoCopy(expansion.Marshal()))
 }

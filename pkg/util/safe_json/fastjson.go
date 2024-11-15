@@ -1,51 +1,127 @@
 package safe_json
 
 import (
+	"bytes"
 	"github.com/Juminiy/kube/pkg/util"
+	"github.com/elliotchance/orderedmap/v2"
 	"github.com/valyala/fastjson"
 )
 
-type Flatten struct {
-	v *fastjson.Value
+var jsonPool fastjson.ArenaPool
+
+// Expansion
+// parse ob to ov
+// expand ov to nv
+// marshal nv to nb
+type Expansion struct {
+	ob []byte
+	ov *fastjson.Value
+	nv *fastjson.Value
+	nb []byte
+	ar *fastjson.Arena
+	vi *orderedmap.OrderedMap[string, *fastjson.Value]
 }
 
-func FlattenFromBytes(b []byte) *Flatten {
-	embedv, err := fastjson.ParseBytes(b)
+//type expansionKv struct {
+//	//keyBuf   zerobuf.String    // append only key buf
+//	//keyFull  string            // a.b.c.d.e copy from keyBuf
+//	//keyShort string            // e suffix of keyFull
+//	valArray *fastjson.Value // valArray item *fastjson.Value Type is in (0,3,4,5,6,7)
+//}
+
+func (e *Expansion) Marshal() []byte {
+	if len(e.nb) == 0 {
+
+	}
+	return e.nb
+}
+
+func ExpandFromBytes(b []byte) *Expansion {
+	ov, err := fastjson.ParseBytes(b)
 	if err != nil {
 		return nil
 	}
-	return &Flatten{v: flattenFromValue(embedv)}
+	expansion := &Expansion{
+		ob: b,
+		ov: ov,
+		ar: jsonPool.Get(),
+		vi: orderedmap.NewOrderedMap[string, *fastjson.Value](),
+	}
+	expansion.expand()
+	jsonPool.Put(expansion.ar)
+	return expansion
 }
 
-func flattenFromValue(v *fastjson.Value) *fastjson.Value {
-	var dst = &fastjson.Value{}
-	flattenv(v, dst)
-	return dst
+func (e *Expansion) expand() *Expansion {
+	e.nv = e.ar.NewArray()
+	e.dfs(e.ov, nil)
+	for index, el := 0, e.vi.Front(); el != nil; index, el = index+1, el.Next() {
+		obj := e.ar.NewObject()
+		elKey := keyNoDot0(util.String2BytesNoCopy(el.Key))
+		obj.Set("full_key", e.ar.NewStringBytes(elKey))
+		obj.Set("short_key", e.ar.NewStringBytes(elKey[bytes.LastIndexByte(elKey, '.')+1:]))
+		obj.Set("val_array", el.Value)
+		e.nv.SetArrayItem(index, obj)
+	}
+	e.nb = e.nv.MarshalTo(make([]byte, 0, len(e.ob)))
+	return e
 }
 
-func flattenv(src, dst *fastjson.Value) {
+func (e *Expansion) dfs(src *fastjson.Value, key []byte) {
 	switch src.Type() {
 	case fastjson.TypeObject:
-		//srcObj, _ := src.Object()
-		//srcObj.Visit(func(key []byte, v *fastjson.Value) {
-		//	dst.Set()
-		//})
+		srcObj, _ := src.Object()
+		srcObj.Visit(func(k []byte, v *fastjson.Value) {
+			e.dfs(v, keyDotKey(key, k))
+		})
 
 	case fastjson.TypeArray:
+		srcArr, _ := src.Array()
+		for i := range srcArr {
+			e.dfs(srcArr[i], key)
+		}
 
-	case fastjson.TypeString:
+	//case fastjson.TypeString:
+	//
+	//case fastjson.TypeNumber:
+	//
+	//case fastjson.TypeTrue:
+	//
+	//case fastjson.TypeFalse:
+	//
+	//case fastjson.TypeNull:
 
-	case fastjson.TypeNumber:
-
-	case fastjson.TypeTrue:
-
-	case fastjson.TypeFalse:
-
-	case fastjson.TypeNull:
-
+	default:
+		e.appendValue(util.Bytes2StringNoCopy(key), src)
 	}
 }
 
-func (f Flatten) Marshal() []byte {
-	return f.v.MarshalTo(make([]byte, 0, util.Ki))
+func (e *Expansion) appendValue(key string, value *fastjson.Value) {
+	if len(key) == 0 {
+		key = onlyArrayNoObjectKey
+	}
+	if _, ok := e.vi.Get(key); !ok {
+		e.vi.Set(key, e.ar.NewArray())
+	}
+	values := e.vi.GetElement(key).Value
+	valuesArray, _ := values.Array()
+	values.SetArrayItem(len(valuesArray), value)
+}
+
+// multiple dimension(s) array no key
+// [e1,e2]
+// [[e1],[e2]]
+// [[[e1,e2]]]
+// [[[...[e1,e2]...]]]
+const onlyArrayNoObjectKey = "^no_object_key$"
+
+func keyDotKey(k0, k1 []byte) []byte {
+	return append(k0, append([]byte{'.'}, k1...)...)
+}
+
+func keyNoDot0(key []byte) []byte {
+	if key[0] == '.' {
+		return key[1:]
+	}
+	return key
 }
