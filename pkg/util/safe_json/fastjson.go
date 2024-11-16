@@ -20,6 +20,20 @@ type Expansion struct {
 	nb []byte
 	ar *fastjson.Arena
 	vi *orderedmap.OrderedMap[string, *fastjson.Value]
+	cg *expansionConfig
+	_  *expansionConfig
+}
+
+type expansionConfig struct {
+	ignoreNull bool
+}
+
+type ExpansionOption func(e *Expansion)
+
+func WithIgnoreNull() ExpansionOption {
+	return func(e *Expansion) {
+		e.cg.ignoreNull = true
+	}
 }
 
 //type expansionKv struct {
@@ -30,13 +44,10 @@ type Expansion struct {
 //}
 
 func (e *Expansion) Marshal() []byte {
-	if len(e.nb) == 0 {
-
-	}
 	return e.nb
 }
 
-func ExpandFromBytes(b []byte) *Expansion {
+func ExpandFromBytes(b []byte, o ...ExpansionOption) *Expansion {
 	ov, err := fastjson.ParseBytes(b)
 	if err != nil {
 		return nil
@@ -46,6 +57,10 @@ func ExpandFromBytes(b []byte) *Expansion {
 		ov: ov,
 		ar: jsonPool.Get(),
 		vi: orderedmap.NewOrderedMap[string, *fastjson.Value](),
+		cg: &expansionConfig{},
+	}
+	for i := range o {
+		o[i](expansion)
 	}
 	expansion.expand()
 	jsonPool.Put(expansion.ar)
@@ -59,7 +74,7 @@ func (e *Expansion) expand() *Expansion {
 		obj := e.ar.NewObject()
 		elKey := keyNoDot0(util.String2BytesNoCopy(el.Key))
 		obj.Set("full_key", e.ar.NewStringBytes(elKey))
-		obj.Set("short_key", e.ar.NewStringBytes(elKey[bytes.LastIndexByte(elKey, '.')+1:]))
+		obj.Set("short_key", e.ar.NewStringBytes(keyShort(elKey)))
 		obj.Set("val_array", el.Value)
 		e.nv.SetArrayItem(index, obj)
 	}
@@ -81,18 +96,20 @@ func (e *Expansion) dfs(src *fastjson.Value, key []byte) {
 			e.dfs(srcArr[i], key)
 		}
 
-	//case fastjson.TypeString:
-	//
-	//case fastjson.TypeNumber:
-	//
-	//case fastjson.TypeTrue:
-	//
-	//case fastjson.TypeFalse:
-	//
-	//case fastjson.TypeNull:
+	case fastjson.TypeNull:
+		if e.cg.ignoreNull {
+			return
+		} else {
+			e.appendValue(string(key), src)
+		}
 
+	//case fastjson.TypeString:
+	//case fastjson.TypeNumber:
+	//case fastjson.TypeTrue:
+	//case fastjson.TypeFalse:
 	default:
-		e.appendValue(util.Bytes2StringNoCopy(key), src)
+		e.appendValue(string(key), src)
+
 	}
 }
 
@@ -120,8 +137,16 @@ func keyDotKey(k0, k1 []byte) []byte {
 }
 
 func keyNoDot0(key []byte) []byte {
-	if key[0] == '.' {
+	if len(key) > 0 && key[0] == '.' {
 		return key[1:]
 	}
 	return key
+}
+
+func keyShort(key []byte) []byte {
+	lastDotIndex := bytes.LastIndexByte(key, '.')
+	if lastDotIndex == -1 {
+		return key
+	}
+	return key[lastDotIndex+1:]
 }

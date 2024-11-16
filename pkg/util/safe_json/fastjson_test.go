@@ -1,6 +1,7 @@
 package safe_json
 
 import (
+	"github.com/Juminiy/kube/pkg/internal_api"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/valyala/fastjson"
 	"os"
@@ -18,8 +19,19 @@ func TestFastJSON(t *testing.T) {
 }
 
 func TestExpandFromBytes(t *testing.T) {
-	bs, err := os.ReadFile(".\\testdata\\embed_0.json")
+	embedFiles, err := internal_api.GetDirFileNames("testdata\\embed")
 	util.Must(err)
-	expansion := ExpandFromBytes(bs)
-	t.Log(util.Bytes2StringNoCopy(expansion.Marshal()))
+	for i := range embedFiles {
+		testExpand("testdata\\embed\\", "testdata\\expand\\", embedFiles[i])
+	}
+}
+
+func testExpand(srcDir, dstDir, fileName string) {
+	bs, err := os.ReadFile(srcDir + fileName)
+	util.Must(err)
+	fptr, err := internal_api.OverwriteCreateFile(dstDir + fileName)
+	defer util.SilentCloseIO("file ptr", fptr)
+	util.Must(err)
+	_, err = fptr.Write(ExpandFromBytes(bs, WithIgnoreNull()).Marshal())
+	util.Must(err)
 }
