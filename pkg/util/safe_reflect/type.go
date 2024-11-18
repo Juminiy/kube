@@ -68,3 +68,35 @@ func CanDirectCompare(typ reflect.Type) bool {
 		String,
 	)
 }
+
+// StructType
+// Struct and Ptr Struct
+// Slice Struct, Arr Struct, Ptr Slice Ptr Struct, Ptr Arr Ptr Struct
+// Map [K] Struct, Ptr Map [K] Ptr Struct
+// Any cast
+func StructType(v any) (typ reflect.Type, ok bool) {
+	typ = indirectT(v)
+loopOf:
+	switch typ.Kind() {
+	case Struct:
+		return typ, true
+
+	case Slice, Arr, Map:
+		typ = underlying(typ.Elem())
+		goto loopOf
+
+	default:
+		return nil, false
+	}
+}
+
+func StructGetTag2(v any, app0, key0, app1, key1 string) (tag0, tag1 TagVV, ok bool) {
+	typ, ok := StructType(v)
+	if !ok {
+		return
+	}
+
+	ok = true
+	tag0, tag1 = structParseTag2(typ, app0, key0, app1, key1)
+	return
+}
