@@ -390,3 +390,17 @@ func TestStructParseTag2(t *testing.T) {
 		"json", ""), // try best none-zero
 	)
 }
+
+type t4 struct {
+	hiddenField int8
+	t1
+	*t2
+	t1Embed    t1
+	t1EmbedPtr *t1
+}
+
+func TestIsStruct(t *testing.T) {
+	t.Log(IndirectOf(t4{}).StructHasFields(map[string]any{
+		"Name": "",
+	}))
+}
