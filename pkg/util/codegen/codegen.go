@@ -174,6 +174,16 @@ func (g *Manifest) genFunc() {
 		if hasRetVal {
 			g.writes("return")
 		}
+
+		// harbor_api.UnwrapErr(v, err)
+		canWrapErr := g.UnExportGlobalVarName == "_harborClient" &&
+			funcInstanceTypeOf.NumOut() == 2 &&
+			funcInstanceTypeOf.Out(1).String() == "error"
+
+		if canWrapErr {
+			g.writes("harbor_api.UnwrapErr(")
+		}
+
 		g.writes(g.UnExportGlobalVarName + "." + method.Name + "(")
 		if hasParam {
 			for k, paramRename := range paramList {
@@ -186,6 +196,11 @@ func (g *Manifest) genFunc() {
 				}
 			}
 		}
+
+		if canWrapErr {
+			g.writes(")")
+		}
+
 		g.writes(")").nextLine()
 
 		g.writes("}").nextLine()

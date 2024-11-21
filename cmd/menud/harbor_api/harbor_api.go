@@ -37,7 +37,7 @@ func Menu(s ...string) {
 	}
 
 	if appOf == "project" && actionOf == "list" {
-		ls, err := harbor_inst.ListProjects()
+		ls, err := harbor_inst.ListProjects(false)
 		if err != nil {
 			fmt.Printf("harbor list proj error: %v\n", err)
 			return

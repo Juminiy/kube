@@ -9,6 +9,7 @@ require (
 	github.com/distribution/reference v0.6.0
 	github.com/docker/docker v27.3.1+incompatible
 	github.com/dubbogo/gost v1.14.0
+	github.com/elliotchance/orderedmap/v2 v2.4.0
 	github.com/fatih/color v1.17.0
 	github.com/goharbor/go-client v0.210.0
 	github.com/google/uuid v1.6.0
@@ -57,7 +58,6 @@ require (
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/ebitengine/purego v0.8.0 // indirect
-	github.com/elliotchance/orderedmap/v2 v2.4.0 // indirect
 	github.com/emicklei/go-restful/v3 v3.11.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/fxamacker/cbor/v2 v2.7.0 // indirect

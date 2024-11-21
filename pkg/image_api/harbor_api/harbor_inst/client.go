@@ -15,47 +15,47 @@ import (
 )
 
 func AdminCreateUser(userCreationReq *models.UserCreationReq) (*user.CreateUserCreated, error) {
-	return _harborClient.AdminCreateUser(userCreationReq)
+	return harbor_api.UnwrapErr(_harborClient.AdminCreateUser(userCreationReq))
 }
 
 func AdminDeleteUser(_int64 int64) (*user.DeleteUserOK, error) {
-	return _harborClient.AdminDeleteUser(_int64)
+	return harbor_api.UnwrapErr(_harborClient.AdminDeleteUser(_int64))
 }
 
 func CopyArtifact(artifactURI harbor_api.ArtifactURI, artifactURI2 harbor_api.ArtifactURI) (*artifact.CopyArtifactCreated, error) {
-	return _harborClient.CopyArtifact(artifactURI, artifactURI2)
+	return harbor_api.UnwrapErr(_harborClient.CopyArtifact(artifactURI, artifactURI2))
 }
 
 func CreateAdmin(userCreationReq *models.UserCreationReq) (*user.CreateUserCreated, error) {
-	return _harborClient.CreateAdmin(userCreationReq)
+	return harbor_api.UnwrapErr(_harborClient.CreateAdmin(userCreationReq))
 }
 
 func CreateArtifactTag(artifactURI harbor_api.ArtifactURI, artifactURI2 harbor_api.ArtifactURI) (*artifact.CreateTagCreated, error) {
-	return _harborClient.CreateArtifactTag(artifactURI, artifactURI2)
+	return harbor_api.UnwrapErr(_harborClient.CreateArtifactTag(artifactURI, artifactURI2))
 }
 
 func CreateProject(projectReqConfig harbor_api.ProjectReqConfig) (*project.CreateProjectCreated, error) {
-	return _harborClient.CreateProject(projectReqConfig)
+	return harbor_api.UnwrapErr(_harborClient.CreateProject(projectReqConfig))
 }
 
 func DeleteAdmin(_int64 int64) (*user.DeleteUserOK, error) {
-	return _harborClient.DeleteAdmin(_int64)
+	return harbor_api.UnwrapErr(_harborClient.DeleteAdmin(_int64))
 }
 
 func DeleteArtifact(artifactURI harbor_api.ArtifactURI) (*artifact.DeleteArtifactOK, error) {
-	return _harborClient.DeleteArtifact(artifactURI)
+	return harbor_api.UnwrapErr(_harborClient.DeleteArtifact(artifactURI))
 }
 
 func DeleteArtifactTag(artifactURI harbor_api.ArtifactURI) (*artifact.DeleteTagOK, error) {
-	return _harborClient.DeleteArtifactTag(artifactURI)
+	return harbor_api.UnwrapErr(_harborClient.DeleteArtifactTag(artifactURI))
 }
 
 func DeleteProject(_string string) (*project.DeleteProjectOK, error) {
-	return _harborClient.DeleteProject(_string)
+	return harbor_api.UnwrapErr(_harborClient.DeleteProject(_string))
 }
 
 func DeleteRepository(_string string, _string2 string) (*repository.DeleteRepositoryOK, error) {
-	return _harborClient.DeleteRepository(_string, _string2)
+	return harbor_api.UnwrapErr(_harborClient.DeleteRepository(_string, _string2))
 }
 
 func ErrorDetail(_error error) string {
@@ -63,7 +63,7 @@ func ErrorDetail(_error error) string {
 }
 
 func ExportArtifact() (string, error) {
-	return _harborClient.ExportArtifact()
+	return harbor_api.UnwrapErr(_harborClient.ExportArtifact())
 }
 
 func GC(varLenfunc ...util.Func) {
@@ -75,19 +75,19 @@ func GenerateArtifact() error {
 }
 
 func GetArtifact(artifactURI harbor_api.ArtifactURI) (*artifact.GetArtifactOK, error) {
-	return _harborClient.GetArtifact(artifactURI)
+	return harbor_api.UnwrapErr(_harborClient.GetArtifact(artifactURI))
 }
 
 func GetAuth() (string, error) {
-	return _harborClient.GetAuth()
+	return harbor_api.UnwrapErr(_harborClient.GetAuth())
 }
 
 func GetProject(_string string) (*project.GetProjectOK, error) {
-	return _harborClient.GetProject(_string)
+	return harbor_api.UnwrapErr(_harborClient.GetProject(_string))
 }
 
 func GetRepository(_string string, _string2 string) (*repository.GetRepositoryOK, error) {
-	return _harborClient.GetRepository(_string, _string2)
+	return harbor_api.UnwrapErr(_harborClient.GetRepository(_string, _string2))
 }
 
 func ImportOfflineArtifact() error {
@@ -95,23 +95,23 @@ func ImportOfflineArtifact() error {
 }
 
 func ListArtifactTags(artifactURI harbor_api.ArtifactURI, _string string) (*artifact.ListTagsOK, error) {
-	return _harborClient.ListArtifactTags(artifactURI, _string)
+	return harbor_api.UnwrapErr(_harborClient.ListArtifactTags(artifactURI, _string))
 }
 
 func ListArtifacts(artifactURI harbor_api.ArtifactURI) (*artifact.ListArtifactsOK, error) {
-	return _harborClient.ListArtifacts(artifactURI)
+	return harbor_api.UnwrapErr(_harborClient.ListArtifacts(artifactURI))
 }
 
 func ListProjects(_bool bool) (*project.ListProjectsOK, error) {
-	return _harborClient.ListProjects(_bool)
+	return harbor_api.UnwrapErr(_harborClient.ListProjects(_bool))
 }
 
 func ListRepositories(_string string) (*repository.ListRepositoriesOK, error) {
-	return _harborClient.ListRepositories(_string)
+	return harbor_api.UnwrapErr(_harborClient.ListRepositories(_string))
 }
 
 func UpdateProjectStorageLimit(projectReqConfig *harbor_api.ProjectReqConfig) (*project.UpdateProjectOK, error) {
-	return _harborClient.UpdateProjectStorageLimit(projectReqConfig)
+	return harbor_api.UnwrapErr(_harborClient.UpdateProjectStorageLimit(projectReqConfig))
 }
 
 func WithCallBack(callBack *harbor_api.CallBack) *harbor_api.Client {
