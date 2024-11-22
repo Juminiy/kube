@@ -7,3 +7,6 @@ import "io"
 type Builder interface {
 	Build(w io.StringWriter)
 }
+
+type Doc struct {
+}
