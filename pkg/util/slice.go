@@ -28,3 +28,7 @@ func ElemsIn[E comparable](src, dst []E) bool {
 	}
 	return true
 }
+
+const (
+	LoNotFound = -1
+)

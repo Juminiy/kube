@@ -4,8 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
+	syncerr "github.com/aws/smithy-go/sync"
 	valyalabuffer "github.com/valyala/bytebufferpool"
 	"io"
+	"sync"
 )
 
 // SilentPanic
@@ -99,3 +101,44 @@ func mergeErrorSep(sep string, err ...error) error {
 	}
 	return nil
 }
+
+// ErrHandle
+// goroutine safe
+type ErrHandle struct {
+	err    *syncerr.OnceErr
+	errs   []error
+	errsRw sync.RWMutex
+}
+
+func NewErrHandle() *ErrHandle {
+	return &ErrHandle{
+		err:  syncerr.NewOnceErr(),
+		errs: make([]error, 0, MagicSliceCap),
+	}
+}
+
+func (h *ErrHandle) Has(err ...error) bool {
+	has := h.err.Err() != nil
+	h.errsRw.Lock()
+	defer h.errsRw.Unlock()
+	for i := range err {
+		if err[i] != nil {
+			has = true
+			h.err.SetError(err[i])
+			h.errs = append(h.errs, err[i])
+		}
+	}
+	return has
+}
+
+func (h *ErrHandle) First() error {
+	return h.err.Err()
+}
+
+func (h *ErrHandle) All() error {
+	h.errsRw.RLock()
+	defer h.errsRw.RUnlock()
+	return MergeError(h.errs...)
+}
+
+var ErrFaked = errors.New("faked error")
