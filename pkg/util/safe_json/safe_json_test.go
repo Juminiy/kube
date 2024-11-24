@@ -3,6 +3,7 @@ package safe_json
 import (
 	"encoding/json"
 	"github.com/Juminiy/kube/pkg/util"
+	goccyjson "github.com/goccy/go-json"
 	"testing"
 	"time"
 )
@@ -63,4 +64,10 @@ func TestSafeEncoder(t *testing.T) {
 	//mock.Slice(&t0Slice)
 	//t.Log(Pretty(t0Slice))
 	t.Log(len(String(t0Slice))) // 12 field mixed-type, slice len 32: size: 15000B ~ 14KiB
+}
+
+func TestGoccy(t *testing.T) {
+	bs, err := goccyjson.Marshal(v0)
+	util.Must(err)
+	t.Log(util.Bytes2StringNoCopy(bs))
 }
