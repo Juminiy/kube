@@ -27,7 +27,7 @@ func errorDetail(err error) error {
 		}
 		return errors.New(util.Bytes2StringNoCopy(bs))
 	}
-	return nil
+	return err
 }
 
 func UnwrapErr[T any](v T, err error) (T, error) {
