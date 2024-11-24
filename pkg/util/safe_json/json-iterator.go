@@ -44,3 +44,27 @@ func unsafeEncoder(wr io.Writer) util.JSONEncoder {
 func unsafeDecoder(rd io.Reader) util.JSONDecoder {
 	return safeConfig.NewDecoder(rd)
 }
+
+type jsonIter struct{}
+
+func (jsonIter) Marshal(v any) ([]byte, error) {
+	return stdConfig.Marshal(v)
+}
+
+func (jsonIter) MarshalIndent(v any, prefix, indent string) ([]byte, error) {
+	return stdConfig.MarshalIndent(v, prefix, indent)
+}
+
+func (jsonIter) Unmarshal(b []byte, v any) error {
+	return stdConfig.Unmarshal(b, v)
+}
+
+var _jsonIter jsonIter
+
+func Jsoniter() jsonIter {
+	return _jsonIter
+}
+
+func SafeConfig() jsoniter.API {
+	return safeConfig
+}

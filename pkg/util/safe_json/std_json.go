@@ -25,3 +25,23 @@ func stdEncoder(wr io.Writer) util.JSONEncoder {
 func stdDecoder(rd io.Reader) util.JSONDecoder {
 	return stdjson.NewDecoder(rd)
 }
+
+type std struct{}
+
+func (std) Marshal(v any) ([]byte, error) {
+	return stdjson.Marshal(v)
+}
+
+func (std) MarshalIndent(v any, prefix, indent string) ([]byte, error) {
+	return stdjson.MarshalIndent(v, prefix, indent)
+}
+
+func (std) Unmarshal(b []byte, v any) error {
+	return stdjson.Unmarshal(b, v)
+}
+
+var _std std
+
+func STD() std {
+	return _std
+}
