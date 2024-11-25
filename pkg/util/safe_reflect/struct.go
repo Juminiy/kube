@@ -194,6 +194,42 @@ func (tv TypVal) Struct2Map(fields map[string]struct{}) map[string]any {
 	return structMap
 }
 
+func (tv TypVal) Struct2MapAll() map[string]any {
+	v := tv.noPointer()
+
+	if v.Kind() != Struct {
+		return nil
+	}
+
+	// all field list
+	fieldsIndex := tv.StructFieldsIndex()
+
+	structMap := make(map[string]any, tv.FieldLen())
+	for fieldName, fieldIndex := range fieldsIndex {
+		if fi := v.FieldByIndex(fieldIndex); fi.CanInterface() {
+			structMap[fieldName] = fi.Interface()
+		}
+	}
+	return structMap
+}
+
+func (tv TypVal) StructFieldValueAll() map[string]reflect.Value {
+	v := tv.noPointer()
+
+	if v.Kind() != Struct {
+		return nil
+	}
+
+	// all field list
+	fieldsIndex := tv.StructFieldsIndex()
+
+	structValue := make(map[string]reflect.Value, tv.FieldLen())
+	for fieldName, fieldIndex := range fieldsIndex {
+		structValue[fieldName] = v.FieldByIndex(fieldIndex)
+	}
+	return structValue
+}
+
 // StructHasFields
 // match all fields by FieldName and FieldType
 // fields FieldValue must direct
@@ -377,13 +413,14 @@ func (tagKv TagKV) parseComma(tagValue string) {
 
 // parseTagKVSemicolonAndColon
 // +example:
-// `app:"k1:v1;k2:v2;k3:v3;key;val;"`
+// `app:"k1:v1;k2:v2;k3:v3;key;val;k4:v4:v5:v6"`
 // +result:
 // k1 -> v1
 // k2 -> v2
 // k3 -> v3
 // key -> key
 // val -> val
+// k4 -> v4:v5:v6
 func (tagKv TagKV) parseSemicolonAndColon(tagValue string) {
 	kvs := strings.Split(tagValue, ";")
 	for _, kv := range kvs {
