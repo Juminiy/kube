@@ -4,6 +4,7 @@ var (
 	_tag       = "valid"
 	_simple    = false
 	_errorStop = false
+	_debug     = false
 )
 
 func SetTag(tag string) {

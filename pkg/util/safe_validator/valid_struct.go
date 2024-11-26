@@ -1,12 +1,15 @@
 package safe_validator
 
 import (
+	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/Juminiy/kube/pkg/util/safe_reflect"
 	"github.com/spf13/cast"
 	"reflect"
 )
 
+// Struct
+// compatible with fiber.StructValidator
 func Struct(v any) bool {
 	return parseStruct(v).valid()
 }
@@ -17,7 +20,7 @@ type structOf struct {
 	FieldVal   map[string]any
 	FieldTagKv safe_reflect.FieldTagKV
 	CanSet     bool
-	util.ErrHandle
+	*util.ErrHandle
 }
 
 func parseStruct(v any) *structOf {
@@ -31,6 +34,7 @@ func parseStruct(v any) *structOf {
 		FieldVal:   tv.Struct2MapAll(),
 		FieldTagKv: tv.StructParseTagKV2(_tag),
 		CanSet:     tv.StructCanSet(),
+		ErrHandle:  util.NewErrHandle(),
 	}
 }
 
@@ -41,6 +45,7 @@ func (s *structOf) valid() bool {
 
 	for name, typ := range s.FieldRTyp {
 		field := fieldOf{
+			name:  name,
 			rkind: typ.Kind(),
 			rval:  s.FieldRVal[name],
 			val:   s.FieldVal[name],
@@ -49,5 +54,8 @@ func (s *structOf) valid() bool {
 		}
 		s.Has(field.valid())
 	}
-	return s.Has()
+	if _debug {
+		stdlog.Error(s.All())
+	}
+	return !s.Has()
 }

@@ -7,6 +7,7 @@ import (
 )
 
 type fieldOf struct {
+	name  string
 	rkind kind
 	rval  reflect.Value
 	val   any
@@ -29,19 +30,19 @@ func (f fieldOf) valid() error {
 		case enumOf:
 			err = f.validEnum(tagv)
 		case notNil:
-
+			err = f.validNotNil()
 		case notZero:
-
+			err = f.validNotZero()
 		case rangeOf:
-
+			err = f.validRange(tagv)
 		case lenOf:
-
+			err = f.validLen(tagv)
 		case ruleOf:
-
+			err = f.validRule(tagv)
 		case regexOf:
-
+			err = f.validRegex(tagv)
 		case defaultOf:
-
+			f.setDefault(tagv)
 		}
 
 		if err != nil {

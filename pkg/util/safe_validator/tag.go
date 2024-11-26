@@ -1,6 +1,7 @@
 package safe_validator
 
 import (
+	"errors"
 	"github.com/Juminiy/kube/pkg/util"
 )
 
@@ -26,7 +27,7 @@ const (
 )
 
 // const
-var _tagPrior = []string{enumOf, notNil, notZero, rangeOf, lenOf, ruleOf, regexOf, defaultOf}
+var _tagPrior = []string{notNil, enumOf, notZero, rangeOf, lenOf, ruleOf, regexOf, defaultOf}
 
 var apply = map[string]map[kind]est{
 	notNil:    {kLikePtr: _est},
@@ -67,3 +68,8 @@ func init() {
 func tagApplyKind(tag string, k kind) bool {
 	return util.MapOk(util.MapElem(apply, tag), k)
 }
+
+var errTagKindCheckErr = errors.New("tag apply kind check error")
+
+const errTagFormatFmt = "format invalid, field: %s, tagKey: %s, tagVal: %s"
+const errValInvalidFmt = "value invalid, field: %s, value: %v %s"

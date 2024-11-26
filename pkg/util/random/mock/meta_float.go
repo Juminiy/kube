@@ -1,6 +1,7 @@
 package mock
 
 import (
+	"github.com/Juminiy/kube/pkg/util"
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/spf13/cast"
 	"math"
@@ -23,10 +24,10 @@ const (
 
 // type decl is all float64
 var floatRule = rule{
-	"float32:min": math.SmallestNonzeroFloat32,
-	"float32:max": math.MaxFloat32,
-	"float64:min": math.SmallestNonzeroFloat64,
-	"float64:max": math.MaxFloat64,
+	"float32:min": util.SmallestNonzeroFloat32,
+	"float32:max": util.MaxFloat32,
+	"float64:min": util.SmallestNonzeroFloat64,
+	"float64:max": util.MaxFloat64,
 }
 
 func (r *rule) applyFloat(minval, maxval string) {

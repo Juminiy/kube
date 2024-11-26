@@ -18,28 +18,31 @@ import (
 // fF64 	| enum:3.33,1.22,2.11	| special judge
 func (f fieldOf) validEnum(tagv string) error {
 	if util.ElemIn(f.rkind, kF32, kF64) {
-		return validEnumFloat()
+		return f.validEnumFloat(tagv)
 	}
+
 	if !util.MapOk(
 		lo.SliceToMap(strings.Split(tagv, ","), func(item string) (string, est) { return item, _est }),
 		f.str) {
-		return enumValidErr(tagv, f.rval)
+		return f.enumValidErr(tagv)
 	}
 	return nil
 }
 
-func validEnumFloat() error {
+func (f fieldOf) validEnumFloat(tagv string) error {
 	return nil
 }
 
-func enumFormatErr(enums string) error {
-	return fmt.Errorf("enum format error: (%s)", enums)
+func (f fieldOf) enumFormatErr(tagv string) error {
+	return fmt.Errorf(errTagFormatFmt, f.name, enumOf, tagv)
 }
 
-func enumValidErr(enums string, v any) error {
-	return fmt.Errorf("enum valid error: %v not in (%s)", v, enums)
+func (f fieldOf) enumValidErr(tagv string) error {
+	return fmt.Errorf(errValInvalidFmt, f.name, f.val,
+		fmt.Sprintf("is not in enums: (%s)", tagv))
 }
 
-func enumValidErrFloat(enums string, v any) error {
-	return fmt.Errorf("enum valid error: %v not in (%s), float may lose precision for misjudge, recommand float to use range", v, enums)
+func (f fieldOf) enumValidErrFloat(tagv string) error {
+	return fmt.Errorf(errValInvalidFmt, f.name, f.val,
+		fmt.Sprintf("is not in enums: (%s), float may lose precision for misjudge, recommand float to use range", tagv))
 }

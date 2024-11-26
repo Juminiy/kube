@@ -1,7 +1,10 @@
 // Package safe_cast codegen by codegen/safe_cast_codegen.go, do not edit.
 package safe_cast
 
-import "math"
+import (
+	"github.com/spf13/cast"
+	"math"
+)
 
 func I64toI32(i64 int64) int32 {
 	if i64 > math.MaxInt32 {
@@ -105,4 +108,12 @@ func I64toI8(i64 int64) int8 {
 
 func I64toI64(i64 int64) int64 {
 	return int64(i64)
+}
+
+func ItoF32[I ~int | int8 | int16 | int32 | int64](i I) float32 {
+	return cast.ToFloat32(cast.ToString(i))
+}
+
+func ItoF64[I ~int | int8 | int16 | int32 | int64](i I) float64 {
+	return cast.ToFloat64(cast.ToString(i))
 }

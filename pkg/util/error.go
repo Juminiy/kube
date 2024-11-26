@@ -135,10 +135,13 @@ func (h *ErrHandle) First() error {
 	return h.err.Err()
 }
 
-func (h *ErrHandle) All() error {
+func (h *ErrHandle) All(sep ...string) error {
 	h.errsRw.RLock()
 	defer h.errsRw.RUnlock()
-	return MergeError(h.errs...)
+	if len(sep) > 0 && len(sep[0]) > 0 {
+		return mergeErrorSep(sep[0], h.errs...)
+	}
+	return mergeErrorSep("\n", h.errs...)
 }
 
 var ErrFaked = errors.New("faked error")

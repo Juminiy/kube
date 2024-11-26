@@ -1,5 +1,7 @@
 package util
 
+import "cmp"
+
 func NewBool(bVar bool) *bool {
 	return &bVar
 }
@@ -72,4 +74,68 @@ func ToElemPtrMap[ElemMap map[K]E, ElemPtrMap map[K]*E, K comparable, E any](m E
 		epm[k] = New(v)
 	}
 	return epm
+}
+
+func PtrPairMin[T cmp.Ordered](t0, t1 *T) *T {
+	return PtrPairFunc(Min, t0, t1)
+}
+
+func PtrPairMax[T cmp.Ordered](t0, t1 *T) *T {
+	return PtrPairFunc(Max, t0, t1)
+}
+
+func Min[T cmp.Ordered](v0 T, v ...T) T {
+	for _, val := range v {
+		v0 = min(v0, val)
+	}
+	return v0
+}
+
+func Max[T cmp.Ordered](v0 T, v ...T) T {
+	for _, val := range v {
+		v0 = max(v0, val)
+	}
+	return v0
+}
+
+func PtrPairFunc[T cmp.Ordered](f func(v0 T, v ...T) T, t0, t1 *T) *T {
+	if t0 == nil && t1 == nil {
+		return nil
+	} else if t0 != nil && t1 != nil {
+		return New(f(*t0, *t1))
+	} else if t0 != nil {
+		return t0
+	} else { // t1 != nil
+		return t1
+	}
+}
+
+func PtrFunc[T cmp.Ordered](f func(v0 T, v ...T) T, p0 *T, p ...*T) *T {
+	var v0 T
+	var set0 bool
+	if p0 != nil {
+		set0 = true
+		v0 = *p0
+	}
+	for _, ptr := range p {
+		if ptr != nil {
+			if set0 {
+				v0 = f(v0, *ptr)
+			} else {
+				set0 = true
+				v0 = *ptr
+			}
+		}
+	}
+	if set0 {
+		return New(v0)
+	}
+	return nil
+}
+
+func PtrValue[T any](t *T) T {
+	if t == nil {
+		return Zero[T]()
+	}
+	return *t
 }
