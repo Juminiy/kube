@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/Juminiy/kube/pkg/util/safe_cast"
+	"math"
 )
 
 // +param: tagv
@@ -24,9 +25,9 @@ func (f fieldOf) validLen(tagv string) error {
 		return f.lenFormatErr(tagv)
 	}
 
-	lenRangeParsed.setLimit(util.NewFloat64(0), util.NewFloat64(safe_cast.ItoF64(util.MaxInt)))
+	lenRangeParsed.setLimitInt(int64(0), int64(math.MaxInt))
 	if rvlen := f.rval.Len(); !util.InRange(
-		rvlen, safe_cast.I64toI(*lenRangeParsed.intL), safe_cast.I64toI(*lenRangeParsed.intR)) {
+		safe_cast.ItoI64(rvlen), *lenRangeParsed.intL, *lenRangeParsed.intR) {
 		return f.lenValidErr(rvlen, tagv)
 	}
 	return nil

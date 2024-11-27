@@ -4,8 +4,10 @@ import "math"
 
 const (
 	MaxFloat32             = float32(math.MaxFloat32)
+	MinFloat32             = float32(-math.MaxFloat32)
 	SmallestNonzeroFloat32 = float32(math.SmallestNonzeroFloat32)
 	MaxFloat64             = float64(math.MaxFloat64)
+	MinFloat64             = float64(-math.MaxFloat64)
 	SmallestNonzeroFloat64 = float64(math.SmallestNonzeroFloat64)
 )
 

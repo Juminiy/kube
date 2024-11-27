@@ -12,6 +12,8 @@ require (
 	github.com/dubbogo/gost v1.14.0
 	github.com/elliotchance/orderedmap/v2 v2.4.0
 	github.com/fatih/color v1.17.0
+	github.com/goccy/go-json v0.10.3
+	github.com/gofiber/fiber/v3 v3.0.0-beta.3
 	github.com/goharbor/go-client v0.210.0
 	github.com/google/uuid v1.6.0
 	github.com/json-iterator/go v1.1.12
@@ -21,6 +23,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2
 	github.com/opencontainers/image-spec v1.1.0
 	github.com/panjf2000/ants/v2 v2.10.0
+	github.com/samber/lo v1.47.0
 	github.com/shirou/gopsutil/v4 v4.24.9
 	github.com/spf13/cast v1.7.0
 	github.com/teris-io/shortid v0.0.0-20220617161101-71ec9f2aa569
@@ -78,8 +81,6 @@ require (
 	github.com/go-openapi/swag v0.22.4 // indirect
 	github.com/go-openapi/validate v0.20.3 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
-	github.com/goccy/go-json v0.10.3 // indirect
-	github.com/gofiber/fiber/v3 v3.0.0-beta.3 // indirect
 	github.com/gofiber/utils/v2 v2.0.0-beta.7 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
@@ -129,7 +130,6 @@ require (
 	github.com/richardlehane/msoleps v1.0.4 // indirect
 	github.com/rs/xid v1.6.0 // indirect
 	github.com/safchain/ethtool v0.3.0 // indirect
-	github.com/samber/lo v1.47.0 // indirect
 	github.com/secure-io/sio-go v0.3.1 // indirect
 	github.com/shirou/gopsutil/v3 v3.23.12 // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect

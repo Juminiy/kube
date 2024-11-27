@@ -15,7 +15,8 @@ import (
 // kUint  	| enum:9,10,1111 		| string
 // kString	| enum:a,b,cc 			| string
 // kF32  	| enum:3.33,1.22,2.11 	| special judge
-// fF64 	| enum:3.33,1.22,2.11	| special judge
+// kF64 	| enum:3.33,1.22,2.11	| special judge
+// kPtr 	| enum:x,xx,xxx			| indir
 func (f fieldOf) validEnum(tagv string) error {
 	if util.ElemIn(f.rkind, kF32, kF64) {
 		return f.validEnumFloat(tagv)

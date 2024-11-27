@@ -3,7 +3,7 @@ package safe_validator
 import "github.com/Juminiy/kube/pkg/util/safe_cast/safe_parse"
 
 func (f fieldOf) setDefault(tagv string) {
-	if !f.rval.CanSet() {
+	if !f.rval.CanSet() || !f.rval.IsZero() {
 		return
 	}
 	switch f.rkind {

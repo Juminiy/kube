@@ -42,22 +42,22 @@ var apply = map[string]map[kind]est{
 
 func init() {
 	for tag, kinds := range apply {
-		switch {
-		case util.MapOk(kinds, kNumber):
+		if util.MapOk(kinds, kNumber) {
 			util.MapInsert(kinds, util.MapElem(_extTyp, kNumber)...)
-			fallthrough
-		case util.MapOk(kinds, kLikeStr):
+		}
+		if util.MapOk(kinds, kLikeStr) {
 			util.MapInsert(kinds, util.MapElem(_extTyp, kLikeStr)...)
-			fallthrough
-		case util.MapOk(kinds, kDirectCompare):
+		}
+		if util.MapOk(kinds, kDirectCompare) {
 			util.MapInsert(kinds, util.MapElem(_extTyp, kDirectCompare)...)
-			fallthrough
-		case util.MapOk(kinds, kLikePtr):
+		}
+		if util.MapOk(kinds, kLikePtr) {
 			util.MapInsert(kinds, util.MapElem(_extTyp, kLikePtr)...)
-			fallthrough
-		case util.MapOk(kinds, kAll):
+		}
+		if util.MapOk(kinds, kAll) {
 			util.MapInsert(kinds, util.MapElem(_extTyp, kAll)...)
-		case util.MapOk(kinds, kBool):
+		}
+		if util.MapOk(kinds, kBool) {
 			util.MapDelete(kinds, kBool)
 		}
 		util.MapDelete(kinds, kC64, kC128, kInvalid)

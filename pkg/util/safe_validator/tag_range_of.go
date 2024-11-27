@@ -3,7 +3,7 @@ package safe_validator
 import (
 	"fmt"
 	"github.com/Juminiy/kube/pkg/util"
-	"github.com/spf13/cast"
+	"github.com/Juminiy/kube/pkg/util/safe_cast/safe_parse"
 	"strings"
 )
 
@@ -24,45 +24,45 @@ func (f fieldOf) validRange(tagv string) error {
 		return f.rangeFormatErr(tagv)
 	}
 
-	var fl, fr float64
 	switch f.rkind {
 	case kInt:
-		fl, fr = castIPairF64(util.MinInt, util.MaxInt)
+		rangeParsed.setLimitInt(int64(util.MinInt), int64(util.MaxInt))
 	case kI8:
-		fl, fr = castIPairF64(util.MinInt8, util.MaxInt8)
+		rangeParsed.setLimitInt(int64(util.MinInt8), int64(util.MaxInt8))
 	case kI16:
-		fl, fr = castIPairF64(util.MinInt16, util.MaxInt16)
+		rangeParsed.setLimitInt(int64(util.MinInt16), int64(util.MaxInt16))
 	case kI32:
-		fl, fr = castIPairF64(util.MinInt32, util.MaxInt32)
+		rangeParsed.setLimitInt(int64(util.MinInt32), int64(util.MaxInt32))
 	case kI64:
-		fl, fr = castIPairF64(util.MinInt64, util.MaxInt64)
+		rangeParsed.setLimitInt(util.MinInt64, util.MaxInt64)
 	case kUint:
-		fl, fr = castUPairF64(util.MinUint, util.MaxUint)
+		rangeParsed.setLimitUint(uint64(util.MinUint), uint64(util.MaxUint))
 	case kU8:
-		fl, fr = castUPairF64(util.MinUint8, util.MaxUint8)
+		rangeParsed.setLimitUint(uint64(util.MinUint8), uint64(util.MaxUint8))
 	case kU16:
-		fl, fr = castUPairF64(util.MinUint16, util.MaxUint16)
+		rangeParsed.setLimitUint(uint64(util.MinUint16), uint64(util.MaxUint16))
 	case kU32:
-		fl, fr = castUPairF64(util.MinUint32, util.MaxUint32)
+		rangeParsed.setLimitUint(uint64(util.MinUint32), uint64(util.MaxUint32))
 	case kU64, kUPtr:
-		fl, fr = castUPairF64(util.MinUint64, util.MaxUint64)
+		rangeParsed.setLimitUint(util.MinUint64, util.MaxUint64)
 	case kF32:
-		fl, fr = float64(util.SmallestNonzeroFloat32), float64(util.MaxFloat32)
+		rangeParsed.setLimitFloat(float64(util.MinFloat32), float64(util.MaxFloat32))
 	case kF64:
-		fl, fr = util.SmallestNonzeroFloat64, util.MaxFloat64
+		rangeParsed.setLimitFloat(util.MinFloat64, util.MaxFloat64)
 	default:
 		panic(errTagKindCheckErr)
 	}
-	rangeParsed.setLimit(&fl, &fr)
 
 	var ok bool
 	switch f.rkind {
 	case kInt, kI8, kI16, kI32, kI64:
-		ok = util.InRange(cast.ToInt64(f.val), *rangeParsed.intL, *rangeParsed.intR)
+		ok = util.InRange(f.rval.Int(), *rangeParsed.intL, *rangeParsed.intR)
 	case kUint, kU8, kU16, kU32, kU64, kUPtr:
-		ok = util.InRange(cast.ToUint64(f.val), *rangeParsed.uintL, *rangeParsed.uintR)
+		ok = util.InRange(f.rval.Uint(), *rangeParsed.uintL, *rangeParsed.uintR)
 	case kF32, kF64:
-		ok = util.InRange(cast.ToFloat64(f.val), *rangeParsed.floatL, *rangeParsed.floatR)
+		ok = util.InRange(f.rval.Float(), *rangeParsed.floatL, *rangeParsed.floatR)
+	default:
+		panic(errTagKindCheckErr)
 	}
 
 	if !ok {
@@ -90,31 +90,45 @@ type rangeLR struct {
 	valid  bool
 }
 
-func (r *rangeLR) set(rl, rr *float64) {
-	r.valid = true
-	if rl != nil {
-		r.intL = util.New(cast.ToInt64(*rl))
-		r.uintL = util.New(cast.ToUint64(*rl))
-		r.floatL = util.New(*rl)
-	}
-	if rr != nil {
-		r.intR = util.New(cast.ToInt64(*rr))
-		r.uintR = util.New(cast.ToUint64(*rr))
-		r.floatR = util.New(*rr)
-	}
+func (r *rangeLR) set(rl, rr string) {
+	parserl := safe_parse.Parse(rl)
+	r.intL = parserl.I64()
+	r.uintL = parserl.U64()
+	r.floatL = parserl.F64()
+
+	parserr := safe_parse.Parse(rr)
+	r.intR = parserr.I64()
+	r.uintR = parserr.U64()
+	r.floatR = parserr.F64()
+
+	r.valid = r.floatL != nil || r.floatR != nil
 }
 
-func (r *rangeLR) setLimit(rl, rr *float64) {
-	if rl != nil {
-		r.intL = util.PtrPairMax(r.intL, util.New(cast.ToInt64(*rl)))
-		r.uintL = util.PtrPairMax(r.uintL, util.New(cast.ToUint64(*rl)))
-		r.floatL = util.PtrPairMax(r.floatL, rl)
-	}
-	if rr != nil {
-		r.intR = util.PtrPairMin(r.intR, util.New(cast.ToInt64(*rr)))
-		r.uintR = util.PtrPairMin(r.uintR, util.New(cast.ToUint64(*rr)))
-		r.floatR = util.PtrPairMin(r.floatR, rr)
-	}
+func (r *rangeLR) setLimit(rl, rr string) {
+	parserl := safe_parse.Parse(rl)
+	r.intL = util.PtrPairMax(r.intL, parserl.I64())
+	r.uintL = util.PtrPairMax(r.uintL, parserl.U64())
+	r.floatL = util.PtrPairMax(r.floatL, parserl.F64())
+
+	parserr := safe_parse.Parse(rr)
+	r.intR = util.PtrPairMin(r.intR, parserr.I64())
+	r.uintR = util.PtrPairMin(r.uintR, parserr.U64())
+	r.floatR = util.PtrPairMin(r.floatR, parserr.F64())
+}
+
+func (r *rangeLR) setLimitInt(rl, rr int64) {
+	r.intL = util.PtrPairMax(r.intL, &rl)
+	r.intR = util.PtrPairMin(r.intR, &rr)
+}
+
+func (r *rangeLR) setLimitUint(rl, rr uint64) {
+	r.uintL = util.PtrPairMax(r.uintL, &rl)
+	r.uintR = util.PtrPairMin(r.uintR, &rr)
+}
+
+func (r *rangeLR) setLimitFloat(rl, rr float64) {
+	r.floatL = util.PtrPairMax(r.floatL, &rl)
+	r.floatR = util.PtrPairMin(r.floatR, &rr)
 }
 
 func parseRange(lenRange string) (rangeLr rangeLR) {
@@ -122,28 +136,10 @@ func parseRange(lenRange string) (rangeLr rangeLR) {
 
 	switch len(rangelr) {
 	case 1:
-		numValid := len(rangelr[0]) > 0
-		if !numValid {
-			return
-		}
-		numTry := cast.ToFloat64(rangelr[0])
-		rangeLr.set(util.New(numTry), util.New(numTry))
+		rangeLr.set(rangelr[0], rangelr[0])
 
 	case 2:
-		num0Valid, num1Valid := len(rangelr[0]) > 0, len(rangelr[1]) > 0
-		num0Try, num1Try := cast.ToFloat64(rangelr[0]), cast.ToFloat64(rangelr[1])
-		if !num0Valid && !num1Valid {
-			return
-		} else if num0Valid && num1Valid {
-			if num0Try > num1Try {
-				return
-			}
-			rangeLr.set(util.New(num0Try), util.New(num1Try))
-		} else if num0Valid {
-			rangeLr.set(util.New(num0Try), nil)
-		} else { // num1Valid
-			rangeLr.set(nil, util.New(num1Try))
-		}
+		rangeLr.set(rangelr[0], rangelr[1])
 
 	default:
 		return

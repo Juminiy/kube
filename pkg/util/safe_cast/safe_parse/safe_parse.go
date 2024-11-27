@@ -80,12 +80,12 @@ func ParseUintptrOk(s string) (v uintptr, ok bool) {
 
 func ParseFloat32Ok(s string) (v float32, ok bool) {
 	f64, err := strconv.ParseFloat(s, 64)
-	ok = err == nil && util.InRange(f64, float64(util.SmallestNonzeroFloat32), float64(util.MaxFloat32))
+	ok = err == nil && util.InRange(f64, float64(-util.MaxFloat32), float64(util.MaxFloat32))
 	return safe_cast.F64tof32(f64), ok
 }
 
 func ParseFloat64Ok(s string) (v float64, ok bool) {
 	f64, err := strconv.ParseFloat(s, 64)
-	ok = err == nil && util.InRange(f64, util.SmallestNonzeroFloat64, util.MaxFloat64)
+	ok = err == nil && util.InRange(f64, -util.MaxFloat64, util.MaxFloat64)
 	return f64, ok
 }

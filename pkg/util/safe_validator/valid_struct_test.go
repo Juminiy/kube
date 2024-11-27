@@ -1,6 +1,7 @@
 package safe_validator
 
 import (
+	"github.com/Juminiy/kube/pkg/util"
 	"strings"
 	"testing"
 )
@@ -11,8 +12,9 @@ type t0 struct {
 	S0   string            `valid:"not_zero;len:1~10;rule:number"`
 	IPtr *int              `valid:"not_nil;range:~2;enum:3,2,1"`
 	SPtr *string           `valid:"not_nil;len:10~20;enum:a,c,b"`
-	Arr0 []int             `valid:"not_zero;len:10"`
-	Map0 map[string]string `valid:"not_zero;len:20"`
+	Arr0 []int             `valid:"not_zero;len:~10"`
+	Map0 map[string]string `valid:"not_zero;len:~20"`
+	I1   int               `valid:"default:1"`
 }
 
 func init() {
@@ -20,25 +22,30 @@ func init() {
 }
 
 func TestStruct(t *testing.T) {
-	t.Log(Struct(t0{
+	v0 := &t0{
 		I0:   1,
 		F0:   0.09,
 		S0:   "12345",
-		IPtr: nil,
-		SPtr: nil,
+		IPtr: util.New(3),
+		SPtr: util.New("a"),
 		Arr0: []int{1, 2, 3},
-		Map0: nil,
-	}))
+		Map0: map[string]string{"r": "v"},
+		I1:   2,
+	}
+	t.Log(Struct(v0), v0)
+}
 
-	t.Log(Struct(t0{
+func TestStruct2(t *testing.T) {
+	v0 := &t0{
 		I0:   111,
-		F0:   -9,
-		S0:   "12345678901",
+		F0:   0,
+		S0:   "666",
 		IPtr: nil,
 		SPtr: nil,
 		Arr0: []int{},
 		Map0: nil,
-	}))
+	}
+	t.Log(Struct(v0), v0)
 }
 
 func TestStringSplit(t *testing.T) {
@@ -52,4 +59,8 @@ func TestStringSplit(t *testing.T) {
 		"11~2"} {
 		t.Log(len(strings.Split(s, "~")), strings.Split(s, "~"))
 	}
+}
+
+func TestNilNeqNil(t *testing.T) {
+	//t.Log(nil == nil)
 }
