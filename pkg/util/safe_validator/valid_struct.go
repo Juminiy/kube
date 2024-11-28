@@ -1,7 +1,7 @@
 package safe_validator
 
 import (
-	"github.com/Juminiy/kube/pkg/log_api/stdlog"
+	"errors"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/Juminiy/kube/pkg/util/safe_reflect"
 	"github.com/spf13/cast"
@@ -10,20 +10,38 @@ import (
 
 // Struct
 // compatible with fiber.StructValidator
-func Struct(v any) bool {
-	return parseStruct(v).valid()
+func (cfg *Config) Struct(v any) bool {
+	ok, _ := cfg.structOkE(v)
+	return ok
 }
+
+func (cfg *Config) StructE(v any) error {
+	_, err := cfg.structOkE(v)
+	return err
+}
+
+func (cfg *Config) structOkE(v any) (ok bool, err error) {
+	parsed := cfg.parseStruct(v)
+	if parsed == nil {
+		return false, errValNotStruct
+	}
+	ok, err = parsed.valid(), parsed.All()
+	return
+}
+
+var errValNotStruct = errors.New("value type is not struct")
 
 type structOf struct {
 	FieldRTyp  map[string]reflect.Type
 	FieldRVal  map[string]reflect.Value
 	FieldVal   map[string]any
 	FieldTagKv safe_reflect.FieldTagKV
-	CanSet     bool
 	*util.ErrHandle
+
+	cfg *Config
 }
 
-func parseStruct(v any) *structOf {
+func (cfg *Config) parseStruct(v any) *structOf {
 	tv := indir(v)
 	if tv.Typ.Kind() != kStruct {
 		return nil
@@ -32,9 +50,9 @@ func parseStruct(v any) *structOf {
 		FieldRTyp:  tv.StructFieldsType(),
 		FieldRVal:  tv.StructFieldValueAll(),
 		FieldVal:   tv.Struct2MapAll(),
-		FieldTagKv: tv.StructParseTagKV2(_tag),
-		CanSet:     tv.StructCanSet(),
+		FieldTagKv: tv.StructParseTagKV2(cfg.Tag),
 		ErrHandle:  util.NewErrHandle(),
+		cfg:        cfg,
 	}
 }
 
@@ -51,11 +69,11 @@ func (s *structOf) valid() bool {
 			val:   s.FieldVal[name],
 			str:   cast.ToString(s.FieldVal[name]),
 			tag:   s.FieldTagKv[name],
+			cfg:   s.cfg,
 		}
-		s.Has(field.valid())
-	}
-	if _debug {
-		stdlog.Error(s.All())
+		if s.Has(field.valid()) && s.cfg.OnErrorStop {
+			return false
+		}
 	}
 	return !s.Has()
 }

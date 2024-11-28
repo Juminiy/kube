@@ -57,3 +57,11 @@ func CapitalizeFirst(str string) string {
 	}
 	return ""
 }
+
+// Camel2SnakeV2
+// ArchOf -> arch_of
+// GPUType -> gpu_type
+// cpuCOUNT -> cpu_count
+func Camel2SnakeV2(s string) string {
+	return s
+}

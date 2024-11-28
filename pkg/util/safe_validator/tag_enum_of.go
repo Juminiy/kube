@@ -3,6 +3,7 @@ package safe_validator
 import (
 	"fmt"
 	"github.com/Juminiy/kube/pkg/util"
+	"github.com/Juminiy/kube/pkg/util/safe_cast/safe_parse"
 	"github.com/samber/lo"
 	"strings"
 )
@@ -18,19 +19,37 @@ import (
 // kF64 	| enum:3.33,1.22,2.11	| special judge
 // kPtr 	| enum:x,xx,xxx			| indir
 func (f fieldOf) validEnum(tagv string) error {
-	if util.ElemIn(f.rkind, kF32, kF64) {
-		return f.validEnumFloat(tagv)
+	if ptrNilErr := f.errPointerNil(enumOf, tagv); ptrNilErr != nil {
+		return ptrNilErr
+	}
+	cloneF, ok := f.indirect(enumOf)
+	if !ok {
+		return nil
+	} // skip indirect value mismatch tag
+
+	if util.ElemIn(cloneF.rkind, kF32, kF64) {
+		return cloneF.validEnumFloat(tagv)
 	}
 
-	if !util.MapOk(
-		lo.SliceToMap(strings.Split(tagv, ","), func(item string) (string, est) { return item, _est }),
-		f.str) {
-		return f.enumValidErr(tagv)
+	if !lo.Contains(strings.Split(tagv, ","), cloneF.str) {
+		return cloneF.enumValidErr(tagv)
 	}
 	return nil
 }
 
 func (f fieldOf) validEnumFloat(tagv string) error {
+	if !util.MapOk(util.Slice2MapWhen(
+		strings.Split(tagv, ","),
+		func(item string, index int) bool {
+			_, ok := safe_parse.ParseFloat64Ok(item)
+			return ok
+		},
+		func(item string) (float64, est) {
+			f64v, _ := safe_parse.ParseFloat64Ok(item)
+			return f64v, _est
+		}), f.rval.Float()) {
+		return f.enumValidErrFloat(tagv)
+	}
 	return nil
 }
 

@@ -5,6 +5,7 @@ import (
 )
 
 var indir = safe_reflect.IndirectOf
+var indirv = safe_reflect.IndirectRVal
 
 //func castIPairF64[I ~int | int8 | int16 | int32 | int64](v0, v1 I) (float64, float64) {
 //	return safe_cast.ItoF64(v0), safe_cast.ItoF64(v1)

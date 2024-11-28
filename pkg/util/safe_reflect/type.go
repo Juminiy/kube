@@ -1,7 +1,9 @@
 package safe_reflect
 
 import (
+	"fmt"
 	"reflect"
+	"time"
 
 	"github.com/Juminiy/kube/pkg/util"
 )
@@ -100,3 +102,7 @@ func StructGetTag2(v any, app0, key0, app1, key1 string) (tag0, tag1 TagVV, ok b
 	tag0, tag1 = structParseTag2(typ, app0, key0, app1, key1)
 	return
 }
+
+var errorType = directT((*error)(nil)).Elem()
+var stringerType = directT((*fmt.Stringer)(nil)).Elem()
+var timeType = directT(time.Time{})

@@ -1,6 +1,9 @@
 package util
 
-import "maps"
+import (
+	"github.com/samber/lo"
+	"maps"
+)
 
 const (
 	MagicMapCap = (iota + 1) << 4
@@ -143,4 +146,9 @@ func MapsMerge[Map ~map[K]V, K comparable, V any](m ...Map) Map {
 	}
 
 	return all
+}
+
+func Slice2MapWhen[Slice ~[]E, E any, K comparable, V any](
+	s Slice, predict Predicate2[E], transform Transform[E, K, V]) map[K]V {
+	return lo.SliceToMap(lo.Filter(s, predict), transform)
 }

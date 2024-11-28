@@ -2,6 +2,10 @@ package safe_reflect
 
 import "reflect"
 
+func IndirectRVal(v reflect.Value) reflect.Value {
+	return indirect(v).Val
+}
+
 func indirectTV(v any) (typ reflect.Type, val reflect.Value) {
 	return indirectT(v), indirectV(v)
 }

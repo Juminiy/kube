@@ -19,12 +19,20 @@ import (
 // range:-5~-10	| error
 // len:11~2		| error
 func (f fieldOf) validRange(tagv string) error {
+	if ptrNilErr := f.errPointerNil(rangeOf, tagv); ptrNilErr != nil {
+		return ptrNilErr
+	}
+	cloneF, ok := f.indirect(rangeOf)
+	if !ok {
+		return nil
+	} // skip indirect value mismatch tag
+
 	rangeParsed := parseRange(tagv)
 	if !rangeParsed.valid {
-		return f.rangeFormatErr(tagv)
+		return cloneF.rangeFormatErr(tagv)
 	}
 
-	switch f.rkind {
+	switch cloneF.rkind {
 	case kInt:
 		rangeParsed.setLimitInt(int64(util.MinInt), int64(util.MaxInt))
 	case kI8:
@@ -53,20 +61,20 @@ func (f fieldOf) validRange(tagv string) error {
 		panic(errTagKindCheckErr)
 	}
 
-	var ok bool
-	switch f.rkind {
+	var validRange bool
+	switch cloneF.rkind {
 	case kInt, kI8, kI16, kI32, kI64:
-		ok = util.InRange(f.rval.Int(), *rangeParsed.intL, *rangeParsed.intR)
+		validRange = util.InRange(cloneF.rval.Int(), *rangeParsed.intL, *rangeParsed.intR)
 	case kUint, kU8, kU16, kU32, kU64, kUPtr:
-		ok = util.InRange(f.rval.Uint(), *rangeParsed.uintL, *rangeParsed.uintR)
+		validRange = util.InRange(cloneF.rval.Uint(), *rangeParsed.uintL, *rangeParsed.uintR)
 	case kF32, kF64:
-		ok = util.InRange(f.rval.Float(), *rangeParsed.floatL, *rangeParsed.floatR)
+		validRange = util.InRange(cloneF.rval.Float(), *rangeParsed.floatL, *rangeParsed.floatR)
 	default:
 		panic(errTagKindCheckErr)
 	}
 
-	if !ok {
-		return f.rangeValidErr(tagv)
+	if !validRange {
+		return cloneF.rangeValidErr(tagv)
 	}
 	return nil
 }

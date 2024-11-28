@@ -83,6 +83,9 @@ func MergeError(err ...error) error {
 }
 
 func mergeErrorSep(sep string, err ...error) error {
+	if len(err) == 1 {
+		return err[0]
+	}
 	var (
 		hasErr bool
 		errStr string

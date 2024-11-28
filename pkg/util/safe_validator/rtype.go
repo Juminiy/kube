@@ -51,6 +51,8 @@ const (
 	kAll
 )
 
+// _extTyp
+// readOnly
 var _extTyp = map[kind][]kind{
 	kNumber:        {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14},             // kInt ~ kF64
 	kLikeStr:       {kString},                                                // kString, ByteSlice([]byte), fmt.Stringer
@@ -64,4 +66,4 @@ type est = struct{}
 
 // value empty struct
 var _est = est{}
-var _timeTyp = safe_reflect.IndirectOf(time.Time{}).Typ
+var _timeTyp = safe_reflect.Of(time.Time{}).Typ

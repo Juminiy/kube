@@ -17,10 +17,6 @@ type t0 struct {
 	I1   int               `valid:"default:1"`
 }
 
-func init() {
-	_debug = true
-}
-
 func TestStruct(t *testing.T) {
 	v0 := &t0{
 		I0:   1,
@@ -32,7 +28,7 @@ func TestStruct(t *testing.T) {
 		Map0: map[string]string{"r": "v"},
 		I1:   2,
 	}
-	t.Log(Struct(v0), v0)
+	t.Log(Default().Struct(v0), v0)
 }
 
 func TestStruct2(t *testing.T) {
@@ -45,7 +41,7 @@ func TestStruct2(t *testing.T) {
 		Arr0: []int{},
 		Map0: nil,
 	}
-	t.Log(Struct(v0), v0)
+	t.Log(Default().Struct(v0), v0)
 }
 
 func TestStringSplit(t *testing.T) {
@@ -63,4 +59,32 @@ func TestStringSplit(t *testing.T) {
 
 func TestNilNeqNil(t *testing.T) {
 	//t.Log(nil == nil)
+}
+
+func TestConfig_Struct(t *testing.T) {
+	t.Log(Strict().StructE(
+		struct {
+			I0 *int    `valid:"enum:1,2,3"`
+			I1 *int    `valid:"range:10~100"`
+			S0 *string `valid:"len:5~10"`
+		}{
+			I0: util.New(19),
+			I1: util.New(2),
+			S0: util.NewString("rrr"),
+		},
+	))
+}
+
+func TestConfig_Struct2(t *testing.T) {
+	t.Log(Strict().StructE(
+		struct {
+			I0 *int    `valid:"enum:1,2,3"`
+			I1 *int    `valid:"range:10~100"`
+			S0 *string `valid:"len:5~10"`
+		}{
+			I0: nil,
+			I1: nil,
+			S0: nil,
+		},
+	))
 }

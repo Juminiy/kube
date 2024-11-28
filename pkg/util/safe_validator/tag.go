@@ -8,28 +8,48 @@ import (
 // apply tag keys
 const (
 	// notNil:
-	//	case Chan, Func, Interface, Map, Pointer, Slice, UnsafePointer: return !v.IsNil()
-	// 	default: skip tag
+	// case kChan, kFunc, kAny, kMap, kPtr, kSlice, kUnsafePtr: return !v.IsNil()
+	// default: skip tag
 	// notNil cannot notZero
 	notNil = "not_nil"
 
 	// notZero:
-	//	case Chan, Func, Interface, Map, Pointer, Slice, UnsafePointer: return !v.IsNil()
-	// 	default: !IsZero()
+	// case kChan, kFunc, kAny, kMap, kPtr, kSlice, kUnsafePtr: return !v.IsNil()
+	// default: !IsZero()
 	// notZero can notNil
-	notZero   = "not_zero"
-	lenOf     = "len"
-	rangeOf   = "range"
-	enumOf    = "enum"
-	ruleOf    = "rule"
-	regexOf   = "regex"
+	notZero = "not_zero"
+
+	// lenOf
+	// case kArr, kChan, kMap, kSlice, kString: return util.InRange(rangeL, v.Len(), rangeR)
+	// default: skip tag
+	lenOf = "len"
+
+	// rangeOf
+	rangeOf = "range"
+
+	// enumOf
+	enumOf = "enum"
+
+	// ruleOf
+	// allow: kString
+	ruleOf = "rule"
+
+	// regexOf
+	// allow: kString
+	regexOf = "regex"
+
+	// defaultOf
+	// case v.CanSet() && v.IsZero()
 	defaultOf = "default"
 )
 
-// const
-var _tagPrior = []string{notNil, enumOf, notZero, rangeOf, lenOf, ruleOf, regexOf, defaultOf}
+// readOnly
+var _prior = []string{notNil, enumOf, notZero, rangeOf, lenOf, ruleOf, regexOf, defaultOf}
 
-var apply = map[string]map[kind]est{
+type tagApplyKindT map[string]map[kind]est
+
+// readOnly
+var _apply = tagApplyKindT{
 	notNil:    {kLikePtr: _est},
 	notZero:   {kAll: _est, kOmitBool: _est},
 	lenOf:     {kArr: _est, kChan: _est, kMap: _est, kSlice: _est, kString: _est},
@@ -41,7 +61,7 @@ var apply = map[string]map[kind]est{
 }
 
 func init() {
-	for tag, kinds := range apply {
+	for tag, kinds := range _apply {
 		if util.MapOk(kinds, kNumber) {
 			util.MapInsert(kinds, util.MapElem(_extTyp, kNumber)...)
 		}
@@ -61,15 +81,16 @@ func init() {
 			util.MapDelete(kinds, kBool)
 		}
 		util.MapDelete(kinds, kC64, kC128, kInvalid)
-		apply[tag] = kinds
+		_apply[tag] = kinds
 	}
 }
 
-func tagApplyKind(tag string, k kind) bool {
+func tagApplyKind(apply tagApplyKindT, tag string, k kind) bool {
 	return util.MapOk(util.MapElem(apply, tag), k)
 }
 
 var errTagKindCheckErr = errors.New("tag apply kind check error")
 
-const errTagFormatFmt = "format invalid, field: %s, tagKey: %s, tagVal: %s"
-const errValInvalidFmt = "value invalid, field: %s, value: %v %s"
+const errTagFormatFmt = "format invalid, field: (%s), tagKey: (%s), tagVal: (%s)"
+const errValInvalidFmt = "value invalid, field: (%s), value: (%v) %s"
+const errPtrNilFmt = "pointer to value invalid, field: (%s), tagKey: (%s), tagVal: (%s), pointer is nil"
