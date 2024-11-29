@@ -6,12 +6,12 @@ import (
 )
 
 func TestTest(t *testing.T) {
-	cfg := safe_validator.Config{
+	cfg := (&safe_validator.Config{
 		Tag:            "valid_tag",
 		OnErrorStop:    true,
 		IgnoreTagError: false,
 		IndirectValue:  true,
 		FloatPrecision: 0,
-	}
+	}).Load()
 	t.Log(cfg.StructE(1))
 }

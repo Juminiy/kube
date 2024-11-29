@@ -20,23 +20,15 @@ import (
 // len:-5~-10	| error
 // len:11~2		| error
 func (f fieldOf) validLen(tagv string) error {
-	if ptrNilErr := f.errPointerNil(lenOf, tagv); ptrNilErr != nil {
-		return ptrNilErr
-	}
-	cloneF, ok := f.indirect(lenOf)
-	if !ok {
-		return nil
-	} // skip indirect value mismatch tag
-
 	lenRangeParsed := parseRange(tagv)
 	if !lenRangeParsed.valid {
-		return cloneF.lenFormatErr(tagv)
+		return f.lenFormatErr(tagv)
 	}
 
 	lenRangeParsed.setLimitInt(int64(0), int64(math.MaxInt))
-	if rvlen := cloneF.rval.Len(); !util.InRange(
+	if rvlen := f.rval.Len(); !util.InRange(
 		safe_cast.ItoI64(rvlen), *lenRangeParsed.intL, *lenRangeParsed.intR) {
-		return cloneF.lenValidErr(rvlen, tagv)
+		return f.lenValidErr(rvlen, tagv)
 	}
 	return nil
 }

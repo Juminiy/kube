@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/Juminiy/kube/pkg/util/safe_reflect"
+	"github.com/spf13/cast"
 	"reflect"
 )
 
@@ -28,24 +29,30 @@ func (f fieldOf) valid() error {
 		}
 
 		tagv := f.tag[tagk]
-		var err error
+		cloneF, skip, err := f.tagApplyIndirect(tagk, tagv)
+		if err != nil {
+			return err
+		}
+		if skip {
+			continue
+		}
 		switch tagk {
 		case enumOf:
-			err = f.validEnum(tagv)
+			err = cloneF.validEnum(tagv)
 		case notNil:
-			err = f.validNotNil()
+			err = cloneF.validNotNil()
 		case notZero:
-			err = f.validNotZero()
+			err = cloneF.validNotZero()
 		case rangeOf:
-			err = f.validRange(tagv)
+			err = cloneF.validRange(tagv)
 		case lenOf:
-			err = f.validLen(tagv)
+			err = cloneF.validLen(tagv)
 		case ruleOf:
-			err = f.validRule(tagv)
+			err = cloneF.validRule(tagv)
 		case regexOf:
-			err = f.validRegex(tagv)
+			err = cloneF.validRegex(tagv)
 		case defaultOf:
-			f.setDefault(tagv)
+			cloneF.setDefault(tagv)
 		}
 
 		if err != nil {
@@ -55,22 +62,42 @@ func (f fieldOf) valid() error {
 	return nil
 }
 
-func (f fieldOf) indirect(tag string) (fieldOf, bool) {
-	cloneF := f
-	if cloneF.cfg.IndirectValue {
+func (f fieldOf) tagApplyIndirect(tagk, tagv string) (cloneF fieldOf, skip bool, err error) {
+	if f.rkind != kPtr || util.ElemIn(tagk,
+		notNil, defaultOf) {
+		return f, false, nil
+	}
+	if !util.ElemIn(tagk,
+		enumOf, lenOf, notZero, rangeOf, regexOf, ruleOf) {
+		return f, true, nil
+	}
+	if err = f.errPointerNil(tagk, tagv); err != nil {
+		return f, false, err
+	}
+	cloneF, skip = f.indirect(tagk)
+	return cloneF, skip, nil // skip indirect-value type mismatch tag
+}
+
+func (f fieldOf) indirect(tag string) (cloneF fieldOf, skip bool) {
+	cloneF = f
+	if cloneF.cfg.IndirectValue &&
+		cloneF.rkind == kPtr {
 		cloneF.rval = indirv(cloneF.rval)
 		cloneF.rkind = cloneF.rval.Kind()
 		cloneF.val = cloneF.rval.Interface()
+		cloneF.str = cast.ToString(cloneF.val)
 		ok := tagApplyKind(_apply, tag, cloneF.rkind)
-		if !ok {
+		if ok {
 			return cloneF, false
+		} else {
+			return f, true
 		}
 	}
-	return cloneF, true
+	return f, true
 }
 
 func (f fieldOf) errPointerNil(tagk, tagv string) error {
-	if f.rval.Kind() == kPtr && f.rval.IsNil() {
+	if f.rkind == kPtr && f.rval.IsNil() {
 		return fmt.Errorf(errPtrNilFmt, f.name, tagk, tagv)
 	}
 	return nil

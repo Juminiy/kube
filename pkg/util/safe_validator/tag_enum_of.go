@@ -19,20 +19,12 @@ import (
 // kF64 	| enum:3.33,1.22,2.11	| special judge
 // kPtr 	| enum:x,xx,xxx			| indir
 func (f fieldOf) validEnum(tagv string) error {
-	if ptrNilErr := f.errPointerNil(enumOf, tagv); ptrNilErr != nil {
-		return ptrNilErr
-	}
-	cloneF, ok := f.indirect(enumOf)
-	if !ok {
-		return nil
-	} // skip indirect value mismatch tag
-
-	if util.ElemIn(cloneF.rkind, kF32, kF64) {
-		return cloneF.validEnumFloat(tagv)
+	if util.ElemIn(f.rkind, kF32, kF64) {
+		return f.validEnumFloat(tagv)
 	}
 
-	if !lo.Contains(strings.Split(tagv, ","), cloneF.str) {
-		return cloneF.enumValidErr(tagv)
+	if !lo.Contains(strings.Split(tagv, ","), f.str) {
+		return f.enumValidErr(tagv)
 	}
 	return nil
 }
