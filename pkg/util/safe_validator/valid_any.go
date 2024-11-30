@@ -1,6 +1,7 @@
 package safe_validator
 
 func (cfg *Config) Any(v any) bool {
+
 	return true
 }
 

@@ -8,3 +8,10 @@ func (f fieldOf) validNotZero() error {
 	}
 	return nil
 }
+
+func (f fieldOf) validIsZero() error {
+	if !f.rval.IsZero() {
+		return fmt.Errorf(errValInvalidFmt, f.name, f.val, "is not zero")
+	}
+	return nil
+}

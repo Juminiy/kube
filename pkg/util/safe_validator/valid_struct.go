@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/Juminiy/kube/pkg/util/safe_reflect"
+	"github.com/samber/lo"
 	"github.com/spf13/cast"
 	"reflect"
 )
@@ -62,6 +63,9 @@ func (s *structOf) valid() bool {
 	}
 
 	for name, typ := range s.FieldRTyp {
+		if len(s.FieldTagKv[name]) == 0 {
+			continue
+		}
 		field := fieldOf{
 			name:  name,
 			rkind: typ.Kind(),
@@ -71,7 +75,23 @@ func (s *structOf) valid() bool {
 			tag:   s.FieldTagKv[name],
 			cfg:   s.cfg,
 		}
-		if s.Has(field.valid()) && s.cfg.OnErrorStop {
+		field.tag = lo.MapKeys(field.tag, func(_tagv string, _tagk string) (_tagkNew string) {
+			return parseTagK(_tagk)
+		})
+		if tagk0, tagk1 := field.tagConflict(); len(tagk0) > 0 && len(tagk1) > 0 {
+			if s.cfg.IgnoreTagError {
+				continue
+			}
+			s.Has(field.errTagConflict(tagk0, tagk1))
+		}
+
+		if err := field.valid(); err != nil {
+			if errIsTagFormat(err) && s.cfg.IgnoreTagError {
+				continue
+			}
+			s.Has(err)
+		}
+		if s.Has() && s.cfg.OnErrorStop {
 			return false
 		}
 	}

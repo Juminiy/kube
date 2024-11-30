@@ -1,3 +1,4 @@
-1. Ptr type
-2. By Config
-3. Array, Slice
+1. Ptr type, ok
+2. By Config, ok
+3. Array, Slice, Map Type
+4. time.Time Type

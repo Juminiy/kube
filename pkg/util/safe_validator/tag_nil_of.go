@@ -10,3 +10,10 @@ func (f fieldOf) validNotNil() error {
 	}
 	return nil
 }
+
+func (f fieldOf) validIsNil() error {
+	if !f.rval.IsNil() {
+		return fmt.Errorf(errValInvalidFmt, f.name, f.rval.String(), "is not nil")
+	}
+	return nil
+}

@@ -1,6 +1,8 @@
 package util
 
-import "cmp"
+import (
+	"cmp"
+)
 
 func NewBool(bVar bool) *bool {
 	return &bVar

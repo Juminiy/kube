@@ -107,3 +107,10 @@ func StringContainsAll(s string, e ...string) bool {
 	}
 	return true
 }
+
+func StringTrimPrefix(s string, e ...string) string {
+	for i := range e {
+		s = strings.TrimPrefix(s, e[i])
+	}
+	return s
+}

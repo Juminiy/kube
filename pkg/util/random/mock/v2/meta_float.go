@@ -2,9 +2,9 @@
 package mockv2
 
 import (
+	"github.com/Juminiy/kube/pkg/util"
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/spf13/cast"
-	"math"
 )
 
 type FloatFunc func() float64
@@ -24,15 +24,15 @@ const (
 
 // type decl is all float64
 var floatRule = rule{
-	"float32:min": math.SmallestNonzeroFloat32,
-	"float32:max": math.MaxFloat32,
-	"float64:min": math.SmallestNonzeroFloat64,
-	"float64:max": math.MaxFloat64,
+	"float32:min": util.MinFloat32,
+	"float32:max": util.MaxFloat32,
+	"float64:min": util.MinFloat64,
+	"float64:max": util.MaxFloat64,
 }
 
 func (r *rule) applyFloat(minval, maxval string) {
-	(*r)["float32:min"], (*r)["float32:max"] = rangeOfFloat64(minval, maxval, math.SmallestNonzeroFloat32, math.MaxFloat32, math.MaxFloat32)
-	(*r)["float64:min"], (*r)["float64:max"] = rangeOfFloat64(minval, maxval, math.SmallestNonzeroFloat64, math.MaxFloat64, math.MaxFloat64)
+	(*r)["float32:min"], (*r)["float32:max"] = rangeOfFloat64(minval, maxval, util.MinFloat32Overflow, util.MaxFloat32Overflow, util.MaxFloat32Overflow)
+	(*r)["float64:min"], (*r)["float64:max"] = rangeOfFloat64(minval, maxval, util.MinFloat64, util.MaxFloat64, util.MaxFloat64)
 }
 
 // get a valid pair range value

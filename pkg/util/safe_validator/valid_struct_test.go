@@ -117,3 +117,15 @@ func TestStrictStructE4(t *testing.T) {
 		S1: util.Zero[*string](),
 	}))
 }
+
+func TestParseTagK(t *testing.T) {
+	tagK := "nil"
+	for _, prefix := range []string{
+		"",          // 0
+		"not_", "!", // 1
+		"not_not_", "not_!", "!not_", "!!", // 2
+		"not_not_not_", "not_not_!", "not_!not_", "not_!!", "!not_not_", "!not_!", "!!not_", "!!!", // 3
+	} {
+		t.Logf("%19s -> %7s", prefix+tagK, parseTagK(prefix+tagK))
+	}
+}

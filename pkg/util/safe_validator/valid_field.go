@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/Juminiy/kube/pkg/util/safe_reflect"
+	"github.com/samber/lo"
 	"github.com/spf13/cast"
 	"reflect"
 )
@@ -17,6 +18,24 @@ type fieldOf struct {
 	tag   safe_reflect.TagKV
 
 	cfg *Config
+}
+
+func (f fieldOf) tagConflict() (string, string) {
+	for tagk := range f.tag {
+		if tagkc, ok := lo.FindKeyBy(f.tag, func(tagkReverse string, _ string) bool {
+			if tagk != tagkReverse && tagSuffix(tagk) == tagSuffix(tagkReverse) {
+				return true
+			}
+			return false
+		}); ok {
+			return tagk, tagkc
+		}
+	}
+	return "", ""
+}
+
+func (f fieldOf) errTagConflict(tagk0, tagk1 string) error {
+	return fmt.Errorf(errTagConflictFmt, f.name, tagk0, tagk1)
 }
 
 func (f fieldOf) valid() error {
@@ -39,18 +58,32 @@ func (f fieldOf) valid() error {
 		switch tagk {
 		case enumOf:
 			err = cloneF.validEnum(tagv)
+		case notEnum:
+			err = cloneF.validEnumNot(tagv)
+		case isNil:
+			err = cloneF.validIsNil()
 		case notNil:
 			err = cloneF.validNotNil()
+		case isZero:
+			err = cloneF.validIsZero()
 		case notZero:
 			err = cloneF.validNotZero()
 		case rangeOf:
 			err = cloneF.validRange(tagv)
+		case notRange:
+			err = cloneF.validRangeNot(tagv)
 		case lenOf:
 			err = cloneF.validLen(tagv)
+		case notLen:
+			err = cloneF.validLenNot(tagv)
 		case ruleOf:
 			err = cloneF.validRule(tagv)
+		case notRule:
+			err = cloneF.validRuleNot(tagv)
 		case regexOf:
 			err = cloneF.validRegex(tagv)
+		case notRegex:
+			err = cloneF.validRegexNot(tagv)
 		case defaultOf:
 			cloneF.setDefault(tagv)
 		}

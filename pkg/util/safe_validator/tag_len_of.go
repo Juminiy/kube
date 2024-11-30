@@ -24,20 +24,39 @@ func (f fieldOf) validLen(tagv string) error {
 	if !lenRangeParsed.valid {
 		return f.lenFormatErr(tagv)
 	}
-
 	lenRangeParsed.setLimitInt(int64(0), int64(math.MaxInt))
+
 	if rvlen := f.rval.Len(); !util.InRange(
 		safe_cast.ItoI64(rvlen), *lenRangeParsed.intL, *lenRangeParsed.intR) {
-		return f.lenValidErr(rvlen, tagv)
+		return f.lenInValidErr(rvlen, tagv)
 	}
 	return nil
 }
 
-func (f fieldOf) lenFormatErr(tagv string) error {
-	return fmt.Errorf(errTagFormatFmt, f.name, lenOf, tagv)
-}
-
-func (f fieldOf) lenValidErr(vlen int, tagv string) error {
+func (f fieldOf) lenInValidErr(vlen int, tagv string) error {
 	return fmt.Errorf(errValInvalidFmt, f.name, f.val,
 		fmt.Sprintf("len: %d not in range: (%s)", vlen, tagv))
+}
+
+func (f fieldOf) validLenNot(tagv string) error {
+	lenRangeParsed := parseRange(tagv)
+	if !lenRangeParsed.valid {
+		return f.lenFormatErr(tagv)
+	}
+	lenRangeParsed.setLimitInt(int64(0), int64(math.MaxInt))
+
+	if rvlen := f.rval.Len(); util.InRange(
+		safe_cast.ItoI64(rvlen), *lenRangeParsed.intL, *lenRangeParsed.intR) {
+		return f.lenNotInValidErr(rvlen, tagv)
+	}
+	return nil
+}
+
+func (f fieldOf) lenNotInValidErr(vlen int, tagv string) error {
+	return fmt.Errorf(errValInvalidFmt, f.name, f.val,
+		fmt.Sprintf("len: %d in range: (%s)", vlen, tagv))
+}
+
+func (f fieldOf) lenFormatErr(tagv string) error {
+	return fmt.Errorf(errTagFormatFmt, f.name, lenOf, tagv)
 }
