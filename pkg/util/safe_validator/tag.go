@@ -57,7 +57,7 @@ var _apply = tagApplyKindT{
 	enumOf:    {kDirectCompare: _est},
 	ruleOf:    {kLikeStr: _est},
 	regexOf:   {kLikeStr: _est},
-	defaultOf: {kAll: _est},
+	defaultOf: {kDirectCompare: _est},
 }
 
 func init() {

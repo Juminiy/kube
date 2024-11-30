@@ -40,12 +40,11 @@ type Config struct {
 
 var _defaultConfig = &Config{
 	Tag:              "valid",
-	OnErrorStop:      false,
-	IgnoreTagError:   false,
+	OnErrorStop:      true,
+	IgnoreTagError:   true,
 	IndirectValue:    false,
 	AllowEmbedStruct: false,
 	FloatPrecision:   -1,
-	once:             sync.Once{},
 }
 
 func Default() *Config {
@@ -59,7 +58,6 @@ var _strictConfig = &Config{
 	IndirectValue:    true,
 	AllowEmbedStruct: true,
 	FloatPrecision:   66,
-	once:             sync.Once{},
 }
 
 func Strict() *Config { return _strictConfig.Load() }

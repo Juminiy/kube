@@ -66,6 +66,18 @@ type t1 struct {
 	I1 *int    `valid:"range:10~100"`
 	S0 *string `valid:"len:5~10"`
 	S1 *string `valid:"not_nil;len:1~3"`
+	S2 *int    `valid:"default:5"`
+}
+
+func TestStrictStructE5(t *testing.T) {
+	t.Log(Strict().StructE(
+		t1{
+			I0: util.New(1),
+			I1: util.New(77),
+			S0: util.New("abcde"),
+			S1: util.New("中国"),
+			S2: util.New(0),
+		}))
 }
 
 func TestStrictStructE1(t *testing.T) {
