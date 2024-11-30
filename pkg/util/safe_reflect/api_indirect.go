@@ -21,9 +21,9 @@ func indirectV(v any) (val reflect.Value) {
 func indirect(v reflect.Value) TypVal {
 	indirV := noPointer(v)
 	return TypVal{
-		Typ: indirV.Type(),
+		Typ: rValueType(indirV),
 		Val: indirV,
-		typ: v.Type(),
+		typ: rValueType(v),
 		//val: v,
 	}
 }

@@ -355,7 +355,7 @@ func TestHowAssignable(t *testing.T) {
 func TestHowAssignable2(t *testing.T) {
 
 	logFCan := func(desc string, v reflect.Value) {
-		t.Logf("%12s value_type(%6s) CanSet(%1s) CanAddr(%1s)", desc, trimTyp(v.Type().String()), yn(v.CanSet()), yn(v.CanAddr()))
+		t.Logf("%12s value_type(%6s) CanSet(%1s) CanAddr(%1s)", desc, trimTyp(rValueType(v).String()), yn(v.CanSet()), yn(v.CanAddr()))
 	}
 	// ENUM OF
 	// (struct, array, slice, map)

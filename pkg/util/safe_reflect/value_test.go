@@ -2,6 +2,7 @@ package safe_reflect
 
 import (
 	"github.com/Juminiy/kube/pkg/util"
+	"reflect"
 	"strconv"
 	"testing"
 )
@@ -55,4 +56,11 @@ func TestCopyFieldValue(t *testing.T) {
 	t.Logf("src1: %s -> %s", src1S, src1.String())
 	t.Logf("dst1: %s -> %s", dst1S, dst1.String())
 	t.Logf("dst2: %s -> %s", dst2S, dst2.String())
+}
+
+func TestSet(t *testing.T) {
+	var iptr *int
+
+	reflect.ValueOf(iptr).Elem().SetInt(int64(666))
+	t.Log(iptr)
 }

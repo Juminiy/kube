@@ -97,6 +97,9 @@ func (tv TypVal) HasMethod(methodName string, in, out []any) bool {
 	tv.noPointer()
 
 	typ := tv.Typ
+	if typ == nil {
+		return false
+	}
 	method, ok := typ.MethodByName(methodName)
 	if !ok {
 		return false

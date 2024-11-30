@@ -52,7 +52,7 @@ func (tv *TypVal) unpack() reflect.Value {
 	v, packed := unpackOk(tv.Val)
 	if packed {
 		tv.Val = v
-		tv.Typ = v.Type()
+		tv.Typ = rValueType(v)
 	}
 	return v
 }
@@ -77,7 +77,7 @@ func unpackV(v any) reflect.Value {
 }
 
 func unpackT(v any) reflect.Type {
-	return unpackV(v).Type()
+	return rValueType(unpackV(v))
 }
 
 func unpackEqual(v0, v1 any) bool {
@@ -130,7 +130,7 @@ func IndirectImpl(v any, iFace any) (inst any, inst2 any) {
 
 	// pointer impl
 	val := onePointer(directV(v))
-	typ := val.Type()
+	typ := rValueType(val)
 	if impl(typ, ifaceTyp) &&
 		val.CanInterface() {
 		inst = val.Interface()

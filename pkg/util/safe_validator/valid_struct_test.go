@@ -2,6 +2,9 @@ package safe_validator
 
 import (
 	"github.com/Juminiy/kube/pkg/util"
+	"github.com/Juminiy/kube/pkg/util/safe_json"
+	"github.com/Juminiy/kube/pkg/util/safe_reflect"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -128,4 +131,44 @@ func TestParseTagK(t *testing.T) {
 	} {
 		t.Logf("%19s -> %7s", prefix+tagK, parseTagK(prefix+tagK))
 	}
+}
+
+func TestStrictStructEDefaultOf(t *testing.T) {
+	var v2 struct {
+		I0v   int  `valid:"default:333"`
+		I0ptr *int `valid:"default:666"`
+	}
+	t.Log(Strict().StructE(&v2), v2)
+}
+
+func TestAssignValueToPtr(t *testing.T) {
+	var iptr *int
+	safe_reflect.Set(666, iptr)
+	t.Log(iptr)
+
+	var iptr2 = util.New(777)
+	safe_reflect.Set(999, iptr2)
+	t.Log(iptr2, *iptr2)
+
+	var iptr3 *int
+	var i3 int
+	reflect.ValueOf(&i3).Elem().Set(reflect.ValueOf(1024))
+	t.Log(i3)
+	reflect.ValueOf(&iptr3).Elem().Set(reflect.ValueOf(util.New(888)))
+	t.Log(iptr3, *iptr3)
+}
+
+func TestJSONAssign(t *testing.T) {
+	var v3 struct {
+		Name         *string                                                  `json:"name,omitempty"`
+		Age          *int                                                     `json:"age,omitempty"`
+		Region       **int                                                    `json:"region,omitempty"`
+		UnlimitedPtr **************************************************string `json:"unlimited_ptr"`
+	}
+	jsonStr := `{"name": "Bob", "age": 18, "region": 6, "unlimited_ptr": "mom"}`
+	safe_json.From(jsonStr, v3)
+	t.Log(safe_json.String(v3))
+
+	safe_json.From(jsonStr, &v3)
+	t.Log(safe_json.String(v3))
 }

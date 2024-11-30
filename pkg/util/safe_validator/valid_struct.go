@@ -44,7 +44,7 @@ type structOf struct {
 
 func (cfg *Config) parseStruct(v any) *structOf {
 	tv := indir(v)
-	if tv.Typ.Kind() != kStruct {
+	if tv.Val.Kind() != kStruct {
 		return nil
 	}
 	return &structOf{

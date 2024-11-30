@@ -13,7 +13,7 @@ func (tv *TypVal) noPointer() reflect.Value {
 	v, pointed := noPtrOk(tv.Val)
 	if pointed {
 		tv.Val = v
-		tv.Typ = v.Type()
+		tv.Typ = rValueType(v)
 	}
 	return v
 }

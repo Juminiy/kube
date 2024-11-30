@@ -1,11 +1,15 @@
 package safe_validator
 
-import "github.com/Juminiy/kube/pkg/util/safe_cast/safe_parse"
+import (
+	"github.com/Juminiy/kube/pkg/util/safe_cast/safe_parse"
+	"reflect"
+)
 
 func (f fieldOf) setDefault(tagv string) {
 	if !f.rval.CanSet() || !f.rval.IsZero() {
 		return
 	}
+
 	switch f.rkind {
 	case kBool:
 		v, ok := safe_parse.ParseBool(tagv)
@@ -79,7 +83,21 @@ func (f fieldOf) setDefault(tagv string) {
 		}
 	case kString:
 		f.rval.SetString(tagv)
+	case kPtr:
+		f.setDefaultToPtr(tagv)
 	default:
 		panic(errTagKindCheckErr)
 	}
+}
+
+func (f fieldOf) setDefaultToPtr(tagv string) {
+	parsedTypedV := safe_parse.Parse(tagv)
+	rvalElem := f.rval.Elem()
+	if rvalElem.CanSet() {
+		val, ok := parsedTypedV.Get(rvalElem.Kind())
+		if ok {
+			rvalElem.Set(reflect.ValueOf(val))
+		}
+	}
+
 }

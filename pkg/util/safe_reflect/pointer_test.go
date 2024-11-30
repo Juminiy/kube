@@ -12,8 +12,8 @@ func TestDeref(t *testing.T) {
 	i32PPPtr := &i32PPtr
 
 	t.Logf("before deref type: %v", directT(i32PPPtr).String())
-	t.Logf("after deref type: %v", onePointer(directV(i32PPPtr)).Type().String())
-	t.Logf("after deref type: %v", noPointer(directV(i32PPPtr)).Type().String())
+	t.Logf("after deref type: %v", rValueType(onePointer(directV(i32PPPtr))).String())
+	t.Logf("after deref type: %v", rValueType(noPointer(directV(i32PPPtr))).String())
 }
 
 // +unpassed no-sense

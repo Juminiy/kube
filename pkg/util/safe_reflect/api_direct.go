@@ -14,7 +14,7 @@ func directT(v any) (typ reflect.Type) { return zero_reflect.TypeOf(v) }
 func directV(v any) (val reflect.Value) { return reflect.ValueOf(v) }
 
 func direct(v reflect.Value) TypVal {
-	t := v.Type()
+	t := rValueType(v)
 	return TypVal{
 		Typ: t,
 		Val: v,

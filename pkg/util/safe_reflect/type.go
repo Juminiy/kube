@@ -46,6 +46,9 @@ const (
 
 // CanDirectAssign only use Type not use flag, a bit of incoming rule
 func (tv TypVal) CanDirectAssign() bool {
+	if tv.typ == nil {
+		return false
+	}
 	return util.ElemIn(tv.typ.Kind(),
 		Chan, Map, Slice,
 	)
@@ -106,3 +109,10 @@ func StructGetTag2(v any, app0, key0, app1, key1 string) (tag0, tag1 TagVV, ok b
 var errorType = directT((*error)(nil)).Elem()
 var stringerType = directT((*fmt.Stringer)(nil)).Elem()
 var timeType = directT(time.Time{})
+
+func rValueType(v reflect.Value) reflect.Type {
+	if v.IsValid() {
+		return v.Type()
+	}
+	return nil
+}

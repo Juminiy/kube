@@ -114,7 +114,7 @@ func (tv TypVal) MapDeleteElemIsZeroKeys() {
 	deleteIndex := make([]int, 0, len(mapKeys))
 	for i := range mapKeys {
 		unpackMapElem := unpack(v.MapIndex(mapKeys[i]))
-		if CanDirectCompare(unpackMapElem.Type()) && unpackMapElem.IsZero() {
+		if CanDirectCompare(rValueType(unpackMapElem)) && unpackMapElem.IsZero() {
 			deleteIndex = append(deleteIndex, i)
 		}
 	}
