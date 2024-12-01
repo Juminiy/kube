@@ -56,7 +56,7 @@ func (r readable) Get(kind reflect.Kind, kindDesc ...string) (v any, ok bool) {
 		if r.numberV != nil {
 			return (*r.numberV).Get(kind)
 		}
-	case reflect.String:
+	case reflect.Interface, reflect.String:
 		return r.stringV, true
 	default:
 		if len(kindDesc) > 0 {

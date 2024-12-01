@@ -133,14 +133,6 @@ func TestParseTagK(t *testing.T) {
 	}
 }
 
-func TestStrictStructEDefaultOf(t *testing.T) {
-	var v2 struct {
-		I0v   int  `valid:"default:333"`
-		I0ptr *int `valid:"default:666"`
-	}
-	t.Log(Strict().StructE(&v2), v2)
-}
-
 func TestAssignValueToPtr(t *testing.T) {
 	var iptr *int
 	safe_reflect.Set(666, iptr)
@@ -163,12 +155,26 @@ func TestJSONAssign(t *testing.T) {
 		Name         *string                                                  `json:"name,omitempty"`
 		Age          *int                                                     `json:"age,omitempty"`
 		Region       **int                                                    `json:"region,omitempty"`
-		UnlimitedPtr **************************************************string `json:"unlimited_ptr"`
+		UnlimitedPtr **************************************************string `json:"unlimited_ptr,omitempty"`
+		E0           any                                                      `json:"e0,omitempty"`
+		E1           *any                                                     `json:"e1,omitempty"`
 	}
-	jsonStr := `{"name": "Bob", "age": 18, "region": 6, "unlimited_ptr": "mom"}`
+	jsonStr := `{"name": "Bob", "age": 18, "region": 6, "unlimited_ptr": "mom", "e0": 999, "e1": "srv6"}`
 	safe_json.From(jsonStr, v3)
 	t.Log(safe_json.String(v3))
 
 	safe_json.From(jsonStr, &v3)
 	t.Log(safe_json.String(v3))
+}
+
+func TestStrictStructEDefaultOf(t *testing.T) {
+	var v2 struct {
+		I0v   int     `valid:"default:333"`
+		I0ptr *int    `valid:"default:666"`
+		S0    *string `valid:"default:srte"`
+		E0    any     `valid:"default:any_string"`
+		E1    *any    `valid:"default:any_full"`
+	}
+	v2.S0 = util.New("srv6")
+	t.Log(Strict().StructE(&v2), safe_json.String(v2))
 }

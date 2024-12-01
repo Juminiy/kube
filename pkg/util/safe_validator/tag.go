@@ -70,13 +70,14 @@ const (
 )
 
 var (
-	_parseRegexp = regexp.MustCompile(`(not_|!)*`)
+	_parseTagKPrefixRegexp = regexp.MustCompile(`(not_|!)*`)
 )
 
 // len, not_not_len, !!len, not_!len, !not_len -> len
 // !len, not_len, !!!len, !not_!len -> not_len
 // tagk suffix not in (notNil, enumOf, notZero, rangeOf, lenOf, ruleOf, regexOf, defaultOf) -> -
 func parseTagK(tagk string) string {
+	tagk = strings.TrimSpace(tagk)
 	var matchSuffix = invalidTagK
 	for _, tagK := range _prior {
 		if strings.HasSuffix(tagk, tagK) {
@@ -88,7 +89,11 @@ func parseTagK(tagk string) string {
 		invalidTagK, defaultOf) {
 		return matchSuffix
 	}
-	if util.IsOdd(strings.Count(tagk, "not_") + strings.Count(tagk, "!")) {
+	matchPrefix := strings.TrimSuffix(tagk, matchSuffix)
+	if !_parseTagKPrefixRegexp.MatchString(matchPrefix) {
+		return invalidTagK
+	}
+	if util.IsOdd(strings.Count(matchPrefix, "not_") + strings.Count(matchPrefix, "!")) {
 		return "not_" + matchSuffix
 	} else {
 		return matchSuffix
@@ -109,6 +114,8 @@ var _prior = []string{
 	ruleOf, notRule,
 	regexOf, notRegex,
 	defaultOf}
+
+var _readVTagK = _prior[2:14]
 
 type tagApplyKindT map[string]map[kind]est
 

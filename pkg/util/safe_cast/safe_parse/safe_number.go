@@ -153,20 +153,24 @@ func (n Number) Get(kind reflect.Kind) (v any, ok bool) {
 			return *n.u, true
 		}
 	case reflect.Uint8:
-		if n.u != nil {
+		if n.u8 != nil {
 			return *n.u8, true
 		}
 	case reflect.Uint16:
-		if n.u != nil {
+		if n.u16 != nil {
 			return *n.u16, true
 		}
 	case reflect.Uint32:
-		if n.u != nil {
+		if n.u32 != nil {
 			return *n.u32, true
 		}
-	case reflect.Uint64, reflect.Uintptr:
-		if n.u != nil {
+	case reflect.Uint64:
+		if n.u64 != nil {
 			return *n.u64, true
+		}
+	case reflect.Uintptr:
+		if n.uptr != nil {
+			return *n.uptr, true
 		}
 	case reflect.Float32:
 		if n.u != nil {

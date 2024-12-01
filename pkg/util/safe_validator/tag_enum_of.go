@@ -63,9 +63,9 @@ func (f fieldOf) validEnumNot(tagv string) error {
 
 	if f.valueInEnums(enums) {
 		if util.ElemIn(f.rkind, kF32, kF64) {
-			return f.enumNotInValidErr(tagv)
-		} else {
 			return f.enumNotInValidFloatErr(tagv)
+		} else {
+			return f.enumNotInValidErr(tagv)
 		}
 	}
 	return nil

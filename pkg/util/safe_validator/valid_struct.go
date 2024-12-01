@@ -5,7 +5,6 @@ import (
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/Juminiy/kube/pkg/util/safe_reflect"
 	"github.com/samber/lo"
-	"github.com/spf13/cast"
 	"reflect"
 )
 
@@ -71,7 +70,7 @@ func (s *structOf) valid() bool {
 			rkind: typ.Kind(),
 			rval:  s.FieldRVal[name],
 			val:   s.FieldVal[name],
-			str:   cast.ToString(s.FieldVal[name]),
+			str:   toString(s.FieldVal[name]),
 			tag:   s.FieldTagKv[name],
 			cfg:   s.cfg,
 		}

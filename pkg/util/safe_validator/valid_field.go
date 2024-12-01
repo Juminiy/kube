@@ -5,7 +5,6 @@ import (
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/Juminiy/kube/pkg/util/safe_reflect"
 	"github.com/samber/lo"
-	"github.com/spf13/cast"
 	"reflect"
 )
 
@@ -48,6 +47,13 @@ func (f fieldOf) valid() error {
 		}
 
 		tagv := f.tag[tagk]
+		if util.ElemIn(tagk, _readVTagK...) {
+			if util.ElemIn(tagk, isZero, notZero) {
+
+			} else if len(tagv) == 0 {
+				continue
+			}
+		}
 		cloneF, skip, err := f.tagApplyIndirect(tagk, tagv)
 		if err != nil {
 			return err
@@ -96,12 +102,11 @@ func (f fieldOf) valid() error {
 }
 
 func (f fieldOf) tagApplyIndirect(tagk, tagv string) (cloneF fieldOf, skip bool, err error) {
-	if f.rkind != kPtr || util.ElemIn(tagk,
-		notNil, defaultOf) {
+	if !util.ElemIn(f.rkind, kPtr, kAny) ||
+		util.ElemIn(tagk, notNil, isNil, defaultOf) {
 		return f, false, nil
 	}
-	if !util.ElemIn(tagk,
-		enumOf, lenOf, notZero, rangeOf, regexOf, ruleOf) {
+	if !util.ElemIn(tagk, _readVTagK...) {
 		return f, true, nil
 	}
 	if err = f.errPointerNil(tagk, tagv); err != nil {
@@ -118,7 +123,7 @@ func (f fieldOf) indirect(tag string) (cloneF fieldOf, skip bool) {
 		cloneF.rval = indirv(cloneF.rval)
 		cloneF.rkind = cloneF.rval.Kind()
 		cloneF.val = cloneF.rval.Interface()
-		cloneF.str = cast.ToString(cloneF.val)
+		cloneF.str = toString(cloneF.val)
 		ok := tagApplyKind(_apply, tag, cloneF.rkind)
 		if ok {
 			return cloneF, false

@@ -23,11 +23,14 @@ type Config struct {
 	IgnoreTagError bool
 
 	// IndirectValue
-	// can apply field tag validator to pointer value
+	// can apply field tag validator to pointer,any value
 	IndirectValue bool
 
 	// AllowEmbedStruct
 	AllowEmbedStruct bool
+
+	// AllowUnexported
+	AllowUnexported bool
 
 	// FloatPrecision
 	// set default precision by -1
@@ -67,7 +70,7 @@ func (cfg *Config) Load() *Config {
 		cfg.apply = maps.Clone(_apply)
 		if cfg.IndirectValue {
 			for tag, kinds := range cfg.apply {
-				cfg.apply[tag] = util.MapInsert(maps.Clone(kinds), kPtr)
+				cfg.apply[tag] = util.MapInsert(maps.Clone(kinds), kPtr, kAny)
 			}
 		}
 	})

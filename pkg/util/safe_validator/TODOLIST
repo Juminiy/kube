@@ -2,3 +2,4 @@
 2. By Config, ok
 3. Array, Slice, Map Type
 4. time.Time Type
+5. Array-Elem, Slice-Elem, Map-Key, Map-Elem
