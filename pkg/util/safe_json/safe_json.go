@@ -38,6 +38,11 @@ func String(v any) string {
 	return util.Bytes2StringNoCopy(bs)
 }
 
+func Bytes(v any) []byte {
+	bs, _ := SafeMarshal(v)
+	return bs
+}
+
 func Pretty(v any) string {
 	bs, _ := SafeMarshalPretty(v)
 	return util.Bytes2StringNoCopy(bs)

@@ -5,6 +5,7 @@ import (
 	"github.com/Juminiy/kube/pkg/netserver/http/stdserver"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/Juminiy/kube/pkg/util/safe_json"
+	"github.com/Juminiy/kube/pkg/util/safe_validator"
 	"github.com/gofiber/fiber/v3"
 )
 
@@ -44,7 +45,7 @@ func New() *fiber.App {
 		TrustedProxies:               nil,
 		EnableIPValidation:           false,
 		ColorScheme:                  fiber.Colors{},
-		StructValidator:              nil,
+		StructValidator:              safe_validator.Strict(),
 		RequestMethods:               stdserver.LawHTTPMethod,
 		EnableSplittingOnParsers:     false,
 	})
