@@ -31,3 +31,16 @@ func TarIOReader2File(ioReader io.Reader, filePath string) (err error) {
 	_, err = io.Copy(tarFileWriter, ioReader)
 	return
 }
+
+func TarIOReaderToFileV2(ioReader io.Reader, filePath string) (err error) {
+	filePtr, err := OSOpenFileWithCreate(filePath)
+	defer SilentCloseIO("tar file ptr", filePtr)
+	if err != nil {
+		return
+	}
+
+	tarWriter := tar.NewWriter(filePtr)
+	defer SilentCloseIO("tar file writer", tarWriter)
+	_, err = io.Copy(tarWriter, ioReader)
+	return
+}

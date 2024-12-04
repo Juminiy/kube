@@ -48,26 +48,22 @@ set:
 	mkdir -p $(BIN_DIR)
 	env GO111MODULE=on GOPROXY=https://goproxy.cn,direct go mod tidy
 
-.PHONY: all
-all: menud
-	@echo "make $^ in $(HOST_ARCH)/$(HOST_OS)"
-
 .PHONY: test
 test:
 	go test $(GO_LIST_DIR)
 	go test -cover $(GO_LIST_DIR)
 
+.PHONY: vet
 vet:
 	go vet $(GO_LIST_DIR)
 
-.PHONY: clean
-clean:
-	rm -rf $(BIN_DIR)
+.PHONY: vendor
+vendor:
+	go mod vendor
 
-.PHONY: menud
-menud: set vet
-	$(GO_RUN_BUILD)
-
+################################
+#		codegen git-add  	   #
+################################
 .PHONY: codegen
 codegen: set
 	go run cmd/codegencli/codegencli.go -gen all
@@ -89,3 +85,19 @@ codegenharbor: set
 codegenminio: set
 	go run cmd/codegencli/codegencli.go -gen minio
 	git add pkg/storage_api/minio_api/minio_inst/client.go
+
+
+################################
+#		binary executable  	   #
+################################
+.PHONY: all
+all: menud
+	@echo "make $^ in $(HOST_ARCH)/$(HOST_OS)"
+
+.PHONY: clean
+clean:
+	rm -rf $(BIN_DIR)
+
+.PHONY: menud
+menud: set vet
+	$(GO_RUN_BUILD)

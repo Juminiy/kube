@@ -15,6 +15,7 @@ import (
 
 var (
 	errImageNotFound = errors.New("image not found")
+	errImageInternal = errors.New("image internal error")
 )
 
 // ExportImage
@@ -90,7 +91,7 @@ func (c *Client) ImportImage(absRefStr string, input io.Reader) (io.ReadCloser, 
 	}
 
 	if len(loadedImageRefStr) == 0 {
-		return nil, errImageNotFound
+		return nil, errImageInternal
 	}
 	return c.CreateImageTag(absRefStr, loadedImageRefStr)
 }

@@ -51,3 +51,14 @@ func (c *Client) WithRegistryAuth(registryAuthConfig *registry.AuthConfig) *Clie
 }
 
 func (c *Client) GC(gcFn ...util.Func) {}
+
+type ClientFunc func(client *dockercli.Client) error
+
+func (c *Client) Do(cfn ...ClientFunc) error {
+	for i := range cfn {
+		if err := cfn[i](c.cli); err != nil {
+			return err
+		}
+	}
+	return nil
+}

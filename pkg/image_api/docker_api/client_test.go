@@ -6,20 +6,26 @@ import (
 )
 
 const (
-	hostURL       = "tcp://192.168.31.242:2375"
-	clientVersion = "1.47"
+	hostIP              = "10.112.121.243"
+	dockerPort          = "2375"
+	dockerAddr          = "tcp://" + hostIP + ":" + dockerPort
+	dockerClientVersion = "1.43"
+	harborPort          = "8111"
+	harborAddr          = hostIP + ":" + harborPort
+	harborAuthUsername  = "admin"
+	harborAuthPassword  = "bupt.harbor@666"
 )
 
 var (
-	testNewClient, testDockerClientError = New(hostURL, clientVersion)
+	testNewClient, testDockerClientError = New(dockerAddr, dockerClientVersion)
 )
 
 func initFunc() {
 	util.SilentPanic(testDockerClientError)
 
 	testNewClient.WithRegistryAuth(&registry.AuthConfig{
-		Username:      "admin",
-		Password:      "Harbor12345",
-		ServerAddress: "192.168.31.242:8662",
+		Username:      harborAuthUsername,
+		Password:      harborAuthPassword,
+		ServerAddress: harborAddr,
 	})
 }
