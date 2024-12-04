@@ -8,6 +8,7 @@ import (
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/moby/sys/sequential"
 	"io"
+	"os"
 	"testing"
 )
 
@@ -29,20 +30,16 @@ var (
 // +passed
 func TestClient_ExportImage(t *testing.T) {
 	initFunc()
-	imageRC, err := testNewClient.ExportImage(imageRef.String())
+	imagePullResp, imageSaveResp, err := testNewClient.ExportImage(imageRef.String())
 	if err != nil {
 		panic(err)
 	}
 
-	imageBytes, err := io.ReadAll(imageRC)
-	defer util.SilentCloseIO("image read error", imageRC)
+	_, err = io.Copy(os.Stderr, imagePullResp)
+	util.Must(err)
 
-	stdlog.InfoF("size of image amd64 %s is: %s", imageRef.String(), util.BytesOf(imageBytes))
-
-	//err = util.TarIOReaderToFileV2(imageRC, testTarGzPath)
-	err = kubedockerclicommand.CopyToFile(testTarGzPath, imageRC)
-	util.SilentPanic(err)
-	stdlog.InfoF("success save tar file: %s", testTarGzPath)
+	err = kubedockerclicommand.CopyToFile(testTarGzPath, imageSaveResp)
+	util.Must(err)
 }
 
 // +failed
@@ -51,25 +48,27 @@ func TestClient_ImportImage(t *testing.T) {
 	var input io.Reader
 	file, err := sequential.Open(testTarGzPath)
 	util.Must(err)
+	//defer util.SilentCloseIO("file ptr", file)
 	input = file
 	_, err = testNewClient.ImportImage(newImageRef.String(), input)
 	util.SilentPanic(err)
-	util.SilentCloseIO("file ptr", file)
 }
 
 // +passed
 func TestClient_ExportImageImportImage(t *testing.T) {
 	initFunc()
-	imageRC, err := testNewClient.ExportImage(imageRef.String())
+	imageTarResp, imageSaveResp, err := testNewClient.ExportImage(imageRef.String())
 	if err != nil {
 		panic(err)
 	}
 
 	//imageBytes, err := io.ReadAll(imageRC)
-	defer util.SilentCloseIO("image read error", imageRC)
+	defer util.SilentCloseIO("image read error", imageTarResp)
 	//stdlog.InfoF("size of image amd64 %s is: %d", imageRef.String(), len(imageBytes))
-	importResp, err := testNewClient.ImportImage(newImageRef.String(), imageRC)
+	importResp, err := testNewClient.ImportImage(newImageRef.String(), imageTarResp)
+	util.SilentPanic(err)
 	defer util.SilentCloseIO("import resp", importResp)
 	stdlog.Info(docker_internal.GetStatusFromImagePushResp(importResp))
-	util.SilentPanic(err)
+
+	stdlog.InfoF("image save resp: %s", util.IOGetStr(imageSaveResp))
 }

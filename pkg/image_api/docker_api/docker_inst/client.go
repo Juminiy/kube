@@ -14,11 +14,15 @@ func CreateImageTag(_string string, _string2 string) (io.ReadCloser, error) {
 	return _dockerClient.CreateImageTag(_string, _string2)
 }
 
+func Do(varLenclientFunc ...docker_api.ClientFunc) error {
+	return _dockerClient.Do(varLenclientFunc...)
+}
+
 func ExportContainer(_string string) (io.ReadCloser, error) {
 	return _dockerClient.ExportContainer(_string)
 }
 
-func ExportImage(_string string) (io.ReadCloser, error) {
+func ExportImage(_string string) (io.ReadCloser, io.ReadCloser, error) {
 	return _dockerClient.ExportImage(_string)
 }
 

@@ -21,6 +21,7 @@ require (
 	github.com/mindprince/gonvml v0.0.0-20211002210717-ac0b66419a41
 	github.com/minio/madmin-go/v3 v3.0.78
 	github.com/minio/minio-go/v7 v7.0.81
+	github.com/moby/sys/sequential v0.6.0
 	github.com/modern-go/reflect2 v1.0.2
 	github.com/opencontainers/image-spec v1.1.0
 	github.com/panjf2000/ants/v2 v2.10.0
@@ -117,7 +118,6 @@ require (
 	github.com/moby/patternmatcher v0.6.0 // indirect
 	github.com/moby/sys/mount v0.3.4 // indirect
 	github.com/moby/sys/mountinfo v0.7.2 // indirect
-	github.com/moby/sys/sequential v0.6.0 // indirect
 	github.com/moby/sys/user v0.3.0 // indirect
 	github.com/moby/sys/userns v0.1.0 // indirect
 	github.com/moby/term v0.5.0 // indirect

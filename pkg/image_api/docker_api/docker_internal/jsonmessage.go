@@ -44,8 +44,8 @@ func decodeJSONMessage(ioReader io.Reader) (jsonMessage jsonmessage.JSONMessage)
 		stdlog.ErrorF("decode json message error: %s", err.Error())
 		return
 	}
-	jsonMessageJSONFmt, _ := util.MarshalJSONPretty(jsonMessage)
-	stdlog.ErrorF("raw JSONMessage: %s", jsonMessageJSONFmt)
+	//jsonMessageJSONFmt, _ := util.MarshalJSONPretty(jsonMessage)
+	//stdlog.ErrorF("raw JSONMessage: %s", jsonMessageJSONFmt)
 	if err0, err1 := jsonMessage.Error != nil, len(jsonMessage.ErrorMessage) != 0; err0 || err1 {
 		if err0 {
 			stdlog.ErrorF("json message error: %s", jsonMessage.Error.Message)

@@ -28,10 +28,10 @@ var (
 //	(2).get image id by absRefStr
 //
 //	(3).save image to docker host local get io.ReadCloser fd
-func (c *Client) ExportImage(absRefStr string) (io.ReadCloser, error) {
-	_, err := c.pullImage(absRefStr)
+func (c *Client) ExportImage(absRefStr string) (imagePullResp, imageSaveResp io.ReadCloser, err error) {
+	imagePullResp, err = c.pullImage(absRefStr)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// replace by inspect
@@ -44,10 +44,11 @@ func (c *Client) ExportImage(absRefStr string) (io.ReadCloser, error) {
 	//}
 	imageInspect, err := c.InspectImage(absRefStr)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return c.cli.ImageSave(c.ctx, []string{imageInspect.ID})
+	imageSaveResp, err = c.cli.ImageSave(c.ctx, []string{imageInspect.ID})
+	return imagePullResp, imageSaveResp, err
 }
 
 // ImportImage
@@ -70,7 +71,7 @@ func (c *Client) ImportImage(absRefStr string, input io.Reader) (io.ReadCloser, 
 
 	if loadResp.Body != nil && loadResp.JSON {
 		// return json message
-		stdlog.Debug("docker image loadResp format: json")
+		//stdlog.Debug("docker image loadResp format: json")
 		// +example1
 		// resp.body.body.body.src.r.buf JSON{"stream":"Loaded image ID: sha256:d2c94e258dcb3c5ac2798d32e1249e42ef01cba4841c2234249495f87264ac5a\n"}
 		// STDOUT: Loaded image ID: sha256:249f59e1dec7f7eacbeba4bb9215b8000e4bdbb672af523b3dacc89915b026ae
@@ -135,7 +136,7 @@ func (c *Client) pullImage(absRefStr string) (io.ReadCloser, error) {
 
 func (c *Client) pushImage(absRefStr string) (io.ReadCloser, error) {
 	return c.cli.ImagePush(c.ctx, absRefStr, image.PushOptions{
-		All:          true,
+		All:          false,
 		RegistryAuth: c.cache.getLatestAuthIdentityToken(),
 	})
 }

@@ -61,6 +61,10 @@ vet:
 vendor:
 	go mod vendor
 
+.PHONY: vendortidy
+vendortidy:
+	rm -rf vendor
+
 ################################
 #		codegen git-add  	   #
 ################################
