@@ -6,6 +6,7 @@ import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/Juminiy/kube/pkg/util/psutil"
+	"github.com/spf13/cast"
 	"log"
 	"net"
 	"net/http"
@@ -90,6 +91,10 @@ func ListenAndServeInfoF(tls bool, port int, addrFilter ...psutil.AddrFilter) {
 			stdlog.InfoF("listen and serve %s://%s:%d", appProto, ip, port)
 		}
 	}
+}
+
+func AllIntfs(port int) string {
+	return ":" + cast.ToString(port)
 }
 
 var LawHTTPMethod = []string{

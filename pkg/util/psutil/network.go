@@ -67,6 +67,8 @@ func RunningInterface(intf net.Interface) bool {
 
 type AddrFilter func(net.Addr) bool
 
+var AllAddr = allAddr
+
 func allAddr(net.Addr) bool {
 	return true
 }
