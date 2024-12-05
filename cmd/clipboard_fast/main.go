@@ -5,5 +5,7 @@ import (
 )
 
 func main() {
-	fiberserver.New().WithPort(8081).Load()
+	fiberserver.New().
+		WithPort(8081).
+		WithRESTAPI(RESTAPI).Load()
 }
