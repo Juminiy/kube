@@ -81,7 +81,17 @@ func (c *Client) ImportImage(absRefStr string, input io.Reader) (io.ReadCloser, 
 		if ignoreJSONMessageErr != nil {
 			stdlog.Warn(ignoreJSONMessageErr)
 		}*/
-		loadedImageRefStr = docker_internal.GetImageIDFromImageLoadResp(loadResp.Body)
+		loadedImageSha256ID := docker_internal.GetImageIDFromImageLoadResp(loadResp.Body)
+		inspect, err := c.InspectImage(loadedImageSha256ID)
+		if err != nil {
+			return nil, err
+		}
+		for i := range inspect.RepoTags {
+			if inspect.RepoTags[i] != absRefStr {
+				loadedImageRefStr = inspect.RepoTags[i]
+				break
+			}
+		}
 	} else {
 		stdlog.Warn("docker client API Version too old, can not create tag furthermore")
 		stdlog.Debug("docker image loadResp format: plain text")
@@ -130,14 +140,14 @@ func (c *Client) HostImageStorageGC(gcFunc ...HostImageGCFunc) {
 func (c *Client) pullImage(absRefStr string) (io.ReadCloser, error) {
 	return c.cli.ImagePull(c.ctx, absRefStr, image.PullOptions{
 		All:          false,
-		RegistryAuth: c.cache.getLatestAuthIdentityToken(),
+		RegistryAuth: c.base64Auth,
 	})
 }
 
 func (c *Client) pushImage(absRefStr string) (io.ReadCloser, error) {
 	return c.cli.ImagePush(c.ctx, absRefStr, image.PushOptions{
 		All:          false,
-		RegistryAuth: c.cache.getLatestAuthIdentityToken(),
+		RegistryAuth: c.base64Auth,
 	})
 }
 

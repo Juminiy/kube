@@ -1,6 +1,7 @@
 package docker_api
 
 import (
+	"encoding/base64"
 	"github.com/Juminiy/kube/pkg/image_api/docker_api/docker_internal"
 	kubedockerclicommand "github.com/Juminiy/kube/pkg/image_api/docker_api/docker_internal/cli/command"
 	kubedockertypes "github.com/Juminiy/kube/pkg/image_api/docker_api/types"
@@ -23,7 +24,7 @@ var (
 		Registry:   harborAddr,
 		Project:    "library",
 		Repository: "hello",
-		Tag:        "v2.0",
+		Tag:        "v3.0",
 	}
 )
 
@@ -42,7 +43,7 @@ func TestClient_ExportImage(t *testing.T) {
 	util.Must(err)
 }
 
-// +failed
+// +passed
 func TestClient_ImportImage(t *testing.T) {
 	initFunc()
 	var input io.Reader
@@ -50,8 +51,9 @@ func TestClient_ImportImage(t *testing.T) {
 	util.Must(err)
 	//defer util.SilentCloseIO("file ptr", file)
 	input = file
-	_, err = testNewClient.ImportImage(newImageRef.String(), input)
+	rc, err := testNewClient.ImportImage(newImageRef.String(), input)
 	util.SilentPanic(err)
+	t.Log(util.IOGetStr(rc))
 }
 
 // +passed
@@ -71,4 +73,9 @@ func TestClient_ExportImageImportImage(t *testing.T) {
 	stdlog.Info(docker_internal.GetStatusFromImagePushResp(importResp))
 
 	stdlog.InfoF("image save resp: %s", util.IOGetStr(imageSaveResp))
+}
+
+func TestFakeLogin(t *testing.T) {
+	//YWRtaW46YnVwdC5oYXJib3JANjY2
+	t.Log(base64.StdEncoding.EncodeToString([]byte(harborAuthUsername + ":" + harborAuthPassword)))
 }

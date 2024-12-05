@@ -1,9 +1,9 @@
 package docker_api
 
 import (
+	"encoding/base64"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
-	"github.com/Juminiy/kube/pkg/util/random"
 	"github.com/docker/docker/api/types/registry"
 )
 
@@ -64,7 +64,7 @@ func (c *Client) internalRegistryAuth(config *registry.AuthConfig) (cacheToken s
 				return false
 			} else if len(cacheToken) == 0 {
 				stdlog.Warn("registry auth is ok, but cacheToken is nil, set an arbitrary token value")
-				cacheToken = random.Password()
+				cacheToken = base64.StdEncoding.EncodeToString([]byte(config.Username + ":" + config.Password))
 			}
 			return true
 		},

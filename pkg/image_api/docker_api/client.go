@@ -3,6 +3,7 @@ package docker_api
 
 import (
 	"context"
+	"encoding/base64"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/docker/docker/api/types/registry"
@@ -14,7 +15,9 @@ type Client struct {
 	ctx        context.Context
 	pageConfig *util.Page
 
-	cache *clientCache
+	registryAddr string
+	base64Auth   string
+	cache        *clientCache
 }
 
 func New(hostURL, version string) (*Client, error) {
@@ -47,6 +50,12 @@ func (c *Client) WithPage(page *util.Page) *Client {
 func (c *Client) WithRegistryAuth(registryAuthConfig *registry.AuthConfig) *Client {
 	cacheToken := c.internalRegistryAuth(registryAuthConfig)
 	c.cache.setLatestAuth(registryAuthConfig, cacheToken)
+	return c.WithRegistryAuth2(registryAuthConfig.Username, registryAuthConfig.Password, registryAuthConfig.ServerAddress)
+}
+
+func (c *Client) WithRegistryAuth2(username, password, registryAddr string) *Client {
+	c.registryAddr = registryAddr
+	c.base64Auth = base64.StdEncoding.EncodeToString([]byte(username + ":" + password))
 	return c
 }
 
