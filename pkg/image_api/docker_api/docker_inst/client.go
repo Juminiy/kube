@@ -14,6 +14,10 @@ func CreateImageTag(_string string, _string2 string) (io.ReadCloser, error) {
 	return _dockerClient.CreateImageTag(_string, _string2)
 }
 
+func CreateImageTagV2(_string string, _string2 string) (docker_api.PushImageOfficialAPIResp, error) {
+	return _dockerClient.CreateImageTagV2(_string, _string2)
+}
+
 func Do(varLenclientFunc ...docker_api.ClientFunc) error {
 	return _dockerClient.Do(varLenclientFunc...)
 }
@@ -22,7 +26,7 @@ func ExportContainer(_string string) (io.ReadCloser, error) {
 	return _dockerClient.ExportContainer(_string)
 }
 
-func ExportImage(_string string) (io.ReadCloser, io.ReadCloser, error) {
+func ExportImage(_string string) (docker_api.ExportImageResp, error) {
 	return _dockerClient.ExportImage(_string)
 }
 
@@ -38,8 +42,12 @@ func ImportContainer(_string string) (io.ReadCloser, error) {
 	return _dockerClient.ImportContainer(_string)
 }
 
-func ImportImage(_string string, reader io.Reader) (io.ReadCloser, error) {
+func ImportImage(_string string, reader io.Reader) (docker_api.ImportImageResp, error) {
 	return _dockerClient.ImportImage(_string, reader)
+}
+
+func ImportImageV2(_string string, reader io.Reader) (docker_api.ImportImageResp, error) {
+	return _dockerClient.ImportImageV2(_string, reader)
 }
 
 func InspectImage(_string string) (types.ImageInspect, error) {
