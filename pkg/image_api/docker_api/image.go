@@ -97,8 +97,8 @@ type ImportImageResp struct {
 	RequestRefStr string
 	LoadedRefStr  string
 	PushStatus    string
-	Digests       []string
-	Digest        string
+	PushDigest    string
+	Inspect       types.ImageInspect
 }
 
 // ImportImage
@@ -135,13 +135,16 @@ func (c *Client) ImportImage(absRefStr string, input io.Reader) (resp ImportImag
 		if err != nil {
 			return resp, err
 		}
+		if len(inspect.RepoTags) > 0 {
+			loadedImageID = inspect.RepoTags[0]
+		}
 		for i := range inspect.RepoTags {
 			if inspect.RepoTags[i] != absRefStr {
 				loadedRefStr = inspect.RepoTags[i]
 				break
 			}
 		}
-		resp.Digests = inspect.RepoDigests
+		resp.Inspect = inspect
 	} else {
 		//stdlog.Warn("docker client API Version too old, can not create tag furthermore")
 		//stdlog.Debug("docker image loadResp format: plain text")
@@ -190,13 +193,16 @@ func (c *Client) ImportImageV2(absRefStr string, input io.Reader) (resp ImportIm
 		if err != nil {
 			return resp, err
 		}
+		if len(inspect.RepoTags) > 0 {
+			loadedImageID = inspect.RepoTags[0]
+		}
 		for i := range inspect.RepoTags {
 			if inspect.RepoTags[i] != absRefStr {
 				loadedRefStr = inspect.RepoTags[i]
 				break
 			}
 		}
-		resp.Digests = inspect.RepoDigests
+		resp.Inspect = inspect
 	} else {
 		//stdlog.Warn("docker client API Version too old, can not create tag furthermore")
 		//stdlog.Debug("docker image loadResp format: plain text")
@@ -214,7 +220,7 @@ func (c *Client) ImportImageV2(absRefStr string, input io.Reader) (resp ImportIm
 	if err != nil {
 		return resp, err
 	}
-	resp.Digest = pushImageResp.GetDigest()
+	resp.PushDigest = pushImageResp.GetDigest()
 	return
 }
 
