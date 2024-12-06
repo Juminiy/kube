@@ -2,25 +2,22 @@ package docker_api
 
 import (
 	"encoding/base64"
-	"github.com/Juminiy/kube/pkg/image_api/docker_api/docker_internal"
 	kubedockerclicommand "github.com/Juminiy/kube/pkg/image_api/docker_api/docker_internal/cli/command"
 	kubedockertypes "github.com/Juminiy/kube/pkg/image_api/docker_api/types"
-	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/moby/sys/sequential"
 	"io"
-	"os"
 	"testing"
 )
 
 var (
-	imageRef = kubedockertypes.ImageRef{
+	imageRefV10 = kubedockertypes.ImageRef{
 		Registry:   harborAddr,
 		Project:    "library",
 		Repository: "hello",
 		Tag:        "v1.0",
 	}
-	newImageRef = kubedockertypes.ImageRef{
+	imageRegV30 = kubedockertypes.ImageRef{
 		Registry:   harborAddr,
 		Project:    "library",
 		Repository: "hello",
@@ -31,15 +28,14 @@ var (
 // +passed
 func TestClient_ExportImage(t *testing.T) {
 	initFunc()
-	imagePullResp, imageSaveResp, err := testNewClient.ExportImage(imageRef.String())
-	if err != nil {
-		panic(err)
-	}
-
-	_, err = io.Copy(os.Stderr, imagePullResp)
+	resp, err := testNewClient.ExportImage(imageRefV10.String())
 	util.Must(err)
 
-	err = kubedockerclicommand.CopyToFile(testTarGzPath, imageSaveResp)
+	if !resp.NotFoundInRegistry {
+		t.Log(resp.ImagePulledInfo)
+	}
+
+	err = kubedockerclicommand.CopyToFile(testTarGzPath, resp.ImageFileReader)
 	util.Must(err)
 }
 
@@ -51,28 +47,44 @@ func TestClient_ImportImage(t *testing.T) {
 	util.Must(err)
 	//defer util.SilentCloseIO("file ptr", file)
 	input = file
-	rc, err := testNewClient.ImportImage(newImageRef.String(), input)
+	resp, err := testNewClient.ImportImage(imageRegV30.String(), input)
 	util.SilentPanic(err)
-	t.Log(util.IOGetStr(rc))
+	t.Log(resp)
+}
+
+func TestClient_pushImageV2(t *testing.T) {
+	initFunc()
+	resp, err := testNewClient.pushImageV2(imageRegV30.String())
+	util.Must(err)
+	t.Log(resp)
+}
+
+func TestClient_ImportImageV2(t *testing.T) {
+	initFunc()
+	var input io.Reader
+	file, err := sequential.Open(testTarGzPath)
+	util.Must(err)
+	//defer util.SilentCloseIO("file ptr", file)
+	input = file
+	resp, err := testNewClient.ImportImageV2(imageRegV30.String(), input)
+	util.SilentPanic(err)
+	t.Log(resp)
 }
 
 // +passed
 func TestClient_ExportImageImportImage(t *testing.T) {
 	initFunc()
-	imageTarResp, imageSaveResp, err := testNewClient.ExportImage(imageRef.String())
+	exportResp, err := testNewClient.ExportImage(imageRefV10.String())
 	if err != nil {
 		panic(err)
 	}
 
 	//imageBytes, err := io.ReadAll(imageRC)
-	defer util.SilentCloseIO("image read error", imageTarResp)
+	defer util.SilentCloseIO("image read error", exportResp.ImageFileReader)
 	//stdlog.InfoF("size of image amd64 %s is: %d", imageRef.String(), len(imageBytes))
-	importResp, err := testNewClient.ImportImage(newImageRef.String(), imageTarResp)
+	importResp, err := testNewClient.ImportImage(imageRegV30.String(), exportResp.ImageFileReader)
 	util.SilentPanic(err)
-	defer util.SilentCloseIO("import resp", importResp)
-	stdlog.Info(docker_internal.GetStatusFromImagePushResp(importResp))
-
-	stdlog.InfoF("image save resp: %s", util.IOGetStr(imageSaveResp))
+	t.Log(importResp)
 }
 
 func TestFakeLogin(t *testing.T) {

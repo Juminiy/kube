@@ -37,6 +37,40 @@ func GetStatusFromImagePushResp(ioReader io.Reader) string {
 	return messageStatusAttr
 }
 
+/*
+	{
+	    "status": "The push refers to repository [10.112.121.243:8111/library/hello]"
+	}
+
+	{
+	    "status": "Preparing",
+	    "progressDetail": {},
+	    "id": "ac28800ec8bb"
+	}
+
+	{
+	    "status": "Layer already exists",
+	    "progressDetail": {},
+	    "id": "ac28800ec8bb"
+	}
+
+	{
+	    "status": "v3.0: digest: sha256:d37ada95d47ad12224c205a938129df7a3e52345828b4fa27b03a98825d1e2e7 size: 524"
+	}
+
+	{
+	    "progressDetail": {},
+	    "aux": {
+	        "Tag": "v3.0",
+	        "Digest": "sha256:d37ada95d47ad12224c205a938129df7a3e52345828b4fa27b03a98825d1e2e7",
+	        "Size": 524
+	    }
+	}
+*/
+func ParseMultipleJSONFromPushResp(ioReader io.Reader) (jsonMessage jsonmessage.JSONMessage) {
+	return decodeJSONMessage(ioReader)
+}
+
 func decodeJSONMessage(ioReader io.Reader) (jsonMessage jsonmessage.JSONMessage) {
 	ioJsonDec := json.NewDecoder(ioReader)
 	err := ioJsonDec.Decode(&jsonMessage)

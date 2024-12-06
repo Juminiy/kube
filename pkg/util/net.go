@@ -101,3 +101,11 @@ func TrimNetMask(ip string) string {
 		return ipMask[0]
 	}
 }
+
+func TrimProto(addr string) string {
+	dSlashIndex := strings.Index(addr, "://")
+	if dSlashIndex != -1 {
+		return addr[dSlashIndex+3:]
+	}
+	return addr
+}
