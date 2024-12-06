@@ -24,3 +24,11 @@ func TestSetLike(t *testing.T) {
 	testSetLog(t, SetLike, "222", &dst)
 	testSetLog(t, SetLike, "333", &dst)
 }
+
+func TestIndirect(t *testing.T) {
+	var i = 1
+	d := Direct(wrapPtr(&i, 10))
+	ind := d.indirect()
+	ind.SetI(20)
+	t.Log(i)
+}

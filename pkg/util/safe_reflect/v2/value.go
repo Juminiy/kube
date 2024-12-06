@@ -47,3 +47,10 @@ func SetLike(src, dst any) {
 // 	case String: v.SetString(s)
 // 	case EFace: v.Set(n)
 // 	case Number: v.SetInt(n), v.SetUint(n), v.SetFloat(n)
+
+func wrapPtr(v any, c int) any {
+	for ; c > 0; c-- {
+		v = &v
+	}
+	return v
+}

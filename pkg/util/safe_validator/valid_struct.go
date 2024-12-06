@@ -23,13 +23,21 @@ func (cfg *Config) StructE(v any) error {
 func (cfg *Config) structOkE(v any) (ok bool, err error) {
 	parsed := cfg.parseStruct(v)
 	if parsed == nil {
-		return false, errValNotStruct
+		return true, errValNotStruct
 	}
-	ok, err = parsed.valid(), parsed.All()
-	return
+
+	return parsed.valid(), parsed.All()
 }
 
 var errValNotStruct = errors.New("value type is not struct")
+
+func (cfg *Config) parseStruct(v any) *structOf {
+	tv := indir(v)
+	if tv.Val.Kind() != kStruct {
+		return nil
+	}
+	return cfg.parseStructOf(tv)
+}
 
 type structOf struct {
 	FieldRTyp  map[string]reflect.Type
@@ -41,11 +49,7 @@ type structOf struct {
 	cfg *Config
 }
 
-func (cfg *Config) parseStruct(v any) *structOf {
-	tv := indir(v)
-	if tv.Val.Kind() != kStruct {
-		return nil
-	}
+func (cfg *Config) parseStructOf(tv safe_reflect.TypVal) *structOf {
 	return &structOf{
 		FieldRTyp:  tv.StructFieldsType(),
 		FieldRVal:  tv.StructFieldValueAll(),

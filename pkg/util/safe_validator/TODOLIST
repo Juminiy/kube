@@ -1,5 +1,6 @@
 1. Ptr type, ok
 2. By Config, ok
-3. Array, Slice, Map Type
+3. Array, Slice, Map Type, ok
 4. time.Time Type
-5. Array-Elem, Slice-Elem, Map-Key, Map-Elem
+5. Array-Elem, Slice-Elem, Map-Elem, ok
+6. tag rule_of, regex_of

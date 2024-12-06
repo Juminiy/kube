@@ -173,11 +173,11 @@ func (n Number) Get(kind reflect.Kind) (v any, ok bool) {
 			return *n.uptr, true
 		}
 	case reflect.Float32:
-		if n.u != nil {
+		if n.f32 != nil {
 			return *n.f32, true
 		}
 	case reflect.Float64:
-		if n.u != nil {
+		if n.f64 != nil {
 			return *n.f64, true
 		}
 	default:

@@ -7,6 +7,7 @@ import (
 )
 
 var indir = safe_reflect.IndirectOf
+var wrapv = safe_reflect.Wrap
 var indirv = safe_reflectv2.IndirectRV
 var toString = func(i any) string {
 	v := indir(i).Val
