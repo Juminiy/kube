@@ -96,9 +96,11 @@ func (c *Client) ExportImage(absRefStr string) (resp ExportImageResp, err error)
 type ImportImageResp struct {
 	RequestRefStr string
 	LoadedRefStr  string
-	PushStatus    string
-	PushDigest    string
-	Inspect       types.ImageInspect
+	// +disable in Client.ImportImageV2
+	PushStatus string
+	PushDigest string
+	Inspect    types.ImageInspect
+	PushResp   PushImageOfficialAPIResp
 }
 
 // ImportImage
@@ -221,6 +223,7 @@ func (c *Client) ImportImageV2(absRefStr string, input io.Reader) (resp ImportIm
 		return resp, err
 	}
 	resp.PushDigest = pushImageResp.GetDigest()
+	resp.PushResp = pushImageResp
 	return
 }
 

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/Juminiy/kube/cmd/clipboard_fast/handler"
+	"github.com/Juminiy/kube/cmd/clipboard/clipboard_fast/handler"
 	"github.com/gofiber/fiber/v3"
 )
 

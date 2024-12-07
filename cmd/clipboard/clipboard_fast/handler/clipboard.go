@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/Juminiy/kube/cmd/clipboard_fast/service"
+	"github.com/Juminiy/kube/cmd/clipboard/clipboard_fast/service"
 	"github.com/gofiber/fiber/v3"
 )
 
