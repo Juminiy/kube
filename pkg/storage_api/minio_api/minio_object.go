@@ -4,6 +4,9 @@ import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/Juminiy/kube/pkg/util/safe_go"
+	"github.com/minio/minio-go/v7"
+	"io"
+	"net/http"
 	"net/url"
 	"strings"
 	"time"
@@ -18,6 +21,9 @@ type ObjectConfig struct {
 
 	// +required
 	ObjectName string
+
+	// +optional, only required in Client.PutObject
+	ObjectSize int64
 }
 
 func (c *ObjectConfig) ObjectAbsPath() string {
@@ -82,6 +88,34 @@ func (c *Client) TempGetObjectList(objectConfigs []ObjectConfig, expiry time.Dur
 
 	err := safe_go.DryRun(fns...)
 	return tempURLs, err
+}
+
+func (c *Client) ObjectExists(objectConfig *ObjectConfig) (bool, error) {
+	_, err := c.mc.StatObject(c.ctx, objectConfig.BucketName, objectConfig.ObjectAbsName(), minio.StatObjectOptions{})
+	switch merr := err.(type) {
+	case nil:
+		return true, nil
+	case minio.ErrorResponse:
+		if merr.StatusCode == http.StatusNotFound {
+			return false, nil
+		} else {
+			return false, err
+		}
+	default:
+		return false, err
+	}
+}
+
+func (c *Client) PutObject(objectConfig *ObjectConfig, input io.Reader) (minio.UploadInfo, error) {
+	if objectConfig.ObjectSize == 0 {
+		objectConfig.ObjectSize = -1
+	}
+	return c.mc.PutObject(c.ctx,
+		objectConfig.BucketName,
+		objectConfig.ObjectAbsName(),
+		input,
+		objectConfig.ObjectSize,
+		minio.PutObjectOptions{})
 }
 
 // Deprecated

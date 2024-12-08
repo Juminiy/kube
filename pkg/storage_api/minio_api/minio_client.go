@@ -16,6 +16,7 @@ const (
 	SecretAccessKeyMaxLen = 128
 )
 
+//go:generate go run codegen/codegen.go
 type Client struct {
 	Endpoint string
 	miniocred.Value

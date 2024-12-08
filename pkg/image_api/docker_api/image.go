@@ -2,6 +2,7 @@ package docker_api
 
 import (
 	"errors"
+	"github.com/Juminiy/kube/pkg/image_api/docker_api/docker_client"
 	"github.com/Juminiy/kube/pkg/image_api/docker_api/docker_internal"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
@@ -21,10 +22,11 @@ var (
 
 type ExportImageResp struct {
 	RequestRefStr      string
-	NotFoundInRegistry bool          // absRefStr not found in provided registry.
-	NotFoundInLocal    bool          // absRefStr not found in docker-server local.
-	ImagePulledInfo    string        // image pulled information from provided registry.
-	ImageFileReader    io.ReadCloser // compressed (.tar, .tar.gz) file reader, It's up to the caller to handle the io.ReadCloser and close it properly.
+	NotFoundInRegistry bool // absRefStr not found in provided registry.
+	NotFoundInLocal    bool // absRefStr not found in docker-server local.
+	// deprecated in Client.ExportImageV2
+	ImagePulledInfo string        // image pulled information from provided registry.
+	ImageFileReader io.ReadCloser `json:"-"` // compressed (.tar, .tar.gz) file reader, It's up to the caller to handle the io.ReadCloser and close it properly.
 }
 
 type errStrParser struct{}
@@ -91,6 +93,40 @@ func (c *Client) ExportImage(absRefStr string) (resp ExportImageResp, err error)
 
 	resp.ImageFileReader, err = c.cli.ImageSave(c.ctx, []string{imageInspect.ID})
 	return resp, err
+}
+
+var ErrNotFoundImageAnyWhere = errors.New("not found image refStr in anywhere")
+
+type ExportImageRespV2 struct {
+	ExportImageResp
+	docker_client.ImagePullResp
+}
+
+func (c *Client) ExportImageV2(absRefStr string) (resp ExportImageRespV2, err error) {
+	resp.RequestRefStr = absRefStr
+
+	pullResp, err := c.apiClient.ImagePull(absRefStr)
+	if err != nil {
+		return
+	}
+	resp.ImagePullResp = pullResp.GetImagePullResp()
+	resp.NotFoundInRegistry = resp.ImagePullResp.NotFound
+
+	inspect, err := c.InspectImage(absRefStr)
+	if err != nil {
+		switch err.(type) {
+		case errdefs.ErrNotFound:
+			resp.NotFoundInLocal = true
+		default:
+			return resp, err
+		}
+	}
+	if resp.NotFoundInLocal && resp.NotFoundInRegistry {
+		return resp, ErrNotFoundImageAnyWhere
+	}
+
+	resp.ImageFileReader, err = c.cli.ImageSave(c.ctx, []string{inspect.ID})
+	return
 }
 
 type ImportImageResp struct {
@@ -227,6 +263,32 @@ func (c *Client) ImportImageV2(absRefStr string, input io.Reader) (resp ImportIm
 	return
 }
 
+type ImportImageRespV3 struct {
+	RequestRefStr string
+	LoadedRefStr  string
+	Inspect       types.ImageInspect
+	PushResp      docker_client.ImagePushResp
+}
+
+func (c *Client) ImportImageV3(absRefStr string, input io.Reader) (resp ImportImageRespV3, err error) {
+	resp.RequestRefStr = absRefStr
+	loadResp, err := c.apiClient.ImageLoad(input)
+	if err != nil {
+		return
+	}
+	resp.LoadedRefStr = loadResp.GetImageLoadRefStr()
+	resp.Inspect, err = c.InspectImage(resp.LoadedRefStr)
+	if err != nil {
+		return
+	}
+	pushResp, err := c.CreateImageTagV3(absRefStr, resp.LoadedRefStr)
+	if err != nil {
+		return
+	}
+	resp.PushResp = pushResp.GetImagePushResp()
+	return
+}
+
 func (c *Client) CreateImageTag(toAbsRefStr, fromAbsRefStr string) (io.ReadCloser, error) {
 	err := c.cli.ImageTag(c.ctx, fromAbsRefStr, toAbsRefStr)
 	if err != nil {
@@ -243,26 +305,20 @@ func (c *Client) CreateImageTagV2(toAbsRefStr, fromAbsRefStr string) (resp PushI
 	return c.pushImageV2(toAbsRefStr)
 }
 
-// InspectImage
-// +param imageID or imageName
-func (c *Client) InspectImage(imageID string) (types.ImageInspect, error) {
-	// discard raw []byte, no usage anymore
-	imageInspect, _, err := c.cli.ImageInspectWithRaw(c.ctx, imageID)
-	return imageInspect, err
+func (c *Client) CreateImageTagV3(toAbsRefStr, fromAbsRefStr string) (resp docker_client.EventResp, err error) {
+	err = c.cli.ImageTag(c.ctx, fromAbsRefStr, toAbsRefStr)
+	if err != nil {
+		return
+	}
+	return c.apiClient.ImagePush(toAbsRefStr)
 }
 
-type HostImageGCFunc util.Func
-
-// HostImageGC
-// cli: docker rmi IMAGE_ID
-// maybe quota by:
-//
-// 1. image CREATED: since, before
-// 2. image SIZE: bytes(B)
-// 3. cache algorithm policy: lru, lfu
-// 4. host disk: bytes(B)
-func (c *Client) HostImageStorageGC(gcFunc ...HostImageGCFunc) {
-
+// InspectImage
+// +param image: sha256ID or refStr
+func (c *Client) InspectImage(image string) (types.ImageInspect, error) {
+	// discard raw []byte, no usage anymore
+	imageInspect, _, err := c.cli.ImageInspectWithRaw(c.ctx, image)
+	return imageInspect, err
 }
 
 func (c *Client) pullImage(absRefStr string) (io.ReadCloser, error) {
@@ -315,6 +371,20 @@ func getRefFilter(absRefStr string) filters.Args {
 
 func validAbsRefStr(absRefStr string) bool {
 	return strings.Count(absRefStr, "/") == 2
+}
+
+type HostImageGCFunc util.Func
+
+// HostImageGC
+// cli: docker rmi IMAGE_ID
+// maybe quota by:
+//
+// 1. image CREATED: since, before
+// 2. image SIZE: bytes(B)
+// 3. cache algorithm policy: lru, lfu
+// 4. host disk: bytes(B)
+func (c *Client) HostImageStorageGC(gcFunc ...HostImageGCFunc) {
+
 }
 
 // Deprecated

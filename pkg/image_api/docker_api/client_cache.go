@@ -6,6 +6,8 @@ import (
 	"sync"
 )
 
+// file Deprecated
+
 const (
 	initCacheSize = 8
 

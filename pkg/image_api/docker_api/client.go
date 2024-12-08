@@ -3,6 +3,7 @@ package docker_api
 
 import (
 	"context"
+	"github.com/Juminiy/kube/pkg/image_api/docker_api/docker_client"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/docker/docker/api/types/registry"
@@ -10,6 +11,7 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
+//go:generate go run codegen/codegen.go
 type Client struct {
 	cli        *dockercli.Client
 	ctx        context.Context
@@ -19,8 +21,11 @@ type Client struct {
 
 	registryAddr  string
 	xRegistryAuth string
-	restyCli      *resty.Client
-	cache         *clientCache
+	apiClient     *docker_client.Client
+	// Deprecated
+	restyCli *resty.Client
+	// Deprecated
+	cache *clientCache
 }
 
 func New(hostURL, version string) (*Client, error) {
@@ -33,43 +38,49 @@ func New(hostURL, version string) (*Client, error) {
 		return nil, err
 	}
 
-	return &Client{
+	cli := &Client{
 		cli:        dCli,
 		ctx:        util.TODOContext(),
 		pageConfig: util.DefaultPage(),
 		hostAddr:   util.TrimProto(hostURL),
 		version:    version,
-		restyCli:   resty.NewWithClient(util.DefaultHTTPClient()),
-		cache:      newClientCache(),
-	}, nil
+	}
+	cli.apiClient = docker_client.New(hostURL, version).
+		WithPage(*cli.pageConfig).
+		WithContext(cli.ctx)
+	return cli, nil
 }
 
 func (c *Client) WithContext(ctx context.Context) *Client {
 	c.ctx = ctx
+	c.apiClient.WithContext(ctx)
 	return c
 }
 
 func (c *Client) WithPage(page *util.Page) *Client {
 	c.pageConfig = page
+	c.apiClient.WithPage(*page)
 	return c
 }
 
 func (c *Client) WithRegistryAuth(registryAuthConfig *registry.AuthConfig) *Client {
-	cacheToken := c.internalRegistryAuth(registryAuthConfig)
-	c.cache.setLatestAuth(registryAuthConfig, cacheToken)
-
-	registryAuthConfig.IdentityToken = cacheToken
-	var encodeAuthConfigErr error
-	c.xRegistryAuth, encodeAuthConfigErr = registry.EncodeAuthConfig(*registryAuthConfig)
-	if encodeAuthConfigErr != nil {
-		stdlog.WarnF("encode auth config error: %s", encodeAuthConfigErr.Error())
-	}
-
+	//cacheToken := c.internalRegistryAuth(registryAuthConfig)
+	//c.cache.setLatestAuth(registryAuthConfig, cacheToken)
+	//
+	//registryAuthConfig.IdentityToken, _ = c.registryAuth(registryAuthConfig)
+	//var encodeAuthConfigErr error
+	//c.xRegistryAuth, encodeAuthConfigErr = registry.EncodeAuthConfig(*registryAuthConfig)
+	//if encodeAuthConfigErr != nil {
+	//	stdlog.WarnF("encode auth config error: %s", encodeAuthConfigErr.Error())
+	//}
+	//
+	//c.registryAddr = registryAuthConfig.ServerAddress
+	//c.restyCli.SetAllowGetMethodPayload(true).
+	//	SetBaseURL(util.URLWithHTTP(c.hostAddr)).
+	//	SetScheme("http").
+	//	SetTimeout(util.TimeSecond(60))
 	c.registryAddr = registryAuthConfig.ServerAddress
-	c.restyCli.SetAllowGetMethodPayload(true).
-		SetBaseURL(util.URLWithHTTP(c.hostAddr)).
-		SetScheme("http").
-		SetTimeout(util.TimeSecond(60))
+	c.xRegistryAuth = c.apiClient.WithRegistryAuth(*registryAuthConfig).GetRegistryAuth()
 	return c
 }
 

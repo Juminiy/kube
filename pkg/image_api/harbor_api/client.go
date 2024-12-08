@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+//go:generate go run codegen/codegen.go
 type Client struct {
 	// global variant
 	v2Cli       *v2client.HarborAPI
