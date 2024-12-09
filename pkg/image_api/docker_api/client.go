@@ -84,6 +84,14 @@ func (c *Client) WithRegistryAuth(registryAuthConfig *registry.AuthConfig) *Clie
 	return c
 }
 
+func (c *Client) GetRegistryAuthConfig() registry.AuthConfig {
+	authConfig, err := registry.DecodeAuthConfig(c.xRegistryAuth)
+	if err == nil {
+		return *authConfig
+	}
+	return registry.AuthConfig{}
+}
+
 func (c *Client) GC(gcFn ...util.Func) {}
 
 type ClientFunc func(client *dockercli.Client) error

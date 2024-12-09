@@ -383,9 +383,7 @@ type HostImageGCFunc util.Func
 // 2. image SIZE: bytes(B)
 // 3. cache algorithm policy: lru, lfu
 // 4. host disk: bytes(B)
-func (c *Client) HostImageStorageGC(gcFunc ...HostImageGCFunc) {
-
-}
+func (c *Client) HostImageStorageGC(gcFunc ...HostImageGCFunc) {}
 
 // Deprecated
 // +example +strict url format
