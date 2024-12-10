@@ -2,6 +2,7 @@ package docker_client
 
 import (
 	"context"
+	"github.com/Juminiy/kube/pkg/image_api/docker_api/docker_registry"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/docker/docker/api/types/registry"
@@ -10,14 +11,13 @@ import (
 )
 
 type Client struct {
-	rCli     *resty.Client
-	hostAddr string // ip:port, domain:port
-	version  string // 1.27, v1.27
+	rCli *resty.Client   // HTTP API client
+	page *util.Page      // for list pagination
+	ctx  context.Context // for task cancellation
 
-	registryAddr  string     // ip:port, domain:port
-	xRegistryAuth string     // base64 of username:password
-	page          *util.Page // for list pagination
-	ctx           context.Context
+	hostAddr string                   // docker host address, ex. ip:port, domain:port
+	version  string                   // docker client version, ex. 1.27, v1.27
+	reg      docker_registry.Registry // docker registry, for pull, push, tag, etc
 }
 
 func New(host, version string) *Client {
@@ -53,16 +53,15 @@ func (c *Client) WithRegistryAuth(authConfig registry.AuthConfig) *Client {
 	} else {
 		authConfig.IdentityToken = authResp.IdentityToken
 	}
-	c.registryAddr = authConfig.ServerAddress
-	c.xRegistryAuth, err = registry.EncodeAuthConfig(authConfig)
+	c.reg = docker_registry.FromAuthConfig(authConfig)
 	if err != nil {
 		stdlog.ErrorF("docker registry encode authConfig error: %s", err.Error())
 	}
 	return c
 }
 
-func (c *Client) GetRegistryAuth() (xRegistryAuth string) {
-	return c.xRegistryAuth
+func (c *Client) GetRegistry() docker_registry.Registry {
+	return c.reg
 }
 
 func versionWithV(version string) string {

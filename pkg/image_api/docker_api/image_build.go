@@ -1,19 +1,30 @@
 package docker_api
 
 import (
+	"errors"
 	"github.com/Juminiy/kube/pkg/internal_api"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/registry"
 	"io"
 )
 
-func (c *Client) BuildImage(input io.Reader) (types.ImageBuildResponse, error) {
-	return c.cli.ImageBuild(c.ctx, input, c.BuildImageFavOption())
+type BuildImageRespV1 struct {
+	TagPushImageResp
+	types.ImageBuildResponse
 }
 
-func (c *Client) BuildImageFavOption() types.ImageBuildOptions {
+func (c *Client) BuildImage(input io.Reader, refStr string) (resp BuildImageRespV1, err error) {
+	resp.ImageBuildResponse, err = c.buildImage(input, refStr)
+	if err != nil {
+		return
+	}
+	resp.TagPushImageResp, err = c.tagImageFromRefStr(refStr)
+	return
+}
+
+func (c *Client) BuildImageFavOption(refStr string) types.ImageBuildOptions {
 	return types.ImageBuildOptions{
-		Tags:           nil,
+		Tags:           []string{refStr},
 		SuppressOutput: false,
 		RemoteContext:  "", // external Dockerfile or tarball
 		NoCache:        true,
@@ -31,11 +42,11 @@ func (c *Client) BuildImageFavOption() types.ImageBuildOptions {
 		CgroupParent:   "",
 		NetworkMode:    NetworkBridge,
 		ShmSize:        0,
-		Dockerfile:     "Dockerfile",
+		Dockerfile:     "",
 		Ulimits:        nil,
 		BuildArgs:      nil,
 		AuthConfigs: map[string]registry.AuthConfig{
-			c.registryAddr: c.GetRegistryAuthConfig(),
+			c.reg.Addr: c.reg.GetAuthConfig(),
 		},
 		Context:     nil,
 		Labels:      nil,
@@ -51,6 +62,13 @@ func (c *Client) BuildImageFavOption() types.ImageBuildOptions {
 		Outputs:     nil,
 	}
 }
+
+func (c *Client) buildImage(input io.Reader, refStr string) (types.ImageBuildResponse, error) {
+	return c.cli.ImageBuild(c.ctx, input, c.BuildImageFavOption(refStr))
+}
+
+var ErrAbsRefStr = errors.New("image absolutely refStr format error")
+var ErrProjectNotFound = errors.New("project not found error")
 
 const (
 	PlatformLinuxAmd64   = internal_api.Linux + "/" + internal_api.Amd64

@@ -29,3 +29,14 @@ func initFunc() {
 		ServerAddress: harborAddr,
 	})
 }
+
+func initFunc2() *Client {
+	cli, err := New("tcp://192.168.31.242:2375", "1.47")
+	util.Must(err)
+	cli.WithRegistryAuth(&registry.AuthConfig{
+		Username:      "admin",
+		Password:      "Harbor12345",
+		ServerAddress: "192.168.31.242:8662",
+	})
+	return cli
+}

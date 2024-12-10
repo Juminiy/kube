@@ -78,7 +78,7 @@ func (r *PushImageOfficialAPIResp) getAuxValue(key string) any {
 
 func (c *Client) pushImageV2(absRefStr string) (resp PushImageOfficialAPIResp, err error) {
 	apiReq := c.restyCli.R().
-		SetHeader(registry.AuthHeader, c.xRegistryAuth)
+		SetHeader(registry.AuthHeader, c.reg.Auth)
 
 	refNamed, err := reference.ParseNormalizedNamed(absRefStr)
 	if err != nil {

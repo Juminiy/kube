@@ -127,7 +127,7 @@ func (c *Client) ListContainers() ([]types.Container, error) {
 			Size:   true,
 			All:    true,
 			Latest: false,
-			Limit:  c.pageConfig.SizeIntValue(),
+			Limit:  c.page.SizeIntValue(),
 		},
 	)
 }

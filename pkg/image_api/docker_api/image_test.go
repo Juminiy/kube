@@ -5,8 +5,10 @@ import (
 	kubedockerclicommand "github.com/Juminiy/kube/pkg/image_api/docker_api/docker_internal/cli/command"
 	kubedockertypes "github.com/Juminiy/kube/pkg/image_api/docker_api/types"
 	"github.com/Juminiy/kube/pkg/util"
+	"github.com/Juminiy/kube/pkg/util/safe_json"
 	"github.com/moby/sys/sequential"
 	"io"
+	"os"
 	"testing"
 )
 
@@ -90,4 +92,37 @@ func TestClient_ExportImageImportImage(t *testing.T) {
 func TestFakeLogin(t *testing.T) {
 	//YWRtaW46YnVwdC5oYXJib3JANjY2
 	t.Log(base64.StdEncoding.EncodeToString([]byte(harborAuthUsername + ":" + harborAuthPassword)))
+}
+
+func TestClient_ImportImageV3(t *testing.T) {
+	initFunc()
+	var input io.Reader
+	file, err := sequential.Open(testTarGzPath)
+	util.Must(err)
+	//defer util.SilentCloseIO("file ptr", file)
+	input = file
+	resp, err := testNewClient.ImportImageV3(imageRegV30.String(), input)
+	util.SilentPanic(err)
+	t.Log(resp)
+}
+
+func TestClient_ExportImageV2(t *testing.T) {
+	initFunc()
+	resp, err := testNewClient.ExportImageV2(imageRegV30.String())
+	util.Must(err)
+
+	err = kubedockerclicommand.CopyToFile(testTarGzPath, resp.ImageFileReader)
+	util.Must(err)
+	t.Log(safe_json.Pretty(resp))
+}
+
+func TestClient_BuildImage(t *testing.T) {
+	cli := initFunc2()
+	cli.WithProject("library")
+	fptr, err := os.Open(testTarBuildPath)
+	util.Must(err)
+	defer util.SilentCloseIO("tar fileptr", fptr)
+	resp, err := cli.BuildImage(fptr, "jammy-env:v1.7")
+	util.Must(err)
+	t.Log(resp)
 }

@@ -22,7 +22,7 @@ func (c *Client) ImageCreate(parentRefStr string) (createResp EventResp, err err
 func (c *Client) imageCreate(queryParam map[string]string) (createResp EventResp, err error) {
 	r := c.post("/images/create")
 	r.r.SetQueryParams(queryParam).
-		SetHeader(registry.AuthHeader, c.xRegistryAuth)
+		SetHeader(registry.AuthHeader, c.reg.Auth)
 
 	resp, err := r.do()
 	return *createResp.Parse(resp), err

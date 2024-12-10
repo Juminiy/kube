@@ -39,6 +39,7 @@ const (
 	atLeastTryCount = 3
 )
 
+// Deprecated
 // try at least 3 times
 func (c *Client) internalRegistryAuth(config *registry.AuthConfig) (cacheToken string) {
 	if config == nil ||

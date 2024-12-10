@@ -4,6 +4,7 @@ package docker_api
 import (
 	"context"
 	"github.com/Juminiy/kube/pkg/image_api/docker_api/docker_client"
+	"github.com/Juminiy/kube/pkg/image_api/docker_api/docker_registry"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/docker/docker/api/types/registry"
@@ -13,15 +14,15 @@ import (
 
 //go:generate go run codegen/codegen.go
 type Client struct {
-	cli        *dockercli.Client
-	ctx        context.Context
-	pageConfig *util.Page
-	hostAddr   string
-	version    string
+	cli      *dockercli.Client // official SDK
+	ctx      context.Context
+	page     *util.Page
+	hostAddr string
+	version  string
 
-	registryAddr  string
-	xRegistryAuth string
-	apiClient     *docker_client.Client
+	apiClient *docker_client.Client // official API
+	reg       docker_registry.Registry
+
 	// Deprecated
 	restyCli *resty.Client
 	// Deprecated
@@ -39,14 +40,14 @@ func New(hostURL, version string) (*Client, error) {
 	}
 
 	cli := &Client{
-		cli:        dCli,
-		ctx:        util.TODOContext(),
-		pageConfig: util.DefaultPage(),
-		hostAddr:   util.TrimProto(hostURL),
-		version:    version,
+		cli:      dCli,
+		ctx:      util.TODOContext(),
+		page:     util.DefaultPage(),
+		hostAddr: util.TrimProto(hostURL),
+		version:  version,
 	}
 	cli.apiClient = docker_client.New(hostURL, version).
-		WithPage(*cli.pageConfig).
+		WithPage(*cli.page).
 		WithContext(cli.ctx)
 	return cli, nil
 }
@@ -58,12 +59,12 @@ func (c *Client) WithContext(ctx context.Context) *Client {
 }
 
 func (c *Client) WithPage(page *util.Page) *Client {
-	c.pageConfig = page
+	c.page = page
 	c.apiClient.WithPage(*page)
 	return c
 }
 
-func (c *Client) WithRegistryAuth(registryAuthConfig *registry.AuthConfig) *Client {
+func (c *Client) WithRegistryAuth(authConfig *registry.AuthConfig) *Client {
 	//cacheToken := c.internalRegistryAuth(registryAuthConfig)
 	//c.cache.setLatestAuth(registryAuthConfig, cacheToken)
 	//
@@ -79,17 +80,13 @@ func (c *Client) WithRegistryAuth(registryAuthConfig *registry.AuthConfig) *Clie
 	//	SetBaseURL(util.URLWithHTTP(c.hostAddr)).
 	//	SetScheme("http").
 	//	SetTimeout(util.TimeSecond(60))
-	c.registryAddr = registryAuthConfig.ServerAddress
-	c.xRegistryAuth = c.apiClient.WithRegistryAuth(*registryAuthConfig).GetRegistryAuth()
+	c.reg = c.apiClient.WithRegistryAuth(*authConfig).GetRegistry()
 	return c
 }
 
-func (c *Client) GetRegistryAuthConfig() registry.AuthConfig {
-	authConfig, err := registry.DecodeAuthConfig(c.xRegistryAuth)
-	if err == nil {
-		return *authConfig
-	}
-	return registry.AuthConfig{}
+func (c *Client) WithProject(project string) *Client {
+	c.reg.WithProject(project)
+	return c
 }
 
 func (c *Client) GC(gcFn ...util.Func) {}
