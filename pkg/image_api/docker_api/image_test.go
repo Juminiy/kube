@@ -126,3 +126,7 @@ func TestClient_BuildImage(t *testing.T) {
 	util.Must(err)
 	t.Log(resp)
 }
+
+func TestClient_BuildImage2(t *testing.T) {
+
+}
