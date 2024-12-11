@@ -18,7 +18,14 @@ type EventResp struct {
 
 func (r *EventResp) Parse(resp *resty.Response) *EventResp {
 	r.Status = resp.StatusCode()
-	bs := resp.Body()
+	return r.parse(resp.Body())
+}
+
+func (r *EventResp) ParseBytes(bs []byte) *EventResp {
+	return r.parse(bs)
+}
+
+func (r *EventResp) parse(bs []byte) *EventResp {
 	if len(bs) == 0 {
 		return r
 	}

@@ -122,7 +122,7 @@ func TestClient_BuildImage(t *testing.T) {
 	fptr, err := os.Open(testTarBuildPath)
 	util.Must(err)
 	defer util.SilentCloseIO("tar fileptr", fptr)
-	resp, err := cli.BuildImage(fptr, "jammy-env:v1.7")
+	resp, err := cli.BuildImage(fptr, "jammy-env:v1.8")
 	util.Must(err)
 	t.Log(resp)
 }

@@ -1,0 +1,191 @@
+{
+    "stream": "Step 1/15 : FROM 10.112.121.243:8111/library/jammy-release:v1.1"
+}
+{
+    "stream": "\n"
+}
+{
+    "stream": " ---> 00aa496a0f11\n"
+}
+{
+    "stream": "Step 2/15 : LABEL authors=\"chisato\""
+}
+{
+    "stream": "\n"
+}
+{
+    "stream": " ---> Running in 0ed6452c2c97\n"
+}
+{
+    "stream": " ---> Removed intermediate container 0ed6452c2c97\n"
+}
+{
+    "stream": " ---> 4145acd16028\n"
+}
+{
+    "stream": "Step 3/15 : COPY ./sshd_config /sshd_config"
+}
+{
+    "stream": "\n"
+}
+{
+    "stream": " ---> ef9132e95924\n"
+}
+{
+    "stream": "Step 4/15 : COPY ./start-sshd /usr/sbin/start-sshd"
+}
+{
+    "stream": "\n"
+}
+{
+    "stream": " ---> 39b8459c9b25\n"
+}
+{
+    "stream": "Step 5/15 : RUN chmod +x /usr/sbin/start-sshd"
+}
+{
+    "stream": "\n"
+}
+{
+    "stream": " ---> Running in 357c14513a58\n"
+}
+{
+    "stream": " ---> Removed intermediate container 357c14513a58\n"
+}
+{
+    "stream": " ---> 133a8a115112\n"
+}
+{
+    "stream": "Step 6/15 : COPY ./ttyd.x86_64 /usr/bin/ttyd.x86_64"
+}
+{
+    "stream": "\n"
+}
+{
+    "stream": " ---> 3b49e2b1c2b8\n"
+}
+{
+    "stream": "Step 7/15 : RUN chmod +x /usr/bin/ttyd.x86_64"
+}
+{
+    "stream": "\n"
+}
+{
+    "stream": " ---> Running in 907749d11555\n"
+}
+{
+    "stream": " ---> Removed intermediate container 907749d11555\n"
+}
+{
+    "stream": " ---> 0f4c59fdca9d\n"
+}
+{
+    "stream": "Step 8/15 : COPY ./filebrowser /usr/bin/filebrowser"
+}
+{
+    "stream": "\n"
+}
+{
+    "stream": " ---> ca91c6b4ab68\n"
+}
+{
+    "stream": "Step 9/15 : RUN chmod +x /usr/bin/filebrowser"
+}
+{
+    "stream": "\n"
+}
+{
+    "stream": " ---> Running in 1c567b8a5b99\n"
+}
+{
+    "stream": " ---> Removed intermediate container 1c567b8a5b99\n"
+}
+{
+    "stream": " ---> 425a6ae0bcc8\n"
+}
+{
+    "stream": "Step 10/15 : COPY ./healthz /usr/bin/healthz"
+}
+{
+    "stream": "\n"
+}
+{
+    "stream": " ---> 7e8ac9a93bf7\n"
+}
+{
+    "stream": "Step 11/15 : RUN chmod +x /usr/bin/healthz"
+}
+{
+    "stream": "\n"
+}
+{
+    "stream": " ---> Running in 5c81d3c3ef64\n"
+}
+{
+    "stream": " ---> Removed intermediate container 5c81d3c3ef64\n"
+}
+{
+    "stream": " ---> 64c4bf556ef1\n"
+}
+{
+    "stream": "Step 12/15 : EXPOSE 7772"
+}
+{
+    "stream": "\n"
+}
+{
+    "stream": " ---> Running in 61a8e14ae72d\n"
+}
+{
+    "stream": " ---> Removed intermediate container 61a8e14ae72d\n"
+}
+{
+    "stream": " ---> 8d5f69f56714\n"
+}
+{
+    "stream": "Step 13/15 : COPY ./entrypoint.sh /entrypoint.sh"
+}
+{
+    "stream": "\n"
+}
+{
+    "stream": " ---> e0a38262dee6\n"
+}
+{
+    "stream": "Step 14/15 : RUN chmod +x /entrypoint.sh"
+}
+{
+    "stream": "\n"
+}
+{
+    "stream": " ---> Running in 3e20db7b174e\n"
+}
+{
+    "stream": " ---> Removed intermediate container 3e20db7b174e\n"
+}
+{
+    "stream": " ---> d91a9b8853bd\n"
+}
+{
+    "stream": "Step 15/15 : CMD [\"/entrypoint.sh\"]"
+}
+{
+    "stream": "\n"
+}
+{
+    "stream": " ---> Running in cd2c4a8356e0\n"
+}
+{
+    "stream": " ---> Removed intermediate container cd2c4a8356e0\n"
+}
+{
+    "stream": " ---> 98c64b533043\n"
+}
+{
+    "aux": {
+        "ID": "sha256:98c64b533043c1b59f9a5eededf415f6f11d8b549d3c28b886e64424d2b5808a"
+    }
+}
+{
+    "stream": "Successfully built 98c64b533043\n"
+}

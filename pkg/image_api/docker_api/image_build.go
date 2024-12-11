@@ -2,19 +2,24 @@ package docker_api
 
 import (
 	"errors"
+	"github.com/Juminiy/kube/pkg/image_api/docker_api/docker_client"
 	"github.com/Juminiy/kube/pkg/internal_api"
+	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/registry"
 	"io"
 )
 
 type BuildImageRespV1 struct {
-	TagPushImageResp
-	types.ImageBuildResponse
+	docker_client.ImageBuildResp `json:"build_image"`
+	TagPushImageResp             `json:"tag_push_image"`
+	OSType                       string `json:"os_type"`
+	types.ImageBuildResponse     `json:"-"`
 }
 
 func (c *Client) BuildImage(input io.Reader, refStr string) (resp BuildImageRespV1, err error) {
 	resp.ImageBuildResponse, err = c.buildImage(input, refStr)
+	resp.parse()
 	if err != nil {
 		return
 	}
@@ -84,3 +89,14 @@ const (
 	NetworkNone      = "none"
 	networkContainer = "container:<name|id>"
 )
+
+func (b *BuildImageRespV1) parse() *BuildImageRespV1 {
+	bs, err := io.ReadAll(b.Body)
+	if err != nil {
+		stdlog.ErrorF("read build image bytes error: %s", err.Error())
+		return b
+	}
+	b.ImageBuildResp = (&docker_client.EventResp{}).
+		ParseBytes(bs).GetImageBuildResp()
+	return b
+}
