@@ -5,6 +5,7 @@ import (
 	"github.com/Juminiy/kube/pkg/image_api/docker_api/docker_client"
 	"github.com/Juminiy/kube/pkg/internal_api"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
+	"github.com/Juminiy/kube/pkg/util"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/registry"
 	"io"
@@ -92,6 +93,7 @@ const (
 
 func (b *BuildImageRespV1) parse() *BuildImageRespV1 {
 	bs, err := io.ReadAll(b.Body)
+	defer util.SilentCloseIO("build image resp body", b.Body)
 	if err != nil {
 		stdlog.ErrorF("read build image bytes error: %s", err.Error())
 		return b
