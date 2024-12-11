@@ -20,10 +20,10 @@ type BuildImageRespV1 struct {
 
 func (c *Client) BuildImage(input io.Reader, refStr string) (resp BuildImageRespV1, err error) {
 	resp.ImageBuildResponse, err = c.buildImage(input, refStr)
-	resp.parse()
 	if err != nil {
 		return
 	}
+	resp.parse()
 	resp.TagPushImageResp, err = c.tagImageFromRefStr(refStr)
 	return
 }
