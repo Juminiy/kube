@@ -89,8 +89,6 @@ func (c *Client) WithProject(project string) *Client {
 	return c
 }
 
-func (c *Client) GC(gcFn ...util.Func) {}
-
 type ClientFunc func(client *dockercli.Client) error
 
 func (c *Client) Do(cfn ...ClientFunc) error {

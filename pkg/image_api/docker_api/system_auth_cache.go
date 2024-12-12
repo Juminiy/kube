@@ -1,3 +1,4 @@
+// Deprecated
 package docker_api
 
 import (
@@ -5,8 +6,6 @@ import (
 	"github.com/docker/docker/api/types/registry"
 	"sync"
 )
-
-// file Deprecated
 
 const (
 	initCacheSize = 8

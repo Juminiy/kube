@@ -3,40 +3,36 @@ package docker_api
 import (
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/docker/docker/api/types/registry"
+	"gopkg.in/yaml.v3"
+	"io"
+	"os"
+	"path/filepath"
 )
 
-const (
-	hostIP              = "10.112.121.243"
-	dockerPort          = "2375"
-	dockerAddr          = "tcp://" + hostIP + ":" + dockerPort
-	dockerClientVersion = "1.43"
-	harborPort          = "8111"
-	harborAddr          = hostIP + ":" + harborPort
-	harborAuthUsername  = "admin"
-	harborAuthPassword  = "bupt.harbor@666"
-)
-
-var (
-	testNewClient, testDockerClientError = New(dockerAddr, dockerClientVersion)
-)
-
-func initFunc() {
-	util.SilentPanic(testDockerClientError)
-
-	testNewClient.WithRegistryAuth(&registry.AuthConfig{
-		Username:      harborAuthUsername,
-		Password:      harborAuthPassword,
-		ServerAddress: harborAddr,
-	})
+var _cli *Client
+var _cfg struct {
+	Docker struct {
+		Addr    string `yaml:"addr"`
+		Version string `yaml:"version"`
+	} `yaml:"docker"`
+	Registry struct {
+		Addr     string `yaml:"addr"`
+		Username string `yaml:"username"`
+		Password string `yaml:"password"`
+	} `yaml:"registry"`
 }
 
-func initFunc2() *Client {
-	cli, err := New("tcp://192.168.31.242:2375", "1.47")
+func init() {
+	cfgPath, err := os.Open(filepath.Join("testdata", "env", "chisato_win10.yaml"))
 	util.Must(err)
-	cli.WithRegistryAuth(&registry.AuthConfig{
-		Username:      "admin",
-		Password:      "Harbor12345",
-		ServerAddress: "192.168.31.242:8662",
+	cfgBytes, err := io.ReadAll(cfgPath)
+	util.Must(err)
+	util.Must(yaml.Unmarshal(cfgBytes, &_cfg))
+	_cli, err = New(_cfg.Docker.Addr, _cfg.Docker.Version)
+	util.Must(err)
+	_cli.WithRegistryAuth(&registry.AuthConfig{
+		Username:      _cfg.Registry.Username,
+		Password:      _cfg.Registry.Password,
+		ServerAddress: _cfg.Registry.Addr,
 	})
-	return cli
 }

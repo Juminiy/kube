@@ -1,0 +1,16 @@
+Docker Engine API Category
+- Containers
+- Images
+- Networks
+- Volumes
+- Exec
+- Swarm
+- Nodes
+- Services
+- Tasks
+- Secrets
+- Configs
+- Plugins
+- System
+- Distribution
+- Session

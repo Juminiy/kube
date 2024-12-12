@@ -7,8 +7,12 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-var EncE = safe_json.Goccy().Marshal
-var DecE = safe_json.Goccy().Unmarshal
+func EncE(v any) ([]byte, error) {
+	return safe_json.Goccy().Marshal(v)
+}
+func DecE(b []byte, v any) error {
+	return safe_json.Goccy().Unmarshal(b, v)
+}
 
 type EventResp struct {
 	Status     int

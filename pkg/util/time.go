@@ -2,6 +2,8 @@ package util
 
 import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
+	"github.com/prometheus/prometheus/model/timestamp"
+	"github.com/spf13/cast"
 	"time"
 )
 
@@ -101,3 +103,16 @@ func MeasureTime(dur time.Duration) string {
 
 	return F64toa(appr) + meas
 }
+
+func ToTimestamp(t time.Time) string {
+	if t != _zeroTime {
+		return cast.ToString(timestamp.FromTime(t))
+	}
+	return ""
+}
+
+func FromTimestamp(s string) time.Time {
+	return timestamp.Time(cast.ToInt64(s))
+}
+
+var _zeroTime = time.Time{}

@@ -26,6 +26,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2
 	github.com/opencontainers/image-spec v1.1.0
 	github.com/panjf2000/ants/v2 v2.10.0
+	github.com/prometheus/prometheus v0.54.1
 	github.com/samber/lo v1.47.0
 	github.com/shirou/gopsutil/v4 v4.24.11
 	github.com/spf13/cast v1.7.0
@@ -39,6 +40,7 @@ require (
 	k8s.io/api v0.31.3
 	k8s.io/apimachinery v0.31.3
 	k8s.io/client-go v0.31.3
+	k8s.io/kube-openapi v0.0.0-20240228011516-70dd3763d340
 )
 
 require (
@@ -137,7 +139,6 @@ require (
 	github.com/prometheus/common v0.59.1 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/prometheus/prom2json v1.4.0 // indirect
-	github.com/prometheus/prometheus v0.54.1 // indirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/richardlehane/msoleps v1.0.4 // indirect
 	github.com/rs/xid v1.6.0 // indirect
@@ -180,7 +181,6 @@ require (
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
-	k8s.io/kube-openapi v0.0.0-20240228011516-70dd3763d340 // indirect
 	k8s.io/utils v0.0.0-20240711033017-18e509b52bc8 // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
