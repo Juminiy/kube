@@ -144,3 +144,14 @@ func TestClient_BuildImageWithCancel(t *testing.T) {
 		//(*cancelFunc)()
 	}
 }
+
+func TestClient_BuildImageV2(t *testing.T) {
+	cli := initFunc2()
+	cli.WithProject("library")
+	fptr, err := os.Open(testTarBuildTimeout)
+	util.Must(err)
+	defer util.SilentCloseIO("tar fileptr", fptr)
+	resp, err := cli.BuildImageV2(fptr, "timeout:v1.0")
+	util.Must(err)
+	t.Log(resp)
+}

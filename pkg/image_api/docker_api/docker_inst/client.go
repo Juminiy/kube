@@ -19,6 +19,10 @@ func BuildImageFavOption(_string string) types.ImageBuildOptions {
 	return _dockerClient.BuildImageFavOption(_string)
 }
 
+func BuildImageV2(reader io.Reader, _string string) (docker_api.BuildImageRespV1, error) {
+	return _dockerClient.BuildImageV2(reader, _string)
+}
+
 func BuildImageWithCancel(context context.Context, reader io.Reader, _string string) (docker_api.BuildImageRespV1, *context.CancelFunc, error) {
 	return _dockerClient.BuildImageWithCancel(context, reader, _string)
 }

@@ -27,10 +27,12 @@ func (b *BuildImageRespV1) parseBuildRawResp(brr types.ImageBuildResponse) *Buil
 	}
 	b.ImageBuildResp = (&docker_client.EventResp{}).
 		ParseBytes(bs).GetImageBuildResp()
+	b.OSType = brr.OSType
 	return b
 }
 
-func (c *Client) BuildImage(input io.Reader, refStr string) (resp BuildImageRespV1, err error) {
+func (c *Client) BuildImage(input io.Reader, refStr string) (
+	resp BuildImageRespV1, err error) {
 	return c.buildImageWithContext(c.ctx, input, refStr)
 }
 
@@ -50,6 +52,22 @@ func (c *Client) buildImageWithContext(ctx context.Context, input io.Reader, ref
 		return
 	}
 	resp.parseBuildRawResp(rawBuildResp)
+	resp.TagPushImageResp, err = c.tagImageFromRefStr(refStr)
+	return
+}
+
+func (c *Client) BuildImageV2(input io.Reader, refStr string) (
+	resp BuildImageRespV1, err error) {
+	return c.buildImageWithContextV2(c.ctx, input, refStr)
+}
+
+func (c *Client) buildImageWithContextV2(ctx context.Context, input io.Reader, refStr string) (
+	resp BuildImageRespV1, err error) {
+	buildResp, err := c.apiClient.ImageBuild(input, c.BuildImageFavOption(refStr), ctx)
+	if err != nil {
+		return
+	}
+	resp.ImageBuildResp = buildResp.GetImageBuildResp()
 	resp.TagPushImageResp, err = c.tagImageFromRefStr(refStr)
 	return
 }
