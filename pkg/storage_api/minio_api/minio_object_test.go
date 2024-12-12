@@ -8,7 +8,7 @@ import (
 
 // +passed
 func TestClient_TempGetObject(t *testing.T) {
-	url, err := testMinioClient.TempGetObject(&ObjectConfig{"kube-env", "shell", "info.sh"}, util.DurationMinute*10)
+	url, err := testMinioClient.TempGetObject(&ObjectConfig{BucketName: "kube-env", ObjectPath: "shell", ObjectName: "info.sh"}, util.DurationMinute*10)
 	if err != nil {
 		panic(err)
 	}
@@ -17,7 +17,7 @@ func TestClient_TempGetObject(t *testing.T) {
 
 // +passed
 func TestClient_TempPutObject(t *testing.T) {
-	url, err := testMinioClient.TempPutObject(&ObjectConfig{"kube-env", "/shell/folder", "rr.sh"}, util.DurationMinute*10)
+	url, err := testMinioClient.TempPutObject(&ObjectConfig{BucketName: "kube-env", ObjectPath: "/shell/folder", ObjectName: "rr.sh"}, util.DurationMinute*10)
 	if err != nil {
 		panic(err)
 	}
@@ -27,8 +27,8 @@ func TestClient_TempPutObject(t *testing.T) {
 // +passed
 func TestClient_TempGetObjectList(t *testing.T) {
 	urls, err := testMinioClient.TempGetObjectList([]ObjectConfig{
-		{"kube-env", "/shell/folder", "cc.sh"},
-		{"kube-env", "/shell/folder", "rr.sh"}},
+		{BucketName: "kube-env", ObjectPath: "/shell/folder", ObjectName: "cc.sh"},
+		{BucketName: "kube-env", ObjectPath: "/shell/folder", ObjectName: "rr.sh"}},
 		util.DurationMinute*10)
 	if err != nil {
 		t.Log(err)
