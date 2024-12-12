@@ -33,51 +33,6 @@ func (c *Client) ImagePush(refStr string) (pushResp EventResp, err error) {
 	return *pushResp.Parse(resp), err
 }
 
-/*
-	{
-	    "status": "The push refers to repository [docker.io/???/???]"
-	}
-	{
-	    "status": "Preparing",
-	    "progressDetail": {},
-	    "id": "ac28800ec8bb"
-	}
-	{
-	    "status": "Pushing",
-	    "progressDetail": {
-	        "current": 512,
-	        "total": 13256
-	    },
-	    "progress": "[=>                                                 ]     512B/13.26kB",
-	    "id": "ac28800ec8bb"
-	}
-	{
-	    "status": "Pushing",
-	    "progressDetail": {
-	        "current": 14848,
-	        "total": 13256
-	    },
-	    "progress": "[==================================================>]  14.85kB",
-	    "id": "ac28800ec8bb"
-	}
-	{
-	    "status": "Pushed",
-	    "progressDetail": {},
-	    "id": "ac28800ec8bb"
-	}
-	{
-	    "status": "v1.0: digest: sha256:d37ada95d47ad12224c205a938129df7a3e52345828b4fa27b03a98825d1e2e7 size: 524"
-	}
-	{
-	    "progressDetail": {},
-	    "aux": {
-	        "Tag": "v1.0",
-	        "Digest": "sha256:d37ada95d47ad12224c205a938129df7a3e52345828b4fa27b03a98825d1e2e7",
-	        "Size": 524
-	    }
-	}
-*/
-
 type ImagePushResp struct {
 	RemoteRepository string
 	PushID           string

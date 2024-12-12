@@ -1,0 +1,5 @@
+/* 3. image do not exist in registry
+{
+    "message": "manifest for ???/??? not found: manifest unknown: manifest unknown"
+}
+*/

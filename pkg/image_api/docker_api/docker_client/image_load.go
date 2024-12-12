@@ -15,19 +15,6 @@ func (c *Client) ImageLoad(input io.Reader) (loadResp EventResp, err error) {
 	return *loadResp.Parse(resp), err
 }
 
-/*
-case1: refStr
-
-	{
-	    "stream": "Loaded image: hello-world:latest\n"
-	}
-
-case2: imageID
-
-	{
-		"stream": "Loaded image ID: sha256:d2c94e258dcb3c5ac2798d32e1249e42ef01cba4841c2234249495f87264ac5a\n"
-	}
-*/
 func (r *EventResp) GetImageLoad() (refStrOrImageID string) {
 	for _, msg := range r.Message {
 		if msg == nil {

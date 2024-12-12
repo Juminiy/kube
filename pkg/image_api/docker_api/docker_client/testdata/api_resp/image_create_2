@@ -1,0 +1,12 @@
+/* 2. image exists in local
+{
+    "status": "Pulling from library/hello-world",
+    "id": "latest"
+}
+{
+    "status": "Digest: sha256:305243c734571da2d100c8c8b3c3167a098cab6049c9a5b066b6021a60fcb966"
+}
+{
+    "status": "Status: Image is up to date for hello-world:latest"
+}
+*/

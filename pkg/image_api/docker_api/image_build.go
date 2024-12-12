@@ -1,6 +1,7 @@
 package docker_api
 
 import (
+	"context"
 	"errors"
 	"github.com/Juminiy/kube/pkg/image_api/docker_api/docker_client"
 	"github.com/Juminiy/kube/pkg/internal_api"
@@ -15,15 +16,40 @@ type BuildImageRespV1 struct {
 	docker_client.ImageBuildResp `json:"build_image"`
 	TagPushImageResp             `json:"tag_push_image"`
 	OSType                       string `json:"os_type"`
-	types.ImageBuildResponse     `json:"-"`
+}
+
+func (b *BuildImageRespV1) parseBuildRawResp(brr types.ImageBuildResponse) *BuildImageRespV1 {
+	bs, err := io.ReadAll(brr.Body)
+	defer util.SilentCloseIO("build image resp body", brr.Body)
+	if err != nil {
+		stdlog.ErrorF("read build image bytes error: %s", err.Error())
+		return b
+	}
+	b.ImageBuildResp = (&docker_client.EventResp{}).
+		ParseBytes(bs).GetImageBuildResp()
+	return b
 }
 
 func (c *Client) BuildImage(input io.Reader, refStr string) (resp BuildImageRespV1, err error) {
-	resp.ImageBuildResponse, err = c.buildImage(input, refStr)
+	return c.buildImageWithContext(c.ctx, input, refStr)
+}
+
+func (c *Client) BuildImageWithCancel(ctx context.Context, input io.Reader, refStr string) (
+	resp BuildImageRespV1, cancelFunc *context.CancelFunc, err error) {
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	cancelFunc = &cancel
+	resp, err = c.buildImageWithContext(ctx, input, refStr)
+	return
+}
+
+func (c *Client) buildImageWithContext(ctx context.Context, input io.Reader, refStr string) (
+	resp BuildImageRespV1, err error) {
+	rawBuildResp, err := c.cli.ImageBuild(ctx, input, c.BuildImageFavOption(refStr))
 	if err != nil {
 		return
 	}
-	resp.parse()
+	resp.parseBuildRawResp(rawBuildResp)
 	resp.TagPushImageResp, err = c.tagImageFromRefStr(refStr)
 	return
 }
@@ -69,10 +95,6 @@ func (c *Client) BuildImageFavOption(refStr string) types.ImageBuildOptions {
 	}
 }
 
-func (c *Client) buildImage(input io.Reader, refStr string) (types.ImageBuildResponse, error) {
-	return c.cli.ImageBuild(c.ctx, input, c.BuildImageFavOption(refStr))
-}
-
 var ErrAbsRefStr = errors.New("image absolutely refStr format error")
 var ErrProjectNotFound = errors.New("project not found error")
 
@@ -90,15 +112,3 @@ const (
 	NetworkNone      = "none"
 	networkContainer = "container:<name|id>"
 )
-
-func (b *BuildImageRespV1) parse() *BuildImageRespV1 {
-	bs, err := io.ReadAll(b.Body)
-	defer util.SilentCloseIO("build image resp body", b.Body)
-	if err != nil {
-		stdlog.ErrorF("read build image bytes error: %s", err.Error())
-		return b
-	}
-	b.ImageBuildResp = (&docker_client.EventResp{}).
-		ParseBytes(bs).GetImageBuildResp()
-	return b
-}

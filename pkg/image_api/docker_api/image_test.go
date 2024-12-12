@@ -10,6 +10,7 @@ import (
 	"io"
 	"os"
 	"testing"
+	"time"
 )
 
 var (
@@ -122,11 +123,24 @@ func TestClient_BuildImage(t *testing.T) {
 	fptr, err := os.Open(testTarBuildPath)
 	util.Must(err)
 	defer util.SilentCloseIO("tar fileptr", fptr)
-	resp, err := cli.BuildImage(fptr, "jammy-env:v1.8")
+	resp, err := cli.BuildImage(fptr, "jammy-env:v1.9")
 	util.Must(err)
 	t.Log(resp)
 }
 
-func TestClient_BuildImage2(t *testing.T) {
+func TestClient_BuildImageWithCancel(t *testing.T) {
+	cli := initFunc2()
+	cli.WithProject("library")
+	fptr, err := os.Open(testTarBuildTimeout)
+	util.Must(err)
+	defer util.SilentCloseIO("tar fileptr", fptr)
+	ctx := util.TODOContext()
+	resp, cancelFunc, err := cli.BuildImageWithCancel(ctx, fptr, "timeout:v1.0")
+	util.Must(err)
+	t.Log(resp)
 
+	time.Sleep(util.TimeSecond(10))
+	if cancelFunc != nil {
+		//(*cancelFunc)()
+	}
 }
