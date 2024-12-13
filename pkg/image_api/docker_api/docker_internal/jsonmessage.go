@@ -39,7 +39,7 @@ func GetStatusFromImagePushResp(ioReader io.Reader) string {
 
 /*
 	{
-	    "status": "The push refers to repository [10.112.121.243:8111/library/hello]"
+	    "status": "The push refers to repository [harbor.local:8080/library/hello]"
 	}
 
 	{

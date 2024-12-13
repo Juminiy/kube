@@ -10,11 +10,11 @@ var (
 		"jammy-env",              // only repo
 		"jammy-env:v1.6",         // only refStr-artifact
 		"library/jammy-env:v1.6", // only refStr
-		"10.112.121.243:8111/library/jammy-env:v1.6",                                                                    // absRefStr
-		"sha256:305243c734571da2d100c8c8b3c3167a098cab6049c9a5b066b6021a60fcb966",                                       // only digest
-		"jammy-env@sha256:305243c734571da2d100c8c8b3c3167a098cab6049c9a5b066b6021a60fcb966",                             // only digest-artifact
-		"library/jammy-env@sha256:305243c734571da2d100c8c8b3c3167a098cab6049c9a5b066b6021a60fcb966",                     // only digestStr
-		"10.112.121.243:8111/library/jammy-env@sha256:305243c734571da2d100c8c8b3c3167a098cab6049c9a5b066b6021a60fcb966", // absDigestStr
+		"harbor.local:8080/library/jammy-env:v1.6",                                                                    // absRefStr
+		"sha256:305243c734571da2d100c8c8b3c3167a098cab6049c9a5b066b6021a60fcb966",                                     // only digest
+		"jammy-env@sha256:305243c734571da2d100c8c8b3c3167a098cab6049c9a5b066b6021a60fcb966",                           // only digest-artifact
+		"library/jammy-env@sha256:305243c734571da2d100c8c8b3c3167a098cab6049c9a5b066b6021a60fcb966",                   // only digestStr
+		"harbor.local:8080/library/jammy-env@sha256:305243c734571da2d100c8c8b3c3167a098cab6049c9a5b066b6021a60fcb966", // absDigestStr
 	}
 )
 

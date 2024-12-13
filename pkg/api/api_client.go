@@ -6,8 +6,8 @@ import (
 	"github.com/Juminiy/kube/pkg/util"
 )
 
-type ClientInterface interface {
-	WithContext(context.Context) ClientInterface
+type Client interface {
+	WithContext(context.Context) Client
 	GCable
 }
 
@@ -36,4 +36,8 @@ type InternalLoggerV2 interface {
 	InfoF(string, ...any)
 	Error(...any)
 	ErrorF(string, ...any)
+}
+
+func New(...any) (*Client, error) {
+	return nil, nil
 }

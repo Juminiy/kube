@@ -61,38 +61,20 @@ func (c *Client) searchImageByRef(absRefStr string) ([]registry.SearchResult, er
 	})
 }
 
-func getRefFilter(absRefStr string) filters.Args {
-	if !validAbsRefStr(absRefStr) {
+func getRefFilter(absRefStr string) (args filters.Args) {
+	arti := ParseToArtifact(absRefStr)
+	if refStr := arti.RefStr(); len(refStr) > 0 {
 		return filters.NewArgs(filters.KeyValuePair{
 			Key:   docker_internal.FilterReference,
-			Value: docker_internal.ReferenceNone,
+			Value: refStr,
 		})
 	}
-	return filters.NewArgs(filters.KeyValuePair{
-		Key:   docker_internal.FilterReference,
-		Value: absRefStr,
-	})
+	return
 }
-
-func validAbsRefStr(absRefStr string) bool {
-	return strings.Count(absRefStr, "/") == 2
-}
-
-type HostImageGCFunc util.Func
-
-// HostImageGC
-// cli: docker rmi IMAGE_ID
-// maybe quota by:
-//
-// 1. image CREATED: since, before
-// 2. image SIZE: bytes(B)
-// 3. cache algorithm policy: lru, lfu
-// 4. host disk: bytes(B)
-func (c *Client) HostImageStorageGC(gcFunc ...HostImageGCFunc) {}
 
 // Deprecated
 // +example +strict url format
-// 192.168.31.242:8662/library/ubuntu-s:22.04
+// harbor.local:8080/library/ubuntu-s:22.04
 func getRelativeRefStr(absRefStr string) string {
 	parts := strings.Split(absRefStr, "/")
 	if len(parts) != 3 {

@@ -1,13 +1,13 @@
 drawdb                                           latest                         19fdd00ee721   45 hours ago    48.6MB
 <none>                                           <none>                         4ef05cfd7e5e   45 hours ago    483MB
-192.168.31.242:8662/library/ubuntu-s             22.04                          f69bcee5ef10   3 weeks ago     1.31GB
-192.168.31.242:8662/library/node                 20-alpine                      45a59611ca84   4 weeks ago     133MB
-192.168.31.242:8662/library/s3fstest             latest                         15f13f2354d2   7 weeks ago     232MB
+harbor.local:8080/library/ubuntu-s             22.04                          f69bcee5ef10   3 weeks ago     1.31GB
+harbor.local:8080/library/node                 20-alpine                      45a59611ca84   4 weeks ago     133MB
+harbor.local:8080/library/s3fstest             latest                         15f13f2354d2   7 weeks ago     232MB
 s3fstest                                         latest                         15f13f2354d2   7 weeks ago     232MB
-192.168.31.242:8662/library/drawdb               latest                         a7b5dbef56bb   2 months ago    47.9MB
+harbor.local:8080/library/drawdb               latest                         a7b5dbef56bb   2 months ago    47.9MB
 mysql                                            8.0                            307199bdf3e2   2 months ago    573MB
-192.168.31.66:18111/library/mysql                8.0                            307199bdf3e2   2 months ago    573MB
-192.168.31.242:8662/k2s-images/ubuntu            22.04                          8a3cdc4d1ad3   2 months ago    77.9MB
-192.168.31.242:8662/k8s-images/ubuntu            22.04                          8a3cdc4d1ad3   2 months ago    77.9MB
+harbor.local:8080/library/mysql                8.0                            307199bdf3e2   2 months ago    573MB
+harbor.local:8080/k2s-images/ubuntu            22.04                          8a3cdc4d1ad3   2 months ago    77.9MB
+harbor.local:8080/k8s-images/ubuntu            22.04                          8a3cdc4d1ad3   2 months ago    77.9MB
 m.daocloud.io/docker.io/library/ubuntu           22.04                          8a3cdc4d1ad3   2 months ago    77.9MB
 goharbor/harbor-exporter

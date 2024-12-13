@@ -6,8 +6,8 @@ import (
 )
 
 /*
-sudo docker tag jammy-env:v1.6 10.112.121.243:8111/library/jammy-env:v1.6
-sudo docker push 10.112.121.243:8111/library/jammy-env:v1.6
+sudo docker tag jammy-env:v1.6 harbor.local:8080/library/jammy-env:v1.6
+sudo docker push harbor.local:8080/library/jammy-env:v1.6
 */
 
 /*
@@ -43,8 +43,8 @@ type Artifact struct {
 // +example: jammy-env
 // +example: jammy-env:v1.6
 // +example: library/jammy-env:v1.6
-// +example: 10.112.121.243:8111/library/jammy-env:v1.6
-// +example: 10.112.121.243:8111/library/jammy-env@sha256:305243c734571da2d100c8c8b3c3167a098cab6049c9a5b066b6021a60fcb966
+// +example: harbor.local:8080/library/jammy-env:v1.6
+// +example: harbor.local:8080/library/jammy-env@sha256:305243c734571da2d100c8c8b3c3167a098cab6049c9a5b066b6021a60fcb966
 func ParseToArtifact(s string) (arti Artifact) {
 	artiParts := strings.Split(s, "/")
 	switch len(artiParts) {
@@ -109,9 +109,9 @@ func (a *Artifact) DigestStr() string {
 	return a.sha256Digest
 }
 
-// +example: http://10.112.121.243:8111
-// +example: 10.112.121.243:8111/
-// +example: 10.112.121.243:8111
+// +example: http://harbor.local:8080
+// +example: harbor.local:8080/
+// +example: harbor.local:8080
 func (a *Artifact) SetRegistry(s string) *Artifact {
 	a.Registry = trimSSlash(util.TrimProto(s))
 	return a

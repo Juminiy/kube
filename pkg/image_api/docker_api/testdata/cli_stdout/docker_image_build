@@ -1,5 +1,5 @@
 {
-    "stream": "Step 1/15 : FROM 10.112.121.243:8111/library/jammy-release:v1.1"
+    "stream": "Step 1/15 : FROM harbor.local:8080/library/jammy-release:v1.1"
 }
 {
     "stream": "\n"

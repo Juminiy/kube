@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # Modify FROM: https://github.com/kubesphere/kubekey/blob/master/hack/version.sh
-# Modifier NAME: Juminiy, MAIL: chisato-x@bupt.edu.cn
+# Modifier NAME: Juminiy, MAIL: hln0x29a@gmail.com
 
 PROJECT_NAME=github.com/Juminiy/kube
 

@@ -29,6 +29,11 @@ func New(
 	harborInsecure bool,
 	harborUsername,
 	harborPassword string) (*Client, error) {
+	if harborInsecure {
+		harborRegistry = util.URLWithHTTP(harborRegistry)
+	} else {
+		harborRegistry = util.URLWithHTTPS(harborRegistry)
+	}
 	csc := &harbor.ClientSetConfig{
 		URL:      harborRegistry,
 		Insecure: harborInsecure,
@@ -71,10 +76,4 @@ func (c *Client) WithTimeout(httpTimeout time.Duration) *Client {
 
 func (c *Client) GC(gcFn ...util.Func) {
 
-}
-
-// Deprecated
-func (c *Client) WithCallBack(callback *CallBack) *Client {
-	c.CallBack = callback
-	return c
 }

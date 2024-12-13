@@ -7,7 +7,7 @@ import (
 )
 
 func TestClient_ListProjects(t *testing.T) {
-	listProjects, err := testHarborClient.ListProjects(true)
+	listProjects, err := _cli.ListProjects(true)
 	util.Must(err)
 	for _, projectPtr := range listProjects.Payload {
 		bs, err := projectPtr.MarshalBinary()
@@ -22,10 +22,10 @@ func TestClient_CreateProject(t *testing.T) {
 		ProjectName:    util.StringJoin("-", "10", "200", random.LowerCaseString(10)),
 		StorageLimit:   50 * util.Gi,
 	}
-	_, err := testHarborClient.CreateProject(req)
-	t.Log(testHarborClient.ErrorDetail(err))
+	_, err := _cli.CreateProject(req)
+	t.Log(_cli.ErrorDetail(err))
 
-	getProject, err := testHarborClient.GetProject(req.ProjectName)
+	getProject, err := _cli.GetProject(req.ProjectName)
 	util.MustDetail(err)
 
 	bs, err := getProject.Payload.MarshalBinary()
@@ -34,12 +34,12 @@ func TestClient_CreateProject(t *testing.T) {
 }
 
 func TestClient_DeleteProject(t *testing.T) {
-	_, err := testHarborClient.DeleteProject("qo0ww_sa")
+	_, err := _cli.DeleteProject("qo0ww_sa")
 	util.Must(err)
 }
 
 func TestClient_CopyArtifact(t *testing.T) {
-	_, err := UnwrapErr(testHarborClient.CopyArtifact(
+	_, err := UnwrapErr(_cli.CopyArtifact(
 		ArtifactURI{
 			Project:    "library",
 			Repository: "ubuntu",
@@ -51,5 +51,5 @@ func TestClient_CopyArtifact(t *testing.T) {
 			Tag:        "jammy",
 		},
 	))
-	t.Log(testHarborClient.ErrorDetail(err))
+	t.Log(_cli.ErrorDetail(err))
 }

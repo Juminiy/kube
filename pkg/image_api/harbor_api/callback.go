@@ -24,3 +24,9 @@ type (
 		CallBackAttrs
 	}
 )
+
+// Deprecated
+func (c *Client) WithCallBack(callback *CallBack) *Client {
+	c.CallBack = callback
+	return c
+}

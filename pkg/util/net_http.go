@@ -18,6 +18,13 @@ func URLWithHTTP(url string) string {
 	return StringConcat("http://", url)
 }
 
+func URLWithHTTPS(url string) string {
+	if IsURLWithScheme(url) {
+		return url
+	}
+	return StringConcat("https://", url)
+}
+
 func URLWithoutHTTP(url string) string {
 	if IsURLWithScheme(url) {
 		return StringReplaceAlls(url, "", "http://", "https://")
