@@ -65,6 +65,7 @@ vendor:
 vendortidy:
 	rm -rf vendor
 
+
 ################################
 #		codegen git-add  	   #
 ################################
@@ -113,3 +114,25 @@ egvcheck: set vet
 .PHONY: healthz
 healthz: set vet
 	$(GO_RUN_BUILD)
+
+.PHONY: clipboard_fast
+clipboard_fast:
+	GO_ENVS=env GOARCH=amd64 GOOS=linux
+	cd $(CMD_DIR)/clipboard/$@ && $(GO_ENVS) $(GO_BUILD)
+
+
+################################
+#		docker executable  	   #
+################################
+.PHONY: docker_clipboard_fast
+docker_clipboard_fast: clipboard_fast
+	docker build --build-arg PLATFORM=linux/amd64 --no-cache --debug -t clipboard_fast:latest -f docker/clipboard_fast/Dockerfile .
+	docker stop clipboardfast
+	docker rm clipboardfast
+	docker run -dit \
+		--cpus 1 \
+		--memory 1GB \
+		--name clipboardfast \
+		--restart=always \
+		-p 8081:8081 \
+		clipboard_fast:latest
