@@ -105,3 +105,11 @@ clean:
 .PHONY: menud
 menud: set vet
 	$(GO_RUN_BUILD)
+
+.PHONY: egvcheck
+egvcheck: set vet
+	$(GO_RUN_BUILD)
+
+.PHONY: healthz
+healthz: set vet
+	$(GO_RUN_BUILD)

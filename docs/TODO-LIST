@@ -1,5 +1,0 @@
-1. remove fmt.Println fmt.Printf in later version, replaced by logger api, done.
-2. read yaml api, done.
-3. logger api: uber/zap, done
-4. struct json encoding api referred from: k8s & openapi, done.
-5. find TODO: and WARNING: before commit, done.
