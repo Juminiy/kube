@@ -126,7 +126,12 @@ clipboard_fast:
 ################################
 .PHONY: docker_clipboard_fast
 docker_clipboard_fast: clipboard_fast
-	docker build --build-arg PLATFORM=linux/amd64 --no-cache --debug -t clipboard_fast:latest -f docker/clipboard_fast/Dockerfile .
+	docker buildx build --platform linux/amd64 \
+		--build-arg PLATFORM=linux/amd64 \
+		--no-cache \
+		--debug \
+		--tag clipboard_fast:latest \
+		--file docker/clipboard_fast/Dockerfile .
 	docker stop clipboardfast
 	docker rm clipboardfast
 	docker run -dit \

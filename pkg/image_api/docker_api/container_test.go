@@ -1,10 +1,9 @@
 package docker_api
 
 import (
-	"encoding/json"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
-	"strings"
+	"github.com/Juminiy/kube/pkg/util/safe_json"
 	"testing"
 )
 
@@ -12,12 +11,7 @@ import (
 func TestClient_ListContainers(t *testing.T) {
 	containers, err := _cli.ListContainers()
 	util.SilentPanic(err)
-	str := strings.Builder{}
-	encoder := json.NewEncoder(&str)
-	encoder.SetIndent(util.JSONMarshalPrefix, util.JSONMarshalIndent)
-	err = encoder.Encode(containers)
-	util.SilentPanic(err)
-	stdlog.Debug(str.String())
+	t.Log(safe_json.Pretty(containers))
 }
 
 // +passed

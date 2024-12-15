@@ -3,9 +3,9 @@ package docker_internal
 // please notice:
 // lower case word, like: true, false, running, is constant
 // UPPER CASE word, like: IMAGE_ID, IMAGE_NAME, is variable
-// sign '|' is or
-// sign '<>' is variable
-// sign '[]' is optional
+// sign '|' means condition or
+// sign '<>' means variable parameter
+// sign '[]' means optional parameter
 
 // filter args in image
 // +referred from:

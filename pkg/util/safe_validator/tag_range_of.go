@@ -2,9 +2,10 @@ package safe_validator
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/Juminiy/kube/pkg/util/safe_cast/safe_parse"
-	"strings"
 )
 
 // +param: tagv
@@ -83,7 +84,7 @@ func (f fieldOf) valueInRange(rangeParsed rangeLR) (ok bool) {
 	case kF32, kF64:
 		ok = util.InRange(f.rval.Float(), *rangeParsed.floatL, *rangeParsed.floatR)
 	default:
-		panic(errTagKindCheckErr)
+		util.DevPanic(errTagKindCheckErr)
 	}
 	return
 }
@@ -166,6 +167,6 @@ func (r *rangeLR) setLimitKind(kd kind) {
 	case kF64:
 		r.setLimitFloat(util.MinFloat64, util.MaxFloat64)
 	default:
-		panic(errTagKindCheckErr)
+		util.DevPanic(errTagKindCheckErr)
 	}
 }

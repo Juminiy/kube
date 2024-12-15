@@ -1,6 +1,7 @@
 package safe_validator
 
 import (
+	"github.com/Juminiy/kube/pkg/util"
 	"github.com/Juminiy/kube/pkg/util/safe_cast/safe_parse"
 	safe_reflectv2 "github.com/Juminiy/kube/pkg/util/safe_reflect/v2"
 )
@@ -86,7 +87,7 @@ func (f fieldOf) setDefault(tagv string) {
 	case kAny, kPtr:
 		f.setDefaultSlow(tagv)
 	default:
-		panic(errTagKindCheckErr)
+		util.DevPanic(errTagKindCheckErr)
 	}
 }
 

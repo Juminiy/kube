@@ -48,7 +48,7 @@ func Info(version *bool) {
 	if version != nil && *version {
 		infoJSON, err := util.MarshalJSONPretty(&info)
 		if err != nil {
-			panic(err)
+			util.DevPanic(err)
 		}
 		fmt.Println(infoJSON)
 		os.Exit(0)

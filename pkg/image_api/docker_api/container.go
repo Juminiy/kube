@@ -1,140 +1,99 @@
 package docker_api
 
 import (
-	"github.com/Juminiy/kube/pkg/util"
+	"github.com/Juminiy/kube/pkg/util/safe_reflect"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/image"
-	"io"
-	k8sutilsets "k8s.io/apimachinery/pkg/util/sets"
-	"strings"
+	"github.com/docker/docker/api/types/filters"
+	"github.com/samber/lo"
+	"k8s.io/kube-openapi/pkg/util/sets"
+	"k8s.io/utils/set"
 )
 
-func (c *Client) ListContainerFullIds() ([]string, error) {
-	resultMap, err := c.listContainerWithFields("Id")
-	return resultMap["Id"], err
+func (c *Client) ListContainers() ([]types.Container, error) {
+	return c.listContainer(_showAll)
 }
 
 func (c *Client) ListContainerIds() ([]string, error) {
-	resultMap, err := c.listContainerWithFields("Id")
-
-	ids := make([]string, len(resultMap["Id"]))
-	for i, id := range resultMap["Id"] {
-		ids[i] = id[:12]
-	}
-
-	return ids, err
-}
-
-func (c *Client) ListContainerNames() ([]string, error) {
-	resultMap, err := c.listContainerWithFields("Name")
-	return resultMap["Name"], err
-}
-
-func (c *Client) ImportContainer(destRefStr string) (io.ReadCloser, error) {
-	return c.cli.ImageImport(
-		c.ctx,
-		image.ImportSource{
-			Source:     nil,
-			SourceName: "",
-		},
-		destRefStr, image.ImportOptions{
-			Tag:      "",
-			Message:  "",
-			Changes:  nil,
-			Platform: "",
-		})
-}
-
-func (c *Client) ExportContainer(containerID string) (io.ReadCloser, error) {
-	return c.cli.ContainerExport(c.ctx, containerID)
-}
-
-func (c *Client) listContainerWithFields(fields ...string) (map[string][]string, error) {
-	fieldSet := k8sutilsets.New[string](fields...)
-	containers, err := c.ListContainers()
+	crts, err := c.listContainer(_showAll)
 	if err != nil {
 		return nil, err
 	}
-	resultSet := make(map[string][]string, len(fields))
-	if fieldSet.Has("Id") {
-		for _, con := range containers {
-			resultSet["Id"] = append(resultSet["Id"], con.ID)
-		}
-	}
-
-	if fieldSet.Has("Name") {
-		for _, con := range containers {
-			resultSet["Name"] = append(resultSet["Name"], removePrefixSlash(con.Names[0]))
-		}
-	}
-
-	if fieldSet.Has("Image") {
-		for _, con := range containers {
-			resultSet["Image"] = append(resultSet["Image"], con.Image)
-		}
-	}
-
-	if fieldSet.Has("ImageID") {
-		for _, con := range containers {
-			resultSet["ImageID"] = append(resultSet["ImageID"], con.ImageID)
-		}
-	}
-
-	if fieldSet.Has("Command") {
-		for _, con := range containers {
-			resultSet["Command"] = append(resultSet["Command"], con.Command)
-		}
-	}
-
-	if fieldSet.Has("Created") {
-		for _, con := range containers {
-			resultSet["Created"] = append(resultSet["Created"], util.I64toa(con.Created))
-		}
-	}
-
-	if fieldSet.Has("SizeRw") {
-		for _, con := range containers {
-			resultSet["SizeRw"] = append(resultSet["SizeRw"], util.I64toa(con.SizeRw))
-		}
-	}
-
-	if fieldSet.Has("SizeRootFs") {
-		for _, con := range containers {
-			resultSet["SizeRootFs"] = append(resultSet["SizeRootFs"], util.I64toa(con.SizeRootFs))
-		}
-	}
-
-	if fieldSet.Has("State") {
-		for _, con := range containers {
-			resultSet["State"] = append(resultSet["State"], con.State)
-		}
-	}
-
-	if fieldSet.Has("Status") {
-		for _, con := range containers {
-			resultSet["Status"] = append(resultSet["Status"], con.Status)
-		}
-	}
-
-	return resultSet, nil
+	return selectAttr(crts, "ID", func(v any) string {
+		return v.(string)
+	}), nil
 }
 
-func (c *Client) ListContainers() ([]types.Container, error) {
-	return c.cli.ContainerList(
-		c.ctx,
+func (c *Client) ListContainerNames() ([]string, error) {
+	crts, err := c.listContainer(_showAll)
+	if err != nil {
+		return nil, err
+	}
+	ss := make([]string, 0, len(crts))
+	for i := range crts {
+		if len(crts[i].Names) > 0 {
+			ss = append(ss, trimPSlash(crts[i].Names[0]))
+		}
+	}
+	return ss, nil
+}
+
+// map[any]struct{} -> map[T]struct{} -> []T
+func selectAttr[T comparable](crts []types.Container, attrName string, toT func(v any) T) []T {
+	return lo.Keys(lo.MapKeys(
+		safe_reflect.IndirectOf(crts).SliceStructFieldValues(attrName),
+		func(value struct{}, key any) T {
+			return toT(key)
+		}))
+}
+
+// ShowCRT
+// show container runtime
+type ShowCRT struct {
+	// Fuzzy match
+	// container from ancestor image
+	Image sets.String // ancestor=(<image-name>[:<tag>], <image id>, or <image@digest>)
+
+	// container network
+	EPort   sets.String // expose=(<port>[/<proto>]|<startport-endport>/[<proto>])
+	PPort   sets.String // publish=(<port>[/<proto>]|<startport-endport>/[<proto>])
+	Network sets.String // network=(<network id> or <network name>)
+
+	// container volume
+	Volume sets.String // volume=(<volume name> or <mount point destination>)
+
+	// container state
+	Health     sets.String  // health=(starting|healthy|unhealthy|none)
+	Status     sets.String  // status=(created|restarting|running|removing|paused|exited|dead)
+	ExitedCode set.Set[int] // exited=<int> containers with exit code of <int>
+
+	// container start timeline
+	Before string // before=(<container id> or <container name>)
+	Since  string // since=(<container id> or <container name>)
+
+	Isolation sets.String       // isolation=(default|process|hyperv) (Windows daemon only)
+	Task      bool              // is-task=(true|false)
+	Label     map[string]string // label=key or label="key=value" of a container label
+
+	// Exact match
+	ID   sets.String // id=<ID> a container's ID
+	Name sets.String // name=<name> a container's name
+}
+
+func (s ShowCRT) filterArgs() filters.Args {
+	filter := filters.NewArgs()
+	return filter
+}
+
+func (c *Client) listContainer(show ShowCRT) ([]types.Container, error) {
+	return c.cli.ContainerList(c.ctx,
 		container.ListOptions{
-			Size:   true,
-			All:    true,
-			Latest: false,
-			Limit:  c.page.SizeIntValue(),
-		},
-	)
+			Size:    true,
+			All:     true,
+			Latest:  false,
+			Limit:   c.page.SizeIntValue(),
+			Filters: show.filterArgs(),
+		})
 }
 
-func removePrefixSlash(s string) string {
-	if strings.HasPrefix(s, "/") {
-		return s[1:]
-	}
-	return s
-}
+var _showAll = ShowCRT{}

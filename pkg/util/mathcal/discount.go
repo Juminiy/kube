@@ -1,9 +1,10 @@
 package mathcal
 
 import (
+	"sort"
+
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
-	"sort"
 )
 
 const (
@@ -56,7 +57,7 @@ func (h *DiscountHdr) cal() {
 	h.sorted = false
 	if ltot, lcnt := len(h.TotalPrice), len(h.TotalCount); ltot != lcnt ||
 		lcnt == 0 {
-		panic("invalid input TotalPrice, TotalCount")
+		util.DevPanic("invalid input TotalPrice, TotalCount")
 	} else {
 		h.len = lcnt
 	}
@@ -65,7 +66,7 @@ func (h *DiscountHdr) cal() {
 		h.Payment = PaymentCNY
 	}
 	if !util.ElemIn(h.Count, CountWeight, CountNumber) {
-		panic("invalid input Count Method, unit number(s) or weight(g)")
+		util.DevPanic("invalid input Count Method, unit number(s) or weight(g)")
 	}
 	if !util.ElemIn(h.OrderBy, OrderByTotal, OrderByUnit, OrderByCount) {
 		h.OrderBy = OrderByUnit

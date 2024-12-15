@@ -107,7 +107,7 @@ func (c *Client) BuildImageFavOption(refStr string) types.ImageBuildOptions {
 		Target:      "",
 		SessionID:   "",
 		Platform:    PlatformLinuxAmd64,
-		Version:     "1",
+		Version:     "2", // use BuildKit
 		BuildID:     "",
 		Outputs:     nil,
 	}

@@ -65,3 +65,7 @@ func CapitalizeFirst(str string) string {
 func Camel2SnakeV2(s string) string {
 	return s
 }
+
+func DevPanic(v any) {
+	panic(v)
+}
