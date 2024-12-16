@@ -9,7 +9,8 @@ import (
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/registry"
-	"github.com/samber/lo"
+	"github.com/docker/docker/builder/builder-next/exporter"
+	buildkitclient "github.com/moby/buildkit/client"
 	"io"
 )
 
@@ -154,21 +155,17 @@ func (c *Client) supplementImageBuildOptions(options *types.ImageBuildOptions) {
 		}
 	}
 
-	if _, ok := lo.Find(options.Outputs, func(item types.ImageBuildOutput) bool {
-		if item.Type == OutputRegistry {
-			return true
-		}
-		return false
-	}); ok {
-		options.Outputs = make([]types.ImageBuildOutput, len(validAbsRefStr))
-		for i := range validAbsRefStr {
-			options.Outputs[i] = types.ImageBuildOutput{
-				Type: OutputImage,
-				Attrs: map[string]string{
-					"name": validAbsRefStr[i],
-					"push": "true",
-				},
-			}
+	options.Outputs = make([]types.ImageBuildOutput, len(validAbsRefStr))
+	for i := range validAbsRefStr {
+		options.Outputs[i] = types.ImageBuildOutput{
+			Type: OutputImage, // OutputMoby Error
+			Attrs: map[string]string{
+				"name":              validAbsRefStr[i],
+				"push":              "true",
+				"registry.insecure": "true",
+				"compression":       "zstd",
+				"compression-level": "22",
+			},
 		}
 	}
 
@@ -194,12 +191,13 @@ const (
 )
 
 const (
-	OutputLocal    = "local"
-	OutputTar      = "tar"
-	OutputOCI      = "oci"
-	OutputDocker   = "docker"
-	OutputImage    = "image"
+	OutputLocal    = buildkitclient.ExporterLocal
+	OutputTar      = buildkitclient.ExporterTar
+	OutputOCI      = buildkitclient.ExporterOCI
+	OutputDocker   = buildkitclient.ExporterDocker
+	OutputImage    = buildkitclient.ExporterImage
 	OutputRegistry = "registry"
+	OutputMoby     = exporter.Moby
 )
 
 type BuildOutput struct {

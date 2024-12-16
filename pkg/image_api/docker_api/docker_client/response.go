@@ -91,6 +91,12 @@ func (r *EventResp) parse(bs []byte) *EventResp {
 func (r *EventResp) Error() string {
 	errH := util.NewErrHandle()
 	errH.Has(fmt.Errorf("response status code: %d", r.Status))
+	for _, msg := range r.Message {
+		if msg == nil || msg.Error == nil {
+			continue
+		}
+		errH.Has(msg.Error)
+	}
 	for _, errMsg := range r.ErrMessage {
 		if errMsg != nil {
 			errH.Has(errMsg)
@@ -110,5 +116,10 @@ func (r *EventResp) Err() error {
 }
 
 func (r *EventResp) err() bool {
+	for _, msg := range r.Message {
+		if msg != nil && msg.Error != nil {
+			return true
+		}
+	}
 	return len(r.ErrMessage) > 0 || len(r.ErrMessageDecErr) > 0
 }

@@ -20,7 +20,7 @@ func TestClient_BuildImageV3(t *testing.T) {
 		CPUQuota:     0,
 		CPUPeriod:    0,
 		Memory:       0,
-		MemorySwap:   -1,
+		MemorySwap:   0,
 		CgroupParent: "",
 		NetworkMode:  "",
 		ShmSize:      0,
@@ -40,10 +40,7 @@ func TestClient_BuildImageV3(t *testing.T) {
 		SecurityOpt: nil,
 		ExtraHosts:  nil,
 		Target:      "",
-		SessionID:   "",
 		Platform:    PlatformLinuxAmd64,
-		BuildID:     "",
-		Outputs:     []types.ImageBuildOutput{{Type: OutputRegistry}},
 	})
 	util.Must(err)
 	t.Log(resp)

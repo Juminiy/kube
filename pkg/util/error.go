@@ -163,7 +163,7 @@ func (h *ErrHandle) All(sep ...string) error {
 }
 
 func (h *ErrHandle) AllStr(sep ...string) string {
-	if err := h.All(); err != nil {
+	if err := h.All(sep...); err != nil {
 		return err.Error()
 	}
 	return ""
