@@ -24,8 +24,7 @@ func (c *Client) imageCreate(queryParam map[string]string) (createResp EventResp
 	r.r.SetQueryParams(queryParam).
 		SetHeader(registry.AuthHeader, c.reg.Auth)
 
-	resp, err := r.do()
-	return *createResp.Parse(resp), err
+	return createResp.WrapParse(r.do())
 }
 
 func getAPITagFromNamedRef(ref reference.Named) string {

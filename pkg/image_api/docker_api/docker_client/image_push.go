@@ -29,8 +29,7 @@ func (c *Client) ImagePush(refStr string) (pushResp EventResp, err error) {
 	r.r.SetPathParam("name", name).
 		SetHeader(registry.AuthHeader, c.reg.Auth)
 
-	resp, err := r.do()
-	return *pushResp.Parse(resp), err
+	return pushResp.WrapParse(r.do())
 }
 
 type ImagePushResp struct {

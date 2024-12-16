@@ -11,8 +11,7 @@ func (c *Client) ImageLoad(input io.Reader) (loadResp EventResp, err error) {
 		SetQueryParam("quiet", "1").
 		SetBody(input)
 
-	resp, err := r.do()
-	return *loadResp.Parse(resp), err
+	return loadResp.WrapParse(r.do())
 }
 
 func (r *EventResp) GetImageLoad() (refStrOrImageID string) {

@@ -134,6 +134,21 @@ func (h *ErrHandle) Has(err ...error) bool {
 	return has
 }
 
+func (h *ErrHandle) HasStr(s ...string) bool {
+	has := h.err.Err() != nil
+	h.errsRw.Lock()
+	defer h.errsRw.Unlock()
+	for i := range s {
+		if len(s[i]) > 0 {
+			has = true
+			newErr := errors.New(s[i])
+			h.err.SetError(newErr)
+			h.errs = append(h.errs, newErr)
+		}
+	}
+	return has
+}
+
 func (h *ErrHandle) First() error {
 	return h.err.Err()
 }
@@ -145,6 +160,13 @@ func (h *ErrHandle) All(sep ...string) error {
 		return mergeErrorSep(sep[0], h.errs...)
 	}
 	return mergeErrorSep("\n", h.errs...)
+}
+
+func (h *ErrHandle) AllStr(sep ...string) string {
+	if err := h.All(); err != nil {
+		return err.Error()
+	}
+	return ""
 }
 
 var ErrFaked = errors.New("faked error")

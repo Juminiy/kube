@@ -23,7 +23,7 @@ var _cfg struct {
 }
 
 func init() {
-	cfgPath, err := os.Open(filepath.Join("testdata", "env", "chisato_win10.yaml"))
+	cfgPath, err := os.Open(filepath.Join("testdata", "env", "taveen_wz.yaml"))
 	util.Must(err)
 	cfgBytes, err := io.ReadAll(cfgPath)
 	util.Must(err)
@@ -34,5 +34,8 @@ func init() {
 		Username:      _cfg.Registry.Username,
 		Password:      _cfg.Registry.Password,
 		ServerAddress: _cfg.Registry.Addr,
-	})
+	}).
+		WithProject("library")
 }
+
+var _testTar = filepath.Join("testdata", "tar_gz")

@@ -8,6 +8,7 @@ import (
 	"github.com/moby/sys/sequential"
 	"io"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 )
@@ -25,6 +26,7 @@ var (
 		Repository: "hello",
 		Tag:        "v3.0",
 	}
+	_helloTar = filepath.Join(_testTar, "hello.tar")
 )
 
 // +passed
@@ -36,14 +38,14 @@ func TestClient_ExportImage(t *testing.T) {
 		t.Log(resp.ImagePulledInfo)
 	}
 
-	err = kubedockerclicommand.CopyToFile(testTarGzPath, resp.ImageFileReader)
+	err = kubedockerclicommand.CopyToFile(_helloTar, resp.ImageFileReader)
 	util.Must(err)
 }
 
 // +passed
 func TestClient_ImportImage(t *testing.T) {
 	var input io.Reader
-	file, err := sequential.Open(testTarGzPath)
+	file, err := sequential.Open(_helloTar)
 	util.Must(err)
 	//defer util.SilentCloseIO("file ptr", file)
 	input = file
@@ -60,7 +62,7 @@ func TestClient_pushImageV2(t *testing.T) {
 
 func TestClient_ImportImageV2(t *testing.T) {
 	var input io.Reader
-	file, err := sequential.Open(testTarGzPath)
+	file, err := sequential.Open(_helloTar)
 	util.Must(err)
 	//defer util.SilentCloseIO("file ptr", file)
 	input = file
@@ -86,7 +88,7 @@ func TestClient_ExportImageImportImage(t *testing.T) {
 
 func TestClient_ImportImageV3(t *testing.T) {
 	var input io.Reader
-	file, err := sequential.Open(testTarGzPath)
+	file, err := sequential.Open(_helloTar)
 	util.Must(err)
 	//defer util.SilentCloseIO("file ptr", file)
 	input = file
@@ -99,14 +101,14 @@ func TestClient_ExportImageV2(t *testing.T) {
 	resp, err := _cli.ExportImageV2(imageRegV30.String())
 	util.Must(err)
 
-	err = kubedockerclicommand.CopyToFile(testTarGzPath, resp.ImageFileReader)
+	err = kubedockerclicommand.CopyToFile(_helloTar, resp.ImageFileReader)
 	util.Must(err)
 	t.Log(safe_json.Pretty(resp))
 }
 
 func TestClient_BuildImage(t *testing.T) {
 	_cli.WithProject("library")
-	fptr, err := os.Open(testTarBuildPath)
+	fptr, err := os.Open(_helloTar)
 	util.Must(err)
 	defer util.SilentCloseIO("tar fileptr", fptr)
 	resp, err := _cli.BuildImage(fptr, "jammy-env:v1.9")
@@ -116,7 +118,7 @@ func TestClient_BuildImage(t *testing.T) {
 
 func TestClient_BuildImageWithCancel(t *testing.T) {
 	_cli.WithProject("library")
-	fptr, err := os.Open(testTarBuildTimeout)
+	fptr, err := os.Open(_helloTar)
 	util.Must(err)
 	defer util.SilentCloseIO("tar fileptr", fptr)
 	ctx := util.TODOContext()
@@ -132,7 +134,7 @@ func TestClient_BuildImageWithCancel(t *testing.T) {
 
 func TestClient_BuildImageV2(t *testing.T) {
 	_cli.WithProject("library")
-	fptr, err := os.Open(testTarBuildTimeout)
+	fptr, err := os.Open(_helloTar)
 	util.Must(err)
 	defer util.SilentCloseIO("tar fileptr", fptr)
 	resp, err := _cli.BuildImageV2(fptr, "timeout:v1.0")

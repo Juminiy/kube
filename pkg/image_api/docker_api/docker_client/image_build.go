@@ -30,8 +30,7 @@ func (c *Client) ImageBuild(input io.Reader, buildOptions types.ImageBuildOption
 		SetQueryParamsFromValues(query).
 		SetBody(input)
 
-	resp, err := r.do()
-	return *buildResp.Parse(resp), err
+	return buildResp.WrapParse(r.do())
 }
 
 // copy from

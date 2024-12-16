@@ -26,6 +26,10 @@ func BuildImageV2(reader io.Reader, _string string) (docker_api.BuildImageRespV1
 	return _dockerClient.BuildImageV2(reader, _string)
 }
 
+func BuildImageV3(context context.Context, reader io.Reader, imageBuildOptions types.ImageBuildOptions) (docker_api.BuildImageRespV2, error) {
+	return _dockerClient.BuildImageV3(context, reader, imageBuildOptions)
+}
+
 func BuildImageWithCancel(context context.Context, reader io.Reader, _string string) (docker_api.BuildImageRespV1, *context.CancelFunc, error) {
 	return _dockerClient.BuildImageWithCancel(context, reader, _string)
 }
@@ -44,10 +48,6 @@ func CreateImageTagV3(_string string, _string2 string) (docker_client.EventResp,
 
 func Do(varLenclientFunc ...docker_api.ClientFunc) error {
 	return _dockerClient.Do(varLenclientFunc...)
-}
-
-func ExportContainer(_string string) (io.ReadCloser, error) {
-	return _dockerClient.ExportContainer(_string)
 }
 
 func ExportImage(_string string) (docker_api.ExportImageResp, error) {
@@ -70,10 +70,6 @@ func ImagePrune(clearImage docker_api.ClearImage) (image.PruneReport, error) {
 	return _dockerClient.ImagePrune(clearImage)
 }
 
-func ImportContainer(_string string) (io.ReadCloser, error) {
-	return _dockerClient.ImportContainer(_string)
-}
-
 func ImportImage(_string string, reader io.Reader) (docker_api.ImportImageResp, error) {
 	return _dockerClient.ImportImage(_string, reader)
 }
@@ -88,10 +84,6 @@ func ImportImageV3(_string string, reader io.Reader) (docker_api.ImportImageResp
 
 func InspectImage(_string string) (types.ImageInspect, error) {
 	return _dockerClient.InspectImage(_string)
-}
-
-func ListContainerFullIds() ([]string, error) {
-	return _dockerClient.ListContainerFullIds()
 }
 
 func ListContainerIds() ([]string, error) {

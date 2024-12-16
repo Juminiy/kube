@@ -165,6 +165,13 @@ func (a *Artifact) setArtifact(s string) *Artifact {
 	return a
 }
 
+func (a *Artifact) ValidAbsRefStr() bool {
+	return len(a.Registry) > 0 &&
+		len(a.Project) > 0 &&
+		len(a.repository) > 0 &&
+		len(a.artifact) > 0
+}
+
 func trimPSlash(s string) string {
 	return strings.TrimPrefix(s, "/")
 }

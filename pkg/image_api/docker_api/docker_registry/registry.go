@@ -39,6 +39,13 @@ func (r *Registry) GetAuthConfig() registry.AuthConfig {
 	return r.authConfig
 }
 
+func (r *Registry) GetProject() string {
+	if len(r.Project) > 0 {
+		return r.Project[0]
+	}
+	return ""
+}
+
 const (
 	DockerHub = "dockerhub"
 	Harbor    = "harbor"
