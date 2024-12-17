@@ -13,19 +13,8 @@ func TestClient_BuildImageV3(t *testing.T) {
 	util.Must(err)
 	defer util.SilentCloseIO("tar fileptr", fptr)
 	resp, err := _cli.BuildImageV3(util.TODOContext(), fptr, types.ImageBuildOptions{
-		Tags:         []string{"library/netconn:v1.0"},
-		CPUSetCPUs:   "",
-		CPUSetMems:   "",
-		CPUShares:    0,
-		CPUQuota:     0,
-		CPUPeriod:    0,
-		Memory:       0,
-		MemorySwap:   0,
-		CgroupParent: "",
-		NetworkMode:  "",
-		ShmSize:      0,
-		Dockerfile:   "Dockerfile",
-		Ulimits:      nil,
+		Tags:       []string{"library/netconn:v1.0"},
+		Dockerfile: "Dockerfile",
 		BuildArgs: map[string]*string{
 			"OS":      util.NewString("linux"),
 			"ARCH":    util.NewString("amd64"),
@@ -35,12 +24,7 @@ func TestClient_BuildImageV3(t *testing.T) {
 			"for-test": "true",
 			"user-id":  "chisatox",
 		},
-		Squash:      false,
-		CacheFrom:   nil,
-		SecurityOpt: nil,
-		ExtraHosts:  nil,
-		Target:      "",
-		Platform:    PlatformLinuxAmd64,
+		Platform: PlatformLinuxAmd64,
 	})
 	util.Must(err)
 	t.Log(resp)

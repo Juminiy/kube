@@ -126,18 +126,9 @@ clipboard_fast:
 ################################
 .PHONY: docker_clipboard_fast
 docker_clipboard_fast:
-	docker buildx build --platform linux/amd64 \
+	docker buildx build --platform linux/amd64,linux/arm64 \
 		--builder multiple-x \
 		--debug \
 		--load \
 		--tag clipboard_fast:latest \
 		--file docker/clipboard_fast/Dockerfile .
-#	docker stop clipboardfast
-#	docker rm clipboardfast
-	docker run -dit \
-		--cpus 1 \
-		--memory 1GB \
-		--name clipboardfast \
-		--restart=always \
-		-p 8081:8081 \
-		clipboard_fast:latest

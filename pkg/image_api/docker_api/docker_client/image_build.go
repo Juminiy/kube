@@ -33,7 +33,7 @@ func (c *Client) ImageBuild(input io.Reader, buildOptions types.ImageBuildOption
 	return buildResp.WrapParse(r.do())
 }
 
-// copy from
+// copy from github.com/docker/docker/client/image_build.go
 func (c *Client) imageBuildOptionsToQuery(ctx context.Context, options types.ImageBuildOptions) (url.Values, error) {
 	query := url.Values{
 		"t":           options.Tags,
@@ -160,3 +160,10 @@ func (r *EventResp) GetImageBuildResp() (resp ImageBuildResp) {
 	}
 	return
 }
+
+/*
+	httpStatusCode
+	- 200 no error
+	- 400 Bad parameter
+	- 500 server error
+*/

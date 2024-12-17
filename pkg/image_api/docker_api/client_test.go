@@ -23,7 +23,7 @@ var _cfg struct {
 }
 
 func init() {
-	cfgPath, err := os.Open(filepath.Join("testdata", "env", "bupt_vpn.yaml"))
+	cfgPath, err := os.Open(filepath.Join("testdata", "env", "taveen_wz.yaml"))
 	util.Must(err)
 	cfgBytes, err := io.ReadAll(cfgPath)
 	util.Must(err)

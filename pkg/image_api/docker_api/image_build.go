@@ -131,7 +131,7 @@ func (c *Client) BuildImageV3(ctx context.Context, input io.Reader, options type
 }
 
 func (c *Client) supplementImageBuildOptions(options *types.ImageBuildOptions) {
-	validAbsRefStr := make([]string, 0, len(options.Tags))
+	asbRefStr := make([]string, 0, len(options.Tags))
 	for i, refStr := range options.Tags {
 		arti := ParseToArtifact(refStr)
 		if len(arti.Registry) == 0 {
@@ -142,12 +142,18 @@ func (c *Client) supplementImageBuildOptions(options *types.ImageBuildOptions) {
 		}
 		options.Tags[i] = arti.AbsRefStr()
 		if arti.ValidAbsRefStr() {
-			validAbsRefStr = append(validAbsRefStr, arti.AbsRefStr())
+			asbRefStr = append(asbRefStr, arti.AbsRefStr())
 		}
 	}
 
 	options.SuppressOutput = false
-	options.Version = types.BuilderBuildKit
+
+	options.NoCache = false
+	options.Remove = true
+	options.ForceRemove = true
+
+	options.NetworkMode = NetworkNone
+	options.Dockerfile = DockerfileDefault
 
 	if len(options.AuthConfigs) == 0 {
 		options.AuthConfigs = map[string]registry.AuthConfig{
@@ -155,12 +161,15 @@ func (c *Client) supplementImageBuildOptions(options *types.ImageBuildOptions) {
 		}
 	}
 
-	options.Outputs = make([]types.ImageBuildOutput, len(validAbsRefStr))
-	for i := range validAbsRefStr {
+	options.Platform = PlatformLinuxAmd64
+	options.Version = types.BuilderBuildKit
+
+	options.Outputs = make([]types.ImageBuildOutput, len(asbRefStr))
+	for i := range asbRefStr {
 		options.Outputs[i] = types.ImageBuildOutput{
 			Type: OutputImage, // OutputMoby Error
 			Attrs: map[string]string{
-				"name":              validAbsRefStr[i],
+				"name":              asbRefStr[i],
 				"push":              "true",
 				"registry.insecure": "true",
 				"compression":       "zstd",
@@ -198,6 +207,10 @@ const (
 	OutputImage    = buildkitclient.ExporterImage
 	OutputRegistry = "registry"
 	OutputMoby     = exporter.Moby
+)
+
+const (
+	DockerfileDefault = "Dockerfile"
 )
 
 type BuildOutput struct {

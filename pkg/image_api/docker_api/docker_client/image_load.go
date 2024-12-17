@@ -29,3 +29,9 @@ func (r *EventResp) GetImageLoad() (refStrOrImageID string) {
 	}
 	return
 }
+
+/*
+	httpStatusCode
+	- 200 no error
+	- 500 server error
+*/

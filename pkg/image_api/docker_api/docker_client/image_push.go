@@ -63,3 +63,10 @@ func (r *EventResp) GetImagePushResp() (resp ImagePushResp) {
 	}
 	return
 }
+
+/*
+	httpStatusCode
+	- 200 No error
+	- 404 No such image
+	- 500 Server error
+*/

@@ -69,3 +69,10 @@ func (r *EventResp) GetImageCreateResp() (resp ImageCreateResp) {
 	}
 	return
 }
+
+/*
+	httpStatusCode
+	- 200 no error
+	- 404 repository does not exist or no read access
+	- 500 server error
+*/
