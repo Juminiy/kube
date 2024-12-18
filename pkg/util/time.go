@@ -2,6 +2,7 @@ package util
 
 import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
+	unit "github.com/docker/go-units"
 	"github.com/prometheus/prometheus/model/timestamp"
 	"github.com/spf13/cast"
 	"time"
@@ -116,3 +117,7 @@ func FromTimestamp(s string) time.Time {
 }
 
 var _zeroTime = time.Time{}
+
+func HumanTimeDesc(d time.Duration) string {
+	return unit.HumanDuration(d)
+}

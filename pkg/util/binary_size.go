@@ -2,6 +2,8 @@ package util
 
 import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
+	unit "github.com/docker/go-units"
+	"github.com/spf13/cast"
 	"strconv"
 )
 
@@ -82,4 +84,14 @@ func MeasureByte(size int) string {
 		return strconv.Itoa(size) + meas
 	}
 	return F64toa(appr) + meas
+}
+
+// +parameter a: int, uint, float
+func HumanSize(a any) string {
+	return unit.HumanSize(cast.ToFloat64(a))
+}
+
+// +parameter a: int, uint, float
+func HumanBytesSize(a any) string {
+	return unit.BytesSize(cast.ToFloat64(a))
 }
