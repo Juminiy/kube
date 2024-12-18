@@ -3,6 +3,7 @@ package docker_api
 
 import (
 	"context"
+	"github.com/Juminiy/kube/pkg/image_api/docker_api/api_provider"
 	"github.com/Juminiy/kube/pkg/image_api/docker_api/docker_client"
 	"github.com/Juminiy/kube/pkg/image_api/docker_api/docker_registry"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
@@ -89,13 +90,9 @@ func (c *Client) WithProject(project string) *Client {
 	return c
 }
 
-type ClientFunc func(client *dockercli.Client) error
-
-func (c *Client) Do(cfn ...ClientFunc) error {
-	for i := range cfn {
-		if err := cfn[i](c.cli); err != nil {
-			return err
-		}
+func (c *Client) GetAPIProvider() api_provider.APIProvider {
+	return api_provider.APIProvider{
+		SDK: c.cli,
+		API: c.apiClient,
 	}
-	return nil
 }

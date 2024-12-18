@@ -18,10 +18,6 @@ type Client struct {
 	httpCli     *http.Client
 	httpTimeout time.Duration
 	pageConfig  *util.Page
-
-	// Deprecated
-	// callback variant
-	CallBack *CallBack
 }
 
 func New(
