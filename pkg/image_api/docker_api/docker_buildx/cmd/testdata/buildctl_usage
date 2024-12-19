@@ -1,4 +1,3 @@
-
 /*To build and push an image using Dockerfile:
 buildctl build \
 	--frontend dockerfile.v0 \

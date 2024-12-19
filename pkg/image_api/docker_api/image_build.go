@@ -142,7 +142,7 @@ func (c *Client) supplementImageBuildOptions(options *types.ImageBuildOptions) {
 		}
 		options.Tags[i] = arti.AbsRefStr()
 		if arti.ValidAbsRefStr() {
-			asbRefStr = append(asbRefStr, arti.AbsRefStr())
+			asbRefStr = append(asbRefStr, options.Tags[i])
 		}
 	}
 
@@ -151,15 +151,17 @@ func (c *Client) supplementImageBuildOptions(options *types.ImageBuildOptions) {
 	options.NoCache = false
 	options.Remove = true
 	options.ForceRemove = true
+	options.PullParent = false
+
+	options.MemorySwap = -1
 
 	options.NetworkMode = NetworkNone
 	options.Dockerfile = DockerfileDefault
 
 	if len(options.AuthConfigs) == 0 {
-		options.AuthConfigs = map[string]registry.AuthConfig{
-			c.reg.Addr: c.reg.GetAuthConfig(),
-		}
+		options.AuthConfigs = make(map[string]registry.AuthConfig, util.MagicMapCap)
 	}
+	options.AuthConfigs[c.reg.Addr] = c.reg.GetAuthConfig()
 
 	options.Platform = PlatformLinuxAmd64
 	options.Version = types.BuilderBuildKit
@@ -167,13 +169,11 @@ func (c *Client) supplementImageBuildOptions(options *types.ImageBuildOptions) {
 	options.Outputs = make([]types.ImageBuildOutput, len(asbRefStr))
 	for i := range asbRefStr {
 		options.Outputs[i] = types.ImageBuildOutput{
-			Type: OutputImage, // OutputMoby Error
+			Type: OutputImage,
 			Attrs: map[string]string{
 				"name":              asbRefStr[i],
 				"push":              "true",
 				"registry.insecure": "true",
-				"compression":       "zstd",
-				"compression-level": "22",
 			},
 		}
 	}
