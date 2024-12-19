@@ -90,11 +90,11 @@ func (c *Client) BuildImageFavOption(refStr string) types.ImageBuildOptions {
 		CPUQuota:       0,
 		CPUPeriod:      0,
 		Memory:         0,
-		MemorySwap:     0,
+		MemorySwap:     -1,
 		CgroupParent:   "",
-		NetworkMode:    NetworkBridge,
+		NetworkMode:    NetworkNone,
 		ShmSize:        0,
-		Dockerfile:     "",
+		Dockerfile:     DockerfileDefault,
 		Ulimits:        nil,
 		BuildArgs:      nil,
 		AuthConfigs: map[string]registry.AuthConfig{
@@ -109,7 +109,7 @@ func (c *Client) BuildImageFavOption(refStr string) types.ImageBuildOptions {
 		Target:      "",
 		SessionID:   "",
 		Platform:    PlatformLinuxAmd64,
-		Version:     types.BuilderBuildKit, // use BuildKit
+		Version:     types.BuilderV1, // use BuildKit
 		BuildID:     "",
 		Outputs:     nil,
 	}
@@ -180,6 +180,22 @@ func (c *Client) supplementImageBuildOptions(options *types.ImageBuildOptions) {
 
 }
 
+func (c *Client) BuildImageV4(
+	ctx context.Context, input io.Reader, options types.ImageBuildOptions) (
+	resp BuildImageRespV1, err error) {
+	buildResp, err := c.apiClient.ImageBuild(input, options, ctx)
+	if buildResp.Status != 0 {
+		resp.ImageBuildResp = buildResp.GetImageBuildResp()
+	}
+	if err != nil {
+		return
+	}
+	for _, refStr := range options.Tags {
+		resp.TagPushImageResp, err = c.tagImageFromRefStr(refStr)
+	}
+	return
+}
+
 var ErrAbsRefStr = errors.New("image absolutely refStr format error")
 var ErrProjectNotFound = errors.New("project not found error")
 
@@ -226,4 +242,10 @@ type BuildOutput struct {
 		Push bool   // Boolean to automatically push the image.
 	}
 	Registry bool // The registry exporter is a shortcut for type=image,push=true.
+}
+
+var _GoBuildArgs = map[string]*string{
+	"ARCH":    util.NewString(internal_api.Amd64),
+	"OS":      util.New(internal_api.Linux),
+	"GOPROXY": util.New("https://goproxy.cn,direct"),
 }

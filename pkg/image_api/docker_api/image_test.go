@@ -134,10 +134,14 @@ func TestClient_BuildImageWithCancel(t *testing.T) {
 
 func TestClient_BuildImageV2(t *testing.T) {
 	_cli.WithProject("library")
-	fptr, err := os.Open(_helloTar)
+	fptr, err := os.Open(filepath.Join(_testTar, "netconn.tar"))
 	util.Must(err)
 	defer util.SilentCloseIO("tar fileptr", fptr)
-	resp, err := _cli.BuildImageV2(fptr, "timeout:v1.0")
-	util.Must(err)
-	t.Log(resp)
+	opt := _cli.BuildImageFavOption("netconn:v1.1")
+	opt.BuildArgs = _GoBuildArgs
+	opt.BuildArgs["HTTP_PROXY"] = util.New("192.168.3.37:7890")
+	opt.BuildArgs["HTTPS_PROXY"] = util.New("192.168.3.37:7890")
+	resp, err := _cli.BuildImageV4(util.TODOContext(), fptr, opt)
+	t.Log(safe_json.Pretty(resp))
+	t.Log(err)
 }
