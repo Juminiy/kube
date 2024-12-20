@@ -132,31 +132,37 @@ func (c *Client) DeleteArtifactTag(artifactURI ArtifactURI) (*artifact.DeleteTag
 	)
 }
 
-type ArtifactCopyTag struct {
+type ArtifactCopyTagGet struct {
 	*artifact.CopyArtifactCreated
 	*artifact.CreateTagCreated
+	*artifact.GetArtifactOK
 }
 
-func (c *Client) ArtifactCopyAndTag(toURI, fromURI ArtifactURI) (resp ArtifactCopyTag, err error) {
+func (c *Client) ArtifactCopyTagGet(toURI, fromURI ArtifactURI) (resp ArtifactCopyTagGet, err error) {
 	resp.CopyArtifactCreated, err = c.CopyArtifact(toURI, fromURI)
 	if err != nil {
 		return
 	}
-	nowArti, err := c.GetArtifact(toURI)
+
+	copiedURI := ArtifactURI{
+		Project:    toURI.Project,
+		Repository: toURI.Repository,
+		Tag:        fromURI.Tag,
+	}
+	copiedArtifact, err := c.GetArtifact(copiedURI)
 	if err != nil {
 		return
 	}
-	for _, tag := range nowArti.Payload.Tags {
+	for _, tag := range copiedArtifact.Payload.Tags {
 		if tag.Name == toURI.Tag {
+			resp.GetArtifactOK = copiedArtifact
 			return
 		}
 	}
-	resp.CreateTagCreated, err = c.CreateArtifactTag(
-		toURI,
-		ArtifactURI{
-			Project:    toURI.Project,
-			Repository: toURI.Repository,
-			Tag:        fromURI.Tag,
-		})
+	resp.CreateTagCreated, err = c.CreateArtifactTag(toURI, copiedURI)
+	if err != nil {
+		return
+	}
+	resp.GetArtifactOK, err = c.GetArtifact(toURI)
 	return
 }

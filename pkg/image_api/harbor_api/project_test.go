@@ -40,7 +40,7 @@ func TestClient_DeleteProject(t *testing.T) {
 }
 
 func TestClient_CopyArtifact(t *testing.T) {
-	_, err := UnwrapErr(_cli.ArtifactCopyAndTag(
+	copyArtifactTest(t,
 		ArtifactURI{
 			Project:    "library",
 			Repository: "jammy-release",
@@ -50,17 +50,25 @@ func TestClient_CopyArtifact(t *testing.T) {
 			Project:    "library",
 			Repository: "jammy-env",
 			Tag:        "v1.9",
-			Digest:     "sha256:84b5e24c1321786da5e5ab3a56c6a06e9b181c70274fe72810a7ab0b3d064daf",
-		},
-	))
-	util.Must(err)
-	arti, err := UnwrapErr(_cli.GetArtifact(
+		})
+}
+
+func TestClient_CopyArtifact2(t *testing.T) {
+	copyArtifactTest(t,
 		ArtifactURI{
 			Project:    "library",
-			Repository: "jammy-release",
-			Tag:        "v1.1",
+			Repository: "healthzcopy",
+			Tag:        "v1.0",
 		},
-	))
+		ArtifactURI{
+			Project:    "library",
+			Repository: "healthz",
+			Tag:        "latest",
+		})
+}
+
+func copyArtifactTest(t *testing.T, to, from ArtifactURI) {
+	resp, err := UnwrapErr(_cli.ArtifactCopyTagGet(to, from))
 	util.Must(err)
-	t.Log(safe_json.Pretty(arti))
+	t.Log(safe_json.Pretty(resp.GetArtifactOK))
 }

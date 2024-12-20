@@ -2,7 +2,6 @@
 package harbor_inst
 
 import (
-	"context"
 	"github.com/Juminiy/kube/pkg/image_api/harbor_api"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/client/artifact"
@@ -10,6 +9,7 @@ import (
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/client/repository"
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/client/user"
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/models"
+	"golang.org/x/net/context"
 	"net/http"
 	"time"
 )
@@ -22,8 +22,8 @@ func AdminDeleteUser(_int64 int64) (*user.DeleteUserOK, error) {
 	return harbor_api.UnwrapErr(_harborClient.AdminDeleteUser(_int64))
 }
 
-func ArtifactCopyAndTag(artifactURI harbor_api.ArtifactURI, artifactURI2 harbor_api.ArtifactURI) (harbor_api.ArtifactCopyTag, error) {
-	return harbor_api.UnwrapErr(_harborClient.ArtifactCopyAndTag(artifactURI, artifactURI2))
+func ArtifactCopyTagGet(artifactURI harbor_api.ArtifactURI, artifactURI2 harbor_api.ArtifactURI) (harbor_api.ArtifactCopyTagGet, error) {
+	return harbor_api.UnwrapErr(_harborClient.ArtifactCopyTagGet(artifactURI, artifactURI2))
 }
 
 func CopyArtifact(artifactURI harbor_api.ArtifactURI, artifactURI2 harbor_api.ArtifactURI) (*artifact.CopyArtifactCreated, error) {
