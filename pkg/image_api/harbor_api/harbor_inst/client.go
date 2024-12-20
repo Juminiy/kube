@@ -22,6 +22,10 @@ func AdminDeleteUser(_int64 int64) (*user.DeleteUserOK, error) {
 	return harbor_api.UnwrapErr(_harborClient.AdminDeleteUser(_int64))
 }
 
+func ArtifactCopyAndTag(artifactURI harbor_api.ArtifactURI, artifactURI2 harbor_api.ArtifactURI) (harbor_api.ArtifactCopyTag, error) {
+	return harbor_api.UnwrapErr(_harborClient.ArtifactCopyAndTag(artifactURI, artifactURI2))
+}
+
 func CopyArtifact(artifactURI harbor_api.ArtifactURI, artifactURI2 harbor_api.ArtifactURI) (*artifact.CopyArtifactCreated, error) {
 	return harbor_api.UnwrapErr(_harborClient.CopyArtifact(artifactURI, artifactURI2))
 }
@@ -58,16 +62,8 @@ func DeleteRepository(_string string, _string2 string) (*repository.DeleteReposi
 	return harbor_api.UnwrapErr(_harborClient.DeleteRepository(_string, _string2))
 }
 
-func ExportArtifact() (string, error) {
-	return harbor_api.UnwrapErr(_harborClient.ExportArtifact())
-}
-
 func GC(varLenfunc ...util.Func) {
 	_harborClient.GC(varLenfunc...)
-}
-
-func GenerateArtifact() error {
-	return _harborClient.GenerateArtifact()
 }
 
 func GetArtifact(artifactURI harbor_api.ArtifactURI) (*artifact.GetArtifactOK, error) {
@@ -80,10 +76,6 @@ func GetProject(_string string) (*project.GetProjectOK, error) {
 
 func GetRepository(_string string, _string2 string) (*repository.GetRepositoryOK, error) {
 	return harbor_api.UnwrapErr(_harborClient.GetRepository(_string, _string2))
-}
-
-func ImportOfflineArtifact() error {
-	return _harborClient.ImportOfflineArtifact()
 }
 
 func ListArtifactTags(artifactURI harbor_api.ArtifactURI, _string string) (*artifact.ListTagsOK, error) {

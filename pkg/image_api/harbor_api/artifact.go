@@ -4,23 +4,31 @@ import (
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/client/artifact"
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/models"
-	"strings"
 )
 
 type ArtifactURI struct {
 	Project    string
 	Repository string
 	Tag        string
+	Digest     string
 }
 
 // Example:
 // library/s3fstest:latest
 func (a ArtifactURI) String() string {
-	return strings.Join([]string{
-		a.Project, "/",
-		a.Repository, ":",
-		a.Tag,
-	}, "")
+	if len(a.Tag) != 0 {
+		return util.StringConcat(
+			a.Project, "/",
+			a.Repository, ":",
+			a.Tag)
+	} else if len(a.Digest) != 0 {
+		return util.StringConcat(
+			a.Project, "/",
+			a.Repository, "@",
+			a.Digest,
+		)
+	}
+	return ""
 }
 
 func (c *Client) ListArtifacts(artifactURI ArtifactURI) (*artifact.ListArtifactsOK, error) {
@@ -124,23 +132,31 @@ func (c *Client) DeleteArtifactTag(artifactURI ArtifactURI) (*artifact.DeleteTag
 	)
 }
 
-// ExportArtifact
-// Download the image.tar.gz file to local
-func (c *Client) ExportArtifact() (string, error) {
-
-	return "", nil
+type ArtifactCopyTag struct {
+	*artifact.CopyArtifactCreated
+	*artifact.CreateTagCreated
 }
 
-// ImportOfflineArtifact
-// Upload the image.tar.gz file to project
-func (c *Client) ImportOfflineArtifact() error {
-
-	return nil
-}
-
-// GenerateArtifact
-// generate image from Dockerfile and push it to project
-func (c *Client) GenerateArtifact() error {
-
-	return nil
+func (c *Client) ArtifactCopyAndTag(toURI, fromURI ArtifactURI) (resp ArtifactCopyTag, err error) {
+	resp.CopyArtifactCreated, err = c.CopyArtifact(toURI, fromURI)
+	if err != nil {
+		return
+	}
+	nowArti, err := c.GetArtifact(toURI)
+	if err != nil {
+		return
+	}
+	for _, tag := range nowArti.Payload.Tags {
+		if tag.Name == toURI.Tag {
+			return
+		}
+	}
+	resp.CreateTagCreated, err = c.CreateArtifactTag(
+		toURI,
+		ArtifactURI{
+			Project:    toURI.Project,
+			Repository: toURI.Repository,
+			Tag:        fromURI.Tag,
+		})
+	return
 }
