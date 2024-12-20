@@ -3,6 +3,7 @@ package harbor_api
 import (
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/Juminiy/kube/pkg/util/random"
+	"github.com/Juminiy/kube/pkg/util/safe_json"
 	"testing"
 )
 
@@ -23,7 +24,7 @@ func TestClient_CreateProject(t *testing.T) {
 		StorageLimit:   50 * util.Gi,
 	}
 	_, err := _cli.CreateProject(req)
-	t.Log(_cli.ErrorDetail(err))
+	t.Log(err)
 
 	getProject, err := _cli.GetProject(req.ProjectName)
 	util.MustDetail(err)
@@ -42,14 +43,23 @@ func TestClient_CopyArtifact(t *testing.T) {
 	_, err := UnwrapErr(_cli.CopyArtifact(
 		ArtifactURI{
 			Project:    "library",
-			Repository: "ubuntu",
-			Tag:        "jammy",
+			Repository: "jammy-release",
+			Tag:        "v1.0",
 		},
 		ArtifactURI{
-			Project:    "k8e",
-			Repository: "ubuntu",
-			Tag:        "jammy",
+			Project:    "library",
+			Repository: "jammy-env",
+			Tag:        "v1.0",
 		},
 	))
-	t.Log(_cli.ErrorDetail(err))
+	util.Must(err)
+	arti, err := UnwrapErr(_cli.GetArtifact(
+		ArtifactURI{
+			Project:    "library",
+			Repository: "jammy-release",
+			Tag:        "v1.0",
+		},
+	))
+	util.Must(err)
+	t.Log(safe_json.Pretty(arti))
 }
