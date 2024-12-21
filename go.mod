@@ -38,6 +38,7 @@ require (
 	github.com/valyala/fastjson v1.6.4
 	github.com/xuri/excelize/v2 v2.9.0
 	go.uber.org/zap v1.27.0
+	golang.org/x/net v0.32.0
 	golang.org/x/sync v0.10.0
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.31.3
@@ -196,7 +197,6 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/arch v0.8.0 // indirect
 	golang.org/x/crypto v0.31.0 // indirect
-	golang.org/x/net v0.32.0 // indirect
 	golang.org/x/oauth2 v0.22.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/term v0.27.0 // indirect

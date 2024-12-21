@@ -1,0 +1,28 @@
+Expression Affinity	Column Declared Type
+TEXT	"TEXT"
+NUMERIC	"NUM"
+INTEGER	"INT"
+REAL	"REAL"
+BLOB (a.k.a "NONE")	"" (empty string)
+
+CREATE TABLE t(x INTEGER PRIMARY KEY ASC, y, z);
+CREATE TABLE t(x INTEGER, y, z, PRIMARY KEY(x ASC));
+CREATE TABLE t(x INTEGER, y, z, PRIMARY KEY(x DESC));
+
+```
+CREATE TABLE IF NOT EXISTS tbl_k (name TEXT, desc TEXT, rate REAL, status INT, extras TEXT);
+
+DROP TABLE IF EXISTS tbl_k;
+
+INSERT INTO tbl_k
+    ( name,         desc,                        rate, status, extras) VALUES
+    ('BraveShine', 'FavMusic',                   0.78,      1,  '{"platforms": ["Youtube", "Bilibili", "Spotify"]}'),
+    ('C++11',      'Technical Programming Lang', 0.75,      1,  '{"platforms": ["Youtube", "Bilibili", "Stackoverflow"]}' ),
+    ('LYY',        'FavFemale',                  0.99,      1,  '{"platforms": ["NEUQ", "2084team", "StudentCommitteeCadres"]}' );
+
+SELECT rowid, * FROM tbl_k;
+
+UPDATE tbl_k SET height=1.2 WHERE rowid=3;
+
+DELETE FROM tbl_k WHERE rowid=1;
+```

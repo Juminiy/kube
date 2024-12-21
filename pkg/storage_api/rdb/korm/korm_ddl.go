@@ -2,10 +2,9 @@ package korm
 
 import "database/sql"
 
-// create table if not exists `tbl_korm`(`id`, `name`, `desc`, `extras`)
-// drop table if exists `tbl_korm`;
-
 type Table struct {
+	TName        func() string
+	WithoutRowID bool
 }
 
 type Column struct {
@@ -14,3 +13,9 @@ type Column struct {
 }
 
 type Schema interface{ TName() string }
+
+const _DefaultDriver = `sqlite3`
+const _DefaultDB = `kdb.db`
+const _ROWID = `rowid`
+const _OID = `oid`
+const _ROWID_ = `_rowid_`

@@ -7,7 +7,7 @@ import (
 	"sync"
 )
 
-var _clipBoard sync.Map
+var _clipBoard = sync.Map{}
 
 func ClipList() []string {
 	s := make([]string, 0, util.MagicSliceCap)
