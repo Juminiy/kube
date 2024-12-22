@@ -78,6 +78,13 @@ func MapDelete[Map ~map[K]V, K comparable, V any](m Map, k ...K) {
 	}
 }
 
+func MapDeleteR[Map ~map[K]V, K comparable, V any](m Map, k ...K) Map {
+	for i := range k {
+		delete(m, k[i])
+	}
+	return m
+}
+
 func MapClear[Map ~map[K]V, K comparable, V any](m ...Map) {
 	for i := range m {
 		clear(m[i])
@@ -151,4 +158,10 @@ func MapsMerge[Map ~map[K]V, K comparable, V any](m ...Map) Map {
 func Slice2MapWhen[Slice ~[]E, E any, K comparable, V any](
 	s Slice, predict Predicate2[E], transform Transform[E, K, V]) map[K]V {
 	return lo.SliceToMap(lo.Filter(s, predict), transform)
+}
+
+func MapVK[K, V comparable](m map[K]V) map[V]K {
+	return lo.MapEntries(m, func(key K, value V) (V, K) {
+		return value, key
+	})
 }

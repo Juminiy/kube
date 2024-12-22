@@ -94,6 +94,19 @@ func (t T) structFields() Fields {
 
 var _Fields = sync.Map{}
 
+func (v V) StructSet(nv map[string]any) {
+	if v.Kind() != reflect.Struct || !v.CanSet() {
+		return
+	}
+	for name, val := range nv {
+		field := v.FieldByName(name)
+		if field == ZeroValue() || !field.CanSet() {
+			continue
+		}
+		V2Wrap(field).SetILike(val)
+	}
+}
+
 type Values map[string]reflect.Value
 
 func (tv Tv) StructToMap() map[string]any {

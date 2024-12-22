@@ -1,12 +1,25 @@
 package korm
 
 type Config struct {
-	TagKey     string
+	Tag        *Tag
 	QRetry     int
 	UseNumber  bool
 	UsePointer bool
 	NoTag      *NoTag
 	ConnC      *ConnC
+}
+
+type Tag struct {
+	Key        string
+	Column     string
+	Type       string
+	Size       string
+	PrimaryKey string
+	Unique     string
+	Default    string
+	Precision  string
+	Scale      string
+	NotNULL    string
 }
 
 type NoTag struct {
@@ -25,8 +38,21 @@ const _DefaultTagKey = `k`
 const _DefaultQRetry = 3 // retry only for Query
 
 var _DefaultConfig = &Config{
-	QRetry: _DefaultQRetry,
-	TagKey: _DefaultTagKey,
+	Tag: &Tag{
+		Key:        "k",
+		Column:     "col",
+		Type:       "typ",
+		Size:       "sz",
+		PrimaryKey: "pk",
+		Unique:     "u",
+		Default:    "d",
+		Precision:  "pr",
+		Scale:      "sc",
+		NotNULL:    "nn",
+	},
+	QRetry:     _DefaultQRetry,
+	UseNumber:  true,
+	UsePointer: true,
 	NoTag: &NoTag{
 		ColumnSnakeCase: true,
 		ColumnCamelCase: false,

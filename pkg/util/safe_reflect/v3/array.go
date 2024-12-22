@@ -23,6 +23,21 @@ func (t T) ArrayStructFields() Fields {
 	return t.Indirect().StructFields()
 }
 
+func (v V) ArrayCallMethod(name string, args []any) (rets []any, called bool) {
+	if v.Kind() != reflect.Array ||
+		v.Len() == 0 {
+		return nil, false
+	}
+	return WrapV(v.Index(0)).Indirect().CallMethod(name, args)
+}
+
+func (v V) ArrayStructSetField(index int, nv map[string]any) {
+	if v.Kind() != reflect.Array || !v.CanSet() || v.Len() <= index {
+		return
+	}
+	WrapV(v.Index(index)).StructSet(nv)
+}
+
 func (tv Tv) ArrayStructValues() []map[string]any {
 	t, v := tv.T, tv.V
 	if t.Kind() != reflect.Array {

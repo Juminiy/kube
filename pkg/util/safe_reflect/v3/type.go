@@ -3,6 +3,7 @@ package safe_reflectv3
 import (
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/samber/lo"
+	"golang.org/x/exp/maps"
 	"reflect"
 )
 
@@ -38,3 +39,63 @@ func rts(i []any) []reflect.Type {
 		return reflect.TypeOf(item)
 	})
 }
+
+func (t T) Tag1(tagKey string) map[string]string {
+	return lo.MapValues(t.Tags(tagKey), func(tag Tag, name string) string {
+		if len(tag) > 0 {
+			return maps.Keys(tag)[0]
+		}
+		return ""
+	})
+}
+
+func (t T) Tag2(tagKey, valKey string) map[string]string {
+	return lo.MapValues(t.Tags(tagKey), func(tag Tag, name string) string {
+		return util.MapElem(tag, valKey)
+	})
+}
+
+func (t T) Tag2VName(tagKey, valKey string) map[string]string {
+	return util.MapVK(t.Tag2(tagKey, valKey))
+}
+
+func (t T) Tags(tagKey string) (tags Tags) {
+	switch t.Kind() {
+	case reflect.Struct:
+		tags = t.StructTags(tagKey)
+
+	case reflect.Array:
+		tags = t.ArrayStructTags(tagKey)
+
+	case reflect.Slice:
+		tags = t.SliceStructTags(tagKey)
+
+	default: // ignore
+	}
+	return
+}
+
+func (t T) CanSet(st reflect.Type) bool {
+	return t.Type.Kind() == reflect.Interface || t.Type == st
+}
+
+func (t T) FieldType() Types {
+	switch t.Kind() {
+	case reflect.Struct:
+		return t.StructTypes()
+
+	case reflect.Array:
+		return t.ArrayStructTypes()
+
+	case reflect.Slice:
+		return t.SliceStructTypes()
+
+	case reflect.Map:
+		return Types{MapElemType: t.MapElemType()}
+
+	default:
+		return nil
+	}
+}
+
+type MetaElemCate int8

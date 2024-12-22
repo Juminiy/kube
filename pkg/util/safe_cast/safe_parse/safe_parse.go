@@ -6,7 +6,18 @@ import (
 	"time"
 )
 
+type Category int8
+
+const (
+	Null = Category(0)
+	Bool = Category(1)
+	Num  = Category(2)
+	Time = Category(3)
+	Text = Category(4)
+)
+
 type Type interface {
+	Category() Category
 	Bool() bool
 	Number() Number
 	Time() time.Time
@@ -19,6 +30,17 @@ type readable struct {
 	numberV *Number
 	timeV   *time.Time
 	stringV string
+}
+
+func (r readable) Category() Category {
+	if r.timeV != nil {
+		return Time
+	} else if r.numberV != nil {
+		return Num
+	} else if r.boolV != nil {
+		return Bool
+	}
+	return Text
 }
 
 func (r readable) Bool() bool {
@@ -85,7 +107,13 @@ func Parse(s string) Type {
 	}
 
 	// Number, reflect.Int~reflect.F64, Type.Number()
-	readV.numberV = util.New(ParseNumber(s))
+	numberV := ParseNumber(s)
+	for _kind := reflect.Int; _kind <= reflect.Float64; _kind++ {
+		if _, ok := numberV.Get(_kind); ok {
+			readV.numberV = util.New(numberV)
+			break
+		}
+	}
 
 	// time.Time, Type.Time()
 	timeV, ok := ParseTime(s)

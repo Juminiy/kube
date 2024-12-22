@@ -82,6 +82,17 @@ func (w *Writer) WordsaSep(sep string, v ...any) *Writer {
 	return w.Space()
 }
 
+func (w *Writer) WordsaSepBrace(sep string, b []func(string) string, v []any) *Writer {
+	for i := range v {
+		_, _ = w.buf.WriteString(b[i](cast.ToString(v[i])))
+		if i == len(v)-1 && len(strings.TrimSpace(sep)) != 0 {
+			break
+		}
+		_, _ = w.buf.WriteString(sep)
+	}
+	return w.Space()
+}
+
 func (w *Writer) Byte(b byte) *Writer {
 	_ = w.buf.WriteByte(b)
 	return w

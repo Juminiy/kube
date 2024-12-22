@@ -1,6 +1,8 @@
 package safe_reflectv3
 
-import "reflect"
+import (
+	"reflect"
+)
 
 func (t T) SliceStructTags(tagKey string) Tags {
 	if t.Kind() != reflect.Slice {
@@ -21,6 +23,21 @@ func (t T) SliceStructFields() Fields {
 		return nil
 	}
 	return t.Indirect().StructFields()
+}
+
+func (v V) SliceCallMethod(name string, args []any) (rets []any, called bool) {
+	if v.Kind() != reflect.Slice ||
+		v.Len() == 0 {
+		return nil, false
+	}
+	return WrapV(v.Index(0)).Indirect().CallMethod(name, args)
+}
+
+func (v V) SliceStructSetField(index int, nv map[string]any) {
+	if v.Kind() != reflect.Slice || !v.CanSet() || v.Len() <= index {
+		return
+	}
+	WrapV(v.Index(index)).StructSet(nv)
 }
 
 func (tv Tv) SliceStructValues() []map[string]any {

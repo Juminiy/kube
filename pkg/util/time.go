@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	unit "github.com/docker/go-units"
 	"github.com/prometheus/prometheus/model/timestamp"
@@ -119,5 +120,14 @@ func FromTimestamp(s string) time.Time {
 var _zeroTime = time.Time{}
 
 func HumanTimeDesc(d time.Duration) string {
+	if ns := d.Nanoseconds(); ns < 1 {
+		return "Less than a nanosecond"
+	} else if ns < 1000 {
+		return fmt.Sprintf("%d nanoseconds", ns)
+	} else if mcs := d.Microseconds(); mcs < 1000 {
+		return fmt.Sprintf("%d microseconds", mcs)
+	} else if mls := d.Milliseconds(); mls < 1000 {
+		return fmt.Sprintf("%d ms", mls)
+	}
 	return unit.HumanDuration(d)
 }
