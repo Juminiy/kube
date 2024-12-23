@@ -79,7 +79,3 @@ func (c *Client) Ping() (*ping.GetPingOK, error) {
 			WithTimeout(c.httpTimeout).
 			WithHTTPClient(c.httpCli))
 }
-
-func (c *Client) GC(gcFn ...util.Func) {
-
-}

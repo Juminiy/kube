@@ -166,3 +166,7 @@ func (c *Client) ArtifactCopyTagGet(toURI, fromURI ArtifactURI) (resp ArtifactCo
 	resp.GetArtifactOK, err = c.GetArtifact(toURI)
 	return
 }
+
+func (c *Client) GC(gcFn ...util.Func) {
+
+}
