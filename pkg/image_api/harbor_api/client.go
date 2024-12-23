@@ -6,6 +6,7 @@ import (
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/goharbor/go-client/pkg/harbor"
 	v2client "github.com/goharbor/go-client/pkg/sdk/v2.0/client"
+	"github.com/goharbor/go-client/pkg/sdk/v2.0/client/ping"
 	"net/http"
 	"time"
 )
@@ -68,6 +69,15 @@ func (c *Client) WithPageConfig(pCfg *util.Page) *Client {
 func (c *Client) WithTimeout(httpTimeout time.Duration) *Client {
 	c.httpTimeout = httpTimeout
 	return c
+}
+
+func (c *Client) Ping() (*ping.GetPingOK, error) {
+	return c.v2Cli.Ping.GetPing(
+		c.ctx,
+		ping.NewGetPingParams().
+			WithContext(c.ctx).
+			WithTimeout(c.httpTimeout).
+			WithHTTPClient(c.httpCli))
 }
 
 func (c *Client) GC(gcFn ...util.Func) {

@@ -5,6 +5,7 @@ import (
 	"github.com/Juminiy/kube/pkg/image_api/harbor_api"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/client/artifact"
+	"github.com/goharbor/go-client/pkg/sdk/v2.0/client/ping"
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/client/project"
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/client/repository"
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/client/user"
@@ -92,6 +93,10 @@ func ListProjects(_bool bool) (*project.ListProjectsOK, error) {
 
 func ListRepositories(_string string) (*repository.ListRepositoriesOK, error) {
 	return harbor_api.UnwrapErr(_harborClient.ListRepositories(_string))
+}
+
+func Ping() (*ping.GetPingOK, error) {
+	return harbor_api.UnwrapErr(_harborClient.Ping())
 }
 
 func UpdateProjectStorageLimit(projectReqConfig *harbor_api.ProjectReqConfig) (*project.UpdateProjectOK, error) {

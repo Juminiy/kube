@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
-	"github.com/Juminiy/kube/pkg/util/safe_json"
 	"github.com/Juminiy/kube/pkg/util/safe_reflect"
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/models"
 )
@@ -20,7 +19,7 @@ func errorDetail(err error) error {
 		return errors.New(util.Bytes2StringNoCopy(detail))
 	default:
 		stdlog.Warn("uncaught error type")
-		return errors.New(safe_json.String(err))
+		return err
 	}
 }
 
