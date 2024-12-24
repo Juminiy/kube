@@ -1,20 +1,33 @@
 package ksql
 
-import "k8s.io/apimachinery/pkg/util/sets"
-
-type Clause struct {
+/*type Clause struct {
 	Select   sets.Set[string]
+	Join     *Join
 	Distinct *bool
-	Limit    *int
-	Offset   int
-	Order    *Order
-	Group    *Group
+	All      *bool
+	Limit    *Limit
+	OrderBy  *OrderBy
+	GroupBy  *GroupBy
 }
 
-type Order struct {
+type Join struct {
+	Clause *Clause
+}
+
+type OrderBy struct {
+	Term []OrderTerm
+}
+
+type OrderTerm struct {
 	Column string
 	Desc   bool
 }
 
-type Group struct {
+type GroupBy struct {
+	Column string
 }
+
+type Limit struct {
+	Count  *int
+	Offset int
+}*/
