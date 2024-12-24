@@ -2,8 +2,9 @@ package util
 
 import (
 	"fmt"
-	"github.com/fatih/color"
 	"strings"
+
+	"github.com/fatih/color"
 )
 
 func RedF(format string, v ...any) string {
