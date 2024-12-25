@@ -3,6 +3,7 @@ package korm
 import (
 	"database/sql"
 	"errors"
+	"github.com/Juminiy/kube/pkg/storage_api/rdb/kinternal"
 	"github.com/Juminiy/kube/pkg/storage_api/rdb/ksql"
 	"github.com/Juminiy/kube/pkg/util"
 	"golang.org/x/exp/maps"
@@ -23,7 +24,7 @@ type Stmt struct {
 	Column      []string
 	Values      [][]any
 
-	ksql.B
+	B kinternal.StringBuilder
 	*util.ErrHandle
 
 	RowAffect int64
@@ -127,7 +128,7 @@ func (stmt *Stmt) Execute() *Stmt {
 	}
 
 	stmt.Has(stmt.trace(func() error {
-		result, err := stmt.DB.ExecContext(stmt.ctx, stmt.Build())
+		result, err := stmt.DB.ExecContext(stmt.ctx, stmt.B.Build())
 		if err != nil {
 			return err
 		}
@@ -160,7 +161,7 @@ func (stmt *Stmt) trace(f util.Func) error {
 	stmt.L.Printf("time: [%s] row_affect: [%d] sql: [%s]\n",
 		util.HumanTimeDesc(time.Now().Sub(timeBegin)),
 		stmt.RowAffect,
-		stmt.Build(),
+		stmt.B.Build(),
 	)
 
 	return err
