@@ -117,8 +117,13 @@ healthz: set vet
 
 .PHONY: clipboard_fast
 clipboard_fast:
-	GO_ENVS=env GOARCH=amd64 GOOS=linux
+	$(eval GO_ENVS = env CGO_ENABLED=1 GOOS=linux GOARCH=amd64)
 	cd $(CMD_DIR)/clipboard/$@ && $(GO_ENVS) $(GO_BUILD)
+
+.PHONY: hardcliv2
+hardcliv2:
+	$(eval GO_ENVS = env CGO_ENABLED=0 GOOS=linux GOARCH=amd64)
+	$(GO_RUN_BUILD)
 
 
 ################################

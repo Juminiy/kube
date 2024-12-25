@@ -61,3 +61,7 @@ func MarshalIndent() []byte {
 	}
 	return util.String2BytesNoCopy(bs)
 }
+
+func MarshalIndentString() string {
+	return util.Bytes2StringNoCopy(MarshalIndent())
+}

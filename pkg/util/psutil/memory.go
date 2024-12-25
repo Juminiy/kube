@@ -35,3 +35,11 @@ func vmem() *mem {
 	safe_reflect.CopyFieldValue(vmemStat, memPtr)
 	return memPtr.setHumanRead()
 }
+
+type MemV2 struct {
+	*mem `json:",inline"`
+}
+
+func memV2() MemV2 {
+	return MemV2{mem: vmem()}
+}

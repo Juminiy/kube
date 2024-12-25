@@ -120,3 +120,15 @@ func ipFromAddr(addr []net.Addr, filter AddrFilter) []string {
 	}
 	return ip
 }
+
+type NetV2 struct {
+	IPv4 []string
+	IPv6 []string
+}
+
+func netV2() NetV2 {
+	return NetV2{
+		IPv4: HostIPv4(),
+		IPv6: HostIPv6(),
+	}
+}
