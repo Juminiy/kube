@@ -50,3 +50,7 @@ func InRange[T Number](v, l, r T) bool {
 func IsOdd(n int) bool {
 	return n%2 == 1
 }
+
+const (
+	MagicNumber = 114514
+)
