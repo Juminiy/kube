@@ -1,7 +1,5 @@
 package kstmt
 
-import "io"
-
 type InExpr struct {
 	Expr       Expr
 	Not        *Empty
@@ -18,11 +16,4 @@ type TableExpr struct {
 type SelectStmtExpr struct {
 	SelectStmt *SelectStmt
 	Expr       ExprList
-}
-
-type SelectStmt struct {
-}
-
-func (b SelectStmt) Build(r io.Writer) {
-
 }

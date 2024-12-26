@@ -5,9 +5,6 @@ type JoinClause struct {
 	Joins           []Join
 }
 
-type TableOrSubquery struct {
-}
-
 type Join struct {
 	Operator   JoinOperator
 	Dest       TableOrSubquery

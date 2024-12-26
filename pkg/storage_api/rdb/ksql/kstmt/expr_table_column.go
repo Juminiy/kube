@@ -31,8 +31,24 @@ type ColumnExpr struct {
 }
 
 type Order struct {
+	Asc  *Empty
 	Desc *Empty
 }
 
 type QualifiedTable struct {
+	Table Table
+	As    *AsAliasExpr
+	Index *IndexExpr
 }
+
+type IndexExpr struct {
+	IndexedBy  *string
+	NotIndexed *Empty
+}
+
+type ResultColumn struct {
+	Expr         *ReturningExpr
+	TableDotStar *string
+}
+
+type ResultColumnList AtLeastOne[ResultColumn]

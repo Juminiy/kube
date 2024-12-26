@@ -6,4 +6,13 @@ type CastAsExpr struct {
 }
 
 type TypeName struct {
+	Name AtLeastOne[string]
+	One  *SignedNumber
+	Pair *Pair[SignedNumber]
+}
+
+type SignedNumber struct {
+	Positive *Empty
+	Negative *Empty
+	Number   NumericLiteral
 }
