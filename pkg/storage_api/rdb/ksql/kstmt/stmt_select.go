@@ -53,4 +53,16 @@ type CompoundSelect struct {
 }
 
 type TableOrSubquery struct {
+	Schema    *string
+	TableExpr *struct {
+		Name  string
+		Index IndexExpr
+	}
+	TableFunc *TableFuncExpr
+	Select    *SelectStmt
+	As        *AsAliasExpr
+	Recursive *struct {
+		R    *AtLeastOne[TableOrSubquery]
+		Join *JoinClause
+	}
 }

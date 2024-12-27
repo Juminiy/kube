@@ -4,7 +4,7 @@ type InsertStmt struct {
 	With   *WithCommonTableExpr
 	Write  ReplaceOrInsertExpr
 	Table  Table
-	Alias  *AsAliasExpr
+	As     *AsAliasExpr
 	Column ColumnList
 	Data   DataFromStmt
 }
@@ -32,6 +32,7 @@ type WriteFailOpt struct {
 }
 
 type AsAliasExpr struct {
+	As    *Empty
 	Alias string
 }
 

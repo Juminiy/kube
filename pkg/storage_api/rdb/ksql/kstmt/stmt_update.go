@@ -10,6 +10,12 @@ type UpdateStmt struct {
 	Returning *ReturningClause
 }
 
+type UpdateStmtLimited struct {
+	Update  UpdateStmt
+	OrderBy *OrderByClause
+	Limit   *LimitClause
+}
+
 type UpdateSetExpr AtLeastOne[SetExpr]
 
 type SetExpr struct {

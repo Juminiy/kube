@@ -9,6 +9,7 @@ type DeleteStmt struct {
 }
 
 type DeleteStmtLimited struct {
+	Delete  DeleteStmt
 	OrderBy *OrderByClause
 	Limit   *LimitClause
 }
