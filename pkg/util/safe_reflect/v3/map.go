@@ -16,6 +16,13 @@ func (t T) MapElemType() reflect.Type {
 	return t.Type.Elem()
 }
 
+func (t T) MapElemNew() Tv {
+	if t.Kind() != reflect.Map {
+		return Tv{}
+	}
+	return WrapT(t.MapElemType()).New()
+}
+
 func (v V) MapValues() map[string]any {
 	return lo.SliceToMap(v.MapRange(), func(item MapKeyValue) (string, any) {
 		rk, rv := Any(item.Key), Any(item.Value)

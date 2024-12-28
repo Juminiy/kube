@@ -99,3 +99,26 @@ func (t T) FieldType() Types {
 }
 
 type MetaElemCate int8
+
+func (t T) New() Tv {
+	if t.Type == nil {
+		return Tv{}
+	}
+	return Wrap(reflect.New(t.Type))
+}
+
+func (t T) NewElem() Tv {
+	switch t.Kind() {
+	case reflect.Array:
+		return t.ArrayElemNew()
+
+	case reflect.Slice:
+		return t.SliceElemNew()
+
+	case reflect.Map:
+		return t.MapElemNew()
+
+	default:
+		return t.New()
+	}
+}

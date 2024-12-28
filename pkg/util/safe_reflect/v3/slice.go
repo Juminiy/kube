@@ -26,6 +26,13 @@ func (t T) SliceStructFields() Fields {
 	return t.Indirect().StructFields()
 }
 
+func (t T) SliceElemNew() Tv {
+	if t.Kind() != reflect.Slice {
+		return Tv{}
+	}
+	return t.Indirect().New()
+}
+
 func (v V) SliceCallMethod(name string, args []any) (rets []any, called bool) {
 	if v.Kind() != reflect.Slice ||
 		v.Len() == 0 {

@@ -1,5 +1,7 @@
 package safe_reflectv3
 
+import "reflect"
+
 func (v V) CallMethod(name string, args []any) (rets []any, called bool) {
 	method := v.MethodByName(name)
 	if method == ZeroValue() {
@@ -9,6 +11,9 @@ func (v V) CallMethod(name string, args []any) (rets []any, called bool) {
 }
 
 func (tv Tv) FuncCall(in []any) (out []any, called bool) {
+	if tv.Type.Kind() != reflect.Func {
+		return
+	}
 	numIn := tv.NumIn()
 	if numIn != len(in) {
 		return

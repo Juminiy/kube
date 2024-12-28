@@ -124,3 +124,10 @@ func (v V) SetField(nv map[string]any, index ...int) {
 func (v V) SetI(i any) {
 	V2Wrap(v.Value).SetILike(i)
 }
+
+func (v V) I() any {
+	if v.IsValid() && v.CanInterface() {
+		return v.Indirect().Interface()
+	}
+	return nil
+}

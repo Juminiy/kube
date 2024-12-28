@@ -23,6 +23,13 @@ func (t T) ArrayStructFields() Fields {
 	return t.Indirect().StructFields()
 }
 
+func (t T) ArrayElemNew() Tv {
+	if t.Kind() != reflect.Array {
+		return Tv{}
+	}
+	return t.Indirect().New()
+}
+
 func (v V) ArrayCallMethod(name string, args []any) (rets []any, called bool) {
 	if v.Kind() != reflect.Array ||
 		v.Len() == 0 {
