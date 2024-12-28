@@ -41,3 +41,17 @@ func TestTv_ArrayStructValues(t *testing.T) {
 		t.Log(String(etv.ArrayStructValues()))
 	}
 }
+
+func TestV_ArraySet(t *testing.T) {
+	var isl [5]int
+	testWatchDo(t, &isl, func() {
+		for i := range 10 {
+			Indirect(isl).ArraySet(i, (i+1)*111)
+		}
+	})
+	testWatchDo(t, &isl, func() {
+		for i := range 10 {
+			Indirect(&isl).ArraySet(i, (i+1)*111)
+		}
+	})
+}

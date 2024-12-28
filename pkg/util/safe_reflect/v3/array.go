@@ -38,6 +38,13 @@ func (v V) ArrayStructSetField(index int, nv map[string]any) {
 	WrapV(v.Index(index)).StructSet(nv)
 }
 
+func (v V) ArraySet(index int, i any) {
+	if v.Kind() != reflect.Array || !v.CanSet() || v.Len() <= index {
+		return
+	}
+	V2Wrap(v.Index(index)).SetILike(i)
+}
+
 func (tv Tv) ArrayStructValues() []map[string]any {
 	t, v := tv.T, tv.V
 	if t.Kind() != reflect.Array {

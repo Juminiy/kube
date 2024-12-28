@@ -120,3 +120,7 @@ func (v V) SetField(nv map[string]any, index ...int) {
 	default: // ignore
 	}
 }
+
+func (v V) SetI(i any) {
+	V2Wrap(v.Value).SetILike(i)
+}
