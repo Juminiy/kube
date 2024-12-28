@@ -127,7 +127,7 @@ func (v V) SetI(i any) {
 
 func (v V) I() any {
 	if v.IsValid() && v.CanInterface() {
-		return v.Indirect().Interface()
+		return v.Interface()
 	}
 	return nil
 }

@@ -22,6 +22,6 @@ func TestT_NewElem(t *testing.T) {
 		tv := Indirect(val).NewElem()
 		tv.SetI(struct{ I int }{I: 888})
 		tv.SetI((i + 1) * 111)
-		t.Logf("%+v", tv.I())
+		t.Logf("%+v", tv.Indirect().I())
 	}
 }
