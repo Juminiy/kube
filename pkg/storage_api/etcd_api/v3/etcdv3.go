@@ -13,7 +13,7 @@ type Client struct {
 }
 
 func New(addr ...string) (*Client, error) {
-	ctx := util.TODOContext()
+	ctx := util.BackgroundContext()
 	dto := DefaultSecond
 	cli, err := etcdcliv3.New(
 		etcdcliv3.Config{

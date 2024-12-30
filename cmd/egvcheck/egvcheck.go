@@ -22,6 +22,9 @@ func readDir(dirPath string) {
 	dir, err := os.ReadDir(dirPath)
 	util.Must(err)
 	for _, subdir := range dir {
+		if subdir.Name() == "testdata" {
+			continue
+		}
 		subDirPath := filepath.Join(dirPath, subdir.Name())
 		if subdir.IsDir() {
 			readDir(subDirPath)
