@@ -42,11 +42,11 @@ func (v V) MapDeleteZero() {
 }
 
 func (v V) MapSetField(nv map[string]any) {
-	if v.Kind() != reflect.Map {
+	if v.Kind() != reflect.Map || v.Type().Kind() != reflect.String {
 		return
 	}
 	slices.All(Indirect(nv).MapRange())(func(_ int, kv MapKeyValue) bool {
-		if kv.Value != ZeroValue() {
+		if kv.Value != ZeroValue() && kv.Value.Type() == v.Type().Elem() {
 			v.SetMapIndex(kv.Key, kv.Value)
 		}
 		return true

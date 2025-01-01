@@ -38,14 +38,23 @@ func (v V) SliceCallMethod(name string, args []any) (rets []any, called bool) {
 		v.Len() == 0 {
 		return nil, false
 	}
-	return WrapV(v.Index(0)).Indirect().CallMethod(name, args)
+	return WrapVI(v.Index(0)).CallMethod(name, args)
 }
 
 func (v V) SliceStructSetField(index int, nv map[string]any) {
 	if v.Kind() != reflect.Slice || !v.CanSet() || v.Len() <= index {
 		return
 	}
-	WrapV(v.Index(index)).StructSet(nv)
+	WrapVI(v.Index(index)).StructSet(nv)
+}
+
+func (v V) SliceStructSetField2(nv map[string]any) {
+	if v.Kind() != reflect.Slice || !v.CanSet() {
+		return
+	}
+	for i := range v.Len() {
+		WrapVI(v.Index(i)).StructSet(nv)
+	}
 }
 
 func (v V) SliceSet(index int, i any) {

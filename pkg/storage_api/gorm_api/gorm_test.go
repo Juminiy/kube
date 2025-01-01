@@ -36,11 +36,11 @@ func init() {
 
 type Product struct {
 	gorm.Model
-	Name     string
+	Name     string `mt:"unique:name"`
 	Desc     string
 	Code     uint
 	Price    int64
-	TenantID uint `gorm:"index;" mt:"-" json:"-"`
+	TenantID uint `gorm:"index;" mt:"tenant" json:"-"`
 }
 
 var Enc = safe_json.Pretty

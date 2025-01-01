@@ -35,14 +35,23 @@ func (v V) ArrayCallMethod(name string, args []any) (rets []any, called bool) {
 		v.Len() == 0 {
 		return nil, false
 	}
-	return WrapV(v.Index(0)).Indirect().CallMethod(name, args)
+	return WrapVI(v.Index(0)).CallMethod(name, args)
 }
 
 func (v V) ArrayStructSetField(index int, nv map[string]any) {
 	if v.Kind() != reflect.Array || !v.CanSet() || v.Len() <= index {
 		return
 	}
-	WrapV(v.Index(index)).StructSet(nv)
+	WrapVI(v.Index(index)).StructSet(nv)
+}
+
+func (v V) ArrayStructSetField2(nv map[string]any) {
+	if v.Kind() != reflect.Array || !v.CanSet() {
+		return
+	}
+	for i := range v.Len() {
+		WrapVI(v.Index(i)).StructSet(nv)
+	}
 }
 
 func (v V) ArraySet(index int, i any) {

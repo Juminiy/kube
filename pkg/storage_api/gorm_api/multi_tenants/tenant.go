@@ -6,8 +6,12 @@ import (
 )
 
 type Config struct {
-	PluginName string
-	Tag        string
+	PluginName      string
+	Tag             string
+	TenantKey       string
+	SkipKey         string
+	DisableFieldDup bool
+	EmitMapZeroElem bool
 }
 
 func (cfg *Config) Name() string {
@@ -21,10 +25,16 @@ func (cfg *Config) Initialize(tx *gorm.DB) error {
 	if len(cfg.Tag) == 0 {
 		cfg.Tag = "mt"
 	}
+	if len(cfg.TenantKey) == 0 {
+		cfg.TenantKey = "tenant_id"
+	}
+	if len(cfg.SkipKey) == 0 {
+		cfg.SkipKey = "skip_tenant"
+	}
 
 	return errChecker(
 		tx.Callback().Create().Before("gorm:create").
-			Register(cfg.callbackName(true, 'C'), BeforeCreate),
+			Register(cfg.callbackName(true, 'C'), cfg.BeforeCreate),
 		tx.Callback().Create().After("gorm:create").
 			Register(cfg.callbackName(false, 'C'), AfterCreate),
 
@@ -90,7 +100,7 @@ func errChecker(err ...error) error {
 	return nil
 }
 
-var Wrap = safe_reflectv3.Wrap
+var _Ind = safe_reflectv3.Indirect
 
 /*
  * reflect.Kind -> T
@@ -100,3 +110,12 @@ var Wrap = safe_reflectv3.Wrap
  * Map -> --(indirect)--> map[string]any
  * SliceMap -> --(indirect)--> []map[string]any
  */
+
+func (cfg *Config) tenantValid(tx *gorm.DB) (any, bool) {
+	tid, hastid := tx.Get(cfg.TenantKey)
+	_, skiptid := tx.Get(cfg.SkipKey)
+	if !hastid || skiptid {
+		return nil, false
+	}
+	return tid, true
+}

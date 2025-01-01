@@ -18,6 +18,14 @@ func WrapV(rv reflect.Value) V {
 	return V{Value: rv}
 }
 
+func NewVI(i any) V {
+	return WrapVI(reflect.ValueOf(i))
+}
+
+func WrapVI(rv reflect.Value) V {
+	return V{Value: rv}.Indirect()
+}
+
 func (v V) CanElem() bool {
 	return util.ElemIn(v.Kind(),
 		reflect.Interface, reflect.Pointer)
@@ -99,20 +107,16 @@ func (tv Tv) CallMethod(name string, args []any) (rets []any, called bool) {
 	return
 }
 
-func (v V) SetField(nv map[string]any, index ...int) {
+func (v V) SetField(nv map[string]any) {
 	switch v.Kind() {
 	case reflect.Struct:
 		v.StructSet(nv)
 
 	case reflect.Array:
-		if len(index) > 0 {
-			v.ArrayStructSetField(index[0], nv)
-		}
+		v.ArrayStructSetField2(nv)
 
 	case reflect.Slice:
-		if len(index) > 0 {
-			v.SliceStructSetField(index[0], nv)
-		}
+		v.SliceStructSetField2(nv)
 
 	case reflect.Map:
 		v.MapSetField(nv)
