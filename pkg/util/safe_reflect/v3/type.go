@@ -3,7 +3,6 @@ package safe_reflectv3
 import (
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/samber/lo"
-	"golang.org/x/exp/maps"
 	"reflect"
 )
 
@@ -40,13 +39,17 @@ func rts(i []any) []reflect.Type {
 	})
 }
 
-func (t T) Tag1(tagKey string) map[string]string {
-	return lo.MapValues(t.Tags(tagKey), func(tag Tag, name string) string {
-		if len(tag) > 0 {
-			return maps.Keys(tag)[0]
-		}
-		return ""
-	})
+func (t T) Tag1(tagKey string) (raw map[string]string) {
+	switch t.Kind() {
+	case reflect.Struct:
+		return t.StructRawTag(tagKey)
+
+	case reflect.Array, reflect.Slice, reflect.Chan, reflect.Pointer:
+		return t.Indirect().StructRawTag(tagKey)
+
+	default: // ignore
+		return
+	}
 }
 
 func (t T) Tag2(tagKey, valKey string) map[string]string {
@@ -122,3 +125,5 @@ func (t T) NewElem() Tv {
 		return t.New()
 	}
 }
+
+var _NilType = reflect.TypeOf(nil)

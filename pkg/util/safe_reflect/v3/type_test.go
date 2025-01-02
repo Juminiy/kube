@@ -2,11 +2,22 @@ package safe_reflectv3
 
 import "testing"
 
+func Test_Tag1(t *testing.T) {
+	for desc, e := range esvS {
+		ei := Indirect(e)
+		t.Logf("%40s %v", desc, ei.Tag1("gorm"))
+	}
+}
+
 func TestT_Tag2(t *testing.T) {
 	for desc, e := range esvS {
 		ei := Indirect(e)
 		t.Logf("%40s %10s", desc, ei.Tag2("gorm", "column"))
 	}
+}
+
+func TestT_TagNil(t *testing.T) {
+	t.Log(Indirect(nil).Tag1("gorm"))
 }
 
 func TestT_NewElem(t *testing.T) {

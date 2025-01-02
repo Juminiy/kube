@@ -13,10 +13,10 @@ type ExportStruct struct {
 }
 
 var esvS = map[string]any{
-	"Struct":                                  ExportStruct{},               // Struct
-	"Pointer to Struct":                       &ExportStruct{},              // Pointer to Struct
-	"Pointer to Pointer to Struct":            util.New(&ExportStruct{}),    // Pointer to Pointer to Struct
-	"nil":                                     nil,                          // nil
+	"Struct":                       ExportStruct{},            // Struct
+	"Pointer to Struct":            &ExportStruct{},           // Pointer to Struct
+	"Pointer to Pointer to Struct": util.New(&ExportStruct{}), // Pointer to Pointer to Struct
+	//"nil":                                     nil,                          // nil
 	"nil Pointer to Struct":                   util.Zero[*ExportStruct](),   // nil Pointer to Struct
 	"unnamed Struct":                          struct{ I int }{},            // unnamed Struct
 	"Pointer to unnamed Struct":               &struct{ I int }{},           // Pointer to unnamed Struct

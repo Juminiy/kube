@@ -36,32 +36,32 @@ func (cfg *Config) Initialize(tx *gorm.DB) error {
 		tx.Callback().Create().Before("gorm:create").
 			Register(cfg.callbackName(true, 'C'), cfg.BeforeCreate),
 		tx.Callback().Create().After("gorm:create").
-			Register(cfg.callbackName(false, 'C'), AfterCreate),
+			Register(cfg.callbackName(false, 'C'), cfg.AfterCreate),
 
 		tx.Callback().Query().Before("gorm:query").
-			Register(cfg.callbackName(true, 'Q'), BeforeQuery),
+			Register(cfg.callbackName(true, 'Q'), cfg.BeforeQuery),
 		tx.Callback().Query().After("gorm:query").
-			Register(cfg.callbackName(false, 'Q'), AfterQuery),
+			Register(cfg.callbackName(false, 'Q'), cfg.AfterQuery),
 
 		tx.Callback().Update().Before("gorm:update").
-			Register(cfg.callbackName(true, 'U'), BeforeUpdate),
+			Register(cfg.callbackName(true, 'U'), cfg.BeforeUpdate),
 		tx.Callback().Update().After("gorm:update").
-			Register(cfg.callbackName(false, 'U'), AfterUpdate),
+			Register(cfg.callbackName(false, 'U'), cfg.AfterUpdate),
 
 		tx.Callback().Delete().Before("gorm:delete").
-			Register(cfg.callbackName(true, 'D'), BeforeDelete),
+			Register(cfg.callbackName(true, 'D'), cfg.BeforeDelete),
 		tx.Callback().Delete().After("gorm:delete").
-			Register(cfg.callbackName(false, 'D'), AfterDelete),
+			Register(cfg.callbackName(false, 'D'), cfg.AfterDelete),
 
 		tx.Callback().Raw().Before("gorm:raw").
-			Register(cfg.callbackName(true, 'E'), BeforeRaw),
+			Register(cfg.callbackName(true, 'E'), cfg.BeforeRaw),
 		tx.Callback().Raw().After("gorm:raw").
-			Register(cfg.callbackName(false, 'E'), AfterRaw),
+			Register(cfg.callbackName(false, 'E'), cfg.AfterRaw),
 
 		tx.Callback().Row().Before("gorm:row").
-			Register(cfg.callbackName(true, 'R'), BeforeRow),
+			Register(cfg.callbackName(true, 'R'), cfg.BeforeRow),
 		tx.Callback().Row().After("gorm:row").
-			Register(cfg.callbackName(false, 'R'), AfterRow),
+			Register(cfg.callbackName(false, 'R'), cfg.AfterRow),
 	)
 }
 

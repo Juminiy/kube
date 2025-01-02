@@ -2,10 +2,10 @@ package multi_tenants
 
 import "gorm.io/gorm"
 
-func BeforeRow(tx *gorm.DB) {
+func (cfg *Config) BeforeRow(tx *gorm.DB) {
 
 }
 
-func AfterRow(tx *gorm.DB) {
+func (cfg *Config) AfterRow(tx *gorm.DB) {
 
 }

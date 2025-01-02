@@ -4,7 +4,7 @@ import "reflect"
 
 func (v V) CallMethod(name string, args []any) (rets []any, called bool) {
 	method := v.MethodByName(name)
-	if method == ZeroValue() {
+	if method == _ZeroValue {
 		return
 	}
 	return Wrap(method).FuncCall(args)

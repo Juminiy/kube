@@ -37,7 +37,7 @@ func (v V) MapDeleteZero() {
 	for _, kv := range lo.Filter(v.MapRange(), func(item MapKeyValue, index int) bool {
 		return item.Value.IsZero()
 	}) {
-		v.SetMapIndex(kv.Key, ZeroValue())
+		v.SetMapIndex(kv.Key, _ZeroValue)
 	}
 }
 
@@ -46,7 +46,7 @@ func (v V) MapSetField(nv map[string]any) {
 		return
 	}
 	slices.All(Indirect(nv).MapRange())(func(_ int, kv MapKeyValue) bool {
-		if kv.Value != ZeroValue() && kv.Value.Type() == v.Type().Elem() {
+		if kv.Value != _ZeroValue && kv.Value.Type() == v.Type().Elem() {
 			v.SetMapIndex(kv.Key, kv.Value)
 		}
 		return true

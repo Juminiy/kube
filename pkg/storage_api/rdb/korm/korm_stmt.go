@@ -144,7 +144,7 @@ func (stmt *Stmt) AfterCreate(result sql.Result) *Stmt {
 	}
 	vsz := int64(len(stmt.Values))
 	for idx := int64(0); idx < vsz; idx++ {
-		stmt.Tv.SetField(map[string]any{stmt.PK.Field: lastRowID - vsz + idx + 1}, int(idx))
+		stmt.Tv.SetField(map[string]any{stmt.PK.Field: lastRowID - vsz + idx + 1})
 	}
 
 	rowAffect, rAErr := result.RowsAffected()

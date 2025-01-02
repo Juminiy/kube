@@ -10,8 +10,7 @@ type Tv struct {
 }
 
 func (tv Tv) Indirect() Tv {
-	iv := tv.V.Indirect()
-	if iv.IsValid() {
+	if iv := tv.V.Indirect(); iv.IsValid() {
 		return Tv{
 			T: WrapT(iv.Type()),
 			V: iv,

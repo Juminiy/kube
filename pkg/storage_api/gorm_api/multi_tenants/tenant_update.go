@@ -2,10 +2,10 @@ package multi_tenants
 
 import "gorm.io/gorm"
 
-func BeforeUpdate(tx *gorm.DB) {
+func (cfg *Config) BeforeUpdate(tx *gorm.DB) {
 
 }
 
-func AfterUpdate(tx *gorm.DB) {
+func (cfg *Config) AfterUpdate(tx *gorm.DB) {
 
 }

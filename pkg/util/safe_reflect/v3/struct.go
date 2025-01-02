@@ -13,6 +13,14 @@ type Types map[string]reflect.Type
 type Tags map[string]Tag
 type Tag map[string]string
 
+func (t T) StructRawTag(tagKey string) map[string]string {
+	return lo.MapValues(t.StructFields(),
+		func(field reflect.StructField, name string) string {
+			return field.Tag.Get(tagKey)
+		},
+	)
+}
+
 func (t T) StructTags(tagKey string) Tags {
 	return lo.MapValues(t.StructFields(),
 		func(field reflect.StructField, name string) Tag {
@@ -100,7 +108,7 @@ func (v V) StructSet(nv map[string]any) {
 	}
 	for name, val := range nv {
 		field := v.FieldByName(name)
-		if field == ZeroValue() || !field.CanSet() {
+		if field == _ZeroValue || !field.CanSet() {
 			continue
 		}
 		V2Wrap(field).SetILike(val)
