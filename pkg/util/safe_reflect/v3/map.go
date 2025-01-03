@@ -9,11 +9,18 @@ import (
 
 const MapElemType = "~map_elem_r_type~"
 
+func (t T) MapKeyType() reflect.Type {
+	if t.Kind() != reflect.Map {
+		return nil
+	}
+	return t.Key()
+}
+
 func (t T) MapElemType() reflect.Type {
 	if t.Kind() != reflect.Map {
 		return nil
 	}
-	return t.Type.Elem()
+	return t.Elem()
 }
 
 func (t T) MapElemNew() Tv {
@@ -24,7 +31,7 @@ func (t T) MapElemNew() Tv {
 }
 
 func (v V) MapValues() map[string]any {
-	return lo.SliceToMap(v.MapRange(), func(item MapKeyValue) (string, any) {
+	return lo.SliceToMap(v.MapRange(), func(item MapKeyElem) (string, any) {
 		rk, rv := Any(item.Key), Any(item.Elem)
 		if rk != nil && rv != nil {
 			return cast.ToString(rk), rv
@@ -34,37 +41,42 @@ func (v V) MapValues() map[string]any {
 }
 
 func (v V) MapDeleteZero() {
-	for _, kv := range lo.Filter(v.MapRange(), func(item MapKeyValue, index int) bool {
+	for _, ke := range lo.Filter(v.MapRange(), func(item MapKeyElem, index int) bool {
 		return item.Elem.IsZero()
 	}) {
-		v.SetMapIndex(kv.Key, _ZeroValue)
+		v.SetMapIndex(ke.Key, _ZeroValue)
 	}
 }
 
 func (v V) MapSetField(nv map[string]any) {
-	if v.Kind() != reflect.Map || v.Type().Key().Kind() != reflect.String {
+	keyType, elemType := v.Type().Key(), v.Type().Elem()
+	if v.Kind() != reflect.Map || keyType.Kind() != reflect.String {
 		return
 	}
-	slices.All(Indirect(nv).MapRange())(func(_ int, kv MapKeyValue) bool {
-		if kv.Elem == _ZeroValue || kv.Elem.Type() == v.Type().Elem() {
-			v.SetMapIndex(kv.Key, kv.Elem)
+	slices.All(Direct(nv).MapRange())(func(_ int, item MapKeyElem) bool {
+		if item.Elem == _ZeroValue || item.Elem.IsNil() {
+			v.SetMapIndex(item.Key, _ZeroValue)
+		} else if elemType.Kind() == reflect.Interface || elemType == item.Elem.Type() {
+			v.SetMapIndex(item.Key, item.Elem)
+		} else if elemIndir := WrapV(item.Elem).Indirect(); elemType == elemIndir.Type() {
+			v.SetMapIndex(item.Key, elemIndir.Value)
 		}
 		return true
 	})
 }
 
-type MapKeyValue struct {
+type MapKeyElem struct {
 	Key  reflect.Value
 	Elem reflect.Value
 }
 
-func (v V) MapRange() []MapKeyValue {
+func (v V) MapRange() []MapKeyElem {
 	if v.Kind() != reflect.Map {
 		return nil
 	}
-	keyValues := make([]MapKeyValue, v.Len())
+	keyValues := make([]MapKeyElem, v.Len())
 	for i, miter := 0, v.Value.MapRange(); miter.Next(); i++ {
-		keyValues[i] = MapKeyValue{Key: miter.Key(), Elem: miter.Value()}
+		keyValues[i] = MapKeyElem{Key: miter.Key(), Elem: miter.Value()}
 	}
 	return keyValues
 }

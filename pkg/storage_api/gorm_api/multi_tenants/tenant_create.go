@@ -18,7 +18,8 @@ func (cfg *Config) BeforeCreate(tx *gorm.DB) {
 		return
 	}
 	refv.SetField(map[string]any{
-		field: tid,
+		field: tid, // FieldName
+		// DBColumnName
 	})
 }
 
