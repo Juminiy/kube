@@ -88,7 +88,7 @@ func IndirectRV(rv reflect.Value) reflect.Value {
 	return indirect(rv, false)
 }
 
-func (v *Value) indirect() *Value {
+func (v Value) indirect() Value {
 	if v.Value == _ZeroValue {
 		return v
 	}
@@ -100,7 +100,10 @@ func (v Value) SetI(i any) {
 	if !v.indirect().CanSet() {
 		return
 	}
-	iv := Indirect(i)
+	if i == nil {
+		v.SetZero()
+	}
+	iv := Direct(i)
 	if v.isEFace() || // var i0 any
 		v.Type() == iv.Type() { // var i0, i T
 		v.Set(iv.Value)
@@ -111,7 +114,10 @@ func (v Value) SetILike(i any) {
 	if !v.indirect().CanSet() {
 		return
 	}
-	iv := Indirect(i)
+	if i == nil {
+		v.SetZero()
+	}
+	iv := Direct(i)
 	if v.isEFace() || // var i0 any
 		v.Type() == iv.Type() { // var i0, i T
 		v.Set(iv.Value)

@@ -1,6 +1,9 @@
 package multi_tenants
 
-import "gorm.io/gorm"
+import (
+	"github.com/Juminiy/kube/pkg/util"
+	"gorm.io/gorm"
+)
 
 func (cfg *Config) BeforeCreate(tx *gorm.DB) {
 	tid, ok := cfg.tenantValid(tx)
@@ -10,8 +13,12 @@ func (cfg *Config) BeforeCreate(tx *gorm.DB) {
 
 	stmt := tx.Statement
 	refv := _Ind(stmt.ReflectValue)
+	field, ok := util.MapElemOk(util.MapVK(refv.Tag1(cfg.TagKey)), cfg.TagTenantKey)
+	if !ok {
+		return
+	}
 	refv.SetField(map[string]any{
-		"": tid,
+		field: tid,
 	})
 }
 

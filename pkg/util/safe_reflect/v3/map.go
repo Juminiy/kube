@@ -25,7 +25,7 @@ func (t T) MapElemNew() Tv {
 
 func (v V) MapValues() map[string]any {
 	return lo.SliceToMap(v.MapRange(), func(item MapKeyValue) (string, any) {
-		rk, rv := Any(item.Key), Any(item.Value)
+		rk, rv := Any(item.Key), Any(item.Elem)
 		if rk != nil && rv != nil {
 			return cast.ToString(rk), rv
 		}
@@ -35,27 +35,27 @@ func (v V) MapValues() map[string]any {
 
 func (v V) MapDeleteZero() {
 	for _, kv := range lo.Filter(v.MapRange(), func(item MapKeyValue, index int) bool {
-		return item.Value.IsZero()
+		return item.Elem.IsZero()
 	}) {
 		v.SetMapIndex(kv.Key, _ZeroValue)
 	}
 }
 
 func (v V) MapSetField(nv map[string]any) {
-	if v.Kind() != reflect.Map || v.Type().Kind() != reflect.String {
+	if v.Kind() != reflect.Map || v.Type().Key().Kind() != reflect.String {
 		return
 	}
 	slices.All(Indirect(nv).MapRange())(func(_ int, kv MapKeyValue) bool {
-		if kv.Value != _ZeroValue && kv.Value.Type() == v.Type().Elem() {
-			v.SetMapIndex(kv.Key, kv.Value)
+		if kv.Elem == _ZeroValue || kv.Elem.Type() == v.Type().Elem() {
+			v.SetMapIndex(kv.Key, kv.Elem)
 		}
 		return true
 	})
 }
 
 type MapKeyValue struct {
-	Key   reflect.Value
-	Value reflect.Value
+	Key  reflect.Value
+	Elem reflect.Value
 }
 
 func (v V) MapRange() []MapKeyValue {
@@ -64,7 +64,7 @@ func (v V) MapRange() []MapKeyValue {
 	}
 	keyValues := make([]MapKeyValue, v.Len())
 	for i, miter := 0, v.Value.MapRange(); miter.Next(); i++ {
-		keyValues[i] = MapKeyValue{Key: miter.Key(), Value: miter.Value()}
+		keyValues[i] = MapKeyValue{Key: miter.Key(), Elem: miter.Value()}
 	}
 	return keyValues
 }

@@ -3,13 +3,16 @@ package multi_tenants
 import (
 	safe_reflectv3 "github.com/Juminiy/kube/pkg/util/safe_reflect/v3"
 	"gorm.io/gorm"
+	"reflect"
 )
 
 type Config struct {
 	PluginName      string
-	Tag             string
-	TenantKey       string
-	SkipKey         string
+	TagKey          string
+	TagTenantKey    string
+	TagUniqueKey    string
+	TxTenantKey     string
+	TxSkipKey       string
 	DisableFieldDup bool
 	EmitMapZeroElem bool
 }
@@ -22,14 +25,20 @@ func (cfg *Config) Initialize(tx *gorm.DB) error {
 	if len(cfg.PluginName) == 0 {
 		cfg.PluginName = "multi_tenants"
 	}
-	if len(cfg.Tag) == 0 {
-		cfg.Tag = "mt"
+	if len(cfg.TagKey) == 0 {
+		cfg.TagKey = "mt"
 	}
-	if len(cfg.TenantKey) == 0 {
-		cfg.TenantKey = "tenant_id"
+	if len(cfg.TagTenantKey) == 0 {
+		cfg.TagTenantKey = "tenant"
 	}
-	if len(cfg.SkipKey) == 0 {
-		cfg.SkipKey = "skip_tenant"
+	if len(cfg.TagUniqueKey) == 0 {
+		cfg.TagUniqueKey = "unique"
+	}
+	if len(cfg.TxTenantKey) == 0 {
+		cfg.TxTenantKey = "tenant_id"
+	}
+	if len(cfg.TxSkipKey) == 0 {
+		cfg.TxSkipKey = "skip_tenant"
 	}
 
 	return errChecker(
@@ -100,7 +109,9 @@ func errChecker(err ...error) error {
 	return nil
 }
 
-var _Ind = safe_reflectv3.Indirect
+func _Ind(rv reflect.Value) safe_reflectv3.Tv {
+	return safe_reflectv3.Wrap(rv).Indirect()
+}
 
 /*
  * reflect.Kind -> T
@@ -112,8 +123,8 @@ var _Ind = safe_reflectv3.Indirect
  */
 
 func (cfg *Config) tenantValid(tx *gorm.DB) (any, bool) {
-	tid, hastid := tx.Get(cfg.TenantKey)
-	_, skiptid := tx.Get(cfg.SkipKey)
+	tid, hastid := tx.Get(cfg.TxTenantKey)
+	_, skiptid := tx.Get(cfg.TxSkipKey)
 	if !hastid || skiptid {
 		return nil, false
 	}
