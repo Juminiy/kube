@@ -111,7 +111,7 @@ func (v V) StructSet(nv map[string]any) {
 		if field == _ZeroValue || !field.CanSet() {
 			continue
 		}
-		V2Wrap(field).SetILike(val)
+		WrapV(field).SetI(val)
 	}
 }
 

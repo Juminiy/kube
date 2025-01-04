@@ -2,6 +2,7 @@ package safe_reflectv3
 
 import (
 	"github.com/Juminiy/kube/pkg/util"
+	"iter"
 	"reflect"
 )
 
@@ -30,7 +31,7 @@ func (t T) SliceElemNew() Tv {
 	if t.Kind() != reflect.Slice {
 		return Tv{}
 	}
-	return t.Indirect().New()
+	return WrapT(t.Elem()).New()
 }
 
 func (v V) SliceCallMethod(name string, args []any) (rets []any, called bool) {
@@ -38,18 +39,18 @@ func (v V) SliceCallMethod(name string, args []any) (rets []any, called bool) {
 		v.Len() == 0 {
 		return nil, false
 	}
-	return WrapVI(v.Index(0)).CallMethod(name, args)
+	return WrapV(v.Index(0)).CallMethod(name, args)
 }
 
 func (v V) SliceStructSetField(index int, nv map[string]any) {
-	if v.Kind() != reflect.Slice || !v.CanSet() || v.Len() <= index {
+	if v.Kind() != reflect.Slice || v.Len() <= index {
 		return
 	}
 	WrapVI(v.Index(index)).StructSet(nv)
 }
 
 func (v V) SliceStructSetField2(nv map[string]any) {
-	if v.Kind() != reflect.Slice || !v.CanSet() {
+	if v.Kind() != reflect.Slice {
 		return
 	}
 	for i := range v.Len() {
@@ -58,10 +59,10 @@ func (v V) SliceStructSetField2(nv map[string]any) {
 }
 
 func (v V) SliceSet(index int, i any) {
-	if v.Kind() != reflect.Slice || !v.CanSet() || v.Len() <= index {
+	if v.Kind() != reflect.Slice || v.Len() <= index {
 		return
 	}
-	V2Wrap(v.Index(index)).SetILike(i)
+	WrapV(v.Index(index)).SetI(i)
 }
 
 func (v V) SliceAppend(i any) {
@@ -75,7 +76,7 @@ func (v V) SliceAppend(i any) {
 		fmt.Printf("grow happend: %d->%d\n", oldCap, v.Cap())
 	}*/
 	v.SetLen(newLen)
-	V2Wrap(v.Index(oldLen)).SetILike(i)
+	WrapV(v.Index(oldLen)).SetI(i)
 }
 
 func sliceLenCap(oldLen, oldCap int) (newLen, newCap int) {
@@ -100,12 +101,42 @@ func sliceLenCap(oldLen, oldCap int) (newLen, newCap int) {
 
 func (tv Tv) SliceStructValues() []map[string]any {
 	t, v := tv.T, tv.V
-	if t.Kind() != reflect.Slice {
+	if t.Kind() != reflect.Slice || t.Indirect().Kind() != reflect.Struct {
 		return nil
 	}
 	values := make([]map[string]any, v.Len())
-	for i := range v.Len() {
-		values[i] = Wrap(v.Index(i)).StructValues()
-	}
+	tv.IterIndex()(func(i int, rv reflect.Value) bool {
+		values[i] = WrapI(rv).StructValues()
+		return true
+	})
 	return values
+}
+
+func (tv Tv) SliceMapValues() []map[string]any {
+	t, v := tv.T, tv.V
+	if t.Kind() != reflect.Slice || t.Indirect().Kind() != reflect.Map {
+		return nil
+	}
+	values := make([]map[string]any, v.Len())
+	tv.IterIndex()(func(i int, rv reflect.Value) bool {
+		values[i] = WrapI(rv).MapValues()
+		return true
+	})
+	return values
+}
+
+func (v V) IterIndex() iter.Seq2[int, reflect.Value] {
+	if !util.ElemIn(v.Kind(),
+		reflect.Slice, reflect.Array) {
+		return func(yield func(int, reflect.Value) bool) {
+			return
+		}
+	}
+	return func(yield func(int, reflect.Value) bool) {
+		for i := range v.Len() {
+			if !yield(i, v.Index(i)) {
+				return
+			}
+		}
+	}
 }

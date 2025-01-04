@@ -110,7 +110,7 @@ func errChecker(err ...error) error {
 }
 
 func _Ind(rv reflect.Value) safe_reflectv3.Tv {
-	return safe_reflectv3.Wrap(rv).Indirect()
+	return safe_reflectv3.WrapI(rv)
 }
 
 /*

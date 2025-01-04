@@ -1,8 +1,7 @@
 package safe_reflectv2
 
 import (
-	"github.com/Juminiy/kube/pkg/util/safe_cast/safe_parse"
-	"github.com/spf13/cast"
+	"github.com/Juminiy/kube/pkg/util"
 	"reflect"
 )
 
@@ -84,49 +83,11 @@ func indirect(v reflect.Value, setNull bool) (rv reflect.Value) {
 	return v
 }
 
-func IndirectRV(rv reflect.Value) reflect.Value {
-	return indirect(rv, false)
-}
-
 func (v Value) indirect() Value {
-	if v.Value == _ZeroValue {
+	if v.Value == _ZeroValue ||
+		!util.ElemIn(v.Value.Kind(), Interface, Pointer) {
 		return v
 	}
 	v.Value = indirect(v.Value, false)
 	return v
 }
-
-func (v Value) SetI(i any) {
-	if !v.indirect().CanSet() {
-		return
-	}
-	if i == nil {
-		v.SetZero()
-	}
-	iv := Direct(i)
-	if v.isEFace() || // var i0 any
-		v.Type() == iv.Type() { // var i0, i T
-		v.Set(iv.Value)
-	}
-}
-
-func (v Value) SetILike(i any) {
-	if !v.indirect().CanSet() {
-		return
-	}
-	if i == nil {
-		v.SetZero()
-	}
-	iv := Direct(i)
-	if v.isEFace() || // var i0 any
-		v.Type() == iv.Type() { // var i0, i T
-		v.Set(iv.Value)
-		return
-	}
-	parsed := safe_parse.Parse(cast.ToString(i))
-	if pv, ok := parsed.Get(v.Kind()); ok {
-		v.Set(direct(pv))
-	}
-}
-
-var _ZeroValue = reflect.Value{}

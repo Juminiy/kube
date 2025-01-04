@@ -1,13 +1,20 @@
 package safe_reflectv3
 
-import "reflect"
+import (
+	"reflect"
+)
 
 func (v V) CallMethod(name string, args []any) (rets []any, called bool) {
 	method := v.MethodByName(name)
 	if method == _ZeroValue {
 		return
 	}
-	return Wrap(method).FuncCall(args)
+	methodDirect := Wrap(method)
+	rets, called = methodDirect.FuncCall(args)
+	if !called {
+		rets, called = methodDirect.Indirect().FuncCall(args)
+	}
+	return
 }
 
 func (tv Tv) FuncCall(in []any) (out []any, called bool) {

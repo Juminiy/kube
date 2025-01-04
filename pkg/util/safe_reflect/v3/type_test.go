@@ -3,16 +3,16 @@ package safe_reflectv3
 import "testing"
 
 func Test_Tag1(t *testing.T) {
-	for desc, e := range esvS {
-		ei := Indirect(e)
-		t.Logf("%40s %v", desc, ei.Tag1("gorm"))
+	for _, e := range esvS {
+		ei := Indirect(e.Value)
+		t.Logf("%40s %v", e.Desc, ei.Tag1("gorm"))
 	}
 }
 
 func TestT_Tag2(t *testing.T) {
-	for desc, e := range esvS {
-		ei := Indirect(e)
-		t.Logf("%40s %10s", desc, ei.Tag2("gorm", "column"))
+	for _, e := range esvS {
+		ei := Indirect(e.Value)
+		t.Logf("%40s %10s", e.Desc, ei.Tag2("gorm", "column"))
 	}
 }
 

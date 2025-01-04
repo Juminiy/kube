@@ -2,6 +2,7 @@ package safe_reflectv3
 
 import (
 	"github.com/Juminiy/kube/pkg/util"
+	safe_reflectv2 "github.com/Juminiy/kube/pkg/util/safe_reflect/v2"
 	"github.com/samber/lo"
 	"reflect"
 )
@@ -73,14 +74,16 @@ func (tv Tv) Values() []map[string]any {
 	case reflect.Struct:
 		values = append(values, tv.StructValues())
 
+	case reflect.Map:
+		values = append(values, tv.MapValues())
+
 	case reflect.Array:
 		values = append(values, tv.ArrayStructValues()...)
+		values = append(values, tv.ArrayMapValues()...)
 
 	case reflect.Slice:
 		values = append(values, tv.SliceStructValues()...)
-
-	case reflect.Map:
-		values = append(values, tv.MapValues())
+		values = append(values, tv.SliceMapValues()...)
 
 	default: // ignore
 	}
@@ -88,18 +91,27 @@ func (tv Tv) Values() []map[string]any {
 }
 
 func (tv Tv) CallMethod(name string, args []any) (rets []any, called bool) {
-	t, v := tv.T, tv.V
-	switch t.Kind() {
-	case reflect.Array:
-		rets, called = v.ArrayCallMethod(name, args)
+	callMethod := func(vv V) {
+		rets, called = vv.CallMethod(name, args)
+		if called {
+			return
+		}
+		switch vv.Kind() {
+		case reflect.Array:
+			rets, called = vv.ArrayCallMethod(name, args)
 
-	case reflect.Slice:
-		rets, called = v.SliceCallMethod(name, args)
+		case reflect.Slice:
+			rets, called = vv.SliceCallMethod(name, args)
 
-	default:
-		rets, called = v.CallMethod(name, args)
-
+		default: // ignore
+		}
 	}
+
+	callMethod(tv.V)
+	if !called {
+		callMethod(tv.V.Indirect())
+	}
+
 	return
 }
 
@@ -122,7 +134,7 @@ func (v V) SetField(nv map[string]any) {
 }
 
 func (v V) SetI(i any) {
-	V2Wrap(v.Value).SetILike(i)
+	safe_reflectv2.Wrap(v.Value).SetILike(i)
 }
 
 func (v V) I() any {

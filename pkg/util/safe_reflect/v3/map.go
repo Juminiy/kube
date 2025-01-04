@@ -1,6 +1,7 @@
 package safe_reflectv3
 
 import (
+	"github.com/Juminiy/kube/pkg/util/safe_cast/safe_parse"
 	"github.com/samber/lo"
 	"github.com/spf13/cast"
 	"reflect"
@@ -27,7 +28,7 @@ func (t T) MapElemNew() Tv {
 	if t.Kind() != reflect.Map {
 		return Tv{}
 	}
-	return WrapT(t.MapElemType()).New()
+	return WrapT(t.Elem()).New()
 }
 
 func (v V) MapValues() map[string]any {
@@ -54,12 +55,18 @@ func (v V) MapSetField(nv map[string]any) {
 		return
 	}
 	slices.All(Direct(nv).MapRange())(func(_ int, item MapKeyElem) bool {
-		if item.Elem == _ZeroValue || item.Elem.IsNil() {
+		if item.Elem == _ZeroValue ||
+			(item.Elem.Kind() == reflect.Interface && item.Elem.IsNil()) {
 			v.SetMapIndex(item.Key, _ZeroValue)
 		} else if elemType.Kind() == reflect.Interface || elemType == item.Elem.Type() {
 			v.SetMapIndex(item.Key, item.Elem)
-		} else if elemIndir := WrapV(item.Elem).Indirect(); elemType == elemIndir.Type() {
+		} else if elemIndir := WrapVI(item.Elem); elemType == elemIndir.Type() {
 			v.SetMapIndex(item.Key, elemIndir.Value)
+		} else if elemIndirv := elemIndir.I(); elemIndirv != nil {
+			parsed := safe_parse.Parse(cast.ToString(elemIndirv))
+			if pv, ok := parsed.Get(elemType.Kind()); ok {
+				v.SetMapIndex(item.Key, Direct(pv).Value)
+			}
 		}
 		return true
 	})

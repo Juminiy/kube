@@ -46,3 +46,7 @@ func Wrap(rv reflect.Value) Tv {
 		V: v,
 	}
 }
+
+func WrapI(rv reflect.Value) Tv {
+	return Wrap(rv).Indirect()
+}

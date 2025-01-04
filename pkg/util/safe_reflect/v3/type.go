@@ -33,6 +33,16 @@ func (t T) Indirect() T {
 	return tCopy
 }
 
+func (t T) IndirectElem() T {
+	tCopy := t
+	for util.ElemIn(tCopy.Kind(),
+		reflect.Array, reflect.Slice, reflect.Map, reflect.Chan, reflect.Pointer,
+	) {
+		tCopy = WrapT(tCopy.Elem())
+	}
+	return tCopy
+}
+
 func rts(i []any) []reflect.Type {
 	return lo.Map(i, func(item any, index int) reflect.Type {
 		return reflect.TypeOf(item)

@@ -40,16 +40,16 @@ func TestV_MapSetField2(t *testing.T) {
 	}
 	for _, mapv := range []any{
 		map[string]any{
-			"k1": "v1",
-			"k2": 2,
+			"k1": "v1", // no key
+			"k2": 2,    // no key
 		},
 		map[string]int{
-			"k1": 1,
-			"k2": 2,
+			"k1": 1, // no key
+			"k2": 2, // no key
 		},
 		map[int]any{
-			1: "v1",
-			2: 2,
+			1: "v1", // 1: v1
+			2: 2,    // 2: 2
 		},
 	} {
 		Direct(mapv).MapSetField(setv)
