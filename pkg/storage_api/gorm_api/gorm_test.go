@@ -32,15 +32,17 @@ func init() {
 	util.Must(tx.Use(&multi_tenants.Config{}))
 	tx.DB = tx.Debug()
 	_tx = tx
+	_txTenant = _tx.Set("tenant_id", uint(114514))
 }
 
 type Product struct {
+	Name       string `mt:"unique:name"`
+	Desc       string
+	NetContent string
+	Code       uint
+	Price      int64
+	TenantID   uint `gorm:"index;" mt:"tenant" json:"-"`
 	gorm.Model
-	Name     string `mt:"unique:name"`
-	Desc     string
-	Code     uint
-	Price    int64
-	TenantID uint `gorm:"index;" mt:"tenant" json:"-"`
 }
 
 var Enc = safe_json.Pretty

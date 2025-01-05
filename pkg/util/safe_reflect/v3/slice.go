@@ -49,12 +49,28 @@ func (v V) SliceStructSetField(index int, nv map[string]any) {
 	WrapVI(v.Index(index)).StructSet(nv)
 }
 
+func (v V) SliceMapSetField(index int, nv map[string]any) {
+	if v.Kind() != reflect.Slice || v.Len() <= index {
+		return
+	}
+	WrapVI(v.Index(index)).MapSetField(nv)
+}
+
 func (v V) SliceStructSetField2(nv map[string]any) {
 	if v.Kind() != reflect.Slice {
 		return
 	}
 	for i := range v.Len() {
 		WrapVI(v.Index(i)).StructSet(nv)
+	}
+}
+
+func (v V) SliceMapSetField2(nv map[string]any) {
+	if v.Kind() != reflect.Slice {
+		return
+	}
+	for i := range v.Len() {
+		WrapVI(v.Index(i)).MapSetField(nv)
 	}
 }
 

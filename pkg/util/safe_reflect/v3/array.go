@@ -45,12 +45,28 @@ func (v V) ArrayStructSetField(index int, nv map[string]any) {
 	WrapVI(v.Index(index)).StructSet(nv)
 }
 
+func (v V) ArrayMapSetField(index int, nv map[string]any) {
+	if v.Kind() != reflect.Array || v.Len() <= index {
+		return
+	}
+	WrapVI(v.Index(index)).MapSetField(nv)
+}
+
 func (v V) ArrayStructSetField2(nv map[string]any) {
 	if v.Kind() != reflect.Array {
 		return
 	}
 	for i := range v.Len() {
 		WrapVI(v.Index(i)).StructSet(nv)
+	}
+}
+
+func (v V) ArrayMapSetField2(nv map[string]any) {
+	if v.Kind() != reflect.Array {
+		return
+	}
+	for i := range v.Len() {
+		WrapVI(v.Index(i)).MapSetField(nv)
 	}
 }
 

@@ -120,14 +120,22 @@ func (v V) SetField(nv map[string]any) {
 	case reflect.Struct:
 		v.StructSet(nv)
 
-	case reflect.Array:
-		v.ArrayStructSetField2(nv)
-
-	case reflect.Slice:
-		v.SliceStructSetField2(nv)
-
 	case reflect.Map:
 		v.MapSetField(nv)
+
+	case reflect.Array:
+		if elemKind := WrapT(v.Type()).Indirect().Kind(); elemKind == reflect.Struct {
+			v.ArrayStructSetField2(nv)
+		} else if elemKind == reflect.Map {
+			v.ArrayMapSetField2(nv)
+		}
+
+	case reflect.Slice:
+		if elemKind := WrapT(v.Type()).Indirect().Kind(); elemKind == reflect.Struct {
+			v.SliceStructSetField2(nv)
+		} else if elemKind == reflect.Map {
+			v.SliceMapSetField2(nv)
+		}
 
 	default: // ignore
 	}
