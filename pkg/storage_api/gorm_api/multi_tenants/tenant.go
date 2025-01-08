@@ -121,6 +121,10 @@ func _Ind(rv reflect.Value) safe_reflectv3.Tv {
 	return safe_reflectv3.WrapI(rv)
 }
 
+func _Tag(s string) safe_reflectv3.Tag {
+	return safe_reflectv3.ParseTagValue(s)
+}
+
 /*
  * reflect.Kind -> T
  * Struct -> --(indirect)--> T
@@ -131,10 +135,7 @@ func _Ind(rv reflect.Value) safe_reflectv3.Tv {
  */
 
 type Tenant struct {
-	Name    string
-	DBTable string
-	DBName  string
-	Value   any
+	Field
 }
 
 func (cfg *Config) TenantInfo(tx *gorm.DB) *Tenant {
@@ -172,9 +173,11 @@ func (cfg *Config) tenantInfo(tx *gorm.DB) *Tenant {
 	}
 
 	return &Tenant{
-		Name:    tidField.Name,
-		DBTable: schema.Table,
-		DBName:  tidField.DBName,
-		Value:   tid,
+		Field{
+			Name:    tidField.Name,
+			DBTable: schema.Table,
+			DBName:  tidField.DBName,
+			Value:   tid,
+		},
 	}
 }

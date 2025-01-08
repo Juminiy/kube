@@ -28,6 +28,10 @@ func (t T) StructTags(tagKey string) Tags {
 		})
 }
 
+func ParseTagValue(s string) (tag Tag) {
+	return parseTagVal(s)
+}
+
 func parseTagVal(s string) (tag Tag) {
 	defer func() { util.MapDelete(tag, "") }()
 	tag = parseTagValKV(s)

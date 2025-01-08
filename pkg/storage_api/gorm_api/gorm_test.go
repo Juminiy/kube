@@ -37,9 +37,9 @@ func init() {
 
 type Product struct {
 	Name       string `mt:"unique:name"`
-	Desc       string
+	Desc       string `mt:"unique:name"`
 	NetContent string
-	Code       uint
+	Code       uint `mt:"unique:code"`
 	Price      int64
 	TenantID   uint `gorm:"index;" mt:"tenant" json:"-"`
 	gorm.Model
@@ -50,7 +50,7 @@ var Dec = safe_json.From
 
 func TestCreate(t *testing.T) {
 	var product = Product{
-		Name:  "Beff1Ton",
+		Name:  "Beef1Ton",
 		Desc:  "one ton of beef",
 		Code:  114514,
 		Price: 177013,
