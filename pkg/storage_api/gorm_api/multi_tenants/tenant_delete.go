@@ -9,6 +9,9 @@ import (
 var ErrDeleteTenantAllNotAllowed = errors.New("delete tenant all rows or global update is not allowed")
 
 func (cfg *Config) BeforeDelete(tx *gorm.DB) {
+	if tx.Error != nil {
+		return
+	}
 	if (!cfg.DeleteAllowTenantAll || !tx.AllowGlobalUpdate) &&
 		clause_checker.NoWhereClause(tx) {
 		_ = tx.AddError(ErrDeleteTenantAllNotAllowed)

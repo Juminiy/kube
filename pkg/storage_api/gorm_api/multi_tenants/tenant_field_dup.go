@@ -18,20 +18,55 @@ type Field struct {
 	Values  []any
 }
 
-type FieldDup struct {
-	*Tenant
-	DBTable string
-	Keys    []string
-	Groups  map[string][]Field // key = Keys[i], Groups[key] -> FieldGroup
+func FromSchema(field *gormschema.Field) Field {
+	return Field{
+		Name:    field.Name,
+		DBTable: field.Schema.Table,
+		DBName:  field.DBName,
+	}
 }
 
+func DeletedAt(schema *gormschema.Schema) *Field {
+	deletedAt := schema.LookUpField("DeletedAt")
+	if deletedAt == nil {
+		deletedAt = schema.LookUpField("deleted_at")
+		if deletedAt == nil {
+			return nil
+		}
+	}
+	return util.New(FromSchema(deletedAt))
+}
+
+func (f Field) WithValue(v ...any) Field {
+	if len(v) > 2 {
+		f.Values = v
+	} else if len(v) == 1 {
+		f.Value = v[0]
+	}
+	return f
+}
+
+type FieldDup struct {
+	*Tenant
+	DeletedAt *Field
+	DBTable   string
+	Keys      []string
+	Groups    map[string][]Field // key = Keys[i], Groups[key] -> FieldGroup
+}
+
+// FieldDupInfo
+// Create(&Struct), Create(&[]Struct), Create(&[N]Struct)
+// Create(&map[string]any{}), Create(&[]map[string]any{})
+// Create map[string]any ~ Map[K]V, K(string) is FieldName, V(any) is FieldValue
+// Updates(&Struct)
+// Updates(&map[string]any{})
+// Updates map[string]any ~ Map[K]V, K(string) is ColumnName, V(any) is FieldValue
 func (cfg *Config) FieldDupInfo(tx *gorm.DB) *FieldDup {
 	schema := tx.Statement.Schema
 	if schema == nil {
 		return nil
 	}
 
-	_ = _Ind(tx.Statement.ReflectValue).Values()
 	keys := make([]string, 0, len(schema.Fields)/4)
 	groups := make(map[string][]Field, cap(keys))
 	slices.All(schema.Fields)(
@@ -41,24 +76,47 @@ func (cfg *Config) FieldDupInfo(tx *gorm.DB) *FieldDup {
 					if lo.IndexOf(keys, key) == -1 {
 						keys = append(keys, key)
 					}
-					groups[key] = append(groups[key], Field{
-						Name:    field.Name,
-						DBTable: schema.Table,
-						DBName:  field.DBName,
-						Value:   nil,
-						Values:  nil,
-					})
+					groups[key] = append(groups[key], FromSchema(field))
 				}
 			}
 			return true
 		})
 
 	return &FieldDup{
-		Tenant:  cfg.TenantInfo(tx),
-		DBTable: schema.Table,
-		Keys:    keys,
-		Groups:  groups,
+		Tenant:    cfg.TenantInfo(tx),
+		DeletedAt: DeletedAt(schema),
+		DBTable:   schema.Table,
+		Keys:      keys,
+		Groups:    groups,
 	}
+}
+
+func (cfg *Config) FieldDupCheck(tx *gorm.DB, forUpdate bool) {
+	dupInfo := cfg.FieldDupInfo(tx)
+	if dupInfo == nil {
+		return
+	}
+	if forUpdate {
+		dupInfo.Update(tx) // update map, struct
+		return
+	}
+	dupInfo.Create(tx) // create
+}
+
+func (d *FieldDup) Create(tx *gorm.DB) {
+
+}
+
+func (d *FieldDup) Update(tx *gorm.DB) {
+
+}
+
+func (d *FieldDup) simple(tx *gorm.DB) {
+
+}
+
+func (d *FieldDup) complex(tx *gorm.DB) {
+
 }
 
 type FieldDupError interface {

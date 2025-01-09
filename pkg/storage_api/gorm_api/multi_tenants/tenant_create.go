@@ -5,6 +5,9 @@ import (
 )
 
 func (cfg *Config) BeforeCreate(tx *gorm.DB) {
+	if tx.Error != nil {
+		return
+	}
 	tInfo := cfg.TenantInfo(tx)
 	if tInfo == nil {
 		return

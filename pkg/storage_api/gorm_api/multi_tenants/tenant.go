@@ -17,7 +17,7 @@ type Config struct {
 	TxTenantKey              string
 	TxSkipKey                string
 	DisableFieldDup          bool
-	CreateWriteBackPrimary   bool
+	ComplexFieldDup          bool
 	DeleteAllowTenantAll     bool // only tenant, no other where clause
 	DeleteBeforeQuery        bool
 	UpdateAllowTenantAll     bool // only tenant, no other where clause
@@ -173,11 +173,6 @@ func (cfg *Config) tenantInfo(tx *gorm.DB) *Tenant {
 	}
 
 	return &Tenant{
-		Field{
-			Name:    tidField.Name,
-			DBTable: schema.Table,
-			DBName:  tidField.DBName,
-			Value:   tid,
-		},
+		Field: FromSchema(tidField).WithValue(tid),
 	}
 }

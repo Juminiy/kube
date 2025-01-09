@@ -9,6 +9,9 @@ import (
 var ErrUpdateTenantAllNotAllowed = errors.New("update tenant all rows or global update is not allowed")
 
 func (cfg *Config) BeforeUpdate(tx *gorm.DB) {
+	if tx.Error != nil {
+		return
+	}
 	if (!cfg.UpdateAllowTenantAll || !tx.AllowGlobalUpdate) &&
 		clause_checker.NoWhereClause(tx) {
 		_ = tx.AddError(ErrUpdateTenantAllNotAllowed)
