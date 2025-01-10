@@ -55,10 +55,50 @@ var Dec = safe_json.From
 func TestCreate(t *testing.T) {
 	var product = Product{
 		Name:  "Beef1Ton",
-		Desc:  "one ton of beef",
-		Code:  114514,
+		Desc:  "one ton of beef", // group["name"] is valid
+		Code:  114514,            // group["code"] is valid
 		Price: 177013,
 	}
+	/*
+		SELECT COUNT(0)
+		FROM tbl_product
+		WHERE 1=1
+		AND (1!=1 OR `name`='Beef1Ton' OR `desc`='one ton of beef')
+		AND (1!=1 OR `code`=114514)
+	*/
+	err := _tx.Create(&product).Error
+	util.Must(err)
+}
+
+func TestCreate2(t *testing.T) {
+	var product = Product{
+		Name:       "Beef1Ton",
+		Desc:       "", // Zero group["name"] is invalid, ignore
+		NetContent: "1000kg",
+		Code:       114514, // group["code"] is valid
+		Price:      177013,
+	}
+	/*
+		SELECT COUNT(0)
+		FROM tbl_product
+		WHERE 1=1
+		AND (1!=1 OR `code`=114514)
+	*/
+	err := _tx.Create(&product).Error
+	util.Must(err)
+}
+
+func TestCreate3(t *testing.T) {
+	var product = Product{
+		Name:       "Beef1Ton",
+		Desc:       "", // Zero group["name"] is invalid, ignore
+		NetContent: "1000kg",
+		Code:       0, // Zero group["code"] is invalid, ignore
+		Price:      177013,
+	}
+	/*
+		No COUNT SQL
+	*/
 	err := _tx.Create(&product).Error
 	util.Must(err)
 }

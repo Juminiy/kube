@@ -173,6 +173,6 @@ func (cfg *Config) tenantInfo(tx *gorm.DB) *Tenant {
 	}
 
 	return &Tenant{
-		Field: FromSchema(tidField).WithValue(tid),
+		Field: FieldFromSchema(tidField).WithValue(tid),
 	}
 }

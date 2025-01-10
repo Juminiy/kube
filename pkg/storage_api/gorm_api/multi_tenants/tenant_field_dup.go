@@ -4,9 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Juminiy/kube/pkg/util"
-	"github.com/samber/lo"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	gormschema "gorm.io/gorm/schema"
+	"maps"
+	"reflect"
 	"slices"
 )
 
@@ -18,23 +20,12 @@ type Field struct {
 	Values  []any
 }
 
-func FromSchema(field *gormschema.Field) Field {
+func FieldFromSchema(field *gormschema.Field) Field {
 	return Field{
 		Name:    field.Name,
 		DBTable: field.Schema.Table,
 		DBName:  field.DBName,
 	}
-}
-
-func DeletedAt(schema *gormschema.Schema) *Field {
-	deletedAt := schema.LookUpField("DeletedAt")
-	if deletedAt == nil {
-		deletedAt = schema.LookUpField("deleted_at")
-		if deletedAt == nil {
-			return nil
-		}
-	}
-	return util.New(FromSchema(deletedAt))
 }
 
 func (f Field) WithValue(v ...any) Field {
@@ -46,12 +37,23 @@ func (f Field) WithValue(v ...any) Field {
 	return f
 }
 
+func (f Field) ClauseEq() clause.Eq {
+	return clause.Eq{
+		Column: clause.Column{
+			Table: f.DBTable,
+			Name:  f.DBName,
+		},
+		Value: f.Value,
+	}
+}
+
 type FieldDup struct {
 	*Tenant
-	DeletedAt *Field
-	DBTable   string
-	Keys      []string
-	Groups    map[string][]Field // key = Keys[i], Groups[key] -> FieldGroup
+	DeletedAt   *Field
+	DBTable     string
+	ColumnField map[string]string
+	FieldValue  map[string]any
+	Groups      map[string][]string // Groups[key] -> FieldGroup
 }
 
 // FieldDupInfo
@@ -67,26 +69,28 @@ func (cfg *Config) FieldDupInfo(tx *gorm.DB) *FieldDup {
 		return nil
 	}
 
-	keys := make([]string, 0, len(schema.Fields)/4)
-	groups := make(map[string][]Field, cap(keys))
+	names := make([]string, 0, len(schema.Fields)/4)
+	dbNames := make([]string, 0, cap(names))
+	groups := make(map[string][]string, cap(names))
 	slices.All(schema.Fields)(
 		func(_ int, field *gormschema.Field) bool {
 			if mt, ok := field.Tag.Lookup(cfg.TagKey); ok {
 				if key, ok := util.MapElemOk(_Tag(mt), cfg.TagUniqueKey); ok {
-					if lo.IndexOf(keys, key) == -1 {
-						keys = append(keys, key)
-					}
-					groups[key] = append(groups[key], FromSchema(field))
+					names = append(names, field.Name)
+					dbNames = append(dbNames, field.DBName)
+					groups[key] = append(groups[key], field.Name)
 				}
 			}
 			return true
 		})
+	if len(groups) == 0 {
+		return nil
+	}
 
 	return &FieldDup{
 		Tenant:    cfg.TenantInfo(tx),
 		DeletedAt: DeletedAt(schema),
 		DBTable:   schema.Table,
-		Keys:      keys,
 		Groups:    groups,
 	}
 }
@@ -104,19 +108,55 @@ func (cfg *Config) FieldDupCheck(tx *gorm.DB, forUpdate bool) {
 }
 
 func (d *FieldDup) Create(tx *gorm.DB) {
+	rval := _Ind(tx.Statement.ReflectValue)
+	switch rval.Type.Kind() {
+	case reflect.Struct:
+		rval.StructValues()
+		d.simple(tx)
 
+	case reflect.Map:
+		rval.MapValues()
+		d.simple(tx)
+
+	case reflect.Slice, reflect.Array:
+		d.complex(tx)
+
+	default: // ignore case
+	}
 }
 
 func (d *FieldDup) Update(tx *gorm.DB) {
-
+	rval := _Ind(tx.Statement.ReflectValue)
+	rval.MapValues()
+	d.simple(tx)
 }
 
 func (d *FieldDup) simple(tx *gorm.DB) {
+	if len(d.Groups) == 0 {
+		return
+	}
+	ntx := tx.Session(&gorm.Session{NewDB: true, SkipHooks: true}).
+		Table(d.DBTable)
 
+	if d.Tenant != nil {
+		ntx.Where(d.Tenant)
+	}
+
+	if d.DeletedAt != nil {
+		// maybe not required,
+		// check SkipHooks whether effect on soft_delete
+	}
+
+	maps.All(d.Groups)(func(key string, names []string) bool {
+
+		return true
+	})
 }
 
 func (d *FieldDup) complex(tx *gorm.DB) {
-
+	if len(d.Groups) == 0 {
+		return
+	}
 }
 
 type FieldDupError interface {
