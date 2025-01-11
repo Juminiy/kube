@@ -21,5 +21,7 @@ func (cfg *Config) BeforeDelete(tx *gorm.DB) {
 }
 
 func (cfg *Config) AfterDelete(tx *gorm.DB) {
-
+	if tx.Error != nil {
+		return
+	}
 }

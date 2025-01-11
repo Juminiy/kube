@@ -121,6 +121,10 @@ func _Ind(rv reflect.Value) safe_reflectv3.Tv {
 	return safe_reflectv3.WrapI(rv)
 }
 
+func _IndI(i any) safe_reflectv3.Tv {
+	return safe_reflectv3.Indirect(i)
+}
+
 func _Tag(s string) safe_reflectv3.Tag {
 	return safe_reflectv3.ParseTagValue(s)
 }

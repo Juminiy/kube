@@ -12,11 +12,18 @@ func (cfg *Config) BeforeUpdate(tx *gorm.DB) {
 	if tx.Error != nil {
 		return
 	}
+
 	if (!cfg.UpdateAllowTenantAll || !tx.AllowGlobalUpdate) &&
 		clause_checker.NoWhereClause(tx) {
 		_ = tx.AddError(ErrUpdateTenantAllNotAllowed)
 		return
 	}
+
+	cfg.FieldDupCheck(tx, true)
+	if tx.Error != nil {
+		return
+	}
+
 	cfg.tenantWhereClause(tx)
 }
 

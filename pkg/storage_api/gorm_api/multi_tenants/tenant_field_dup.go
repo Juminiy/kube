@@ -1,13 +1,13 @@
 package multi_tenants
 
 import (
-	"errors"
 	"fmt"
+	"github.com/Juminiy/kube/pkg/storage_api/gorm_api/clause_checker"
 	"github.com/Juminiy/kube/pkg/util"
+	"github.com/samber/lo"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	gormschema "gorm.io/gorm/schema"
-	"maps"
 	"reflect"
 	"slices"
 )
@@ -48,11 +48,13 @@ func (f Field) ClauseEq() clause.Eq {
 }
 
 type FieldDup struct {
-	*Tenant
+	Tenant      *Tenant
 	DeletedAt   *Field
 	DBTable     string
-	ColumnField map[string]string
+	FieldColumn map[string]string
 	FieldValue  map[string]any
+	ColumnField map[string]string
+	ColumnValue map[string]any
 	Groups      map[string][]string // Groups[key] -> FieldGroup
 }
 
@@ -69,15 +71,13 @@ func (cfg *Config) FieldDupInfo(tx *gorm.DB) *FieldDup {
 		return nil
 	}
 
-	names := make([]string, 0, len(schema.Fields)/4)
-	dbNames := make([]string, 0, cap(names))
-	groups := make(map[string][]string, cap(names))
+	columnField := make(map[string]string, len(schema.DBNames)/4)
+	groups := make(map[string][]string, len(schema.DBNames)/4)
 	slices.All(schema.Fields)(
 		func(_ int, field *gormschema.Field) bool {
 			if mt, ok := field.Tag.Lookup(cfg.TagKey); ok {
 				if key, ok := util.MapElemOk(_Tag(mt), cfg.TagUniqueKey); ok {
-					names = append(names, field.Name)
-					dbNames = append(dbNames, field.DBName)
+					columnField[field.DBName] = field.Name
 					groups[key] = append(groups[key], field.Name)
 				}
 			}
@@ -88,10 +88,12 @@ func (cfg *Config) FieldDupInfo(tx *gorm.DB) *FieldDup {
 	}
 
 	return &FieldDup{
-		Tenant:    cfg.TenantInfo(tx),
-		DeletedAt: DeletedAt(schema),
-		DBTable:   schema.Table,
-		Groups:    groups,
+		Tenant:      cfg.TenantInfo(tx),
+		DeletedAt:   DeletedAt(schema),
+		DBTable:     schema.Table,
+		FieldColumn: util.MapVK(columnField),
+		ColumnField: columnField,
+		Groups:      groups,
 	}
 }
 
@@ -111,11 +113,11 @@ func (d *FieldDup) Create(tx *gorm.DB) {
 	rval := _Ind(tx.Statement.ReflectValue)
 	switch rval.Type.Kind() {
 	case reflect.Struct:
-		rval.StructValues()
+		d.FieldValue = rval.StructValues()
 		d.simple(tx)
 
 	case reflect.Map:
-		rval.MapValues()
+		d.FieldValue = rval.MapValues()
 		d.simple(tx)
 
 	case reflect.Slice, reflect.Array:
@@ -126,8 +128,17 @@ func (d *FieldDup) Create(tx *gorm.DB) {
 }
 
 func (d *FieldDup) Update(tx *gorm.DB) {
-	rval := _Ind(tx.Statement.ReflectValue)
-	rval.MapValues()
+	dest := tx.Statement.Dest
+	switch columnValue := dest.(type) {
+	case map[string]any:
+		d.ColumnValue = columnValue
+
+	case *map[string]any:
+		d.ColumnValue = *columnValue
+
+	default:
+		d.ColumnValue = _IndI(dest).MapValues()
+	}
 	d.simple(tx)
 }
 
@@ -135,22 +146,88 @@ func (d *FieldDup) simple(tx *gorm.DB) {
 	if len(d.Groups) == 0 {
 		return
 	}
+	if len(d.FieldValue) == 0 {
+		d.FieldValue = lo.MapKeys(d.ColumnValue, func(_ any, column string) string {
+			return d.ColumnField[column]
+		})
+	} else if len(d.ColumnValue) == 0 {
+		d.ColumnValue = lo.MapKeys(d.FieldValue, func(_ any, name string) string {
+			return d.FieldColumn[name]
+		})
+	} else {
+		return
+	}
+
+	// where clause 1. values
+	var orExpr clause.Expression = clause_checker.FalseExpr()
+	var noExpr = true
+	slices.All(lo.MapToSlice(d.Groups, func(_ string, names []string) clause.Expression {
+		var andExpr clause.Expression = clause_checker.TrueExpr()
+		slices.All(names)(func(_ int, name string) bool {
+			fieldValue, ok := d.FieldValue[name]
+			if !ok || _IndI(fieldValue).Value.IsZero() {
+				andExpr = nil
+				return false
+			}
+			andExpr = clause.And(andExpr, clause.Eq{
+				Column: d.FieldColumn[name],
+				Value:  fieldValue,
+			})
+			return true
+		})
+		return andExpr
+	}))(func(_ int, expression clause.Expression) bool {
+		if expression == nil {
+			return true
+		}
+		noExpr = false
+		orExpr = clause.Or(orExpr, expression)
+		return true
+	})
+	if noExpr {
+		return
+	}
+
 	ntx := tx.Session(&gorm.Session{NewDB: true, SkipHooks: true}).
 		Table(d.DBTable)
 
+	ntx = _SkipWriteBeforeCount.Set(ntx).
+		Where(orExpr)
+
+	// where clause 2. tenant
 	if d.Tenant != nil {
-		ntx.Where(d.Tenant)
+		ntx.Where(d.Tenant.ClauseEq())
 	}
 
+	// where clause 3. soft_delete
 	if d.DeletedAt != nil {
 		// maybe not required,
 		// check SkipHooks whether effect on soft_delete
 	}
 
-	maps.All(d.Groups)(func(key string, names []string) bool {
+	// where clause 4. tx.Clause
+	if txClause, ok := clause_checker.WhereClause(tx); ok {
+		ntx.Where(clause.Not(txClause))
+	}
 
-		return true
-	})
+	// do Count
+	var cnt int64
+	err := ntx.Count(&cnt).Error
+	if err != nil {
+		tx.Logger.Error(tx.Statement.Context, "before write, do field duplicated check, error: %s", err.Error())
+		return
+	}
+	if cnt > 0 {
+		fdErr := fieldDupErr{
+			dbTable: d.DBTable,
+			dbName:  util.MapKeys(d.ColumnField),
+		}
+		if d.Tenant != nil {
+			fdErr.tenantDBName = d.Tenant.DBName
+			fdErr.tenantValue = d.Tenant.Value
+		}
+		_ = tx.AddError(fdErr)
+	}
 }
 
 func (d *FieldDup) complex(tx *gorm.DB) {
@@ -168,8 +245,10 @@ type FieldDupError interface {
 }
 
 func IsFieldDupError(err error) bool {
-	return errors.Is(err, fieldDupErr{})
+	return _IndI(err).Type == _fieldDupErrRType
 }
+
+var _fieldDupErrRType = _IndI(fieldDupErr{}).Type
 
 type fieldDupErr struct {
 	dbTable      string

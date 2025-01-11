@@ -27,10 +27,12 @@ func (v Value) SetI(i any) {
 	if !indirv.CanSet() {
 		return
 	}
-	if i == nil {
-		indirv.SetZero()
-	}
 	iv := Direct(i)
+	if iv.Value == _ZeroValue ||
+		iv.IsZero() {
+		indirv.SetZero()
+		return
+	}
 	if indirv.isEFace() || // var i0 any
 		indirv.Type() == iv.Type() { // var i0, i T
 		indirv.Set(iv.Value)
@@ -43,10 +45,12 @@ func (v Value) SetILike(i any) {
 	if !indirv.CanSet() {
 		return
 	}
-	if i == nil {
-		indirv.SetZero()
-	}
 	directi := Direct(i)
+	if directi.Value == _ZeroValue ||
+		directi.IsZero() {
+		indirv.SetZero()
+		return
+	}
 	if indirv.isEFace() || // var i0 any
 		indirv.Type() == directi.Type() { // var i0, i T
 		indirv.Set(directi.Value)

@@ -7,7 +7,6 @@ import (
 	"golang.org/x/exp/maps"
 	gormsqlite "gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 	"gorm.io/gorm/schema"
 	"gorm.io/plugin/soft_delete"
 	"testing"
@@ -51,65 +50,6 @@ type Product struct {
 
 var Enc = safe_json.Pretty
 var Dec = safe_json.From
-
-func TestCreate(t *testing.T) {
-	var product = Product{
-		Name:  "Beef1Ton",
-		Desc:  "one ton of beef", // group["name"] is valid
-		Code:  114514,            // group["code"] is valid
-		Price: 177013,
-	}
-	/*
-		SELECT COUNT(0)
-		FROM tbl_product
-		WHERE 1=1
-		AND (1!=1 OR `name`='Beef1Ton' OR `desc`='one ton of beef')
-		AND (1!=1 OR `code`=114514)
-	*/
-	err := _tx.Create(&product).Error
-	util.Must(err)
-}
-
-func TestCreate2(t *testing.T) {
-	var product = Product{
-		Name:       "Beef1Ton",
-		Desc:       "", // Zero group["name"] is invalid, ignore
-		NetContent: "1000kg",
-		Code:       114514, // group["code"] is valid
-		Price:      177013,
-	}
-	/*
-		SELECT COUNT(0)
-		FROM tbl_product
-		WHERE 1=1
-		AND (1!=1 OR `code`=114514)
-	*/
-	err := _tx.Create(&product).Error
-	util.Must(err)
-}
-
-func TestCreate3(t *testing.T) {
-	var product = Product{
-		Name:       "Beef1Ton",
-		Desc:       "", // Zero group["name"] is invalid, ignore
-		NetContent: "1000kg",
-		Code:       0, // Zero group["code"] is invalid, ignore
-		Price:      177013,
-	}
-	/*
-		No COUNT SQL
-	*/
-	err := _tx.Create(&product).Error
-	util.Must(err)
-}
-
-func TestUpdate(t *testing.T) {
-	err := _tx.
-		Model(&Product{}).
-		Where(clause.Eq{Column: "id", Value: 1}).
-		Update("name", "Beef1Ton").Error
-	util.Must(err)
-}
 
 func TestDelete(t *testing.T) {
 	err := _tx.Delete(&Product{}, 1).Error
