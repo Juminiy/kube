@@ -6,7 +6,7 @@ import (
 )
 
 func TestTenantsDeleteOne(t *testing.T) {
-	util.Must(_txTenant.Delete(&Product{}, 16).Error)
+	util.Must(_txTenant.Delete(&Product{}, 1).Error)
 }
 
 func TestTenantsDeleteList(t *testing.T) {

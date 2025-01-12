@@ -5,6 +5,7 @@ import (
 	gormschema "gorm.io/gorm/schema"
 )
 
+// Deprecated: use clause.Interface instead
 func DeletedAt(schema *gormschema.Schema) *Field { // maybe not required
 	deletedAt := schema.LookUpField("DeletedAt")
 	if deletedAt == nil {

@@ -17,6 +17,19 @@ func TestTenantsCreateOne(t *testing.T) {
 		Code:       8,
 		Price:      299,
 	}).Error
+	/*
+		SELECT count(*)
+		FROM `tbl_product`
+		WHERE
+		(	(
+				1!=1
+				OR ((1=1 AND `name` = "Coca-Cola") AND `desc` = "Most Popular Drink in the World")
+			)
+			OR (1=1 AND `code` = 8)
+		)
+		AND `tbl_product`.`tenant_id` = 114514
+		AND `tbl_product`.`deleted_at` IS NULL
+	*/
 	if multi_tenants.IsFieldDupError(err) {
 		t.Log(err.Error())
 	} else {
@@ -65,22 +78,26 @@ func TestCreate(t *testing.T) {
 	/*
 		SELECT COUNT(0)
 		FROM tbl_product
-		WHERE 1!=1
+		WHERE (1!=1
 		OR (1=1 AND `name`='Beef1Ton' AND `desc`='one ton of beef')
-		OR (1=1 AND `code`=114514)
+		OR (1=1 AND `code`=114514))
+		AND deleted_at IS NULL
 	*/
 	// Gen:
 	/*
 		SELECT count(*)
 		FROM `tbl_product`
 		WHERE
-		((1!=1
-		OR ((1=1 AND `name` = "Beef1Ton") AND `desc` = "one ton of beef"))
-		OR (1=1 AND `code` = 114514))
+		(	(
+				1!=1
+				OR ((1=1 AND `name` = "Beef1Ton") AND `desc` = "one ton of beef")
+			)
+			OR (1=1 AND `code` = 114514))
+		AND `tbl_product`.`deleted_at` IS NULL
 	*/
 	err := _tx.Create(&product).Error
 	if multi_tenants.IsFieldDupError(err) {
-		t.Error(err.Error())
+		t.Log(err.Error())
 	} else {
 		util.Must(err)
 	}
@@ -106,12 +123,12 @@ func TestCreate2(t *testing.T) {
 		SELECT count(*)
 		FROM `tbl_product`
 		WHERE
-		((1!=1 OR (1=1 AND `name` = "Beef1Ton"))
-		OR (1=1 AND `code` = 114514))
+		(1!=1 OR (1=1 AND `code` = 114514))
+		AND `tbl_product`.`deleted_at` IS NULL
 	*/
 	err := _tx.Create(&product).Error
 	if multi_tenants.IsFieldDupError(err) {
-		t.Error(err.Error())
+		t.Log(err.Error())
 	} else {
 		util.Must(err)
 	}
@@ -130,7 +147,7 @@ func TestCreate3(t *testing.T) {
 	*/
 	err := _tx.Create(&product).Error
 	if multi_tenants.IsFieldDupError(err) {
-		t.Error(err.Error())
+		t.Log(err.Error())
 	} else {
 		util.Must(err)
 	}

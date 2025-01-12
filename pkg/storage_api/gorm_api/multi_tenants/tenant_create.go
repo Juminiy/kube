@@ -29,11 +29,13 @@ func (cfg *Config) AfterCreate(tx *gorm.DB) {
 		return
 	}
 
-	tInfo := cfg.TenantInfo(tx)
-	if tInfo == nil {
-		return
+	if !cfg.AfterCallbackNoHideTenant {
+		tInfo := cfg.TenantInfo(tx)
+		if tInfo == nil {
+			return
+		}
+		_Ind(tx.Statement.ReflectValue).SetField(map[string]any{
+			tInfo.Name: nil,
+		})
 	}
-	_Ind(tx.Statement.ReflectValue).SetField(map[string]any{
-		tInfo.Name: nil,
-	})
 }

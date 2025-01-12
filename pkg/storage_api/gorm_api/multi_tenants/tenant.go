@@ -10,19 +10,20 @@ import (
 )
 
 type Config struct {
-	PluginName               string
-	TagKey                   string
-	TagTenantKey             string
-	TagUniqueKey             string
-	TxTenantKey              string
-	TxSkipKey                string
-	DisableFieldDup          bool
-	ComplexFieldDup          bool
-	DeleteAllowTenantAll     bool // only tenant, no other where clause
-	DeleteBeforeQuery        bool
-	UpdateAllowTenantAll     bool // only tenant, no other where clause
-	UpdateOmitMapZeroElemKey bool
-	AfterCallbackHideTenant  bool
+	PluginName                string
+	TagKey                    string
+	TagTenantKey              string
+	TagUniqueKey              string
+	TxTenantKey               string
+	TxSkipKey                 string
+	DisableFieldDup           bool // effect on create, update
+	ComplexFieldDup           bool // effect on create
+	DeleteAllowTenantAll      bool // effect on delete, only tenant, no other where clause
+	DeleteBeforeQuery         bool // effect on delete
+	UpdateAllowTenantAll      bool // effect on update, only tenant, no other where clause
+	UpdateOmitMapZeroElemKey  bool // effect on update,
+	AfterCallbackNoHideTenant bool // effect on query and create
+	AllowWrapRawOrRowByClause bool // effect on raw and row
 }
 
 func (cfg *Config) Name() string {

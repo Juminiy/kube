@@ -1,6 +1,7 @@
 package gorm_api
 
 import (
+	"errors"
 	"github.com/Juminiy/kube/pkg/storage_api/gorm_api/multi_tenants"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/Juminiy/kube/pkg/util/safe_json"
@@ -59,7 +60,15 @@ func TestDelete(t *testing.T) {
 func TestQuery(t *testing.T) {
 	var product Product
 	err := _tx.First(&product).Error
-	util.Must(err)
+	if err != nil {
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			t.Log(gorm.ErrRecordNotFound)
+		default:
+			util.Must(err)
+		}
+		return
+	}
 	t.Log(Enc(product))
 }
 

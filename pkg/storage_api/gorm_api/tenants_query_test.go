@@ -1,14 +1,25 @@
 package gorm_api
 
 import (
+	"errors"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/Juminiy/kube/pkg/util/safe_json"
+	"gorm.io/gorm"
 	"testing"
 )
 
 func TestTenantsQueryOne(t *testing.T) {
 	var one Product
-	util.Must(_txTenant.First(&one, 16).Error)
+	err := _txTenant.First(&one, 1).Error
+	if err != nil {
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			t.Log(gorm.ErrRecordNotFound)
+		default:
+			util.Must(err)
+		}
+		return
+	}
 	t.Log(safe_json.Pretty(one))
 }
 

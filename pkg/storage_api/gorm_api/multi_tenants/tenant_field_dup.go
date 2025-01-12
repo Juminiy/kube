@@ -49,7 +49,7 @@ func (f Field) ClauseEq() clause.Eq {
 
 type FieldDup struct {
 	Tenant      *Tenant
-	DeletedAt   *Field
+	Clauses     []clause.Interface
 	DBTable     string
 	FieldColumn map[string]string
 	FieldValue  map[string]any
@@ -89,7 +89,7 @@ func (cfg *Config) FieldDupInfo(tx *gorm.DB) *FieldDup {
 
 	return &FieldDup{
 		Tenant:      cfg.TenantInfo(tx),
-		DeletedAt:   DeletedAt(schema),
+		Clauses:     schema.QueryClauses,
 		DBTable:     schema.Table,
 		FieldColumn: util.MapVK(columnField),
 		ColumnField: columnField,
@@ -199,11 +199,11 @@ func (d *FieldDup) simple(tx *gorm.DB) {
 		ntx.Where(d.Tenant.ClauseEq())
 	}
 
-	// where clause 3. soft_delete
-	if d.DeletedAt != nil {
-		// maybe not required,
-		// check SkipHooks whether effect on soft_delete
-	}
+	// where clause 3. soft_delete or other clauses
+	slices.All(d.Clauses)(func(_ int, c clause.Interface) bool {
+		ntx.Statement.AddClause(c)
+		return true
+	})
 
 	// where clause 4. tx.Clause
 	if txClause, ok := clause_checker.WhereClause(tx); ok {

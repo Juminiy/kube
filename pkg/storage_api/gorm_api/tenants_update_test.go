@@ -9,8 +9,8 @@ import (
 
 func TestTenantsUpdateOne(t *testing.T) {
 	util.Must(_txTenant.Model(&Product{}).
-		Where(clause.Eq{Column: "id", Value: 16}).
-		Update("name", "Coca-Cola").Error)
+		Where(clause.Eq{Column: "id", Value: 2}).
+		Update("code", "114514").Error)
 }
 
 func TestTenantsUpdateList(t *testing.T) {
@@ -21,7 +21,7 @@ func TestTenantsUpdateList(t *testing.T) {
 func TestUpdate(t *testing.T) {
 	err := _tx.
 		Model(&Product{}).
-		Where(clause.Eq{Column: "id", Value: 24}).
+		Where(clause.Eq{Column: "id", Value: 1}).
 		Update("code", 114514).Error
 	util.Must(err)
 }
