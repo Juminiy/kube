@@ -1,6 +1,7 @@
 package multi_tenants
 
 import (
+	"github.com/Juminiy/kube/pkg/storage_api/gorm_api/plugin_register"
 	"github.com/Juminiy/kube/pkg/util"
 	safe_reflectv3 "github.com/Juminiy/kube/pkg/util/safe_reflect/v3"
 	"github.com/samber/lo"
@@ -10,20 +11,20 @@ import (
 )
 
 type Config struct {
-	PluginName                string
-	TagKey                    string
-	TagTenantKey              string
-	TagUniqueKey              string
-	TxTenantKey               string
-	TxSkipKey                 string
-	DisableFieldDup           bool // effect on create, update
-	ComplexFieldDup           bool // effect on create
-	DeleteAllowTenantAll      bool // effect on delete, only tenant, no other where clause
-	DeleteBeforeQuery         bool // effect on delete
-	UpdateAllowTenantAll      bool // effect on update, only tenant, no other where clause
-	UpdateOmitMapZeroElemKey  bool // effect on update,
-	AfterCallbackNoHideTenant bool // effect on query and create
-	AllowWrapRawOrRowByClause bool // effect on raw and row
+	PluginName               string
+	TagKey                   string
+	TagTenantKey             string
+	TagUniqueKey             string
+	TxTenantKey              string
+	TxSkipKey                string
+	DisableFieldDup          bool // effect on create and update
+	ComplexFieldDup          bool // effect on create
+	DeleteAllowTenantAll     bool // effect on delete, only tenant, no other where clause
+	QueryBeforeDelete        bool // effect on delete
+	UpdateAllowTenantAll     bool // effect on update, only tenant, no other where clause
+	UpdateOmitMapZeroElemKey bool // effect on update
+	AfterCreateNoHideTenant  bool // effect on create
+	AfterQueryShowTenant     bool // effect on query
 }
 
 func (cfg *Config) Name() string {
@@ -32,7 +33,7 @@ func (cfg *Config) Name() string {
 
 func (cfg *Config) Initialize(tx *gorm.DB) error {
 	if len(cfg.PluginName) == 0 {
-		cfg.PluginName = "multi_tenants"
+		return plugin_register.NoPluginName
 	}
 	if len(cfg.TagKey) == 0 {
 		cfg.TagKey = "mt"
@@ -50,72 +51,37 @@ func (cfg *Config) Initialize(tx *gorm.DB) error {
 		cfg.TxSkipKey = "skip_tenant"
 	}
 
-	return errChecker(
+	return plugin_register.OneError(
 		tx.Callback().Create().Before("gorm:create").
-			Register(cfg.callbackName(true, 'C'), cfg.BeforeCreate),
+			Register(plugin_register.CallbackName(cfg.PluginName, true, 'C'), cfg.BeforeCreate),
 		tx.Callback().Create().After("gorm:after_create").
-			Register(cfg.callbackName(false, 'C'), cfg.AfterCreate),
+			Register(plugin_register.CallbackName(cfg.PluginName, false, 'C'), cfg.AfterCreate),
 
 		tx.Callback().Query().Before("gorm:query").
-			Register(cfg.callbackName(true, 'Q'), cfg.BeforeQuery),
+			Register(plugin_register.CallbackName(cfg.PluginName, true, 'Q'), cfg.BeforeQuery),
 		tx.Callback().Query().After("gorm:after_query").
-			Register(cfg.callbackName(false, 'Q'), cfg.AfterQuery),
+			Register(plugin_register.CallbackName(cfg.PluginName, false, 'Q'), cfg.AfterQuery),
 
 		tx.Callback().Update().Before("gorm:before_update").
-			Register(cfg.callbackName(true, 'U'), cfg.BeforeUpdate),
+			Register(plugin_register.CallbackName(cfg.PluginName, true, 'U'), cfg.BeforeUpdate),
 		tx.Callback().Update().After("gorm:after_update").
-			Register(cfg.callbackName(false, 'U'), cfg.AfterUpdate),
+			Register(plugin_register.CallbackName(cfg.PluginName, false, 'U'), cfg.AfterUpdate),
 
 		tx.Callback().Delete().Before("gorm:delete").
-			Register(cfg.callbackName(true, 'D'), cfg.BeforeDelete),
+			Register(plugin_register.CallbackName(cfg.PluginName, true, 'D'), cfg.BeforeDelete),
 		tx.Callback().Delete().After("gorm:after_delete").
-			Register(cfg.callbackName(false, 'D'), cfg.AfterDelete),
+			Register(plugin_register.CallbackName(cfg.PluginName, false, 'D'), cfg.AfterDelete),
 
 		tx.Callback().Raw().Before("gorm:raw").
-			Register(cfg.callbackName(true, 'E'), cfg.BeforeRaw),
+			Register(plugin_register.CallbackName(cfg.PluginName, true, 'E'), cfg.BeforeRaw),
 		tx.Callback().Raw().After("gorm:raw").
-			Register(cfg.callbackName(false, 'E'), cfg.AfterRaw),
+			Register(plugin_register.CallbackName(cfg.PluginName, false, 'E'), cfg.AfterRaw),
 
 		tx.Callback().Row().Before("gorm:row").
-			Register(cfg.callbackName(true, 'R'), cfg.BeforeRow),
+			Register(plugin_register.CallbackName(cfg.PluginName, true, 'R'), cfg.BeforeRow),
 		tx.Callback().Row().After("gorm:row").
-			Register(cfg.callbackName(false, 'R'), cfg.AfterRow),
+			Register(plugin_register.CallbackName(cfg.PluginName, false, 'R'), cfg.AfterRow),
 	)
-}
-
-func (cfg *Config) callbackName(before bool, do byte) (name string) {
-	name += cfg.PluginName + ":"
-	if before {
-		name += "before_"
-	} else {
-		name += "after_"
-	}
-	switch do {
-	case 'C': // create
-		name += "create"
-	case 'Q': // query
-		name += "query"
-	case 'U': // update
-		name += "update"
-	case 'D': // delete
-		name += "delete"
-	case 'E': // raw
-		name += "raw"
-	case 'R': // row
-		name += "row"
-	default:
-		panic(do)
-	}
-	return
-}
-
-func errChecker(err ...error) error {
-	for _, errElem := range err {
-		if errElem != nil {
-			return errElem
-		}
-	}
-	return nil
 }
 
 func _Ind(rv reflect.Value) safe_reflectv3.Tv {

@@ -2,6 +2,7 @@ package gorm_api
 
 import (
 	"errors"
+	"github.com/Juminiy/kube/pkg/storage_api/gorm_api/clause_checker"
 	"github.com/Juminiy/kube/pkg/storage_api/gorm_api/multi_tenants"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/Juminiy/kube/pkg/util/safe_json"
@@ -33,7 +34,12 @@ func init() {
 	util.Must(tx.Default().AutoMigrate(
 		&Product{},
 		&WrapType1{}, &WrapType2{}, &WrapType3{}))
-	util.Must(tx.Use(&multi_tenants.Config{}))
+	util.Must(tx.Use(&multi_tenants.Config{
+		PluginName: "multi_tenants",
+	}))
+	util.Must(tx.Use(&clause_checker.Config{
+		PluginName: "clause_checker",
+	}))
 	tx.DB = tx.Debug()
 	_tx = tx
 	_txTenant = _tx.Set("tenant_id", uint(114514))

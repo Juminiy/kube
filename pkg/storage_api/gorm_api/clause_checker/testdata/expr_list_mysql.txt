@@ -1,0 +1,64 @@
+MySQL
+1. ConstValueExpr:
+    - 42
+    - 'Hello World!'
+    - 3.14
+    - NOW()
+2. ColumnExpr:
+    - name
+    - aid+1
+3. AlgorithmExpr:
+    - +
+    - -
+    - *
+    - /
+    - %, MOD(l_expr, r_expr)
+4. CompareExpr:
+    - =
+    - !=, <>
+    - >
+    - <
+    - >=
+    - <=
+    - BETWEEN l_expr AND r_expr
+    - IN(expr_list)
+    - IS NULL
+    - IS NOT NULL
+5. LogicalExpr
+    - l_expr AND r_expr
+    - l_expr OR r_expr
+    - NOT expr
+6. FunctionExpr
+    - StringFunction
+    - DateFunction, TimeFunction
+7. IFExpr
+    - IF(expr_list)
+8. CaseWhenExpr
+    - CASE WHEN expr_0 THEN WHEN expr_1 THEN ... ELSE AS expr_n1
+9. AggregationExpr
+    - COUNT()
+    - SUM()
+    - AVG()
+    - MIN()
+    - MAX()
+    - GROUP_CONCAT()
+10. LikeExpr
+    LIKE '5%'
+11. RegexExpr
+    REGEXP '^5'
+12. WindowFunction
+    - ROW_NUMBER()
+    - RANK()
+    - DENSE_RANK()
+    - SUM() OVER()
+13. TypeCastExpr
+    - CAST()
+    - CONVERT()
+14. BitwiseExpr
+    - &
+    - |
+    - ^
+    - ~
+    - <<
+    - >>
+    -

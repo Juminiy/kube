@@ -19,12 +19,18 @@ func (cfg *Config) BeforeUpdate(tx *gorm.DB) {
 		return
 	}
 
-	cfg.FieldDupCheck(tx, true)
-	if tx.Error != nil {
-		return
+	if !cfg.DisableFieldDup {
+		cfg.FieldDupCheck(tx, false)
+		if tx.Error != nil {
+			return
+		}
 	}
 
 	cfg.tenantWhereClause(tx)
+
+	if cfg.UpdateOmitMapZeroElemKey {
+		// TODO: update omit key of map elem is zero
+	}
 }
 
 func (cfg *Config) AfterUpdate(tx *gorm.DB) {

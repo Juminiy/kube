@@ -6,9 +6,11 @@ func (cfg *Config) BeforeQuery(tx *gorm.DB) {
 	if tx.Error != nil {
 		return
 	}
-	if _SkipWriteBeforeCount.Get(tx) {
+
+	if _SkipQueryCallbackBeforeWriteCountUnique.Get(tx) {
 		return
 	}
+
 	cfg.tenantWhereClause(tx)
 }
 
@@ -18,4 +20,4 @@ func (cfg *Config) AfterQuery(tx *gorm.DB) {
 	}
 }
 
-var _SkipWriteBeforeCount = Skip{Key: "skip_write_before_count"}
+var _SkipQueryCallbackBeforeWriteCountUnique = Skip{Key: "skip_query_callback_before_write_count_unique"}

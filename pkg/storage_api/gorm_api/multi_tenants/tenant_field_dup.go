@@ -29,7 +29,7 @@ func FieldFromSchema(field *gormschema.Field) Field {
 }
 
 func (f Field) WithValue(v ...any) Field {
-	if len(v) > 2 {
+	if len(v) >= 2 {
 		f.Values = v
 	} else if len(v) == 1 {
 		f.Value = v[0]
@@ -104,6 +104,10 @@ func (cfg *Config) FieldDupCheck(tx *gorm.DB, forUpdate bool) {
 	}
 	if forUpdate {
 		dupInfo.Update(tx) // update map, struct
+		return
+	}
+	if util.ElemIn(tx.Statement.ReflectValue.Kind(),
+		reflect.Array, reflect.Slice) && !cfg.ComplexFieldDup {
 		return
 	}
 	dupInfo.Create(tx) // create
@@ -191,7 +195,7 @@ func (d *FieldDup) simple(tx *gorm.DB) {
 	ntx := tx.Session(&gorm.Session{NewDB: true, SkipHooks: true}).
 		Table(d.DBTable)
 
-	ntx = _SkipWriteBeforeCount.Set(ntx).
+	ntx = _SkipQueryCallbackBeforeWriteCountUnique.Set(ntx).
 		Where(orExpr)
 
 	// where clause 2. tenant
@@ -199,7 +203,7 @@ func (d *FieldDup) simple(tx *gorm.DB) {
 		ntx.Where(d.Tenant.ClauseEq())
 	}
 
-	// where clause 3. soft_delete or other clauses
+	// where clause 3. soft_delete or other internal clauses
 	slices.All(d.Clauses)(func(_ int, c clause.Interface) bool {
 		ntx.Statement.AddClause(c)
 		return true

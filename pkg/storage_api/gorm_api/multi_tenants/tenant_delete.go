@@ -12,12 +12,18 @@ func (cfg *Config) BeforeDelete(tx *gorm.DB) {
 	if tx.Error != nil {
 		return
 	}
+
 	if (!cfg.DeleteAllowTenantAll || !tx.AllowGlobalUpdate) &&
 		clause_checker.NoWhereClause(tx) {
 		_ = tx.AddError(ErrDeleteTenantAllNotAllowed)
 		return
 	}
+
 	cfg.tenantWhereClause(tx)
+
+	if cfg.QueryBeforeDelete {
+		// TODO: Query by tx where scan to tx.Dest
+	}
 }
 
 func (cfg *Config) AfterDelete(tx *gorm.DB) {

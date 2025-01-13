@@ -9,9 +9,11 @@ func (cfg *Config) BeforeCreate(tx *gorm.DB) {
 		return
 	}
 
-	cfg.FieldDupCheck(tx, false)
-	if tx.Error != nil {
-		return
+	if !cfg.DisableFieldDup {
+		cfg.FieldDupCheck(tx, false)
+		if tx.Error != nil {
+			return
+		}
 	}
 
 	tInfo := cfg.TenantInfo(tx)
@@ -29,7 +31,7 @@ func (cfg *Config) AfterCreate(tx *gorm.DB) {
 		return
 	}
 
-	if !cfg.AfterCallbackNoHideTenant {
+	if !cfg.AfterCreateNoHideTenant {
 		tInfo := cfg.TenantInfo(tx)
 		if tInfo == nil {
 			return
