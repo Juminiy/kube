@@ -8,7 +8,7 @@ import (
 
 func TestToElemPtrSlice(t *testing.T) {
 	s := []string{"sq", "rw", "cs"}
-	slices.All(ToElemPtrSlice(s))(func(i int, s *string) bool {
+	slices.All(ToElemPtrSlice(s))(func(_ int, s *string) bool {
 		t.Log(*s)
 		return true
 	})

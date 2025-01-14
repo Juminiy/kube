@@ -66,7 +66,7 @@ func AssertStringLike(v any) bool {
 func AssertZero(v any) bool {
 	switch z := v.(type) {
 	case bool:
-		return z // bool value exists conflict means in different case
+		return !z // bool value exists conflict means in different case
 	case int, int64, int32, int16, int8, uint, uint64, uint32, uint16, uint8, float64, float32:
 		return z == 0
 	case string:

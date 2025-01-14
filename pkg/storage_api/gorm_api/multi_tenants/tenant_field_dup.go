@@ -73,16 +73,15 @@ func (cfg *Config) FieldDupInfo(tx *gorm.DB) *FieldDup {
 
 	columnField := make(map[string]string, len(schema.DBNames)/4)
 	groups := make(map[string][]string, len(schema.DBNames)/4)
-	slices.All(schema.Fields)(
-		func(_ int, field *gormschema.Field) bool {
-			if mt, ok := field.Tag.Lookup(cfg.TagKey); ok {
-				if key, ok := util.MapElemOk(_Tag(mt), cfg.TagUniqueKey); ok {
-					columnField[field.DBName] = field.Name
-					groups[key] = append(groups[key], field.Name)
-				}
+	slices.All(schema.Fields)(func(_ int, field *gormschema.Field) bool {
+		if mt, ok := field.Tag.Lookup(cfg.TagKey); ok {
+			if key, ok := util.MapElemOk(_Tag(mt), cfg.TagUniqueKey); ok {
+				columnField[field.DBName] = field.Name
+				groups[key] = append(groups[key], field.Name)
 			}
-			return true
-		})
+		}
+		return true
+	})
 	if len(groups) == 0 {
 		return nil
 	}

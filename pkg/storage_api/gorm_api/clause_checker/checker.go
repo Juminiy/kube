@@ -2,6 +2,7 @@ package clause_checker
 
 import (
 	"github.com/Juminiy/kube/pkg/storage_api/gorm_api/plugin_register"
+	safe_reflectv3 "github.com/Juminiy/kube/pkg/util/safe_reflect/v3"
 	"gorm.io/gorm"
 )
 
@@ -36,3 +37,6 @@ func (cfg *Config) Initialize(tx *gorm.DB) error {
 			Register(cfg.PluginName+":before_delete", cfg.WhereClause),
 	)
 }
+
+var _Ind = safe_reflectv3.Indirect
+var _Dir = safe_reflectv3.Direct
