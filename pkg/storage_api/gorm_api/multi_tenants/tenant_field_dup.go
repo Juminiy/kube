@@ -10,6 +10,7 @@ import (
 	gormschema "gorm.io/gorm/schema"
 	"reflect"
 	"slices"
+	"strings"
 )
 
 type Field struct {
@@ -47,6 +48,16 @@ func (f Field) ClauseEq() clause.Eq {
 	}
 }
 
+func (f Field) ClauseIn() clause.IN {
+	return clause.IN{
+		Column: clause.Column{
+			Table: f.DBTable,
+			Name:  f.DBName,
+		},
+		Values: f.Values,
+	}
+}
+
 type FieldDup struct {
 	Tenant      *Tenant
 	Clauses     []clause.Interface
@@ -75,9 +86,19 @@ func (cfg *Config) FieldDupInfo(tx *gorm.DB) *FieldDup {
 	groups := make(map[string][]string, len(schema.DBNames)/4)
 	slices.All(schema.Fields)(func(_ int, field *gormschema.Field) bool {
 		if mt, ok := field.Tag.Lookup(cfg.TagKey); ok {
-			if key, ok := util.MapElemOk(_Tag(mt), cfg.TagUniqueKey); ok {
+			if keys, ok := util.MapElemOk(_Tag(mt), cfg.TagUniqueKey); ok {
 				columnField[field.DBName] = field.Name
-				groups[key] = append(groups[key], field.Name)
+				slices.All(strings.Split(keys, ","))(func(_ int, key string) bool {
+					if key == "-" { // ignore field
+						return false
+					} else if len(key) > 0 {
+						groups[key] = append(groups[key], field.Name)
+					} else {
+						groups[field.Name] = []string{field.Name}
+					}
+					return true
+				})
+
 			}
 		}
 		return true
@@ -105,8 +126,8 @@ func (cfg *Config) FieldDupCheck(tx *gorm.DB, forUpdate bool) {
 		dupInfo.Update(tx) // update map, struct
 		return
 	}
-	if util.ElemIn(tx.Statement.ReflectValue.Kind(),
-		reflect.Array, reflect.Slice) && !cfg.ComplexFieldDup {
+	if util.ElemIn(tx.Statement.ReflectValue.Kind(), reflect.Array, reflect.Slice) &&
+		!GetSessionConfig(cfg, tx).ComplexFieldDup {
 		return
 	}
 	dupInfo.Create(tx) // create
@@ -140,7 +161,16 @@ func (d *FieldDup) Update(tx *gorm.DB) {
 		d.ColumnValue = *columnValue
 
 	default:
-		d.ColumnValue = _IndI(dest).MapValues()
+		rval := _IndI(dest)
+		switch rval.Type.Kind() {
+		case reflect.Struct:
+			d.FieldValue = rval.StructValues()
+
+		case reflect.Map:
+			d.ColumnValue = rval.MapValues()
+
+		default: // ignore case
+		}
 	}
 	d.simple(tx)
 }
@@ -149,7 +179,10 @@ func (d *FieldDup) simple(tx *gorm.DB) {
 	if len(d.Groups) == 0 {
 		return
 	}
-	if len(d.FieldValue) == 0 {
+	if len(d.FieldValue) == 0 &&
+		len(d.ColumnValue) == 0 {
+		return
+	} else if len(d.FieldValue) == 0 {
 		d.FieldValue = lo.MapKeys(d.ColumnValue, func(_ any, column string) string {
 			return d.ColumnField[column]
 		})
@@ -157,36 +190,10 @@ func (d *FieldDup) simple(tx *gorm.DB) {
 		d.ColumnValue = lo.MapKeys(d.FieldValue, func(_ any, name string) string {
 			return d.FieldColumn[name]
 		})
-	} else {
-		return
 	}
 
 	// where clause 1. values
-	var orExpr clause.Expression = clause_checker.FalseExpr()
-	var noExpr = true
-	slices.All(lo.MapToSlice(d.Groups, func(_ string, names []string) clause.Expression {
-		var andExpr clause.Expression = clause_checker.TrueExpr()
-		slices.All(names)(func(_ int, name string) bool {
-			fieldValue, ok := d.FieldValue[name]
-			if !ok || _IndI(fieldValue).Value.IsZero() {
-				andExpr = nil
-				return false
-			}
-			andExpr = clause.And(andExpr, clause.Eq{
-				Column: d.FieldColumn[name],
-				Value:  fieldValue,
-			})
-			return true
-		})
-		return andExpr
-	}))(func(_ int, expression clause.Expression) bool {
-		if expression == nil {
-			return true
-		}
-		noExpr = false
-		orExpr = clause.Or(orExpr, expression)
-		return true
-	})
+	orExpr, noExpr := d.rowValuesExpr()
 	if noExpr {
 		return
 	}
@@ -217,7 +224,7 @@ func (d *FieldDup) simple(tx *gorm.DB) {
 	var cnt int64
 	err := ntx.Count(&cnt).Error
 	if err != nil {
-		tx.Logger.Error(tx.Statement.Context, "before write, do field duplicated check, error: %s", err.Error())
+		tx.Logger.Error(tx.Statement.Context, "before create or update, do field duplicated check, error: %s", err.Error())
 		return
 	}
 	if cnt > 0 {
@@ -233,10 +240,48 @@ func (d *FieldDup) simple(tx *gorm.DB) {
 	}
 }
 
+// rowValuesExpr
+// support one group, multiple groups
+// each group one field, multiple fields
+// each group if one or more fields reflect.Value.IsZero(), the group will be omitted
+// if no groups, the count will be omitted
+func (d *FieldDup) rowValuesExpr() (orExpr clause.Expression, noExpr bool) {
+	orExpr = clause_checker.FalseExpr()
+	noExpr = true
+	slices.All(lo.MapToSlice(d.Groups, func(_ string, names []string) clause.Expression {
+		var andExpr clause.Expression = clause_checker.TrueExpr()
+		slices.All(names)(func(_ int, name string) bool {
+			fieldValue, ok := d.FieldValue[name]
+			if !ok || _IndI(fieldValue).Value.IsZero() {
+				andExpr = nil
+				return false
+			}
+			andExpr = clause.And(andExpr, clause.Eq{
+				Column: d.FieldColumn[name],
+				Value:  fieldValue,
+			})
+			return true
+		})
+		return andExpr
+	}))(func(_ int, expression clause.Expression) bool {
+		if expression == nil {
+			return true
+		}
+		noExpr = false
+		orExpr = clause.Or(orExpr, expression)
+		return true
+	})
+	return
+}
+
 func (d *FieldDup) complex(tx *gorm.DB) {
 	if len(d.Groups) == 0 {
 		return
 	}
+}
+
+func (d *FieldDup) rowsValuesExpr(tx *gorm.DB) (expr clause.Expression, ok bool) {
+	return
 }
 
 type FieldDupError interface {

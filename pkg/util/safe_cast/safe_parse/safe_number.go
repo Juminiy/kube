@@ -183,5 +183,5 @@ func (n Number) Get(kind reflect.Kind) (v any, ok bool) {
 	default:
 		return nil, false
 	}
-	return nil, false
+	return
 }

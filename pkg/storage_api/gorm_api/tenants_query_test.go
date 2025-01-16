@@ -34,3 +34,18 @@ func TestTenantsQueryCount(t *testing.T) {
 	util.Must(_txTenant.Model(&Product{}).Count(&count).Error)
 	t.Log(count)
 }
+
+func TestQuery(t *testing.T) {
+	var product Product
+	err := _txTenant.First(&product).Error
+	if err != nil {
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			t.Log(gorm.ErrRecordNotFound)
+		default:
+			util.Must(err)
+		}
+		return
+	}
+	t.Log(Enc(product))
+}

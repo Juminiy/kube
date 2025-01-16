@@ -4,6 +4,7 @@ import (
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/Juminiy/kube/pkg/util/safe_cast"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -148,6 +149,38 @@ func ParseComplex(s string) (v complex128, ok bool) {
 }
 
 func ParseTime(s string) (v time.Time, ok bool) {
-	v, err := time.Parse(time.DateTime, s)
-	return v, err == nil
+	for _, timeFormat := range []string{
+		time.Layout,
+		time.ANSIC,
+		time.UnixDate,
+		time.RubyDate,
+		time.RFC822,
+		time.RFC822Z,
+		time.RFC850,
+		time.RFC1123,
+		time.RFC1123Z,
+		time.RFC3339,
+		time.RFC3339Nano,
+		time.Kitchen,
+		time.Stamp,
+		time.StampMilli,
+		time.StampMicro,
+		time.StampNano,
+		time.DateTime,
+		time.DateOnly,
+		time.TimeOnly,
+	} {
+		v, err := time.Parse(timeFormat, s)
+		if err == nil {
+			return v, true
+		}
+	}
+	// "2025-01-16 21:05:42.157628 +0800 CST m=+1.356894792"
+	if spaceMEqIndex := strings.Index(s, " m="); spaceMEqIndex != -1 {
+		v, err := time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", s[:spaceMEqIndex])
+		if err == nil {
+			return v, true
+		}
+	}
+	return time.Time{}, false
 }

@@ -12,23 +12,24 @@ func (cfg *Config) BeforeUpdate(tx *gorm.DB) {
 	if tx.Error != nil {
 		return
 	}
+	sCfg := GetSessionConfig(cfg, tx)
 
-	if (!cfg.UpdateAllowTenantAll || !tx.AllowGlobalUpdate) &&
+	if (!sCfg.UpdateAllowTenantAll || !tx.AllowGlobalUpdate) &&
 		clause_checker.NoWhereClause(tx) {
 		_ = tx.AddError(ErrUpdateTenantAllNotAllowed)
 		return
 	}
 
-	if !cfg.DisableFieldDup {
+	if !sCfg.DisableFieldDup {
 		cfg.FieldDupCheck(tx, false)
 		if tx.Error != nil {
 			return
 		}
 	}
 
-	cfg.tenantWhereClause(tx)
+	cfg.tenantWhereClause(tx, false)
 
-	if cfg.UpdateOmitMapZeroElemKey {
+	if sCfg.UpdateOmitMapZeroElemKey {
 		// TODO: update omit key of map elem is zero
 	}
 }

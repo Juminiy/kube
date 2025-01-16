@@ -21,5 +21,4 @@ func LimitClause(tx *gorm.DB) (limitClause clause.Limit, ok bool) {
 		ok = limitClause.Limit != nil && *limitClause.Limit > 0
 	}
 	return
-
 }

@@ -6,7 +6,7 @@ import (
 	"github.com/Juminiy/kube/pkg/storage_api/rdb/kinternal"
 	"github.com/Juminiy/kube/pkg/storage_api/rdb/ksql"
 	"github.com/Juminiy/kube/pkg/util"
-	"golang.org/x/exp/maps"
+	expmaps "golang.org/x/exp/maps"
 	"reflect"
 	"slices"
 	"time"
@@ -95,9 +95,9 @@ func (stmt *Stmt) parseValues() *Stmt {
 		})
 	})*/
 
-	fieldCol := util.MapDeleteR(maps.Clone(stmt.FieldColumn), stmt.PK.Field)
+	fieldCol := util.MapDeleteR(expmaps.Clone(stmt.FieldColumn), stmt.PK.Field)
 	fieldVals := stmt.Tv.Values()
-	fields := maps.Keys(fieldCol)
+	fields := expmaps.Keys(fieldCol)
 
 	column := make([]string, 0, len(fieldCol))
 	slices.All(fields)(func(_ int, field string) bool {

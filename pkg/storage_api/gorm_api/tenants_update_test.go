@@ -7,6 +7,10 @@ import (
 	"testing"
 )
 
+var Update = func(t *testing.T, i any, conds ...any) {
+	Err(t, _txTenant.Updates(i).Error)
+}
+
 func TestTenantsUpdateOne(t *testing.T) {
 	util.Must(_txTenant.Model(&Product{}).
 		Where(clause.Eq{Column: "id", Value: 2}).
@@ -19,8 +23,7 @@ func TestTenantsUpdateList(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	err := _tx.
-		Model(&Product{}).
+	err := _txTenant.Model(&Product{}).
 		Where(clause.Eq{Column: "id", Value: 1}).
 		Update("code", 114514).Error
 	util.Must(err)

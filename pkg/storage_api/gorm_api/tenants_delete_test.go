@@ -1,14 +1,17 @@
 package gorm_api
 
 import (
-	"github.com/Juminiy/kube/pkg/util"
 	"testing"
 )
 
+var Delete = func(t *testing.T, i any, conds ...any) {
+	Err(t, _txTenant.Delete(i).Error)
+}
+
 func TestTenantsDeleteOne(t *testing.T) {
-	util.Must(_txTenant.Delete(&Product{}, 1).Error)
+	Delete(t, &Product{}, 1)
 }
 
 func TestTenantsDeleteList(t *testing.T) {
-	util.Must(_txTenant.Delete(&Product{}).Error)
+	Delete(t, &Product{})
 }

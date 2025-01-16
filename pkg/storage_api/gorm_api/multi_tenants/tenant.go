@@ -11,20 +11,14 @@ import (
 )
 
 type Config struct {
-	PluginName               string
-	TagKey                   string
-	TagTenantKey             string
-	TagUniqueKey             string
-	TxTenantKey              string
-	TxSkipKey                string
-	DisableFieldDup          bool // effect on create and update
-	ComplexFieldDup          bool // effect on create
-	DeleteAllowTenantAll     bool // effect on delete, only tenant, no other where clause
-	QueryBeforeDelete        bool // effect on delete
-	UpdateAllowTenantAll     bool // effect on update, only tenant, no other where clause
-	UpdateOmitMapZeroElemKey bool // effect on update
-	AfterCreateNoHideTenant  bool // effect on create
-	AfterQueryShowTenant     bool // effect on query
+	PluginName   string // no default value, "" will be error, plugin will not be effect
+	TagKey       string // default: mt
+	TagTenantKey string // default: tenant
+	TagUniqueKey string // default: unique
+	TxTenantKey  string // default: tenant_id
+	TxTenantsKey string // default: tenant_ids
+	TxSkipKey    string // default: skip_tenant
+	*SessionConfig
 }
 
 func (cfg *Config) Name() string {
@@ -47,8 +41,14 @@ func (cfg *Config) Initialize(tx *gorm.DB) error {
 	if len(cfg.TxTenantKey) == 0 {
 		cfg.TxTenantKey = "tenant_id"
 	}
+	if len(cfg.TxTenantsKey) == 0 {
+		cfg.TxTenantsKey = "tenant_ids"
+	}
 	if len(cfg.TxSkipKey) == 0 {
 		cfg.TxSkipKey = "skip_tenant"
+	}
+	if cfg.SessionConfig == nil {
+		cfg.SessionConfig = &SessionConfig{}
 	}
 
 	return plugin_register.OneError(

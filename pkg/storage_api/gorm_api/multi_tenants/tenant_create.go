@@ -8,8 +8,9 @@ func (cfg *Config) BeforeCreate(tx *gorm.DB) {
 	if tx.Error != nil {
 		return
 	}
+	sCfg := GetSessionConfig(cfg, tx)
 
-	if !cfg.DisableFieldDup {
+	if !sCfg.DisableFieldDup {
 		cfg.FieldDupCheck(tx, false)
 		if tx.Error != nil {
 			return
@@ -31,7 +32,7 @@ func (cfg *Config) AfterCreate(tx *gorm.DB) {
 		return
 	}
 
-	if !cfg.AfterCreateNoHideTenant {
+	if !GetSessionConfig(cfg, tx).AfterCreateShowTenant {
 		tInfo := cfg.TenantInfo(tx)
 		if tInfo == nil {
 			return

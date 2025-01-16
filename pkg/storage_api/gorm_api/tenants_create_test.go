@@ -1,13 +1,9 @@
 package gorm_api
 
 import (
-	"github.com/Juminiy/kube/pkg/storage_api/gorm_api/multi_tenants"
 	"github.com/Juminiy/kube/pkg/util"
-	"gorm.io/gorm"
 	"testing"
 )
-
-var _txTenant *gorm.DB
 
 func TestTenantsCreateOne(t *testing.T) {
 	err := _txTenant.Create(&Product{
@@ -17,24 +13,7 @@ func TestTenantsCreateOne(t *testing.T) {
 		Code:       8,
 		Price:      299,
 	}).Error
-	/*
-		SELECT count(*)
-		FROM `tbl_product`
-		WHERE
-		(	(
-				1!=1
-				OR ((1=1 AND `name` = "Coca-Cola") AND `desc` = "Most Popular Drink in the World")
-			)
-			OR (1=1 AND `code` = 8)
-		)
-		AND `tbl_product`.`tenant_id` = 114514
-		AND `tbl_product`.`deleted_at` IS NULL
-	*/
-	if multi_tenants.IsFieldDupError(err) {
-		t.Log(err.Error())
-	} else {
-		util.Must(err)
-	}
+	Err(t, err)
 }
 
 func TestTenantsCreateList(t *testing.T) {
@@ -74,33 +53,8 @@ func TestCreate(t *testing.T) {
 		Code:  114514,            // group["code"] is valid
 		Price: 177013,
 	}
-	// Want:
-	/*
-		SELECT COUNT(0)
-		FROM tbl_product
-		WHERE (1!=1
-		OR (1=1 AND `name`='Beef1Ton' AND `desc`='one ton of beef')
-		OR (1=1 AND `code`=114514))
-		AND deleted_at IS NULL
-	*/
-	// Gen:
-	/*
-		SELECT count(*)
-		FROM `tbl_product`
-		WHERE
-		(	(
-				1!=1
-				OR ((1=1 AND `name` = "Beef1Ton") AND `desc` = "one ton of beef")
-			)
-			OR (1=1 AND `code` = 114514))
-		AND `tbl_product`.`deleted_at` IS NULL
-	*/
-	err := _tx.Create(&product).Error
-	if multi_tenants.IsFieldDupError(err) {
-		t.Log(err.Error())
-	} else {
-		util.Must(err)
-	}
+	err := _txTenant.Create(&product).Error
+	Err(t, err)
 }
 
 func TestCreate2(t *testing.T) {
@@ -111,27 +65,8 @@ func TestCreate2(t *testing.T) {
 		Code:       114514, // group["code"] is valid
 		Price:      177013,
 	}
-	// Want:
-	/*
-		SELECT COUNT(0)
-		FROM tbl_product
-		WHERE 1!=1
-		OR (1=1 AND `code`=114514)
-	*/
-	// Gen:
-	/*
-		SELECT count(*)
-		FROM `tbl_product`
-		WHERE
-		(1!=1 OR (1=1 AND `code` = 114514))
-		AND `tbl_product`.`deleted_at` IS NULL
-	*/
-	err := _tx.Create(&product).Error
-	if multi_tenants.IsFieldDupError(err) {
-		t.Log(err.Error())
-	} else {
-		util.Must(err)
-	}
+	err := _txTenant.Create(&product).Error
+	Err(t, err)
 }
 
 func TestCreate3(t *testing.T) {
@@ -142,13 +77,6 @@ func TestCreate3(t *testing.T) {
 		Code:       0, // Zero group["code"] is invalid, ignore
 		Price:      177013,
 	}
-	/*
-		No COUNT SQL
-	*/
-	err := _tx.Create(&product).Error
-	if multi_tenants.IsFieldDupError(err) {
-		t.Log(err.Error())
-	} else {
-		util.Must(err)
-	}
+	err := _txTenant.Create(&product).Error
+	Err(t, err)
 }
