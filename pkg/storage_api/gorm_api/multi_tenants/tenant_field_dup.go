@@ -202,7 +202,7 @@ func (d *FieldDup) simple(tx *gorm.DB) {
 	ntx := tx.Session(&gorm.Session{NewDB: true, SkipHooks: true}).
 		Table(d.DBTable)
 
-	ntx = _SkipQueryCallbackBeforeWriteCountUnique.Set(ntx).
+	ntx = _SkipQueryCallback.Set(ntx).
 		Where(orExpr)
 
 	// where clause 2. tenant
@@ -210,7 +210,7 @@ func (d *FieldDup) simple(tx *gorm.DB) {
 		ntx.Where(d.Tenant.Clause())
 	}
 
-	// where clause 3. soft_delete or other internal clauses
+	// where clause 3. soft_delete or other schema(table) clauses
 	slices.All(d.Clauses)(func(_ int, c clause.Interface) bool {
 		ntx.Statement.AddClause(c)
 		return true

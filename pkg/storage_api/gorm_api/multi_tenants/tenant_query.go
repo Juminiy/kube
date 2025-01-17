@@ -7,7 +7,7 @@ func (cfg *Config) BeforeQuery(tx *gorm.DB) {
 		return
 	}
 
-	if _SkipQueryCallbackBeforeWriteCountUnique.Get(tx) {
+	if _SkipQueryCallback.Get(tx) {
 		return
 	}
 
@@ -30,6 +30,6 @@ func (cfg *Config) AfterQuery(tx *gorm.DB) {
 	}
 }
 
-var _SkipQueryCallbackBeforeWriteCountUnique = SingleConfig{
-	Key: "skip_query_callback_before_write_count_unique",
+var _SkipQueryCallback = SingleConfig{
+	Key: "skip_query_callback",
 }

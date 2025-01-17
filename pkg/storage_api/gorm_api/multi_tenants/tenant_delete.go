@@ -4,6 +4,8 @@ import (
 	"errors"
 	"github.com/Juminiy/kube/pkg/storage_api/gorm_api/clause_checker"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
+	"slices"
 )
 
 var ErrDeleteTenantAllNotAllowed = errors.New("delete tenant all rows or global update is not allowed")
@@ -23,12 +25,38 @@ func (cfg *Config) BeforeDelete(tx *gorm.DB) {
 	cfg.tenantClause(tx, false)
 
 	if sCfg.QueryBeforeDelete {
-		// TODO: Query by tx where scan to tx.Dest
+		cfg.doQueryBeforeDelete(tx)
 	}
 }
 
 func (cfg *Config) AfterDelete(tx *gorm.DB) {
 	if tx.Error != nil {
 		return
+	}
+}
+
+func (cfg *Config) doQueryBeforeDelete(tx *gorm.DB) {
+	ntx := tx.Session(&gorm.Session{NewDB: true})
+
+	ntx = _SkipQueryCallback.Set(ntx)
+
+	if tInfo := cfg.TenantInfo(tx); tInfo != nil {
+		ntx.Where(tInfo.Clause())
+	}
+
+	if schema := tx.Statement.Schema; schema != nil {
+		slices.All(schema.QueryClauses)(func(_ int, c clause.Interface) bool {
+			ntx.Statement.AddClause(c)
+			return true
+		})
+	}
+
+	if txClause, ok := clause_checker.WhereClause(tx); ok {
+		ntx.Where(txClause)
+	}
+
+	err := ntx.Find(tx.Statement.Dest).Error
+	if err != nil {
+		tx.Logger.Error(tx.Statement.Context, "before delete, do query, error: %s", err.Error())
 	}
 }
