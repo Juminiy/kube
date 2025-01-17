@@ -27,7 +27,7 @@ func (cfg *Config) BeforeUpdate(tx *gorm.DB) {
 		}
 	}
 
-	cfg.tenantWhereClause(tx, false)
+	cfg.tenantClause(tx, false)
 
 	if sCfg.UpdateOmitMapZeroElemKey {
 		// TODO: update omit key of map elem is zero

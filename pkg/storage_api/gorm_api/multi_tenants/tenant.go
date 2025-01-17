@@ -8,6 +8,7 @@ import (
 	"gorm.io/gorm"
 	gormschema "gorm.io/gorm/schema"
 	"reflect"
+	"sync"
 )
 
 type Config struct {
@@ -18,7 +19,11 @@ type Config struct {
 	TxTenantKey  string // default: tenant_id
 	TxTenantsKey string // default: tenant_ids
 	TxSkipKey    string // default: skip_tenant
-	*SessionConfig
+
+	*SessionConfig // can be overwritten by UseSession
+
+	UseTableParseSchema bool
+	cacheStore          *sync.Map
 }
 
 func (cfg *Config) Name() string {
@@ -47,9 +52,12 @@ func (cfg *Config) Initialize(tx *gorm.DB) error {
 	if len(cfg.TxSkipKey) == 0 {
 		cfg.TxSkipKey = "skip_tenant"
 	}
+
 	if cfg.SessionConfig == nil {
 		cfg.SessionConfig = &SessionConfig{}
 	}
+
+	cfg.cacheStore = new(sync.Map)
 
 	return plugin_register.OneError(
 		tx.Callback().Create().Before("gorm:create").
@@ -96,6 +104,10 @@ func _Tag(s string) safe_reflectv3.Tag {
 	return safe_reflectv3.ParseTagValue(s)
 }
 
+func _AS(i any) []any {
+	return safe_reflectv3.ToAnySlice(i)
+}
+
 /*
  * reflect.Kind -> T
  * Struct -> --(indirect)--> T
@@ -110,7 +122,7 @@ type Tenant struct {
 }
 
 func (cfg *Config) TenantInfo(tx *gorm.DB) *Tenant {
-	tenantInfoKey := util.StringJoin(":", cfg.PluginName, cfg.TagKey, cfg.TagTenantKey, cfg.TxTenantKey)
+	tenantInfoKey := util.StringJoin(":", cfg.PluginName, cfg.TagKey, cfg.TagTenantKey)
 	if tInfo, ok := tx.Get(tenantInfoKey); ok {
 		return tInfo.(*Tenant)
 	}
@@ -123,9 +135,10 @@ func (cfg *Config) TenantInfo(tx *gorm.DB) *Tenant {
 
 func (cfg *Config) tenantInfo(tx *gorm.DB) *Tenant {
 	tid, hastid := tx.Get(cfg.TxTenantKey)
+	tids, hastids := tx.Get(cfg.TxTenantsKey)
 	_, skiptid := tx.Get(cfg.TxSkipKey)
-	if !hastid || // tx no tenant_id set
-		skiptid { // tx skip tenant_id
+	if (!hastid && !hastids) || // tx no tenant_id or no tenant_ids set
+		skiptid { // tx skip tenant_id and tenant_ids
 		return nil
 	}
 
@@ -143,7 +156,12 @@ func (cfg *Config) tenantInfo(tx *gorm.DB) *Tenant {
 		return nil
 	}
 
-	return &Tenant{
-		Field: FieldFromSchema(tidField).WithValue(tid),
+	field := FieldFromSchema(tidField)
+	if hastid {
+		field.Value = tid
 	}
+	if hastids {
+		field.Values = _AS(tids)
+	}
+	return &Tenant{Field: field}
 }

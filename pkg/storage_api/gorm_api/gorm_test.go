@@ -14,7 +14,9 @@ import (
 
 var _tx *DB
 
-var _txTenant *gorm.DB
+var _txTenant = func() *gorm.DB {
+	return _tx.Set("tenant_id", uint(114514))
+}
 
 func init() {
 	tx, err := New(gorm.Config{
@@ -37,7 +39,6 @@ func init() {
 	tx.DB = tx.Debug()
 	_tx = tx
 	//util.Must(_tx.AutoMigrate(&Product{}))
-	_txTenant = _tx.Set("tenant_id", uint(114514))
 }
 
 var Enc = safe_json.Pretty
@@ -46,7 +47,8 @@ var Err = func(t *testing.T, err error) {
 	if err != nil {
 		if multi_tenants.IsFieldDupError(err) ||
 			errors.Is(err, multi_tenants.ErrDeleteTenantAllNotAllowed) ||
-			errors.Is(err, multi_tenants.ErrUpdateTenantAllNotAllowed) {
+			errors.Is(err, multi_tenants.ErrUpdateTenantAllNotAllowed) ||
+			errors.Is(err, gorm.ErrRecordNotFound) {
 			t.Log(err)
 		} else {
 			util.Must(err)

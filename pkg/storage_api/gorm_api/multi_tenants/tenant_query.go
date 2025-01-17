@@ -11,7 +11,7 @@ func (cfg *Config) BeforeQuery(tx *gorm.DB) {
 		return
 	}
 
-	cfg.tenantWhereClause(tx, true)
+	cfg.tenantClause(tx, true)
 }
 
 func (cfg *Config) AfterQuery(tx *gorm.DB) {

@@ -8,16 +8,19 @@ import (
 
 type Config struct {
 	PluginName string
+
 	// effect on where clause
 	LikeNoPrefixMatch    bool // ignore or warn of (column LIKE '%which')
 	IndexColumnNoExpr    bool // ignore or warn of indexed_column use expr or function
 	InExprMaxValuesLen   *int
-	OrderByNoIndexColumn bool
 	BinaryExprStrongType bool
 	NoRegexp             bool
 
 	// effect on where clause on raw and row
 	AllowWrapRawOrRowByClause bool
+
+	// effect on orderBy clause
+	OrderByNoIndexColumn bool
 }
 
 func (cfg *Config) Name() string {
@@ -30,11 +33,11 @@ func (cfg *Config) Initialize(tx *gorm.DB) error {
 	}
 	return plugin_register.OneError(
 		tx.Callback().Delete().Before("gorm:delete").
-			Register(cfg.PluginName+":before_delete", cfg.WhereClause),
+			Register(cfg.PluginName+":before_delete", cfg.Clause),
 		tx.Callback().Update().Before("gorm:before_update").
-			Register(cfg.PluginName+":before_delete", cfg.WhereClause),
+			Register(cfg.PluginName+":before_delete", cfg.Clause),
 		tx.Callback().Query().Before("gorm:query").
-			Register(cfg.PluginName+":before_delete", cfg.WhereClause),
+			Register(cfg.PluginName+":before_delete", cfg.Clause),
 	)
 }
 

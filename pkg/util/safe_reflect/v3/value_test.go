@@ -3,6 +3,7 @@ package safe_reflectv3
 import (
 	"github.com/Juminiy/kube/pkg/util"
 	"testing"
+	"unsafe"
 )
 
 func TestTv_Values(t *testing.T) {
@@ -97,4 +98,27 @@ func TestV_SetI(t *testing.T) {
 		String: "1919810",
 	})
 	t.Log(array)
+}
+
+func TestToAnySlice(t *testing.T) {
+	for _, v := range []any{
+		nil,
+		true,
+		int(-5), int8(11), int16(32), int32(77), int64(10),
+		uint(1), uint8(8), uint16(9), uint32(27), uint64(222),
+		uintptr(1122), float32(0.1), float64(1.1),
+		complex(10, 20), complex(float64(1), float64(2)),
+		[3]uint{10, 11, 12}, [2]int{1, 2}, [3]any{nil, nil, nil},
+		make(chan int, 1),
+		func() {},
+		any(10),
+		map[string]any{"k": "v"},
+		util.New(10),
+		[]uint{1, 2, 3}, []string{"rr", "bb", "aa"}, []any{nil, nil, nil},
+		"rrr",
+		struct{ V int }{V: 100443},
+		unsafe.Pointer(util.New(10)),
+	} {
+		t.Log(ToAnySlice(v))
+	}
 }

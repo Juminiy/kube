@@ -66,6 +66,8 @@ func (v V) MapSetField(nv map[string]any) {
 			parsed := safe_parse.Parse(cast.ToString(elemIndirv))
 			if pv, ok := parsed.Get(elemType.Kind()); ok {
 				v.SetMapIndex(item.Key, Direct(pv).Value)
+			} else if pv, ok = parsed.GetByRT(elemType); ok {
+				v.SetMapIndex(item.Key, Direct(pv).Value)
 			}
 		}
 		return true

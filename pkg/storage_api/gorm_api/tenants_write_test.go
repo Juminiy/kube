@@ -11,7 +11,7 @@ import (
 
 var Create = func(t *testing.T, i any) {
 	//util.Must(_tx.AutoMigrate(i))
-	Err(t, _txTenant.Create(i).Error)
+	Err(t, _txTenant().Create(i).Error)
 }
 
 type UniqueTest1 struct {

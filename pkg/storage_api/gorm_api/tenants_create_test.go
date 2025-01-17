@@ -1,12 +1,11 @@
 package gorm_api
 
 import (
-	"github.com/Juminiy/kube/pkg/util"
 	"testing"
 )
 
 func TestTenantsCreateOne(t *testing.T) {
-	err := _txTenant.Create(&Product{
+	err := _txTenant().Create(&Product{
 		Name:       "Coca-Cola",
 		Desc:       "Most Popular Drink in the World",
 		NetContent: "500ml",
@@ -17,8 +16,8 @@ func TestTenantsCreateOne(t *testing.T) {
 }
 
 func TestTenantsCreateList(t *testing.T) {
-	util.Must(
-		_txTenant.Create(&[]Product{
+	Err(t,
+		_txTenant().Create(&[]Product{
 			{Name: "Milk", Desc: "Fresh milk", NetContent: "1L", Code: 100001, Price: 800},
 			{Name: "Bread", Desc: "Whole wheat bread", NetContent: "500g", Code: 100002, Price: 1200},
 			{Name: "Rice", Desc: "Long grain rice", NetContent: "5kg", Code: 100003, Price: 4500},
@@ -28,22 +27,24 @@ func TestTenantsCreateList(t *testing.T) {
 }
 
 func TestTenantsCreateMap(t *testing.T) {
-	util.Must(_txTenant.Model(&Product{}).Create(&map[string]any{
-		"Name":       "Apple",
-		"Desc":       "Fresh red apples",
-		"NetContent": "1kg",
-		"Code":       100005,
-		"Price":      1000,
-	}).Error)
+	Err(t,
+		_txTenant().Model(&Product{}).Create(&map[string]any{
+			"Name":       "Apple",
+			"Desc":       "Fresh red apples",
+			"NetContent": "1kg",
+			"Code":       100005,
+			"Price":      1000,
+		}).Error)
 }
 
 func TestTenantsCreateMapList(t *testing.T) {
-	util.Must(_txTenant.Model(&Product{}).Create(&[]map[string]any{
-		{"Name": "Beer", "Desc": "Local lager beer", "NetContent": "500ml", "Code": 100007, "Price": 500},
-		{"Name": "Noodles", "Desc": "Instant noodles", "NetContent": "5 packs", "Code": 100008, "Price": 1000},
-		{"Name": "Shampoo", "Desc": "Herbal shampoo", "NetContent": "400ml", "Code": 100009, "Price": 2500},
-		{"Name": "Toothpaste", "Desc": "Mint toothpaste", "NetContent": "120g", "Code": 100010, "Price": 800},
-	}).Error)
+	Err(t,
+		_txTenant().Model(&Product{}).Create(&[]map[string]any{
+			{"Name": "Beer", "Desc": "Local lager beer", "NetContent": "500ml", "Code": 100007, "Price": 500},
+			{"Name": "Noodles", "Desc": "Instant noodles", "NetContent": "5 packs", "Code": 100008, "Price": 1000},
+			{"Name": "Shampoo", "Desc": "Herbal shampoo", "NetContent": "400ml", "Code": 100009, "Price": 2500},
+			{"Name": "Toothpaste", "Desc": "Mint toothpaste", "NetContent": "120g", "Code": 100010, "Price": 800},
+		}).Error)
 }
 
 func TestCreate(t *testing.T) {
@@ -53,7 +54,7 @@ func TestCreate(t *testing.T) {
 		Code:  114514,            // group["code"] is valid
 		Price: 177013,
 	}
-	err := _txTenant.Create(&product).Error
+	err := _txTenant().Create(&product).Error
 	Err(t, err)
 }
 
@@ -65,7 +66,7 @@ func TestCreate2(t *testing.T) {
 		Code:       114514, // group["code"] is valid
 		Price:      177013,
 	}
-	err := _txTenant.Create(&product).Error
+	err := _txTenant().Create(&product).Error
 	Err(t, err)
 }
 
@@ -77,6 +78,6 @@ func TestCreate3(t *testing.T) {
 		Code:       0, // Zero group["code"] is invalid, ignore
 		Price:      177013,
 	}
-	err := _txTenant.Create(&product).Error
+	err := _txTenant().Create(&product).Error
 	Err(t, err)
 }

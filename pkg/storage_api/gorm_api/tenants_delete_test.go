@@ -5,7 +5,7 @@ import (
 )
 
 var Delete = func(t *testing.T, i any, conds ...any) {
-	Err(t, _txTenant.Delete(i).Error)
+	Err(t, _txTenant().Delete(i, conds...).Error)
 }
 
 func TestTenantsDeleteOne(t *testing.T) {

@@ -29,13 +29,14 @@ func FieldFromSchema(field *gormschema.Field) Field {
 	}
 }
 
-func (f Field) WithValue(v ...any) Field {
-	if len(v) >= 2 {
-		f.Values = v
-	} else if len(v) == 1 {
-		f.Value = v[0]
+func (f Field) Clause() clause.Expression {
+	var expr clause.Expression = clause_checker.TrueExpr()
+	if f.Value != nil {
+		expr = f.ClauseEq()
+	} else if len(f.Values) > 0 {
+		expr = f.ClauseIn()
 	}
-	return f
+	return expr
 }
 
 func (f Field) ClauseEq() clause.Eq {
@@ -206,7 +207,7 @@ func (d *FieldDup) simple(tx *gorm.DB) {
 
 	// where clause 2. tenant
 	if d.Tenant != nil {
-		ntx.Where(d.Tenant.ClauseEq())
+		ntx.Where(d.Tenant.Clause())
 	}
 
 	// where clause 3. soft_delete or other internal clauses

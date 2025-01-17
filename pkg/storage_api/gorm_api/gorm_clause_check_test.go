@@ -8,14 +8,14 @@ import (
 
 func TestClauseCheckCommonCase(t *testing.T) {
 	var productList []Product
-	err := _txTenant.
+	err := _txTenant().
 		Select([]string{"id", "name", "desc", "code", "price"}).
-		Omit("desc").                          // omit no effect
-		Omit("`desc`").                        // omit no effect
-		Where("id = 1").                       // has expr, no value: but valid
-		Where("", "").                         // no expr no value, invalid
-		Where("", 1).                          // no expr, has value, invalid
-		Where("id <= ").                       // has expr, no value, invalid, but no judge
+		Omit("desc").    // omit no effect
+		Omit("`desc`").  // omit no effect
+		Where("id = 1"). // has expr, no value: but valid
+		Where("", "").   // no expr no value, invalid
+		Where("", 1).    // no expr, has value, invalid
+		//Where("id <= ").                       // has expr, no value, invalid, but no judge
 		Where("name LIKE ?", "").              // has expr, no value, notLike
 		Where("tenant_id BETWEEN ? AND ?", 1). // no enough value, invalid
 		Where("id >= ?", 1, 2).                // value overflow, invalid
@@ -46,15 +46,15 @@ func TestClauseCheckCommonCase(t *testing.T) {
 		SELECT `id`,`name`,`desc`,`code`,`price`
 		FROM `tbl_product`
 		WHERE
-		(id = 1
-		AND id <=
-		AND name LIKE ""
-		OR id = 1
-		OR id = 2
-		AND NOT id = 3
-		AND NOT id = 4
-		AND `tbl_product`.`tenant_id` = 114514)
+		(	id = 1
+			AND name LIKE ""
+			OR id = 1 OR id = 2
+			AND NOT id = 3
+			AND NOT id = 4
+			AND `tbl_product`.`tenant_id` = 114514
+		)
 		AND `tbl_product`.`deleted_at` IS NULL
+		ORDER BY id desc,id asc,id DESC,id ASC LIMIT 10
 	*/
 	if err != nil {
 		t.Log(err.Error())

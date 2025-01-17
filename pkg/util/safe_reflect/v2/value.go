@@ -63,7 +63,7 @@ func (v Value) SetILike(i any) {
 	if pv, ok := parsed.Get(indirv.Kind()); ok {
 		indirv.Set(direct(pv))
 		return
-	} else if pv, ok := parsed.GetByRT(indirv.Type()); ok {
+	} else if pv, ok = parsed.GetByRT(indirv.Type()); ok {
 		indirv.Set(direct(pv))
 		return
 	}

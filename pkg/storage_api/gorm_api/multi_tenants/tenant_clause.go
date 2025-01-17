@@ -4,15 +4,14 @@ import (
 	"gorm.io/gorm"
 )
 
-func (cfg *Config) tenantWhereClause(tx *gorm.DB, forQuery bool) {
+func (cfg *Config) tenantClause(tx *gorm.DB, forQuery bool) {
 	tInfo := cfg.TenantInfo(tx)
 	if tInfo == nil {
 		return
 	}
 
+	tx.Where(tInfo.Clause())
 	if !forQuery {
-		tx.Where(tInfo.ClauseEq())
-	} else {
-		tx.Omit(tInfo.DBName).Where(tInfo.ClauseEq())
+		tx.Omit(tInfo.DBName)
 	}
 }

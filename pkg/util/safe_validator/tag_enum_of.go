@@ -85,6 +85,9 @@ func (f fieldOf) parseEnums(tagv string) ([]string, bool) {
 	enums := strings.Split(tagv, ",")
 	ok := lo.ContainsBy(enums, func(item string) bool {
 		_, ok := safe_parse.Parse(item).Get(f.rkind)
+		if !ok {
+			_, ok = safe_parse.Parse(item).GetByRT(f.rval.Type())
+		}
 		return ok
 	})
 	if !ok {

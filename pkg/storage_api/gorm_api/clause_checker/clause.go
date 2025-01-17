@@ -1,5 +1,7 @@
 package clause_checker
 
+import "gorm.io/gorm"
+
 // gorm support clause
 const (
 	Where      = "WHERE"
@@ -12,3 +14,14 @@ const (
 	OrderBy    = "ORDER BY"
 	GroupBy    = "GROUP BY"
 )
+
+func (cfg *Config) Clause(tx *gorm.DB) {
+	for _, fn := range []func(tx *gorm.DB){
+		cfg.WhereClause,
+		cfg.OrderByClause,
+		cfg.LimitClause,
+		cfg.GroupByClause,
+	} {
+		fn(tx)
+	}
+}

@@ -20,7 +20,7 @@ func (cfg *Config) BeforeDelete(tx *gorm.DB) {
 		return
 	}
 
-	cfg.tenantWhereClause(tx, false)
+	cfg.tenantClause(tx, false)
 
 	if sCfg.QueryBeforeDelete {
 		// TODO: Query by tx where scan to tx.Dest

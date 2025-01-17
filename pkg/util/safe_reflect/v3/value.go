@@ -151,3 +151,27 @@ func (v V) I() any {
 	}
 	return nil
 }
+
+// ToAnySlice
+// []Tpl -> []any
+// [N]Tpl -> []any
+// Tpl -> []any
+func ToAnySlice(i any) []any {
+	tv := Direct(i)
+	if tv.Value == _ZeroValue {
+		return []any{nil}
+	}
+	aS := make([]any, 0, util.MagicSliceCap)
+	switch tv.Type.Kind() {
+	case reflect.Array, reflect.Slice:
+		tv.IterIndex()(func(_ int, value reflect.Value) bool {
+			if value.IsValid() && value.CanInterface() {
+				aS = append(aS, value.Interface())
+			}
+			return true
+		})
+	default:
+		return append(aS, i)
+	}
+	return aS
+}
