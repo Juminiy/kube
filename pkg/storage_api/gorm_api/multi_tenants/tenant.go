@@ -20,7 +20,7 @@ type Config struct {
 	TxTenantsKey string // default: tenant_ids
 	TxSkipKey    string // default: skip_tenant
 
-	*SessionConfig // can be overwritten by UseSession
+	GlobalCfg *SessionConfig // can be overSensed by SessionCfg
 
 	UseTableParseSchema bool
 	cacheStore          *sync.Map
@@ -53,8 +53,8 @@ func (cfg *Config) Initialize(tx *gorm.DB) error {
 		cfg.TxSkipKey = "skip_tenant"
 	}
 
-	if cfg.SessionConfig == nil {
-		cfg.SessionConfig = &SessionConfig{}
+	if cfg.GlobalCfg == nil {
+		cfg.GlobalCfg = _GlobalCfg
 	}
 
 	cfg.cacheStore = new(sync.Map)
@@ -79,16 +79,6 @@ func (cfg *Config) Initialize(tx *gorm.DB) error {
 			Register(plugin_register.CallbackName(cfg.PluginName, true, 'D'), cfg.BeforeDelete),
 		tx.Callback().Delete().After("gorm:after_delete").
 			Register(plugin_register.CallbackName(cfg.PluginName, false, 'D'), cfg.AfterDelete),
-
-		tx.Callback().Raw().Before("gorm:raw").
-			Register(plugin_register.CallbackName(cfg.PluginName, true, 'E'), cfg.BeforeRaw),
-		tx.Callback().Raw().After("gorm:raw").
-			Register(plugin_register.CallbackName(cfg.PluginName, false, 'E'), cfg.AfterRaw),
-
-		tx.Callback().Row().Before("gorm:row").
-			Register(plugin_register.CallbackName(cfg.PluginName, true, 'R'), cfg.BeforeRow),
-		tx.Callback().Row().After("gorm:row").
-			Register(plugin_register.CallbackName(cfg.PluginName, false, 'R'), cfg.AfterRow),
 	)
 }
 

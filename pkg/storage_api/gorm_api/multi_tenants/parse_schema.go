@@ -1,6 +1,12 @@
 package multi_tenants
 
-import "gorm.io/gorm"
+import (
+	"github.com/Juminiy/kube/pkg/storage_api/gorm_api/clause_checker"
+	"github.com/Juminiy/kube/pkg/util"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
+	gormschema "gorm.io/gorm/schema"
+)
 
 // ParseSchema
 // experimental function
@@ -13,4 +19,62 @@ func (cfg *Config) ParseSchema(tx *gorm.DB) {
 			}
 		}
 	}
+}
+
+type Field struct {
+	Name    string
+	DBTable string
+	DBName  string
+	Value   any
+	Values  []any
+}
+
+func FieldFromSchema(field *gormschema.Field) Field {
+	return Field{
+		Name:    field.Name,
+		DBTable: field.Schema.Table,
+		DBName:  field.DBName,
+	}
+}
+
+func (f Field) Clause() clause.Expression {
+	var expr clause.Expression = clause_checker.TrueExpr()
+	if f.Value != nil {
+		expr = f.ClauseEq()
+	} else if len(f.Values) > 0 {
+		expr = f.ClauseIn()
+	}
+	return expr
+}
+
+func (f Field) ClauseEq() clause.Eq {
+	return clause.Eq{
+		Column: clause.Column{
+			Table: f.DBTable,
+			Name:  f.DBName,
+		},
+		Value: f.Value,
+	}
+}
+
+func (f Field) ClauseIn() clause.IN {
+	return clause.IN{
+		Column: clause.Column{
+			Table: f.DBTable,
+			Name:  f.DBName,
+		},
+		Values: f.Values,
+	}
+}
+
+// Deprecated: use clause.Interface instead
+func DeletedAt(schema *gormschema.Schema) *Field { // maybe not required
+	deletedAt := schema.LookUpField("DeletedAt")
+	if deletedAt == nil {
+		deletedAt = schema.LookUpField("deleted_at")
+		if deletedAt == nil { // pkg soft_delete
+			return nil
+		}
+	}
+	return util.New(FieldFromSchema(deletedAt))
 }

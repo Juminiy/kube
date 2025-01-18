@@ -22,11 +22,11 @@ func (cfg *Config) BeforeDelete(tx *gorm.DB) {
 		return
 	}
 
-	cfg.tenantClause(tx, false)
-
 	if sCfg.QueryBeforeDelete {
 		cfg.doQueryBeforeDelete(tx)
 	}
+
+	cfg.tenantClause(tx, false)
 }
 
 func (cfg *Config) AfterDelete(tx *gorm.DB) {

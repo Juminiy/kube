@@ -55,3 +55,5 @@ var Err = func(t *testing.T, err error) {
 		}
 	}
 }
+
+func Test0(t *testing.T) {}

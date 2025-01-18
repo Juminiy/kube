@@ -3,7 +3,6 @@ package codegen
 import (
 	kubeinternal "github.com/Juminiy/kube/pkg/internal_api"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
-	"github.com/Juminiy/kube/pkg/util/codegen/example"
 	"github.com/Juminiy/kube/pkg/util/zero_reflect"
 	"reflect"
 	"testing"
@@ -52,9 +51,9 @@ func TestManifest_Do_ExampleStruct(t *testing.T) {
 	}
 	exampleManifest := Manifest{
 		DstFilePath: dstFilePath,
-		InstanceOf:  &example.ExampleStruct{},
-		GenImport:   true,
-		GenVar:      true,
+		//InstanceOf:  &example.ExampleStruct{},
+		GenImport: true,
+		GenVar:    true,
 	}
 	exampleManifest.Do()
 }

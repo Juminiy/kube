@@ -13,60 +13,12 @@ import (
 	"strings"
 )
 
-type Field struct {
-	Name    string
-	DBTable string
-	DBName  string
-	Value   any
-	Values  []any
-}
-
-func FieldFromSchema(field *gormschema.Field) Field {
-	return Field{
-		Name:    field.Name,
-		DBTable: field.Schema.Table,
-		DBName:  field.DBName,
-	}
-}
-
-func (f Field) Clause() clause.Expression {
-	var expr clause.Expression = clause_checker.TrueExpr()
-	if f.Value != nil {
-		expr = f.ClauseEq()
-	} else if len(f.Values) > 0 {
-		expr = f.ClauseIn()
-	}
-	return expr
-}
-
-func (f Field) ClauseEq() clause.Eq {
-	return clause.Eq{
-		Column: clause.Column{
-			Table: f.DBTable,
-			Name:  f.DBName,
-		},
-		Value: f.Value,
-	}
-}
-
-func (f Field) ClauseIn() clause.IN {
-	return clause.IN{
-		Column: clause.Column{
-			Table: f.DBTable,
-			Name:  f.DBName,
-		},
-		Values: f.Values,
-	}
-}
-
 type FieldDup struct {
 	Tenant      *Tenant
 	Clauses     []clause.Interface
 	DBTable     string
 	FieldColumn map[string]string
-	FieldValue  map[string]any
 	ColumnField map[string]string
-	ColumnValue map[string]any
 	Groups      map[string][]string // Groups[key] -> FieldGroup
 }
 
@@ -138,15 +90,21 @@ func (d *FieldDup) Create(tx *gorm.DB) {
 	rval := _Ind(tx.Statement.ReflectValue)
 	switch rval.Type.Kind() {
 	case reflect.Struct:
-		d.FieldValue = rval.StructValues()
-		d.simple(tx)
+		(&rowValues{
+			FieldValue: rval.StructValues(),
+			FieldDup:   d,
+		}).simple(tx)
 
 	case reflect.Map:
-		d.FieldValue = rval.MapValues()
-		d.simple(tx)
+		(&rowValues{
+			FieldValue: rval.MapValues(),
+			FieldDup:   d,
+		}).simple(tx)
 
 	case reflect.Slice, reflect.Array:
-		d.complex(tx)
+		(&rowsValues{
+			FieldDup: d,
+		}).complex(tx)
 
 	default: // ignore case
 	}
@@ -156,52 +114,42 @@ func (d *FieldDup) Update(tx *gorm.DB) {
 	dest := tx.Statement.Dest
 	switch columnValue := dest.(type) {
 	case map[string]any:
-		d.ColumnValue = columnValue
+		(&rowValues{
+			ColumnValue: columnValue,
+			FieldDup:    d,
+		}).simple(tx)
 
 	case *map[string]any:
-		d.ColumnValue = *columnValue
+		(&rowValues{
+			ColumnValue: *columnValue,
+			FieldDup:    d,
+		}).simple(tx)
 
 	default:
 		rval := _IndI(dest)
 		switch rval.Type.Kind() {
 		case reflect.Struct:
-			d.FieldValue = rval.StructValues()
+			(&rowValues{
+				FieldValue: rval.StructValues(),
+				FieldDup:   d,
+			}).simple(tx)
 
 		case reflect.Map:
-			d.ColumnValue = rval.MapValues()
+			(&rowValues{
+				ColumnValue: rval.MapValues(),
+				FieldDup:    d,
+			}).simple(tx)
 
 		default: // ignore case
 		}
 	}
-	d.simple(tx)
 }
 
-func (d *FieldDup) simple(tx *gorm.DB) {
-	if len(d.Groups) == 0 {
-		return
-	}
-	if len(d.FieldValue) == 0 &&
-		len(d.ColumnValue) == 0 {
-		return
-	} else if len(d.FieldValue) == 0 {
-		d.FieldValue = lo.MapKeys(d.ColumnValue, func(_ any, column string) string {
-			return d.ColumnField[column]
-		})
-	} else if len(d.ColumnValue) == 0 {
-		d.ColumnValue = lo.MapKeys(d.FieldValue, func(_ any, name string) string {
-			return d.FieldColumn[name]
-		})
-	}
-
-	// where clause 1. values
-	orExpr, noExpr := d.rowValuesExpr()
-	if noExpr {
-		return
-	}
-
+func (d *FieldDup) doCount(tx *gorm.DB, orExpr clause.Expression) {
 	ntx := tx.Session(&gorm.Session{NewDB: true, SkipHooks: true}).
 		Table(d.DBTable)
 
+	// where clause 1. orExpr
 	ntx = _SkipQueryCallback.Set(ntx).
 		Where(orExpr)
 
@@ -241,12 +189,42 @@ func (d *FieldDup) simple(tx *gorm.DB) {
 	}
 }
 
+type rowValues struct {
+	FieldValue  map[string]any
+	ColumnValue map[string]any
+	*FieldDup
+}
+
+func (d *rowValues) simple(tx *gorm.DB) {
+	if len(d.Groups) == 0 {
+		return
+	}
+	if len(d.FieldValue) == 0 &&
+		len(d.ColumnValue) == 0 {
+		return
+	} else if len(d.FieldValue) == 0 {
+		d.FieldValue = lo.MapKeys(d.ColumnValue, func(_ any, column string) string {
+			return d.ColumnField[column]
+		})
+	} else if len(d.ColumnValue) == 0 {
+		d.ColumnValue = lo.MapKeys(d.FieldValue, func(_ any, name string) string {
+			return d.FieldColumn[name]
+		})
+	}
+
+	orExpr, noExpr := d.expr()
+	if noExpr {
+		return
+	}
+	d.doCount(tx, orExpr)
+}
+
 // rowValuesExpr
 // support one group, multiple groups
 // each group one field, multiple fields
 // each group if one or more fields reflect.Value.IsZero(), the group will be omitted
 // if no groups, the count will be omitted
-func (d *FieldDup) rowValuesExpr() (orExpr clause.Expression, noExpr bool) {
+func (d *rowValues) expr() (orExpr clause.Expression, noExpr bool) {
 	orExpr = clause_checker.FalseExpr()
 	noExpr = true
 	slices.All(lo.MapToSlice(d.Groups, func(_ string, names []string) clause.Expression {
@@ -275,13 +253,45 @@ func (d *FieldDup) rowValuesExpr() (orExpr clause.Expression, noExpr bool) {
 	return
 }
 
-func (d *FieldDup) complex(tx *gorm.DB) {
+type rowsValues struct {
+	List []rowValues
+	*FieldDup
+}
+
+func (d *rowsValues) complex(tx *gorm.DB) {
 	if len(d.Groups) == 0 {
 		return
 	}
+	rval := _Ind(tx.Statement.ReflectValue)
+	if !util.ElemIn(rval.T.Indirect().Kind(), reflect.Struct, reflect.Map) {
+		return
+	}
+	d.List = lo.Map(rval.Values(), func(item map[string]any, _ int) rowValues {
+		return rowValues{
+			FieldValue: item,
+			FieldDup:   d.FieldDup,
+		}
+	})
+
+	orExpr, noExpr := d.expr()
+	if noExpr {
+		return
+	}
+	d.doCount(tx, orExpr)
 }
 
-func (d *FieldDup) rowsValuesExpr(tx *gorm.DB) (expr clause.Expression, ok bool) {
+func (d *rowsValues) expr() (orExpr clause.Expression, noExpr bool) {
+	orExpr = clause_checker.FalseExpr()
+	noExpr = true
+	slices.All(d.List)(func(_ int, values rowValues) bool {
+		subOrExpr, noOK := values.expr()
+		if noOK {
+			return true
+		}
+		noExpr = false
+		orExpr = clause.Or(orExpr, subOrExpr)
+		return true
+	})
 	return
 }
 

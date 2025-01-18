@@ -1,13 +1,15 @@
 package multi_tenants
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 func (cfg *Config) BeforeQuery(tx *gorm.DB) {
 	if tx.Error != nil {
 		return
 	}
 
-	if _SkipQueryCallback.Get(tx) {
+	if _SkipQueryCallback.Ok(tx) {
 		return
 	}
 
@@ -30,6 +32,6 @@ func (cfg *Config) AfterQuery(tx *gorm.DB) {
 	}
 }
 
-var _SkipQueryCallback = SingleConfig{
-	Key: "skip_query_callback",
+var _SkipQueryCallback = Cfg{
+	key: "skip_query_callback",
 }

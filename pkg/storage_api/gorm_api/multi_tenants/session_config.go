@@ -1,6 +1,9 @@
 package multi_tenants
 
-import "gorm.io/gorm"
+import (
+	"github.com/Juminiy/kube/pkg/util"
+	"gorm.io/gorm"
+)
 
 type SessionConfig struct {
 	DisableFieldDup          bool // effect on create and update
@@ -14,35 +17,35 @@ type SessionConfig struct {
 }
 
 func GetSessionConfig(cfg *Config, tx *gorm.DB) SessionConfig {
-	if UseSession.Get(tx) {
-		v := UseSession.Value(tx)
+	if v, ok := tx.Get(SessionCfg); ok {
 		if vRecv, ok := v.(SessionConfig); ok {
 			return vRecv
 		} else if pRecv, ok := v.(*SessionConfig); ok && pRecv != nil {
 			return *pRecv
 		}
 	}
-	return *cfg.SessionConfig
+	return *cfg.GlobalCfg
 }
 
-var UseSession = SingleConfig{
-	Key: "session_config",
+const SessionCfg = "session_config"
+
+var _GlobalCfg = &SessionConfig{}
+
+type Cfg struct {
+	key string
+	val any     // maybe unused, maybe nil
+	do  util.Fn // maybe unused, maybe nil
 }
 
-type SingleConfig struct {
-	Key string
+func (c *Cfg) Set(tx *gorm.DB) *gorm.DB {
+	return tx.Set(c.key, struct{}{})
 }
 
-func (s SingleConfig) Set(tx *gorm.DB) *gorm.DB {
-	return tx.Set(s.Key, struct{}{})
-}
-
-func (s SingleConfig) Get(tx *gorm.DB) bool {
-	_, ok := tx.Get(s.Key)
+func (c *Cfg) Ok(tx *gorm.DB) bool {
+	_, ok := tx.Get(c.key)
 	return ok
 }
 
-func (s SingleConfig) Value(tx *gorm.DB) any {
-	v, _ := tx.Get(s.Key)
-	return v
+func (c *Cfg) Val(tx *gorm.DB) any {
+	return c.val
 }

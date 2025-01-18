@@ -33,11 +33,19 @@ func (cfg *Config) Initialize(tx *gorm.DB) error {
 	}
 	return plugin_register.OneError(
 		tx.Callback().Delete().Before("gorm:delete").
-			Register(cfg.PluginName+":before_delete", cfg.Clause),
+			Register(plugin_register.CallbackName(cfg.PluginName, true, 'D'), cfg.Clause),
+
 		tx.Callback().Update().Before("gorm:before_update").
-			Register(cfg.PluginName+":before_delete", cfg.Clause),
+			Register(plugin_register.CallbackName(cfg.PluginName, true, 'U'), cfg.Clause),
+
 		tx.Callback().Query().Before("gorm:query").
-			Register(cfg.PluginName+":before_delete", cfg.Clause),
+			Register(plugin_register.CallbackName(cfg.PluginName, true, 'Q'), cfg.Clause),
+
+		tx.Callback().Raw().Before("gorm:raw").
+			Register(plugin_register.CallbackName(cfg.PluginName, true, 'E'), cfg.RowRawClause),
+
+		tx.Callback().Row().Before("gorm:row").
+			Register(plugin_register.CallbackName(cfg.PluginName, true, 'R'), cfg.RowRawClause),
 	)
 }
 

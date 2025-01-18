@@ -1,3 +1,42 @@
-1. clause IN
-2. do query before delete
-3. collect more expr list
+1. multi_tenants
+
+mt:
+    - Create:
+        - ✅✅✅ set value
+    - Delete,Update,Query:
+        - ✅✅✅ where clause Eq
+        - ✅✅✅ where clause IN
+
+SessionConfig
+    - default: Config.GlobalCfg
+    - SessionCfg: SessionConfig{}
+        - ✅✅❌ DisableFieldDup
+        - ✅✅✅ ComplexFieldDup
+        - ✅✅❌ DeleteAllowTenantAll
+        - ✅✅✅ QueryBeforeDelete
+        - ✅✅❌ UpdateAllowTenantAll
+        - ✅❌❌ UpdateOmitMapZeroElemKey
+        - ✅✅❌ AfterCreateShowTenant
+        - ✅✅❌ AfterQueryShowTenant
+
+FieldDup
+    - ✅✅✅ Create OneStruct
+    - ✅✅✅ Create StructList
+    - ✅✅✅ Create map[string]any
+    - ✅✅✅ Create []map[string]any
+    - ✅✅✅ Update OneColumn
+    - ✅✅✅ Updates OneStruct
+    - ✅✅✅ Updates map[string]any
+
+chainable_api
+    - ✅✅❌ UseTableParseSchema: .Table() to replacement of .Model()
+
+2. clause_checker
+    - expr, exprList
+        - exprList len = 0, omit clause
+    - orderBy, orderByList
+        - orderByList len = 0, omit clause
+    - groupBy
+    - limit
+    - TODO: row and raw clause Builder and clause Checker
+    - TODO: more error case, more expr case

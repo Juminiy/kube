@@ -1,20 +1,19 @@
 package gorm_api
 
 import (
-	"github.com/Juminiy/kube/pkg/util/safe_json"
 	"testing"
 )
 
 func TestTenantsQueryOne(t *testing.T) {
 	var one Product
 	Err(t, _txTenant().First(&one, 1).Error)
-	t.Log(safe_json.Pretty(one))
+	t.Log(Enc(one))
 }
 
 func TestTenantsQueryList(t *testing.T) {
 	var list []Product
 	Err(t, _txTenant().Find(&list).Error)
-	t.Log(safe_json.Pretty(list))
+	t.Log(Enc(list))
 }
 
 func TestTenantsQueryCount(t *testing.T) {

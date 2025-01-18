@@ -1,7 +1,6 @@
 package gorm_api
 
 import (
-	"github.com/Juminiy/kube/pkg/util/safe_json"
 	"gorm.io/gorm/clause"
 	"testing"
 )
@@ -42,25 +41,11 @@ func TestClauseCheckCommonCase(t *testing.T) {
 		Limit(10).
 		Offset(0).
 		Find(&productList).Error
-	/*
-		SELECT `id`,`name`,`desc`,`code`,`price`
-		FROM `tbl_product`
-		WHERE
-		(	id = 1
-			AND name LIKE ""
-			OR id = 1 OR id = 2
-			AND NOT id = 3
-			AND NOT id = 4
-			AND `tbl_product`.`tenant_id` = 114514
-		)
-		AND `tbl_product`.`deleted_at` IS NULL
-		ORDER BY id desc,id asc,id DESC,id ASC LIMIT 10
-	*/
 	if err != nil {
 		t.Log(err.Error())
 		return
 	}
-	t.Log(safe_json.Pretty(productList))
+	t.Log(Enc(productList))
 }
 
 func TestClauseCheckRegularCase(t *testing.T) {}

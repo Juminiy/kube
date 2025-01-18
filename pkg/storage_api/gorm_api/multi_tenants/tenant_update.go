@@ -21,7 +21,7 @@ func (cfg *Config) BeforeUpdate(tx *gorm.DB) {
 	}
 
 	if !sCfg.DisableFieldDup {
-		cfg.FieldDupCheck(tx, false)
+		cfg.FieldDupCheck(tx, true)
 		if tx.Error != nil {
 			return
 		}

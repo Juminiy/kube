@@ -1,7 +1,6 @@
 package gorm_api
 
 import (
-	"github.com/Juminiy/kube/pkg/util/safe_json"
 	expmaps "golang.org/x/exp/maps"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
@@ -49,7 +48,7 @@ type WrapType3 struct {
 }
 
 func showSchema(schema *schema.Schema) string {
-	return safe_json.Pretty(map[string]any{
+	return Enc(map[string]any{
 		"Name":             schema.Name,
 		"Table":            schema.Table,
 		"DBNames":          schema.DBNames,
@@ -60,7 +59,7 @@ func showSchema(schema *schema.Schema) string {
 }
 
 func TestSchema(t *testing.T) {
-	//util.Must(_tx.AutoMigrate(&WrapType1{}, &WrapType2{}, &WrapType3{}))
+	/*util.Must(_tx.AutoMigrate(&WrapType1{}, &WrapType2{}, &WrapType3{}))*/
 	for _, ttx := range []*gorm.DB{
 		_txTenant().Find(&WrapType1{}),
 		_txTenant().Find(&WrapType2{}),
