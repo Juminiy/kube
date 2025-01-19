@@ -12,10 +12,10 @@ import (
 )
 
 func EncE(v any) ([]byte, error) {
-	return safe_json.Goccy().Marshal(v)
+	return safe_json.GoCCY().Marshal(v)
 }
 func DecE(b []byte, v any) error {
-	return safe_json.Goccy().Unmarshal(b, v)
+	return safe_json.GoCCY().Unmarshal(b, v)
 }
 
 type EventResp struct {

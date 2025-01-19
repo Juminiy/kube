@@ -7,6 +7,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/iam v1.38.2
 	github.com/aws/smithy-go v1.22.1
 	github.com/brianvoe/gofakeit/v7 v7.1.2
+	github.com/bytedance/sonic v1.12.7
 	github.com/containerd/containerd/v2 v2.0.1
 	github.com/containerd/platforms v1.0.0-rc.0
 	github.com/distribution/reference v0.6.0
@@ -68,10 +69,8 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.32.6 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.25 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.25 // indirect
-	github.com/bytedance/sonic v1.11.6 // indirect
-	github.com/bytedance/sonic/loader v0.1.1 // indirect
+	github.com/bytedance/sonic/loader v0.2.2 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
-	github.com/cloudwego/iasm v0.2.0 // indirect
 	github.com/containerd/cgroups/v3 v3.0.5 // indirect
 	github.com/containerd/containerd v1.7.24 // indirect
 	github.com/containerd/containerd/api v1.8.0 // indirect

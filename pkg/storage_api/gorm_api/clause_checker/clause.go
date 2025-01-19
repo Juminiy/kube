@@ -16,6 +16,9 @@ const (
 )
 
 func (cfg *Config) Clause(tx *gorm.DB) {
+	if tx.Error != nil {
+		return
+	}
 	for _, fn := range []func(tx *gorm.DB){
 		cfg.WhereClause,
 		cfg.OrderByClause,

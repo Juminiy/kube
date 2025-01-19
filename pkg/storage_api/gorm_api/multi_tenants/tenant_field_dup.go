@@ -167,6 +167,10 @@ func (d *FieldDup) doCount(tx *gorm.DB, orExpr clause.Expression) {
 	// where clause 4. tx.Clause
 	if txClause, ok := clause_checker.WhereClause(tx); ok {
 		ntx.Where(clause.Not(txClause))
+		// OR
+		/*ntx.Statement.AddClause(clause.Where{
+			Exprs: []clause.Expression{clause.Not(txClause)},
+		})*/
 	}
 
 	// do Count

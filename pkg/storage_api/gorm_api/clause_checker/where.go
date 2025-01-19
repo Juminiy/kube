@@ -44,8 +44,12 @@ func NoWhereClause(tx *gorm.DB) bool {
 	return !ok
 }
 
-// RowRaw
-// TODO: clause Builder and clause Checker
 func (cfg *Config) RowRawClause(tx *gorm.DB) {
+	if tx.Error != nil {
+		return
+	}
 
+	if cfg.AllowWrapRawOrRowByClause {
+		// TODO: clause Builder and clause Checker
+	}
 }

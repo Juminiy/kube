@@ -7,6 +7,8 @@ import (
 	"github.com/valyala/fastjson"
 )
 
+// for JSON Expansion, no schema Marshal or Unmarshal
+
 var jsonPool fastjson.ArenaPool
 
 // Expansion

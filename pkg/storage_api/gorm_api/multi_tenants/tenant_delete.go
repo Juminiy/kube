@@ -16,10 +16,11 @@ func (cfg *Config) BeforeDelete(tx *gorm.DB) {
 	}
 	sCfg := GetSessionConfig(cfg, tx)
 
-	if (!sCfg.DeleteAllowTenantAll || !tx.AllowGlobalUpdate) &&
-		clause_checker.NoWhereClause(tx) {
-		_ = tx.AddError(ErrDeleteTenantAllNotAllowed)
-		return
+	if !sCfg.DeleteAllowTenantAll && !tx.AllowGlobalUpdate {
+		if clause_checker.NoWhereClause(tx) {
+			_ = tx.AddError(ErrDeleteTenantAllNotAllowed)
+			return
+		}
 	}
 
 	if sCfg.QueryBeforeDelete {

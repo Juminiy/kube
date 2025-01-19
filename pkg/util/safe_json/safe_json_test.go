@@ -40,7 +40,7 @@ func TestSafeJSONIteratorMarshal(t *testing.T) {
 }
 
 func TestSafeDecoder(t *testing.T) {
-	v1 := util.DeepCopyByJSON(safeConfig, v0)
+	v1 := util.DeepCopyByJSON(STD(), v0)
 	t.Log(v1)
 }
 

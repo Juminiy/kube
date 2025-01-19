@@ -74,7 +74,7 @@ func TestV_SliceAppend(t *testing.T) {
 }
 
 func testWatchDo(t *testing.T, v any, do func()) {
-	oldv := util.DeepCopyByJSON(safe_json.Goccy(), v)
+	oldv := util.DeepCopyByJSON(safe_json.GoCCY(), v)
 	do()
 	t.Logf("%v -> %v", oldv, v)
 }

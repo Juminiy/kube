@@ -14,10 +14,11 @@ func (cfg *Config) BeforeUpdate(tx *gorm.DB) {
 	}
 	sCfg := GetSessionConfig(cfg, tx)
 
-	if (!sCfg.UpdateAllowTenantAll || !tx.AllowGlobalUpdate) &&
-		clause_checker.NoWhereClause(tx) {
-		_ = tx.AddError(ErrUpdateTenantAllNotAllowed)
-		return
+	if !sCfg.UpdateAllowTenantAll && !tx.AllowGlobalUpdate {
+		if clause_checker.NoWhereClause(tx) {
+			_ = tx.AddError(ErrUpdateTenantAllNotAllowed)
+			return
+		}
 	}
 
 	if !sCfg.DisableFieldDup {
@@ -35,5 +36,7 @@ func (cfg *Config) BeforeUpdate(tx *gorm.DB) {
 }
 
 func (cfg *Config) AfterUpdate(tx *gorm.DB) {
-
+	if tx.Error != nil {
+		return
+	}
 }

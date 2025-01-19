@@ -2,6 +2,7 @@ package gorm_api
 
 import (
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"testing"
 )
 
@@ -12,6 +13,10 @@ import (
 var Create = func(t *testing.T, i any) {
 	//util.Must(_tx.AutoMigrate(i))
 	Err(t, _txTenant().Create(i).Error)
+}
+
+var Update = func(t *testing.T, model, dest any, conds ...any) {
+	Err(t, _txTenant().Model(model).Where(conds[0], conds[1:]...).Updates(dest).Error)
 }
 
 type UniqueTest1 struct {
@@ -28,6 +33,28 @@ func TestOneFieldOverlapInGe2Groups(t *testing.T) {
 			NumberID: "0019527",
 			Birth:    1919730,
 		})
+}
+
+func TestUpdate1(t *testing.T) {
+	Update(t,
+		UniqueTest1{},
+		UniqueTest1{
+			Name:     "Galaxy",
+			NumberID: "0019527",
+			Birth:    1919730,
+		},
+		clause.Eq{Column: "id", Value: 1},
+	)
+
+	Update(t,
+		UniqueTest1{},
+		map[string]any{
+			"name":      "Galaxy",
+			"number_id": "0019527",
+			"birth":     1919730,
+		},
+		clause.Eq{Column: "id", Value: 1},
+	)
 }
 
 type UniqueTest2 struct {
@@ -60,6 +87,10 @@ func TestOneFieldInOneGroup(t *testing.T) {
 		&UniqueTest3{
 			Name: "RR",
 		})
+
+	Update(t, UniqueTest3{},
+		map[string]any{"name": "RR"},
+		clause.Eq{Column: "id", Value: 1})
 }
 
 type UniqueTest4 struct {

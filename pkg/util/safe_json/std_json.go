@@ -40,8 +40,8 @@ func (std) Unmarshal(b []byte, v any) error {
 	return stdjson.Unmarshal(b, v)
 }
 
-var _std std
+var _STD std
 
 func STD() std {
-	return _std
+	return _STD
 }

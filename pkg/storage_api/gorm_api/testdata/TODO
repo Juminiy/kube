@@ -10,20 +10,22 @@ mt:
 SessionConfig
     - default: Config.GlobalCfg
     - SessionCfg: SessionConfig{}
-        - ✅✅❌ DisableFieldDup
+        - ✅✅✅ SkipTenant
+        - ✅✅✅ DisableFieldDup
         - ✅✅✅ ComplexFieldDup
-        - ✅✅❌ DeleteAllowTenantAll
+        - ✅✅✅ DeleteAllowTenantAll
         - ✅✅✅ QueryBeforeDelete
-        - ✅✅❌ UpdateAllowTenantAll
+        - ✅✅✅ UpdateAllowTenantAll
         - ✅❌❌ UpdateOmitMapZeroElemKey
-        - ✅✅❌ AfterCreateShowTenant
-        - ✅✅❌ AfterQueryShowTenant
+        - ✅✅✅ AfterCreateShowTenant
+        - ✅✅✅ AfterQueryShowTenant
 
 FieldDup
     - ✅✅✅ Create OneStruct
     - ✅✅✅ Create StructList
     - ✅✅✅ Create map[string]any
     - ✅✅✅ Create []map[string]any
+      Clause Build BUG
     - ✅✅✅ Update OneColumn
     - ✅✅✅ Updates OneStruct
     - ✅✅✅ Updates map[string]any
@@ -33,9 +35,9 @@ chainable_api
 
 2. clause_checker
     - expr, exprList
-        - exprList len = 0, omit clause
+        - exprList,expr illegal or len = 0, omit clause
     - orderBy, orderByList
-        - orderByList len = 0, omit clause
+        - orderByList,column len = 0, omit clause
     - groupBy
     - limit
     - TODO: row and raw clause Builder and clause Checker

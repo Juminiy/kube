@@ -16,7 +16,7 @@ type Config struct {
 	BinaryExprStrongType bool
 	NoRegexp             bool
 
-	// effect on where clause on raw and row
+	// effect on where clause, on raw and row
 	AllowWrapRawOrRowByClause bool
 
 	// effect on orderBy clause

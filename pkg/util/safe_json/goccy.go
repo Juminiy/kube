@@ -16,8 +16,8 @@ func (goccy) Unmarshal(b []byte, v any) error {
 	return goccyjson.Unmarshal(b, v)
 }
 
-var _goccy = goccy{}
+var _GoCCY = goccy{}
 
-func Goccy() goccy {
-	return _goccy
+func GoCCY() goccy {
+	return _GoCCY
 }

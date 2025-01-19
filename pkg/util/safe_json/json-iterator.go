@@ -10,12 +10,12 @@ import (
 var (
 	stdConfig  = jsoniter.ConfigCompatibleWithStandardLibrary
 	fastConfig = jsoniter.ConfigFastest
-	safeConfig = jsoniter.Config{
+	favConfig  = jsoniter.Config{
 		IndentionStep:                 0,      // for json pretty
 		MarshalFloatWith6Digits:       true,   // low accuracy float
 		EscapeHTML:                    false,  // no escape for HTML, because no-need html
 		SortMapKeys:                   false,  // no need sorted map keys
-		UseNumber:                     true,   // must use number
+		UseNumber:                     true,   // string as number
 		DisallowUnknownFields:         false,  // unknown field unmarshal, but not error
 		TagKey:                        "json", // default tag is json
 		OnlyTaggedField:               false,  // allow exported but no tagged field
@@ -26,23 +26,23 @@ var (
 )
 
 func unsafeMarshal(v any) ([]byte, error) {
-	return safeConfig.Marshal(v)
+	return favConfig.Marshal(v)
 }
 
 func unsafeMarshalIndent(v any) ([]byte, error) {
-	return safeConfig.MarshalIndent(v, util.JSONMarshalPrefix, util.JSONMarshalIndent)
+	return favConfig.MarshalIndent(v, util.JSONMarshalPrefix, util.JSONMarshalIndent)
 }
 
 func unsafeUnmarshal(b []byte, v any) error {
-	return safeConfig.Unmarshal(b, v)
+	return favConfig.Unmarshal(b, v)
 }
 
 func unsafeEncoder(wr io.Writer) util.JSONEncoder {
-	return safeConfig.NewEncoder(wr)
+	return favConfig.NewEncoder(wr)
 }
 
 func unsafeDecoder(rd io.Reader) util.JSONDecoder {
-	return safeConfig.NewDecoder(rd)
+	return favConfig.NewDecoder(rd)
 }
 
 type jsonIter struct{}
@@ -59,12 +59,8 @@ func (jsonIter) Unmarshal(b []byte, v any) error {
 	return stdConfig.Unmarshal(b, v)
 }
 
-var _jsonIter jsonIter
+var _JSONIter jsonIter
 
-func Jsoniter() jsonIter {
-	return _jsonIter
-}
-
-func SafeConfig() jsoniter.API {
-	return safeConfig
+func JSONIter() jsonIter {
+	return _JSONIter
 }

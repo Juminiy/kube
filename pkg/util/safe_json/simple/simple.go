@@ -1,5 +1,1 @@
 package simple
-
-func Any() {
-
-}

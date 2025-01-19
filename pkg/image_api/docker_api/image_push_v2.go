@@ -26,11 +26,11 @@ func (r *PushImageOfficialAPIResp) Parse(jsonStrSplitByLineFeed string) {
 	r.Aux = make([]*map[string]any, len(jsonStrList))
 	for i := range jsonStrList {
 		msg := jsonmessage.JSONMessage{}
-		err := safe_json.Goccy().Unmarshal(util.String2BytesNoCopy(jsonStrList[i]), &msg)
+		err := safe_json.GoCCY().Unmarshal(util.String2BytesNoCopy(jsonStrList[i]), &msg)
 		if err == nil {
 			var msgAux map[string]any
 			if msg.Aux != nil {
-				err := safe_json.Goccy().Unmarshal([]byte(*msg.Aux), &msgAux)
+				err := safe_json.GoCCY().Unmarshal([]byte(*msg.Aux), &msgAux)
 				if err == nil {
 					r.Aux[i] = &msgAux
 				}
