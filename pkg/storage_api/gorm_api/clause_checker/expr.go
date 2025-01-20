@@ -39,7 +39,7 @@ func checkExprI(exprI clause.Expression) bool {
 			util.AssertZero(exprV.Value) {
 			return false
 		} else if strings.HasPrefix(cast.ToString(exprV.Value), "%") {
-			// TODO: may be deny by cfg
+			// TODO: may be denied by cfg
 		}
 
 	case clause.Expr:

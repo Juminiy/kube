@@ -34,7 +34,8 @@ func init() {
 		PluginName: "multi_tenants",
 	}))
 	util.Must(tx.Use(&clause_checker.Config{
-		PluginName: "clause_checker",
+		PluginName:                 "clause_checker",
+		AllowWriteClauseToRawOrRow: true,
 	}))
 	tx.DB = tx.Debug()
 	_tx = tx

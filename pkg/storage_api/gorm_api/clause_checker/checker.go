@@ -16,8 +16,8 @@ type Config struct {
 	BinaryExprStrongType bool
 	NoRegexp             bool
 
-	// effect on where clause, on raw and row
-	AllowWrapRawOrRowByClause bool
+	// effect on where clause, on raw and row, suggest to Wrap sql by: SELECT * FROM (your sql string)
+	AllowWriteClauseToRawOrRow bool
 
 	// effect on orderBy clause
 	OrderByNoIndexColumn bool

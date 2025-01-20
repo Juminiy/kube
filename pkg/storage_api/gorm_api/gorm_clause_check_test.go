@@ -49,3 +49,19 @@ func TestClauseCheckCommonCase(t *testing.T) {
 }
 
 func TestClauseCheckRegularCase(t *testing.T) {}
+
+func TestClauseWriteToRowOrRaw(t *testing.T) {
+	prods := []Product{}
+	err := _txTenant().Raw("SELECT * FROM `tbl_product`").
+		Where("").
+		Where("", "").
+		Where("r = ?").
+		Where("a >= ? AND b <= ?", 1, 2, 3).
+		Where("id BETWEEN ? AND ?", 1, 1000).
+		Where("name LIKE ?", "%co%").
+		Limit(10).
+		Offset(3).
+		Scan(&prods).Error
+	Err(t, err)
+	t.Log(Enc(prods))
+}

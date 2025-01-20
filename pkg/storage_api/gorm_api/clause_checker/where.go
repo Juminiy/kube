@@ -43,13 +43,3 @@ func NoWhereClause(tx *gorm.DB) bool {
 	_, ok := WhereClause(tx)
 	return !ok
 }
-
-func (cfg *Config) RowRawClause(tx *gorm.DB) {
-	if tx.Error != nil {
-		return
-	}
-
-	if cfg.AllowWrapRawOrRowByClause {
-		// TODO: clause Builder and clause Checker
-	}
-}

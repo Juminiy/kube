@@ -34,11 +34,11 @@ chainable_api
     - ✅✅❌ UseTableParseSchema: .Table() to replacement of .Model()
 
 2. clause_checker
-    - expr, exprList
-        - exprList,expr illegal or len = 0, omit clause
-    - orderBy, orderByList
-        - orderByList,column len = 0, omit clause
-    - groupBy
-    - limit
-    - TODO: row and raw clause Builder and clause Checker
+    - ✅✅✅ expr, exprList
+        - ✅✅✅ exprList,expr illegal or len = 0, omit clause
+    - ✅✅✅ orderBy, orderByList
+        - ✅✅✅ orderByList,column len = 0, omit clause
+    - ✅✅✅ groupBy
+    - ✅✅✅ limit
+    - ✅✅✅ RowOrRawClause row and raw clause Builder and clause Checker
     - TODO: more error case, more expr case
