@@ -6,6 +6,7 @@ require (
 	github.com/aws/aws-sdk-go v1.55.5
 	github.com/aws/aws-sdk-go-v2/service/iam v1.38.2
 	github.com/aws/smithy-go v1.22.1
+	github.com/boltdb/bolt v1.3.1
 	github.com/brianvoe/gofakeit/v7 v7.1.2
 	github.com/bytedance/sonic v1.12.7
 	github.com/containerd/containerd/v2 v2.0.1
@@ -35,6 +36,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/prometheus v0.54.1
 	github.com/samber/lo v1.47.0
+	github.com/sashabaranov/go-openai v1.36.1
 	github.com/shirou/gopsutil/v4 v4.24.11
 	github.com/spf13/cast v1.7.0
 	github.com/teris-io/shortid v0.0.0-20220617161101-71ec9f2aa569
