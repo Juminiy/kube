@@ -29,7 +29,12 @@ func (r *CompletionsReq) Valid() error {
 	if !util.InRange(r.FrequencyPenalty, -2.0, 2.0) {
 		return ErrFrequencyPenalty
 	}
-
+	if !util.InRange(r.MaxTokens, 1, 8192) {
+		return ErrMaxTokens
+	}
+	if !util.InRange(r.PresencePenalty, -2.0, 2.0) {
+		return ErrPresencePenalty
+	}
 	return nil
 }
 
@@ -58,8 +63,9 @@ type CompletionsResp openai.ChatCompletionResponse
 
 func (c *Client) Completions(topic string, req CompletionsReq) (resp CompletionsResp, err error) {
 	if err = req.Valid(); err != nil {
-		return
+		return resp, errors.Wrap(err, "request param valid")
 	}
+
 	var history []openai.ChatCompletionMessage
 	err = c.store.View(func(tx *bolt.Tx) error {
 		topicHistory := tx.Bucket(_BucketCompletions).Get(S2b(topic))
@@ -82,8 +88,7 @@ func (c *Client) Completions(topic string, req CompletionsReq) (resp Completions
 		Post("/chat/completions")
 	if err != nil {
 		return
-	}
-	if rresp.StatusCode() != http.StatusOK {
+	} else if rresp.StatusCode() != http.StatusOK {
 		errH := util.NewErrHandle()
 		errH.Has(ErrRespNotOK)
 		errH.HasStr("caused by ->")
@@ -96,8 +101,10 @@ func (c *Client) Completions(topic string, req CompletionsReq) (resp Completions
 	}
 
 	err = c.store.Update(func(tx *bolt.Tx) error {
-		totalMsg, err := Enc(append(append(history, req.Messages...),
-			lo.Map(resp.Choices, func(item openai.ChatCompletionChoice, _ int) openai.ChatCompletionMessage { return item.Message })...))
+		totalMsg, err := Enc(
+			append(
+				append(history, req.Messages...),
+				lo.Map(resp.Choices, func(item openai.ChatCompletionChoice, _ int) openai.ChatCompletionMessage { return item.Message })...))
 		if err != nil {
 			return err
 		}
