@@ -9,6 +9,7 @@ require (
 	github.com/boltdb/bolt v1.3.1
 	github.com/brianvoe/gofakeit/v7 v7.1.2
 	github.com/bytedance/sonic v1.12.7
+	github.com/chdb-io/chdb-go/chdb v0.0.0-20231112193600-9a45e041749f
 	github.com/containerd/containerd/v2 v2.0.1
 	github.com/containerd/platforms v1.0.0-rc.0
 	github.com/distribution/reference v0.6.0

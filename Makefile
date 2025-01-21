@@ -125,6 +125,11 @@ hardcliv2:
 	$(eval GO_ENVS = env CGO_ENABLED=0 GOOS=linux GOARCH=amd64)
 	$(GO_RUN_BUILD)
 
+.PHONY: dctl
+dctl: set vet
+	$(eval GO_ENVS = env CGO_ENABLED=1)
+	$(GO_RUN_BUILD)
+
 
 ################################
 #		docker executable  	   #
