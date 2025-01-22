@@ -130,6 +130,16 @@ dctl: set vet
 	$(eval GO_ENVS = env CGO_ENABLED=1)
 	$(GO_RUN_BUILD)
 
+.PHONY: dctlv2
+dctlv2: set vet
+	$(eval GO_ENVS = env CGO_ENABLED=1)
+	$(GO_RUN_BUILD)
+
+.PHONY: dctlv3
+dctlv3: set vet
+	$(eval GO_ENVS = env CGO_ENABLED=1)
+	$(GO_RUN_BUILD)
+
 
 ################################
 #		docker executable  	   #

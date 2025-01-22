@@ -40,7 +40,9 @@ require (
 	github.com/sashabaranov/go-openai v1.36.1
 	github.com/shirou/gopsutil/v4 v4.24.11
 	github.com/spf13/cast v1.7.0
+	github.com/spf13/cobra v1.8.1
 	github.com/teris-io/shortid v0.0.0-20220617161101-71ec9f2aa569
+	github.com/urfave/cli/v3 v3.0.0-beta1
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fastjson v1.6.4
 	github.com/xuri/excelize/v2 v2.9.0
@@ -137,6 +139,7 @@ require (
 	github.com/huandu/xstrings v1.4.0 // indirect
 	github.com/imdario/mergo v0.3.16 // indirect
 	github.com/in-toto/in-toto-golang v0.5.0 // indirect
+	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
