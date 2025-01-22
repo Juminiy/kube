@@ -15,7 +15,6 @@ func TestBolt(t *testing.T) {
 	cli, err := New("bolt.db")
 	util.Must(err)
 	defer util.SilentCloseIO("bolt db", cli)
-	t.Log(Enc(cli.Info()))
 	err = cli.Update(func(tx *bolt.Tx) error {
 		btk, err := tx.CreateBucketIfNotExists(S2B("rr"))
 		if err != nil {

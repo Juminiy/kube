@@ -1,39 +1,58 @@
 package main
 
 import (
-	"fmt"
+	"github.com/Juminiy/kube/pkg/util"
 	"github.com/chdb-io/chdb-go/chdb"
-	"os"
-	//_ "github.com/chdb-io/chdb-go/chdb/driver"
+	_ "github.com/chdb-io/chdb-go/chdb/driver"
+	"log"
 )
 
+const DefaultFormat = "json"
+
 func main() {
-	if len(os.Args) == 3 {
-		fmt.Println(chdb.Query(os.Args[1], os.Args[2]))
+	ses, err := chdb.NewSession("chdb.io")
+	util.Must(err)
+	//defer ses.Close()
+
+	/*	crtRes, err := ses.Query(`
+		CREATE TABLE IF NOT EXISTS default.my_first_table
+		(
+		    user_id UInt32,
+		    message String,
+		    timestamp DateTime,
+		    metric Float32
+		)
+		ENGINE = MergeTree
+		PRIMARY KEY (user_id, timestamp)
+		`, DefaultFormat)
+			if err != nil {
+				log.Printf("create table error: %s", err.Error())
+				return
+			}
+			log.Println(crtRes.String())*/
+
+	insRes, err := ses.Query(`
+INSERT INTO default.my_first_table (user_id, message, timestamp, metric) VALUES
+    (101, 'Hello, ClickHouse!',                                 now(),       -1.0    ),
+    (102, 'Insert a lot of rows per batch',                     yesterday(), 1.41421 ),
+    (102, 'Sort your data based on your commonly-used queries', today(),     2.718   ),
+    (101, 'Granules are the smallest chunks of data read',      now() + 5,   3.14159 )
+`, DefaultFormat)
+	if err != nil {
+		log.Printf("insert table error: %s", err.Error())
 		return
 	}
+	log.Println(insRes.String())
 
-	//db, err := sql.Open("chdb", "")
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//rows, err := db.Query(`select COUNT(*) from url('https://datasets.clickhouse.com/hits_compatible/athena_partitioned/hits_0.parquet')`)
-	//if err != nil {
-	//	log.Fatalf("select fail, err: %s", err)
-	//}
-	//cols, err := rows.Columns()
-	//if err != nil {
-	//	log.Fatalf("get result columns fail, err: %s", err)
-	//}
-	//log.Printf("result columns: %v", cols)
-	//defer util.SilentCloseIO("rows", rows)
-	//var count int
-	//for rows.Next() {
-	//	err := rows.Scan(&count)
-	//	if err != nil {
-	//		log.Fatalf("scan fail, err: %s", err)
-	//	}
-	//	log.Printf("count: %d", count)
-	//}
-
+	qryRes, err := ses.Query(`
+SELECT *
+FROM default.my_first_table
+WHERE user_id >= 10 AND user_id <= 110
+ORDER BY timestamp
+`, DefaultFormat)
+	if err != nil {
+		log.Printf("do query error: %s", err.Error())
+		return
+	}
+	log.Println(qryRes.String())
 }
