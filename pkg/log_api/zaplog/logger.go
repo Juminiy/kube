@@ -88,7 +88,7 @@ func logFunc(level zapcore.Level, fn string, templateOrMessage string, v ...any)
 	// default or set to stdlib
 	_stdTipOnce.Do(func() {
 		if _logEngine != logEngineStdlib {
-			stdlog.ErrorF("config log engine is: %s, but it seems wrong, use stdlib instead", _logEngine)
+			stdlog.Warn("zaplog use stdlib")
 		}
 	})
 	switch level {
