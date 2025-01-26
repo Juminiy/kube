@@ -1,6 +1,7 @@
 package safe_reflect
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -39,4 +40,8 @@ func TestStructGetTag2(t *testing.T) {
 	t.Log(StructGetTag2(&[]*[]*[]*structTyp{}, "gorm", "column", "app", "field"))
 	t.Log(StructGetTag2(&[5]*[]*[10]*structTyp{}, "gorm", "column", "app", "field"))
 	t.Log(StructGetTag2(&map[string][]map[string]map[string]*structTyp{}, "gorm", "column", "app", "field"))
+}
+
+func TestTypeFor(t *testing.T) {
+	t.Log(reflect.TypeFor[int]().Name())
 }
