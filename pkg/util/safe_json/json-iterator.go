@@ -64,3 +64,7 @@ var _JSONIter jsonIter
 func JSONIter() jsonIter {
 	return _JSONIter
 }
+
+func JSONIterFav() jsoniter.API {
+	return favConfig
+}
