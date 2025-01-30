@@ -1,7 +1,6 @@
 package minio_api
 
 import (
-	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	miniocred "github.com/minio/minio-go/v7/pkg/credentials"
 	"strconv"
@@ -12,7 +11,7 @@ import (
 func TestClient_CreateAccessKey(t *testing.T) {
 	// create
 	accessKey, err := _cli.CreateAccessKey()
-	stdlog.Info(accessKey)
+	t.Log(accessKey)
 	util.SilentFatalf("create access key error", err)
 
 	// delete
@@ -72,7 +71,7 @@ func TestClient_AccessKeyWorkFlow(t *testing.T) {
 	//create access key
 	userCred, err := _cli.CreateAccessKey()
 	util.SilentFatalf("create access key error", err)
-	stdlog.Info(userCred.AccessKeyID)
+	t.Log(userCred.AccessKeyID)
 
 	policyConfig := PolicyConfig{
 		BusinessUser: businessUser,

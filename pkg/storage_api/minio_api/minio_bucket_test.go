@@ -1,7 +1,6 @@
 package minio_api
 
 import (
-	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/Juminiy/kube/pkg/util/random"
 	"github.com/brianvoe/gofakeit/v7"
@@ -70,7 +69,7 @@ func TestClient_BucketWorkflow(t *testing.T) {
 		BusinessUser: businessUser,
 	}
 	util.SilentFatalf("create bucket error", _cli.MakeBucket(&bucketConfig))
-	stdlog.Info(bucketConfig)
+	t.Log(bucketConfig)
 
 	policyConfig := PolicyConfig{
 		BusinessUser: businessUser,

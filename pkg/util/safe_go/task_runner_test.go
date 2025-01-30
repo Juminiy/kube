@@ -23,7 +23,7 @@ func TestNewRunner2(t *testing.T) {
 	defer func() { close(taskBar) }()
 	go func() {
 		for prog := range taskBar {
-			stdlog.InfoF("progress: %d%%", prog)
+			t.Logf("progress: %d%%", prog)
 		}
 	}()
 

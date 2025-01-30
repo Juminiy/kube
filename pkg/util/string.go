@@ -1,6 +1,8 @@
 package util
 
 import (
+	"github.com/samber/lo"
+	"github.com/spf13/cast"
 	"strings"
 )
 
@@ -113,4 +115,10 @@ func StringTrimPrefix(s string, e ...string) string {
 		s = strings.TrimPrefix(s, e[i])
 	}
 	return s
+}
+
+func StringCast[E any](s []E) []string {
+	return lo.Map(s, func(item E, _ int) string {
+		return cast.ToString(item)
+	})
 }

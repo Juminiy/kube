@@ -58,7 +58,7 @@ func clipValues() []string {
 func renderValues(c *gin.Context, search string) {
 	values := clipValues()
 	if len(search) > 0 {
-		values = lo.Filter(lo.Map(clipValues(), func(item string, index int) string {
+		values = lo.Filter(lo.Map(clipValues(), func(item string, _ int) string {
 			if strings.Contains(search, item) ||
 				strings.Contains(item, search) {
 				return item

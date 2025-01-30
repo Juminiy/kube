@@ -44,7 +44,7 @@ func (t T) IndirectElem() T {
 }
 
 func rts(i []any) []reflect.Type {
-	return lo.Map(i, func(item any, index int) reflect.Type {
+	return lo.Map(i, func(item any, _ int) reflect.Type {
 		return reflect.TypeOf(item)
 	})
 }

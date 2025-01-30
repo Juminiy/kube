@@ -2,7 +2,6 @@ package safe_go
 
 import (
 	"errors"
-	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	"strconv"
 	"testing"
@@ -18,13 +17,13 @@ func TestDryRun(t *testing.T) {
 
 func testRunT(t *testing.T, runner func(...util.Func) error) {
 	defer func() {
-		stdlog.Info("TestRun end")
+		t.Log("TestRun end")
 	}()
-	stdlog.Info("TestRun start")
+	t.Log("TestRun start")
 
 	err := runner(getTestTasks()...)
 	if err != nil {
-		stdlog.Error(err.Error())
+		t.Logf("error: %s", err.Error())
 		return
 	}
 

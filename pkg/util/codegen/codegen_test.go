@@ -2,7 +2,6 @@ package codegen
 
 import (
 	kubeinternal "github.com/Juminiy/kube/pkg/internal_api"
-	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util/zero_reflect"
 	"reflect"
 	"testing"
@@ -76,14 +75,14 @@ func TestManifest_Do_differ_slice_and_variable_length_param(t *testing.T) {
 
 	for i := range typeOfF1.NumIn() {
 		paramIn := typeOfF1.In(i)
-		stdlog.Info(paramIn)
+		t.Log(paramIn)
 	}
 
 	for i := range typeOfF2.NumIn() {
 		paramIn := typeOfF2.In(i)
-		stdlog.Info(paramIn)
+		t.Log(paramIn)
 	}
 
-	stdlog.Info(typeOfF1, valueOfF1, typeOfF2, valueOfF2)
+	t.Log(typeOfF1, valueOfF1, typeOfF2, valueOfF2)
 
 }

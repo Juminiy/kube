@@ -42,7 +42,7 @@ func (v V) MapValues() map[string]any {
 }
 
 func (v V) MapDeleteZero() {
-	for _, ke := range lo.Filter(v.MapRange(), func(item MapKeyElem, index int) bool {
+	for _, ke := range lo.Filter(v.MapRange(), func(item MapKeyElem, _ int) bool {
 		return item.Elem.IsZero()
 	}) {
 		v.SetMapIndex(ke.Key, _ZeroValue)

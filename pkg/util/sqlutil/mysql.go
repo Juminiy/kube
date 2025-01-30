@@ -46,7 +46,7 @@ type ColumnRep struct {
 
 func (v *SelectColumnVisitor) Enter(in tiast.Node) (tiast.Node, bool) {
 	if fieldList, ok := in.(*tiast.FieldList); ok {
-		v.column = lo.Map(fieldList.Fields, func(item *tiast.SelectField, i int) ColumnRep {
+		v.column = lo.Map(fieldList.Fields, func(item *tiast.SelectField, _ int) ColumnRep {
 			var name tiast.ColumnName
 			if item.WildCard != nil {
 				name = tiast.ColumnName{

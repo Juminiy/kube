@@ -31,7 +31,7 @@ func ClipDel(s string) {
 }
 
 func ClipSearch(s string) []string {
-	return lo.FilterMap(ClipList(), func(item string, index int) (string, bool) {
+	return lo.FilterMap(ClipList(), func(item string, _ int) (string, bool) {
 		if strings.Contains(item, s) || strings.Contains(s, item) {
 			return item, true
 		}

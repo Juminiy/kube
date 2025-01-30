@@ -1,7 +1,6 @@
 package docker_api
 
 import (
-	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/Juminiy/kube/pkg/util/safe_json"
 	"testing"
@@ -18,12 +17,12 @@ func TestClient_ListContainers(t *testing.T) {
 func TestClient_ListContainerIds(t *testing.T) {
 	ids, err := _cli.ListContainerIds()
 	util.SilentPanic(err)
-	stdlog.Info(ids)
+	t.Log(ids)
 }
 
 // +passed
 func TestClient_ListContainerNames(t *testing.T) {
 	names, err := _cli.ListContainerNames()
 	util.SilentPanic(err)
-	stdlog.Info(names)
+	t.Log(names)
 }

@@ -1,7 +1,6 @@
 package minio_api
 
 import (
-	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	"testing"
 )
@@ -12,7 +11,7 @@ func TestClient_TempGetObject(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	stdlog.Info(url)
+	t.Log(url)
 }
 
 // +passed
@@ -21,7 +20,7 @@ func TestClient_TempPutObject(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	stdlog.Info(url)
+	t.Log(url)
 }
 
 // +passed

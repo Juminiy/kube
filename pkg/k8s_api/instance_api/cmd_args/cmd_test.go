@@ -2,22 +2,19 @@ package cmd_args
 
 import (
 	"testing"
-
-	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 )
 
 const test = "test"
 
 func TestArgConcat(t *testing.T) {
-	stdlog.Info(LinuxHostNameCtl(test))
-	stdlog.Info(LinuxAddUser(test))
-	stdlog.Info(LinuxSetUserPassword(test))
-	stdlog.Info(LinuxServiceStart(test))
-	stdlog.Info(LinuxTouch(test))
-	stdlog.Info(LinuxEcho(test))
-	stdlog.Info(LinuxChmod("777", test))
-	stdlog.Info(LinuxMkdir(test))
-
+	t.Log(LinuxHostNameCtl(test))
+	t.Log(LinuxAddUser(test))
+	t.Log(LinuxSetUserPassword(test))
+	t.Log(LinuxServiceStart(test))
+	t.Log(LinuxTouch(test))
+	t.Log(LinuxEcho(test))
+	t.Log(LinuxChmod("777", test))
+	t.Log(LinuxMkdir(test))
 }
 
 func TestS3fsMount_Args(t *testing.T) {
@@ -30,6 +27,5 @@ func TestS3fsMount_Args(t *testing.T) {
 			GenMethod: S3CredNamingGenUUID,
 		},
 	}
-
-	stdlog.Info(s3fsM.Args())
+	t.Log(s3fsM.Args())
 }

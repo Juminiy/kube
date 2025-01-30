@@ -18,7 +18,7 @@ func TestGetSet(t *testing.T) {
 	t.Log(reflect2.TypeOf(10))
 
 	reflect2.TypeOf(i).Set(&i, &j)
-	t.Log()
+	t.Log(i, j)
 }
 
 func printBinary(v any) {

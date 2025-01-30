@@ -31,7 +31,7 @@ type DiskUsageInfo struct {
 func diskV2() DiskV2 {
 	anyUsage := false
 	usageList := lo.Map(disk(),
-		func(item psdisk.PartitionStat, index int) *psdisk.UsageStat {
+		func(item psdisk.PartitionStat, _ int) *psdisk.UsageStat {
 			usageStat, err := psdisk.Usage(item.Mountpoint)
 			if err != nil {
 				anyUsage = true
@@ -45,12 +45,12 @@ func diskV2() DiskV2 {
 			usageList = []*psdisk.UsageStat{usageRoot}
 		}
 	}
-	usageList = lo.Filter(usageList, func(item *psdisk.UsageStat, index int) bool {
+	usageList = lo.Filter(usageList, func(item *psdisk.UsageStat, _ int) bool {
 		return item != nil
 	})
 
 	return DiskV2{
-		DiskUsageInfo: lo.Map(usageList, func(item *psdisk.UsageStat, index int) (info DiskUsageInfo) {
+		DiskUsageInfo: lo.Map(usageList, func(item *psdisk.UsageStat, _ int) (info DiskUsageInfo) {
 			if item == nil {
 				return info
 			}

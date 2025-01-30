@@ -49,7 +49,7 @@ func (v V) Indirect() V {
 var _ZeroValue = reflect.Value{}
 
 func rvs(i []any) []reflect.Value {
-	return lo.Map(i, func(item any, index int) reflect.Value {
+	return lo.Map(i, func(item any, _ int) reflect.Value {
 		return reflect.ValueOf(item)
 	})
 }
@@ -62,7 +62,7 @@ func Any(rv reflect.Value) any {
 }
 
 func Anys(rv []reflect.Value) []any {
-	return lo.Map(rv, func(item reflect.Value, index int) any {
+	return lo.Map(rv, func(item reflect.Value, _ int) any {
 		return Any(item)
 	})
 }

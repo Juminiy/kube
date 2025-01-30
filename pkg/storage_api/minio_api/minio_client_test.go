@@ -1,7 +1,6 @@
 package minio_api
 
 import (
-	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	"gopkg.in/yaml.v3"
 	"io"
@@ -43,5 +42,5 @@ func TestClient_AtomicWorkflow(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	stdlog.Info(respJSONStr)
+	t.Log(respJSONStr)
 }

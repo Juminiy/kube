@@ -31,7 +31,7 @@ func (cmder) buildKit(options types.ImageBuildOptions) []string {
 		"--local", "dockerfile=.",
 		"--debug-json-cache-metrics", "stdout")
 
-	imageOutputs := lo.FilterMap(options.Outputs, func(item types.ImageBuildOutput, index int) (types.ImageBuildOutput, bool) {
+	imageOutputs := lo.FilterMap(options.Outputs, func(item types.ImageBuildOutput, _ int) (types.ImageBuildOutput, bool) {
 		if item.Type == buildkitclient.ExporterImage || item.Type == BuildExporterRegistry {
 			return item, true
 		}

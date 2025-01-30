@@ -3,8 +3,6 @@ package minio_api
 import (
 	"strconv"
 	"testing"
-
-	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 )
 
 // +passed
@@ -16,7 +14,7 @@ func TestPolicyConfig_IBAPAccessKeyWithOneBucketObjectCRUDPolicy(t *testing.T) {
 		},
 		BucketName: "s3fs-mount-bucket-chisato-x",
 	}
-	stdlog.Info(pc.IBAPAccessKeyWithOneBucketObjectCRUDPolicy())
+	t.Log(pc.IBAPAccessKeyWithOneBucketObjectCRUDPolicy())
 }
 
 // +passed
@@ -28,5 +26,5 @@ func TestPolicyConfig_RBAPBucketWithAdminAllWithAccessKeyOneBucketObjectCRUDPoli
 		},
 		BucketName: "s3fs-mount-bucket-chisato-x",
 	}
-	stdlog.Info(pc.RBAPBucketWithAdminAllWithAccessKeyOneBucketObjectCRUDPolicy())
+	t.Log(pc.RBAPBucketWithAdminAllWithAccessKeyOneBucketObjectCRUDPolicy())
 }
