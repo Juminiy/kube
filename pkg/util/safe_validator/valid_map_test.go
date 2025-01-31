@@ -1,10 +1,10 @@
 package safe_validator
 
 import (
-	testing2 "testing"
+	"testing"
 )
 
-func TestStrict_Map(t *testing2.T) {
+func TestStrict_Map(t *testing.T) {
 	t.Log(Strict().MapE(map[string]t0{
 		"kv1": correctT0Elem[0],
 		"kv2": correctT0Elem[1],

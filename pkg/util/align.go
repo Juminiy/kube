@@ -7,11 +7,11 @@ func GetTypeByteSize(varOf any) uintptr {
 }
 
 func GetValueByteSize(varOf any) int {
-	switch varOf.(type) {
+	switch v := varOf.(type) {
 	case string:
-		return len(varOf.(string))
+		return len(v)
 	case []byte:
-		return len(varOf.([]byte))
+		return len(v)
 	default:
 		return -1
 	}

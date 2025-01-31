@@ -4,10 +4,10 @@ import (
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/xuri/excelize/v2"
 	"os"
-	testing2 "testing"
+	"testing"
 )
 
-func TestNewWriter(t *testing2.T) {
+func TestNewWriter(t *testing.T) {
 	err := NewWriter().AppendRow("sheet-test",
 		[]any{"Brand", "Sale", "Price"},
 		[]any{"Apple", 10, 6.66},
@@ -20,7 +20,7 @@ func TestNewWriter(t *testing2.T) {
 	util.Must(err)
 }
 
-func TestNewReader(t *testing2.T) {
+func TestNewReader(t *testing.T) {
 	fptr, err := os.Open("testdata/sheet1.xlsx")
 	util.Must(err)
 	defer util.SilentCloseIO("file ptr", fptr)
@@ -30,4 +30,7 @@ func TestNewReader(t *testing2.T) {
 	util.Must(err)
 	t.Log(allrows)
 	t.Log(rows)
+}
+
+func TestCSV(t *testing.T) {
 }

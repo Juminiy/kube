@@ -1,9 +1,10 @@
 package util
 
 import (
-	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"net"
 	"strings"
+
+	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 )
 
 // LookupIP
@@ -45,17 +46,16 @@ func IPStringFromAddr(addr []net.Addr) []string {
 
 func IPFromAddr(addr net.Addr) net.IP {
 	var ip net.IP
-	switch addr.(type) {
+	switch addrv := addr.(type) {
 	case *net.IPAddr:
-		ip = addr.(*net.IPAddr).IP
+		ip = addrv.IP
 	case *net.IPNet:
-		ip = addr.(*net.IPNet).IP
+		ip = addrv.IP
 	case *net.TCPAddr:
-		ip = addr.(*net.TCPAddr).IP
+		ip = addrv.IP
 	case *net.UDPAddr:
-		ip = addr.(*net.UDPAddr).IP
-	case *net.UnixAddr:
-		ip = addr.(*net.IPAddr).IP
+		ip = addrv.IP
+	case *net.UnixAddr: // noIP
 	}
 	return ip
 }
