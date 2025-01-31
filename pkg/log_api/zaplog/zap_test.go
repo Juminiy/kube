@@ -2,6 +2,7 @@ package zaplog
 
 import (
 	kubeinternal "github.com/Juminiy/kube/pkg/internal_api"
+	"github.com/Juminiy/kube/pkg/util"
 	"path/filepath"
 	"testing"
 )
@@ -18,9 +19,7 @@ var _cfg = New().
 
 func testInit() {
 	_cfg.Load()
-	if testDirErr != nil {
-		panic(testDirErr)
-	}
+	util.Must(testDirErr)
 }
 
 // +passed +windows +darwin

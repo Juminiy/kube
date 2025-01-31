@@ -9,13 +9,13 @@ import (
 )
 
 func TestInternalKeywordSizeOf(t *testing.T) {
-	println(unsafe.Sizeof("viviviviviviviviviviviviviviviviviviviviviv")) // 16B
-	println(unsafe.Sizeof("v"))                                           // 16B
-	println(unsafe.Sizeof(map[int]struct{}{}))                            // 8B
-	println(unsafe.Sizeof(func() {}))                                     // 8B
-	println(unsafe.Sizeof([]int{}))                                       // 24B
-	println(unsafe.Sizeof([5]int{}))                                      // len*type_size B
-	println(unsafe.Sizeof(bool(true)))                                    // 1B
+	t.Log(unsafe.Sizeof("viviviviviviviviviviviviviviviviviviviviviv")) // 16B
+	t.Log(unsafe.Sizeof("v"))                                           // 16B
+	t.Log(unsafe.Sizeof(map[int]struct{}{}))                            // 8B
+	t.Log(unsafe.Sizeof(func() {}))                                     // 8B
+	t.Log(unsafe.Sizeof([]int{}))                                       // 24B
+	t.Log(unsafe.Sizeof([5]int{}))                                      // len*type_size B
+	t.Log(unsafe.Sizeof(bool(true)))                                    // 1B
 }
 
 func fa(*bytes.Buffer) {}
@@ -45,4 +45,20 @@ func TestF(t *testing.T) {
 
 	dofe(fe)
 	//dofe(ff) //error
+}
+
+func TestG(t *testing.T) {
+	var logFn = func(lv, rv string, eq bool) {
+		eqStr := "=="
+		if !eq {
+			eqStr = "!="
+		}
+		t.Logf("key[T] value: %8v %s %8v", lv, eqStr, rv)
+	}
+	type key[T any] struct{}
+	var kInt any = key[int]{}
+	var kStr any = key[string]{}
+	logFn("key[int]", "key[int]", kInt == kInt)
+	logFn("key[str]", "key[str]", kStr == kStr)
+	logFn("key[int]", "key[str]", kInt == kStr)
 }

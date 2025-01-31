@@ -19,3 +19,8 @@ func discountPerLog(t *testing.T, tot []float64, cnt []int, per string) {
 		t.Logf("¥%.2f/%d%s = %.4f, 500g = ¥%.2f", tot[i], cnt[i], per, tot[i]/float64(cnt[i]), tot[i]/float64(cnt[i])*500)
 	}
 }
+
+func TestLogLog(t *testing.T) {
+	t.Log(LoopLog(1e10, 2))
+	t.Log(LogLog(1e10, 2, 2))
+}

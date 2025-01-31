@@ -27,10 +27,10 @@ func TestClient_CreateProject(t *testing.T) {
 	t.Log(err)
 
 	getProject, err := _cli.GetProject(req.ProjectName)
-	util.MustDetail(err)
+	util.Must(err)
 
 	bs, err := getProject.Payload.MarshalBinary()
-	util.MustDetail(err)
+	util.Must(err)
 	t.Log(util.Bytes2StringNoCopy(bs))
 }
 

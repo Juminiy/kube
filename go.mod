@@ -35,6 +35,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2
 	github.com/opencontainers/image-spec v1.1.0
 	github.com/panjf2000/ants/v2 v2.10.0
+	github.com/pingcap/tidb/pkg/parser v0.0.0-20231124053542-069631e2ecfe
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/prometheus v0.54.1
 	github.com/samber/lo v1.47.0
@@ -188,7 +189,6 @@ require (
 	github.com/pingcap/errors v0.11.5-0.20210425183316-da1aaba5fb63 // indirect
 	github.com/pingcap/failpoint v0.0.0-20220801062533-2eaa32854a6c // indirect
 	github.com/pingcap/log v1.1.0 // indirect
-	github.com/pingcap/tidb/pkg/parser v0.0.0-20231124053542-069631e2ecfe // indirect
 	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10 // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect

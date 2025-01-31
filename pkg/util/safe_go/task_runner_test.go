@@ -1,7 +1,6 @@
 package safe_go
 
 import (
-	"errors"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	"math/rand/v2"
@@ -44,9 +43,9 @@ func getTestTasks2() []util.Func {
 			stdlog.InfoW("sleep for", "time", sleepSec)
 			time.Sleep(util.TimeSecond(sleepSec))
 			if sleepSec == 7 {
-				panic("faked panic")
+				panic(util.ErrFaked)
 			} else if sleepSec == 5 {
-				return errors.New("faked error")
+				return util.ErrFaked
 			}
 			return nil
 		}

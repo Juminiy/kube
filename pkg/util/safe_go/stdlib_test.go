@@ -2,6 +2,7 @@ package safe_go
 
 import (
 	"errors"
+	"fmt"
 	"github.com/Juminiy/kube/pkg/util"
 	"strconv"
 	"testing"
@@ -40,7 +41,7 @@ func getTestTasks() []util.Func {
 			} else if i%7 == 0 {
 				return errors.New("faked error index: " + strconv.Itoa(i) + "")
 			} else if i%555 == 0 {
-				panic("faked panic index: " + strconv.Itoa(i) + "")
+				util.Must(fmt.Errorf("faked panic index: " + strconv.Itoa(i) + ""))
 			}
 			return nil
 		}

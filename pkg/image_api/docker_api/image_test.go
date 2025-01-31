@@ -74,9 +74,7 @@ func TestClient_ImportImageV2(t *testing.T) {
 // +passed
 func TestClient_ExportImageImportImage(t *testing.T) {
 	exportResp, err := _cli.ExportImage(imageRefV10.String())
-	if err != nil {
-		panic(err)
-	}
+	util.Must(err)
 
 	//imageBytes, err := io.ReadAll(imageRC)
 	defer util.SilentCloseIO("image read error", exportResp.ImageFileReader)

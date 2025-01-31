@@ -3,9 +3,10 @@ package stdlog
 
 import (
 	"fmt"
-	"github.com/Juminiy/kube/pkg/internal_api"
 	"log"
 	"os"
+
+	"github.com/Juminiy/kube/pkg/internal_api"
 )
 
 // same interface with zap sugar log

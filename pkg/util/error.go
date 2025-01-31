@@ -72,11 +72,11 @@ func Must(err error) {
 	}
 }
 
-func MustDetail(err error) {
+/*func MustDetail(err error) {
 	if err != nil {
 		panic(err.Error())
 	}
-}
+}*/
 
 func MergeError(err ...error) error {
 	return mergeErrorSep(", ", err...)

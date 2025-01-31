@@ -35,12 +35,8 @@ func TestClient_AtomicWorkflow(t *testing.T) {
 		BucketQuotaByte: 114514,
 		BucketName:      "funkqqqzaaweqaadfafwq4124asf1122",
 	})
-	if err != nil {
-		panic(err)
-	}
+	util.Must(err)
 	respJSONStr, err := util.MarshalJSONPretty(resp)
-	if err != nil {
-		panic(err)
-	}
+	util.Must(err)
 	t.Log(respJSONStr)
 }
