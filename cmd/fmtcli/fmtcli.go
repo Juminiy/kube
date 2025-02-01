@@ -55,10 +55,6 @@ func printv() {
 }
 
 func scanv() {
-	/*fmt.Fscan()
-	fmt.Fscanf()
-	fmt.Fscanln()*/
-
 	var (
 		bv  bool
 		iv  int
@@ -67,25 +63,39 @@ func scanv() {
 		sv  string
 		bsv []byte
 
-		//sfmt = "%b %d %d %f %s %s"
+		sfmt = "%t %d %d %f %s %s"
+		err  error
 	)
-	_, err := fmt.Scanln(&bv, &iv, &uiv, &fv, &sv, &bsv)
+	/*
+		fmt.Fscan() 	// \n isSpace, \n notEnd
+		fmt.Fscanln() 	// \n notSpace, \n isEnd
+		fmt.Fscanf() 	// \n notSpace, \n notEnd
+	*/
+
+	_, err = fmt.Scan(&bv, &iv, &uiv, &fv, &sv, &bsv)
 	util.Must(err)
 	fmt.Println(bv, iv, uiv, fv, sv, bsv)
 
-	/*_, err = fmt.Scanf(sfmt, &bv, &iv, &uiv, &fv, &sv, &bsv)
+	_, err = fmt.Scanln(&bv, &iv, &uiv, &fv, &sv, &bsv)
 	util.Must(err)
-	fmt.Println(bv, iv, uiv, fv, sv, bsv)*/
-	//fmt.Scanln()
+	fmt.Println(bv, iv, uiv, fv, sv, bsv)
+
+	_, err = fmt.Scanf(sfmt, &bv, &iv, &uiv, &fv, &sv, &bsv)
+	util.Must(err)
+	fmt.Println(bv, iv, uiv, fv, sv, bsv)
+
+	_, err = fmt.Sscan("true -1919180 114514 -114.514 vvmike vvarcw", &bv, &iv, &uiv, &fv, &sv, &bsv)
+	util.Must(err)
+	fmt.Println(bv, iv, uiv, fv, sv, bsv)
 
 	_, err = fmt.Sscanln("false -114514 1919810 114.514 rrtext rrbusy", &bv, &iv, &uiv, &fv, &sv, &bsv)
 	util.Must(err)
 	fmt.Println(bv, iv, uiv, fv, sv, bsv)
 
-	/*_, err = fmt.Sscanf("true 1919810 -114514 1919.810 yyhex yysoft", sfmt, &bv, &iv, &uiv, &fv, &sv, &bsv)
+	_, err = fmt.Sscanf("true -95270 8888 1919.810 yyhex yysoft", sfmt, &bv, &iv, &uiv, &fv, &sv, &bsv)
 	util.Must(err)
-	fmt.Println(bv, iv, uiv, fv, sv, bsv)*/
-	//fmt.Sscanln()
+	fmt.Println(bv, iv, uiv, fv, sv, bsv)
+
 }
 
 func otherv() {

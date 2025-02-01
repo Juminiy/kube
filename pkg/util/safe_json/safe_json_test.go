@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/Juminiy/kube/pkg/util"
 	goccyjson "github.com/goccy/go-json"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -70,4 +71,25 @@ func TestGoccy(t *testing.T) {
 	bs, err := goccyjson.Marshal(v0)
 	util.Must(err)
 	t.Log(util.Bytes2StringNoCopy(bs))
+}
+
+func TestInt64Overflow(t *testing.T) {
+	var ofj = []byte("{\"OFII64\":18446744073709551615, \"OFAI64\":18446744073709551616}")
+
+	for _, unl := range []util.JSONUnmarshaler{
+		STD(),
+		JSONIterFav(),
+		GoCCY(),
+		Sonic(),
+	} {
+		var ofv struct {
+			OFII64 uint64
+			OFAI64 any
+		}
+		err := unl.Unmarshal(ofj, &ofv)
+		if err != nil {
+			t.Logf("%s %v", reflect.TypeOf(unl).String(), err)
+		}
+		t.Logf("%d %f", ofv.OFII64, ofv.OFAI64)
+	}
 }
