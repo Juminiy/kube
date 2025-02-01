@@ -12,6 +12,7 @@ require (
 	github.com/chdb-io/chdb-go v1.7.1
 	github.com/containerd/containerd/v2 v2.0.1
 	github.com/containerd/platforms v1.0.0-rc.0
+	github.com/dchest/captcha v1.1.0
 	github.com/dgraph-io/badger/v4 v4.5.1
 	github.com/distribution/reference v0.6.0
 	github.com/docker/docker v27.4.0-rc.2+incompatible
@@ -99,7 +100,6 @@ require (
 	github.com/creack/pty v1.1.21 // indirect
 	github.com/cznic/mathutil v0.0.0-20181122101859-297441e03548 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
-	github.com/dchest/captcha v1.1.0 // indirect
 	github.com/dgraph-io/ristretto/v2 v2.1.0 // indirect
 	github.com/docker/distribution v2.8.3+incompatible // indirect
 	github.com/docker/go-connections v0.5.0 // indirect
