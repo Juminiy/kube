@@ -25,10 +25,14 @@ FieldDup
     - ✅✅✅ Create StructList
     - ✅✅✅ Create map[string]any
     - ✅✅✅ Create []map[string]any
-      Clause Build BUG
+        - ✅✅✅ Clause Build BUG
     - ✅✅✅ Update OneColumn
     - ✅✅✅ Updates OneStruct
     - ✅✅✅ Updates map[string]any
+
+Create
+    - ✅✅✅ WriteBack AutoIncrement PrimaryKey map[string]any, *map[string]any
+    - ✅✅✅ WriteBack AutoIncrement PrimaryKey *[]map[string]any
 
 chainable_api
     - ✅✅❌ UseTableParseSchema: .Table() to replacement of .Model()
@@ -41,4 +45,5 @@ chainable_api
     - ✅✅✅ groupBy
     - ✅✅✅ limit
     - ✅✅✅ RowOrRawClause row and raw clause Builder and clause Checker
+        - ✅✅✅ SkipRawOrRow, (Fix BUG: when migrate table)
     - TODO: more error case, more expr case

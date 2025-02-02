@@ -9,16 +9,18 @@ import (
 type Config struct {
 	PluginName string
 
+	// TODO: not implement
 	// effect on where clause
 	LikeNoPrefixMatch    bool // ignore or warn of (column LIKE '%which')
 	IndexColumnNoExpr    bool // ignore or warn of indexed_column use expr or function
-	InExprMaxValuesLen   *int
-	BinaryExprStrongType bool
-	NoRegexp             bool
+	InExprMaxValuesLen   *int // restrict of IN expression max values count
+	BinaryExprStrongType bool // binary expression must strong type compare
+	NoRegexp             bool // forbidden of regexp expression
 
 	// effect on where clause, on raw and row, suggest to Wrap sql by: SELECT * FROM (your sql string)
 	AllowWriteClauseToRawOrRow bool
 
+	// TODO: not implement
 	// effect on orderBy clause
 	OrderByNoIndexColumn bool
 }
@@ -51,3 +53,5 @@ func (cfg *Config) Initialize(tx *gorm.DB) error {
 
 var _Ind = safe_reflectv3.Indirect
 var _Dir = safe_reflectv3.Direct
+
+const SkipRawOrRow = "skip_raw_row"

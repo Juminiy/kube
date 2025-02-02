@@ -3,7 +3,7 @@ package clause_checker
 import "gorm.io/gorm"
 
 func (cfg *Config) RowRawClause(tx *gorm.DB) {
-	if tx.Error != nil {
+	if _, ok := tx.Get(SkipRawOrRow); ok || tx.Error != nil {
 		return
 	}
 
