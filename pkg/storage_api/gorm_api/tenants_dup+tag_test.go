@@ -11,7 +11,6 @@ import (
 */
 
 var Create = func(t *testing.T, i any) {
-	//util.Must(_tx.AutoMigrate(i))
 	Err(t, _txTenant().Create(i).Error)
 }
 

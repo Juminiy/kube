@@ -45,3 +45,14 @@ func TestStructGetTag2(t *testing.T) {
 func TestTypeFor(t *testing.T) {
 	t.Log(reflect.TypeFor[int]().Name())
 }
+
+func TestTypeAlias(t *testing.T) {
+	type tStruct struct {
+		I int
+	}
+	type t0Struct tStruct
+	type t1Struct = tStruct
+	t.Log(reflect.TypeFor[tStruct]().String())  // tStruct
+	t.Log(reflect.TypeFor[t0Struct]().String()) // t0Struct
+	t.Log(reflect.TypeFor[t1Struct]().String()) // tStruct
+}

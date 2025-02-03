@@ -21,14 +21,17 @@ func (cfg *Config) BeforeCreate(tx *gorm.DB) {
 		}
 	}
 
-	tInfo := cfg.TenantInfo(tx)
-	if tInfo == nil {
-		return
+	// TODO: add Create Map with Default And NotNull Values
+	// for example: gorm.Model.CreatedAt, gorm.Model.UpdatedAt
+	if _, ok := hasSchemaAndDestIsMap(tx); ok {
+
 	}
-	_Ind(tx.Statement.ReflectValue).SetField(map[string]any{
-		tInfo.Name: tInfo.Value, // FieldName
-		/*tInfo.DBName: tInfo.Value, // DBName*/
-	})
+
+	if tInfo := cfg.TenantInfo(tx); tInfo != nil {
+		_Ind(tx.Statement.ReflectValue).SetField(map[string]any{
+			tInfo.Field.Name: tInfo.Field.Value, // FieldName
+		})
+	}
 }
 
 func (cfg *Config) AfterCreate(tx *gorm.DB) {
@@ -36,18 +39,8 @@ func (cfg *Config) AfterCreate(tx *gorm.DB) {
 		return
 	}
 
-	if !GetSessionConfig(cfg, tx).AfterCreateShowTenant {
-		tInfo := cfg.TenantInfo(tx)
-		if tInfo == nil {
-			return
-		}
-		_Ind(tx.Statement.ReflectValue).SetField(map[string]any{
-			tInfo.Name: nil,
-		})
-	}
-
 	// write back MapType's autoIncrement primaryKey values
-	if sch := tx.Statement.Schema; sch != nil && _Ind(tx.Statement.ReflectValue).T.Indirect().Kind() == reflect.Map {
+	if sch, ok := hasSchemaAndDestIsMap(tx); ok {
 		autoIncPk := lo.Filter(sch.PrimaryFields, func(item *gormschema.Field, _ int) bool {
 			return item.AutoIncrement
 		})
@@ -75,12 +68,19 @@ func (cfg *Config) AfterCreate(tx *gorm.DB) {
 				autoIncPkFunc(autoIncPk, m, srcMap[i])
 				return true
 			})
-			_Ind(tx.Statement.ReflectValue).Set(reflect.ValueOf(dstMap))
+			tx.Statement.ReflectValue.Set(reflect.ValueOf(dstMap))
 
 		default: // ignore
 		}
 	}
 
+	if !GetSessionConfig(cfg, tx).AfterCreateShowTenant {
+		if tInfo := cfg.TenantInfo(tx); tInfo != nil {
+			_Ind(tx.Statement.ReflectValue).SetField(map[string]any{
+				tInfo.Field.Name: nil, // FieldName
+			})
+		}
+	}
 }
 
 // Replace Create Map Key:
@@ -105,4 +105,11 @@ func addAutoIncPkNameByDBName(autoIncPk []*gormschema.Field, dstMap, srcMap map[
 		}
 		return true
 	})
+}
+
+func hasSchemaAndDestIsMap(tx *gorm.DB) (sch *gormschema.Schema, ok bool) {
+	sch = tx.Statement.Schema
+	return sch,
+		sch != nil &&
+			_Ind(tx.Statement.ReflectValue).T.Indirect().Kind() == reflect.Map
 }

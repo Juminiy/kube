@@ -7,6 +7,10 @@ import (
 	"testing"
 )
 
+var _txTenant = func() *gorm.DB {
+	return _tx.Set("tenant_id", uint(114514))
+}
+
 func TestQueryBeforeDeleteOne(t *testing.T) {
 	prod := Product{}
 	err := _txTenant().Set(multi_tenants.SessionCfg, multi_tenants.SessionConfig{

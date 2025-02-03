@@ -100,7 +100,20 @@ func TestCreate5(t *testing.T) {
 }
 
 func TestDoDelete(t *testing.T) {
-	Err(t, _txTenant().Delete(&Product{}, "code BETWEEN ? AND ?", 100007, 100010).Error)
+	Err(t, _txTenant().
+		Or("code BETWEEN ? AND ?", 100007, 100010).
+		Or("code = ?", 300179). // Found Tenant BUG
+		Delete(&Product{}).Error)
+}
+
+func TestDoCreate(t *testing.T) {
+	Err(t, _txTenant().Create(&Product{
+		Name:       "Shoes",
+		Desc:       "Walk and Run",
+		NetContent: "2pack/pair",
+		Code:       300179,
+		Price:      29900,
+	}).Error)
 }
 
 func TestCreateMapOneWriteBackAutoIncPk(t *testing.T) {

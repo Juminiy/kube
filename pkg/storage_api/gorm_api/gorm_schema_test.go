@@ -1,6 +1,7 @@
 package gorm_api
 
 import (
+	"github.com/Juminiy/kube/pkg/util"
 	expmaps "golang.org/x/exp/maps"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
@@ -16,6 +17,10 @@ type Product struct {
 	Code       uint `mt:"unique:code"`
 	Price      int64
 	TenantID   uint `gorm:"index;" mt:"tenant" json:"-"`
+}
+
+func TestCreateProduct(t *testing.T) {
+	util.Must(_tx.AutoMigrate(&Product{}))
 }
 
 type InnerType struct {
@@ -59,7 +64,7 @@ func showSchema(schema *schema.Schema) string {
 }
 
 func TestSchema(t *testing.T) {
-	/*util.Must(_tx.AutoMigrate(&WrapType1{}, &WrapType2{}, &WrapType3{}))*/
+	util.Must(_tx.AutoMigrate(&WrapType1{}, &WrapType2{}, &WrapType3{}))
 	for _, ttx := range []*gorm.DB{
 		_txTenant().Find(&WrapType1{}),
 		_txTenant().Find(&WrapType2{}),

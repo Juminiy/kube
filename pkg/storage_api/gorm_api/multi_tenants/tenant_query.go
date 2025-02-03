@@ -5,11 +5,7 @@ import (
 )
 
 func (cfg *Config) BeforeQuery(tx *gorm.DB) {
-	if tx.Error != nil {
-		return
-	}
-
-	if _SkipQueryCallback.Ok(tx) {
+	if tx.Error != nil || _SkipQueryCallback.Ok(tx) {
 		return
 	}
 
@@ -22,13 +18,11 @@ func (cfg *Config) AfterQuery(tx *gorm.DB) {
 	}
 
 	if !GetSessionConfig(cfg, tx).AfterQueryShowTenant {
-		tInfo := cfg.TenantInfo(tx)
-		if tInfo == nil {
-			return
+		if tInfo := cfg.TenantInfo(tx); tInfo != nil {
+			_Ind(tx.Statement.ReflectValue).SetField(map[string]any{
+				tInfo.Field.Name: nil, // FieldName
+			})
 		}
-		_Ind(tx.Statement.ReflectValue).SetField(map[string]any{
-			tInfo.Name: nil,
-		})
 	}
 }
 

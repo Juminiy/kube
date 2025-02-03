@@ -14,10 +14,6 @@ import (
 
 var _tx *DB
 
-var _txTenant = func() *gorm.DB {
-	return _tx.Set("tenant_id", uint(114514))
-}
-
 func init() {
 	tx, err := New(gorm.Config{
 		Dialector: gormsqlite.Open("kdb.db"),
@@ -36,10 +32,10 @@ func init() {
 	util.Must(tx.Use(&clause_checker.Config{
 		PluginName:                 "clause_checker",
 		AllowWriteClauseToRawOrRow: true,
+		BeforePlugins:              []string{"multi_tenants"},
 	}))
 	tx.DB = tx.Debug()
 	_tx = tx
-	//util.Must(_tx.AutoMigrate(&Product{}))
 }
 
 var Enc = safe_json.Pretty
@@ -56,5 +52,3 @@ var Err = func(t *testing.T, err error) {
 		}
 	}
 }
-
-func Test0(t *testing.T) {}

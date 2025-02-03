@@ -42,7 +42,7 @@ func (cfg *Config) doQueryBeforeDelete(tx *gorm.DB) {
 	ntx = _SkipQueryCallback.Set(ntx)
 
 	if tInfo := cfg.TenantInfo(tx); tInfo != nil {
-		ntx.Where(tInfo.Clause())
+		tInfo.AddClause(ntx)
 	}
 
 	if schema := tx.Statement.Schema; schema != nil {

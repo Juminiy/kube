@@ -2,6 +2,7 @@ package gorm_api
 
 import (
 	"github.com/Juminiy/kube/pkg/storage_api/gorm_api/clause_checker"
+	"gorm.io/gorm"
 	"gorm.io/plugin/soft_delete"
 	"testing"
 )
@@ -46,8 +47,7 @@ func (Enrolled) TableName() string {
 }
 
 func TestCreateStuCourse(t *testing.T) {
-	Err(t, _tx.Set(clause_checker.SkipRawOrRow, struct{}{}).
-		AutoMigrate(&Student{}, &Course{}, &Enrolled{}, &CourseDetail{}))
+	Err(t, _tx.Set(clause_checker.SkipRawOrRow, struct{}{}).AutoMigrate(&Student{}, &Course{}, &Enrolled{}, &CourseDetail{}))
 	/*Err(t, _txTenant().Create(&[]Student{
 		{53666, "RZA", "rza@cs", 55, 4.0},
 		{53688, "Taylor", "swift@cs", 27, 3.9},
@@ -209,4 +209,60 @@ func TestCreateModelReturningID(t *testing.T) {
 		"Cid":  "6.092",
 		"Name": "Introduction to Programming in Java",
 	}).Error)
+}
+
+func TestQueryWindows(t *testing.T) {
+	var gradeRank []struct {
+		Enrolled
+		RowLine   int
+		GradeRank int
+	}
+	Err(t, _txTenant().Raw(`
+SELECT *, 
+ROW_NUMBER() OVER (PARTITION BY cid) row_line,
+RANK() OVER (PARTITION BY cid ORDER BY grade DESC) grade_rank
+FROM enrolled;
+`).Scan(&gradeRank).Error)
+	t.Log(Enc(gradeRank))
+}
+
+type Dict struct {
+	gorm.Model
+	Type int
+	PID  uint
+	Key  string
+	Val  string
+}
+
+func TestCreateDict(t *testing.T) {
+	Err(t, _tx.AutoMigrate(&Dict{}))
+	Err(t, _txTenant().Create(&[]Dict{
+		{Type: 1, PID: 1, Key: "Lang", Val: "C++, Go, Java"},
+		{Type: 1, PID: 1, Key: "Lang", Val: "C++"},
+		{Type: 1, PID: 1, Key: "Lang", Val: "Go"},
+	}).Error)
+}
+
+func TestSelfJoin(t *testing.T) {
+	var DictAndPDict []struct {
+		Dict  `gorm:"embedded;embeddedPrefix:dict_"`
+		PDict Dict `gorm:"embedded;embeddedPrefix:p_dict_"`
+	}
+	Err(t, _txTenant().Raw(`
+SELECT
+dict.id AS dict_id,
+dict.created_at AS dict_created_at,
+dict.type AS dict_type,
+dict.key AS dict_key,
+dict.val AS dict_val,
+p_dict.id AS p_dict_id,
+p_dict.key AS p_dict_key,
+p_dict.val AS p_dict_val
+FROM 
+	(SELECT * FROM tbl_dict WHERE deleted_at IS NULL AND type = ?) AS dict
+LEFT JOIN 
+	(SELECT * FROM tbl_dict WHERE deleted_at IS NULL AND type = ?) AS p_dict
+ON dict.p_id = p_dict.id
+`, 1, 1).Scan(&DictAndPDict).Error)
+	t.Log(Enc(DictAndPDict))
 }

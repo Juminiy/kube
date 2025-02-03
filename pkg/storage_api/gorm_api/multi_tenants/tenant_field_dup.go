@@ -155,7 +155,7 @@ func (d *FieldDup) doCount(tx *gorm.DB, orExpr clause.Expression) {
 
 	// where clause 2. tenant
 	if d.Tenant != nil {
-		ntx.Where(d.Tenant.Clause())
+		d.Tenant.AddClause(ntx)
 	}
 
 	// where clause 3. soft_delete or other schema(table) clauses
@@ -186,8 +186,8 @@ func (d *FieldDup) doCount(tx *gorm.DB, orExpr clause.Expression) {
 			dbName:  util.MapKeys(d.ColumnField),
 		}
 		if d.Tenant != nil {
-			fdErr.tenantDBName = d.Tenant.DBName
-			fdErr.tenantValue = d.Tenant.Value
+			fdErr.tenantDBName = d.Tenant.Field.DBName
+			fdErr.tenantValue = d.Tenant.Field.Value
 		}
 		_ = tx.AddError(fdErr)
 	}

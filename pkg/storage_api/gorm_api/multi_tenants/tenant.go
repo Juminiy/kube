@@ -108,7 +108,7 @@ func _AS(i any) []any {
  */
 
 type Tenant struct {
-	Field
+	Field Field
 }
 
 func (cfg *Config) TenantInfo(tx *gorm.DB) *Tenant {
