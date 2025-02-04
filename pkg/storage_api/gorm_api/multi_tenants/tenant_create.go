@@ -21,11 +21,7 @@ func (cfg *Config) BeforeCreate(tx *gorm.DB) {
 		}
 	}
 
-	// TODO: add Create Map with Default And NotNull Values
-	// for example: gorm.Model.CreatedAt, gorm.Model.UpdatedAt
-	if _, ok := hasSchemaAndDestIsMap(tx); ok {
-
-	}
+	beforeCreateSetDefaultValuesToMap(tx)
 
 	if tInfo := cfg.TenantInfo(tx); tInfo != nil {
 		_Ind(tx.Statement.ReflectValue).SetField(map[string]any{
@@ -39,6 +35,26 @@ func (cfg *Config) AfterCreate(tx *gorm.DB) {
 		return
 	}
 
+	afterCreateSetAutoIncPkToMap(tx)
+
+	if !GetSessionConfig(cfg, tx).AfterCreateShowTenant {
+		if tInfo := cfg.TenantInfo(tx); tInfo != nil {
+			_Ind(tx.Statement.ReflectValue).SetField(map[string]any{
+				tInfo.Field.Name: nil, // FieldName
+			})
+		}
+	}
+}
+
+func beforeCreateSetDefaultValuesToMap(tx *gorm.DB) {
+	// TODO: create map set not exists Name(FieldName, ColumnName) default values
+	// gorm.Model.CreatedAt, gorm.Model.UpdatedAt, tag with default
+	if _, ok := hasSchemaAndDestIsMap(tx); ok {
+		// refer to callbacks.ConvertToCreateValues
+	}
+}
+
+func afterCreateSetAutoIncPkToMap(tx *gorm.DB) {
 	// write back MapType's autoIncrement primaryKey values
 	if sch, ok := hasSchemaAndDestIsMap(tx); ok {
 		autoIncPk := lo.Filter(sch.PrimaryFields, func(item *gormschema.Field, _ int) bool {
@@ -73,14 +89,13 @@ func (cfg *Config) AfterCreate(tx *gorm.DB) {
 		default: // ignore
 		}
 	}
+}
 
-	if !GetSessionConfig(cfg, tx).AfterCreateShowTenant {
-		if tInfo := cfg.TenantInfo(tx); tInfo != nil {
-			_Ind(tx.Statement.ReflectValue).SetField(map[string]any{
-				tInfo.Field.Name: nil, // FieldName
-			})
-		}
-	}
+func hasSchemaAndDestIsMap(tx *gorm.DB) (sch *gormschema.Schema, ok bool) {
+	sch = tx.Statement.Schema
+	return sch,
+		sch != nil &&
+			_Ind(tx.Statement.ReflectValue).T.Indirect().Kind() == reflect.Map
 }
 
 // Replace Create Map Key:
@@ -105,11 +120,4 @@ func addAutoIncPkNameByDBName(autoIncPk []*gormschema.Field, dstMap, srcMap map[
 		}
 		return true
 	})
-}
-
-func hasSchemaAndDestIsMap(tx *gorm.DB) (sch *gormschema.Schema, ok bool) {
-	sch = tx.Statement.Schema
-	return sch,
-		sch != nil &&
-			_Ind(tx.Statement.ReflectValue).T.Indirect().Kind() == reflect.Map
 }

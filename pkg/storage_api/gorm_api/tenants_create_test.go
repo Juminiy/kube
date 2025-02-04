@@ -1,6 +1,7 @@
 package gorm_api
 
 import (
+	"gorm.io/gorm"
 	"testing"
 )
 
@@ -101,7 +102,7 @@ func TestCreate5(t *testing.T) {
 
 func TestDoDelete(t *testing.T) {
 	Err(t, _txTenant().
-		Or("code BETWEEN ? AND ?", 100007, 100010).
+		Or("code BETWEEN ? AND ?", 100007, 100014).
 		Or("code = ?", 300179). // Found Tenant BUG
 		Delete(&Product{}).Error)
 }
@@ -116,18 +117,56 @@ func TestDoCreate(t *testing.T) {
 	}).Error)
 }
 
+type Product0 struct {
+	gorm.Model
+	Name       string
+	Desc       string `gorm:"default:no_body"`
+	NetContent string
+	Code       uint
+	Price      int64
+	TenantID   uint `gorm:"index;" mt:"tenant" json:"-"`
+}
+
+func TestCreateProduct0(t *testing.T) {
+	Err(t, txMigrate().AutoMigrate(&Product0{}))
+	Err(t, _txTenant().Create(&Product0{
+		Name:       "Choco Milk",
+		Desc:       "",
+		NetContent: "335ml",
+		Code:       1178921,
+		Price:      3330,
+	}).Error)
+}
+
 func TestCreateMapOneWriteBackAutoIncPk(t *testing.T) {
 	mapOne := map[string]any{"Name": "Beer", "Desc": "Local lager beer", "NetContent": "500ml", "Code": 100007, "Price": 500}
-	Err(t, _txTenant().Model(&Product{}).Create(&mapOne).Error)
+	Err(t, _txTenant().Model(&Product0{}).Create(mapOne).Error)
+	t.Log(Enc(mapOne))
+}
+
+func TestCreateMapPtrOneWriteBackAutoIncPk(t *testing.T) {
+	mapOne := map[string]any{"Name": "Bee", "Desc": "Local lager bee", "NetContent": "500ml", "Code": 100011, "Price": 500}
+	Err(t, _txTenant().Model(&Product0{}).Create(&mapOne).Error)
 	t.Log(Enc(mapOne))
 }
 
 func TestCreateMapListWriteBackAutoIncPk(t *testing.T) {
-	mapList := []map[string]any{
+	/*mapList := []map[string]any{
 		{"Name": "Noodles", "Desc": "Instant noodles", "NetContent": "5 packs", "Code": 100008, "Price": 1000},
 		{"Name": "Shampoo", "Desc": "Herbal shampoo", "NetContent": "400ml", "Code": 100009, "Price": 2500},
 		{"Name": "Toothpaste", "Desc": "Mint toothpaste", "NetContent": "120g", "Code": 100010, "Price": 800},
 	}
-	Err(t, _txListDup().Model(&Product{}).Create(&mapList).Error)
+	// unsupported Create MapList
+	Err(t, _txListDup().Model(&Product{}).Create(mapList).Error)
+	t.Log(Enc(mapList))*/
+}
+
+func TestCreateMapListPtrWriteBackAutoIncPk(t *testing.T) {
+	mapList := []map[string]any{
+		{"Name": "Noodle", "Desc": "Instant noodle", "NetContent": "5 packs", "Code": 100012, "Price": 1000},
+		{"Name": "Shampo", "Desc": "Herbal shampo", "NetContent": "400ml", "Code": 100013, "Price": 2500},
+		{"Name": "Toothpast", "Desc": "Mint toothpast", "NetContent": "120g", "Code": 100014, "Price": 800},
+	}
+	Err(t, _txListDup().Model(&Product0{}).Create(&mapList).Error)
 	t.Log(Enc(mapList))
 }

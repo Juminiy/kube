@@ -1,7 +1,6 @@
 package gorm_api
 
 import (
-	"github.com/Juminiy/kube/pkg/storage_api/gorm_api/clause_checker"
 	"gorm.io/gorm"
 	"gorm.io/plugin/soft_delete"
 	"testing"
@@ -47,7 +46,7 @@ func (Enrolled) TableName() string {
 }
 
 func TestCreateStuCourse(t *testing.T) {
-	Err(t, _tx.Set(clause_checker.SkipRawOrRow, struct{}{}).AutoMigrate(&Student{}, &Course{}, &Enrolled{}, &CourseDetail{}))
+	Err(t, txMigrate().AutoMigrate(&Student{}, &Course{}, &Enrolled{}, &CourseDetail{}))
 	/*Err(t, _txTenant().Create(&[]Student{
 		{53666, "RZA", "rza@cs", 55, 4.0},
 		{53688, "Taylor", "swift@cs", 27, 3.9},
@@ -235,7 +234,7 @@ type Dict struct {
 }
 
 func TestCreateDict(t *testing.T) {
-	Err(t, _tx.AutoMigrate(&Dict{}))
+	Err(t, txMigrate().AutoMigrate(&Dict{}))
 	Err(t, _txTenant().Create(&[]Dict{
 		{Type: 1, PID: 1, Key: "Lang", Val: "C++, Go, Java"},
 		{Type: 1, PID: 1, Key: "Lang", Val: "C++"},
@@ -265,4 +264,18 @@ LEFT JOIN
 ON dict.p_id = p_dict.id
 `, 1, 1).Scan(&DictAndPDict).Error)
 	t.Log(Enc(DictAndPDict))
+}
+
+func TestWithCTE(t *testing.T) {
+	var res struct {
+		Cnt int
+		Now string
+	}
+	Err(t, _txTenant().Raw(`
+WITH
+    cte1 AS (SELECT CAST(1+1 AS INTEGER) AS cnt),
+    cte2 AS (SELECT CAST(DATETIME() AS DATETIME) AS now)
+SELECT cnt, now FROM cte1, cte2
+`).Scan(&res).Error)
+	t.Log(Enc(res))
 }

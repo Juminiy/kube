@@ -4,8 +4,9 @@ mt:
     - Create:
         - ✅✅✅ set value
     - Delete,Update,Query:
-        - ✅✅✅ where clause Eq
-        - ✅✅✅ where clause IN
+        - ✅✅✅ where tenant clause Eq
+        - ✅✅✅ where tenant clause IN
+        - ✅✅✅ where tenant clause StatementModifier
 
 SessionConfig
     - default: Config.GlobalCfg
@@ -33,9 +34,10 @@ FieldDup
 Create
     - ✅✅✅ WriteBack AutoIncrement PrimaryKey map[string]any, *map[string]any
     - ✅✅✅ WriteBack AutoIncrement PrimaryKey *[]map[string]any
+    - ✅❌❌ Before Create Map, Default Values Set
 
 chainable_api
-    - ✅✅❌ UseTableParseSchema: .Table() to replacement of .Model()
+    - ✅❌❌ UseTableParseSchema: .Table() to replacement of .Model()
 
 2. clause_checker
     - ✅✅✅ expr, exprList

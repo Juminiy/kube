@@ -1,6 +1,7 @@
 package gorm_api
 
 import (
+	"github.com/Juminiy/kube/pkg/storage_api/gorm_api/clause_checker"
 	"github.com/Juminiy/kube/pkg/util"
 	expmaps "golang.org/x/exp/maps"
 	"gorm.io/gorm"
@@ -20,7 +21,7 @@ type Product struct {
 }
 
 func TestCreateProduct(t *testing.T) {
-	util.Must(_tx.AutoMigrate(&Product{}))
+	util.Must(txMigrate().AutoMigrate(&Product{}))
 }
 
 type InnerType struct {
@@ -64,11 +65,15 @@ func showSchema(schema *schema.Schema) string {
 }
 
 func TestSchema(t *testing.T) {
-	util.Must(_tx.AutoMigrate(&WrapType1{}, &WrapType2{}, &WrapType3{}))
+	util.Must(txMigrate().AutoMigrate(&WrapType1{}, &WrapType2{}, &WrapType3{}))
 	for _, ttx := range []*gorm.DB{
 		_txTenant().Find(&WrapType1{}),
 		_txTenant().Find(&WrapType2{}),
 		_txTenant().Find(&WrapType3{})} {
 		t.Log(showSchema(ttx.Statement.Schema))
 	}
+}
+
+var txMigrate = func() *gorm.DB {
+	return _tx.Set(clause_checker.SkipRawOrRow, struct{}{})
 }
