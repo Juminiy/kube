@@ -1,7 +1,7 @@
 package docker_internal
 
 import (
-	"encoding/json"
+	"encoding/json" // NewEncoder
 	"errors"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"

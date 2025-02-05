@@ -1,6 +1,8 @@
 package safe_json
 
-import goccyjson "github.com/goccy/go-json"
+import (
+	goccyjson "github.com/goccy/go-json"
+)
 
 type goccy struct{}
 

@@ -12,6 +12,8 @@ type Tree struct {
 	decoder map[string]rune
 }
 
+// New
+// TODO: BUG fix
 func New(symbol []rune, weight []int) *Tree {
 	n := len(symbol)
 	if n != len(weight) {

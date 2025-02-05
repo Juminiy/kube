@@ -1,7 +1,7 @@
 package util
 
 import (
-	"encoding/json"
+	"encoding/json" // circle reference
 	"fmt"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util/zero_reflect"

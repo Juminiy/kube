@@ -1,8 +1,8 @@
 package muxhandler
 
 import (
-	"encoding/json"
 	"github.com/Juminiy/kube/pkg/util"
+	"github.com/Juminiy/kube/pkg/util/safe_json"
 	"net/http"
 )
 
@@ -21,7 +21,7 @@ func String(resp http.ResponseWriter, v string) {
 }
 
 func JSON(resp http.ResponseWriter, v any) {
-	bs, err := json.Marshal(v)
+	bs, err := safe_json.STD().Marshal(v)
 	if err != nil {
 		Status(resp, http.StatusInternalServerError)
 		return

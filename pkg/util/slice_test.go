@@ -23,3 +23,23 @@ func TestSliceSum(t *testing.T) {
 	slices.Backward(sl)(sumFn)
 	t.Log(sum2)
 }
+
+func TestSliceCopyByFunc(t *testing.T) {
+	arr := []int{1, 2, 3}
+	t.Log(arr) // 1,2,3
+	callMain(t, arr)
+	t.Log(arr) // 1,2,3
+}
+
+func callMain(t *testing.T, arr []int) {
+	t.Log(arr) // 1,2,3
+	callOther(t, arr)
+	t.Log(arr) // 1,2,3
+}
+
+func callOther(t *testing.T, arr []int) {
+	t.Log(arr) // 1,2,3
+	arr = append(arr, 4, 5, 6)
+	arr[0] = 666
+	t.Log(arr) // 666,2,3,4,5,6
+}

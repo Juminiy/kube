@@ -1,10 +1,8 @@
 package safe_json
 
 import (
-	"encoding/json"
 	"github.com/Juminiy/kube/pkg/util"
 	goccyjson "github.com/goccy/go-json"
-	"reflect"
 	"testing"
 	"time"
 )
@@ -31,7 +29,7 @@ var v0 = struct {
 }
 
 func TestStdJSONMarshal(t *testing.T) {
-	bs, err := json.MarshalIndent(v0, util.JSONMarshalPrefix, util.JSONMarshalIndent)
+	bs, err := STD().MarshalIndent(v0, util.JSONMarshalPrefix, util.JSONMarshalIndent)
 	t.Log(util.Bytes2StringNoCopy(bs), err)
 }
 
@@ -73,23 +71,55 @@ func TestGoccy(t *testing.T) {
 	t.Log(util.Bytes2StringNoCopy(bs))
 }
 
+var jsonUnmarshalers = map[string]util.JSONUnmarshaler{
+	"stdlib":              STD(),
+	"json-iterator/std":   JSONIter(),
+	"json-iterator/favor": JSONIterFav(),
+	"goccy":               GoCCY(),
+	"sonic":               Sonic(),
+}
+
+var jsonMarshalers = map[string]util.JSONMarshaler{
+	"stdlib":              STD(),
+	"json-iterator/std":   JSONIter(),
+	"json-iterator/favor": JSONIterFav(),
+	"goccy":               GoCCY(),
+	"sonic":               Sonic(),
+}
+
+var jsonLites = map[string]util.JSONLite{
+	"stdlib":              STD(),
+	"json-iterator/std":   JSONIter(),
+	"json-iterator/favor": JSONIterFav(),
+	"goccy":               GoCCY(),
+	"sonic":               Sonic(),
+}
+
+// json BUG
 func TestInt64Overflow(t *testing.T) {
 	var ofj = []byte("{\"OFII64\":18446744073709551615, \"OFAI64\":18446744073709551616}")
 
-	for _, unl := range []util.JSONUnmarshaler{
-		STD(),
-		JSONIterFav(),
-		GoCCY(),
-		Sonic(),
-	} {
+	for name, unl := range jsonUnmarshalers {
 		var ofv struct {
 			OFII64 uint64
 			OFAI64 any
 		}
 		err := unl.Unmarshal(ofj, &ofv)
 		if err != nil {
-			t.Logf("%s %v", reflect.TypeOf(unl).String(), err)
+			t.Logf("%19s: %v", name, err)
 		}
-		t.Logf("%d %f", ofv.OFII64, ofv.OFAI64)
+		t.Logf("%19s: {%d, %f}", name, ofv.OFII64, ofv.OFAI64)
+	}
+}
+
+// json BUG
+func TestMapAny(t *testing.T) {
+	var maj = []byte("{\"name\": \"my-world\", \"id\": 12345}")
+	for name, lite := range jsonLites {
+		var mapv map[string]any
+		util.Must(lite.Unmarshal(maj, &mapv))
+		bs, err := lite.Marshal(mapv)
+		util.Must(err)
+		t.Logf("%19s: %s", name, string(bs))
 	}
 }

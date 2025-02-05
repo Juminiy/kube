@@ -1,8 +1,8 @@
 package pod_api
 
 import (
-	"encoding/json"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
+	"github.com/Juminiy/kube/pkg/util/safe_json"
 	"time"
 
 	"github.com/Juminiy/kube/pkg/util"
@@ -25,7 +25,7 @@ func SyncPodListByNS(
 			PodStateSyncingDone <- struct{}{}
 		}
 		for _, deployOf := range latestDeployListOf.Items {
-			statusBytes, err := json.MarshalIndent(deployOf.Status, "", util.JSONMarshalIndent)
+			statusBytes, err := safe_json.STD().MarshalIndent(deployOf.Status, "", util.JSONMarshalIndent)
 			if err != nil {
 				stdlog.Error(err)
 				return err

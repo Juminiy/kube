@@ -2,7 +2,7 @@ package safe_parse
 
 import (
 	"database/sql"
-	"encoding/json"
+	"encoding/json" // json.RawMessage
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/google/uuid"
 	"reflect"

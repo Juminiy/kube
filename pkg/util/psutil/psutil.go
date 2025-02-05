@@ -1,9 +1,9 @@
 package psutil
 
 import (
-	"encoding/json"
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
+	"github.com/Juminiy/kube/pkg/util/safe_json"
 	psnvgpu "github.com/mindprince/gonvml"
 	pscpu "github.com/shirou/gopsutil/v4/cpu"
 	psdisk "github.com/shirou/gopsutil/v4/disk"
@@ -45,7 +45,7 @@ func getSysHard() *sysHard {
 }
 
 func Marshal() []byte {
-	bs, err := json.Marshal(getSysHard())
+	bs, err := safe_json.STD().Marshal(getSysHard())
 	if err != nil {
 		stdlog.ErrorF("marshal psutil error: %s", err.Error())
 		return nil

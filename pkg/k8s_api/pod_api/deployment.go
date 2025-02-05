@@ -2,7 +2,8 @@ package pod_api
 
 import (
 	"context"
-	"encoding/json"
+	"github.com/Juminiy/kube/pkg/util/safe_json"
+
 	"errors"
 	"github.com/Juminiy/kube/pkg/image_api/harbor_api"
 	"github.com/Juminiy/kube/pkg/k8s_api"
@@ -253,7 +254,7 @@ func (c *DeploymentConfig) JSONMarshal() string {
 // after SaveConfig, CallBack is nil
 func (c *DeploymentConfig) SaveConfig() string {
 	c.cbk = nil
-	bs, err := json.Marshal(c)
+	bs, err := safe_json.STD().Marshal(c)
 	if err != nil {
 		stdlog.ErrorF("deployment config json marshal error: %s", err.Error())
 		return ""
