@@ -39,8 +39,8 @@ func New(symbol []rune, weight []int) *Tree {
 		encoder: make(map[rune]string, n),
 		decoder: make(map[string]rune, n),
 	}
-	t.bfsWalk(setCode)
-	t.bfsWalk(func(cur *node) {
+	t.dfsPreWalk(setCode)
+	t.dfsPreWalk(func(cur *node) {
 		if cur.leaf {
 			t.encoder[cur.symbol] = cur.code
 			t.decoder[cur.code] = cur.symbol

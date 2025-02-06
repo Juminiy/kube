@@ -40,9 +40,11 @@ type visNode func(cur *node)
 func setCode(cur *node) {
 	if !cur.root {
 		if cur.parent.left == cur {
-			cur.code += "0"
+			cur.code = cur.parent.code + "0"
 		} else {
-			cur.code += "1"
+			cur.code = cur.parent.code + "1"
 		}
 	}
 }
+
+type visNodeList func(cur []*node)

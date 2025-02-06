@@ -7,7 +7,7 @@ func (l nodeStack) Len() int {
 }
 
 func (l nodeStack) Empty() bool {
-	return len(l) > 0
+	return len(l) == 0
 }
 
 func (l *nodeStack) Push(nd *node) {

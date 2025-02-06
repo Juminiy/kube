@@ -33,7 +33,25 @@ func (t *Tree) dfsMidWalk(fn visNode) {
 }
 
 func (t *Tree) dfsPostWalk(fn visNode) {
+	nd, tstk, fstk := t.root, make(nodeStack, 0, t.n), make(nodeStack, 0, t.n)
 
+	for nd != nil || !tstk.Empty() {
+		for nd != nil {
+			fstk.Push(nd)
+			tstk.Push(nd)
+			nd = nd.right
+		}
+		if !tstk.Empty() {
+			nd = tstk.Top()
+			tstk.Pop()
+			nd = nd.left
+		}
+	}
+
+	for !fstk.Empty() {
+		fn(fstk.Top())
+		fstk.Pop()
+	}
 }
 
 func (t *Tree) bfsWalk(fn visNode) {
@@ -52,6 +70,24 @@ func (t *Tree) bfsWalk(fn visNode) {
 	}
 }
 
-func (t *Tree) bfsLevelWalk(fn visNode) {
-
+func (t *Tree) bfsLevelWalk(fn visNodeList) {
+	que := make(nodeQueue, 0, t.n)
+	que.Push(t.root)
+	for !que.Empty() {
+		ique := make(nodeQueue, 0, t.n)
+		ls := make([]*node, 0, t.n)
+		for !que.Empty() {
+			nd := que.Front()
+			que.Pop()
+			ls = append(ls, nd)
+			if nd.left != nil {
+				ique.Push(nd.left)
+			}
+			if nd.right != nil {
+				ique.Push(nd.right)
+			}
+		}
+		que = ique
+		fn(ls)
+	}
 }

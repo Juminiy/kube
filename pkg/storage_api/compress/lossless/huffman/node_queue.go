@@ -7,7 +7,7 @@ func (l nodeQueue) Len() int {
 }
 
 func (l nodeQueue) Empty() bool {
-	return len(l) > 0
+	return len(l) == 0
 }
 
 func (l *nodeQueue) Push(nd *node) {
