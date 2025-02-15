@@ -23,7 +23,7 @@ func (cfg *Config) BeforeDelete(tx *gorm.DB) {
 		}
 	}
 
-	if sCfg.QueryBeforeDelete {
+	if sCfg.BeforeDeleteDoQuery {
 		cfg.doQueryBeforeDelete(tx)
 	}
 

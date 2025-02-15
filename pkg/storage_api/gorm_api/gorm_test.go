@@ -27,13 +27,16 @@ func init() {
 	})
 	util.Must(err)
 	util.Must(tx.Use(&multi_tenants.Config{
-		PluginName: "multi_tenants",
+		PluginName:          "multi_tenants",
+		UseTableParseSchema: true,
 	}))
 	util.Must(tx.Use(&clause_checker.Config{
 		PluginName:                 "clause_checker",
 		AllowWriteClauseToRawOrRow: true,
 		BeforePlugins:              []string{"multi_tenants"},
 	}))
+	tx.Plugins["multi_tenants"].(*multi_tenants.Config).
+		GraspSchema(tx.DB, &Product{}, &AppUser{})
 	tx.DB = tx.Debug()
 	_tx = tx
 }
@@ -52,3 +55,5 @@ var Err = func(t *testing.T, err error) {
 		}
 	}
 }
+
+func TestInit(t *testing.T) {}

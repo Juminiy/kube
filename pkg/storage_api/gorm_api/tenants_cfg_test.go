@@ -14,7 +14,7 @@ var _txTenant = func() *gorm.DB {
 func TestQueryBeforeDeleteOne(t *testing.T) {
 	prod := Product{}
 	err := _txTenant().Set(multi_tenants.SessionCfg, multi_tenants.SessionConfig{
-		QueryBeforeDelete: true,
+		BeforeDeleteDoQuery: true,
 	}).Delete(&prod, 1).Error
 	if err != nil {
 		t.Error(err)
@@ -25,7 +25,7 @@ func TestQueryBeforeDeleteOne(t *testing.T) {
 func TestQueryBeforeDeleteList(t *testing.T) {
 	prod := []Product{}
 	err := _txTenant().Set(multi_tenants.SessionCfg, multi_tenants.SessionConfig{
-		QueryBeforeDelete: true,
+		BeforeDeleteDoQuery: true,
 	}).Delete(&prod, []int{2, 3, 4}).Error
 	if err != nil {
 		t.Error(err)

@@ -1,11 +1,13 @@
 package multi_tenants
 
 import (
+	"github.com/Juminiy/kube/pkg/util"
 	"github.com/samber/lo"
 	"gorm.io/gorm"
 	gormschema "gorm.io/gorm/schema"
 	"reflect"
 	"slices"
+	"time"
 )
 
 func (cfg *Config) BeforeCreate(tx *gorm.DB) {
@@ -47,11 +49,58 @@ func (cfg *Config) AfterCreate(tx *gorm.DB) {
 }
 
 func beforeCreateSetDefaultValuesToMap(tx *gorm.DB) {
-	// TODO: create map set not exists Name(FieldName, ColumnName) default values
-	// gorm.Model.CreatedAt, gorm.Model.UpdatedAt, tag with default
-	if _, ok := hasSchemaAndDestIsMap(tx); ok {
+	// Field: gorm.Model.CreatedAt, gorm.Model.UpdatedAt, tag with default
+	if sch, ok := hasSchemaAndDestIsMap(tx); ok {
 		// refer to callbacks.ConvertToCreateValues
+		selectColumns, restricted := tx.Statement.SelectAndOmitColumns(true, false)
+		setUp := setUpMapValues{
+			sch:           sch,
+			curTime:       tx.Statement.DB.NowFunc(),
+			selectColumns: selectColumns,
+			restricted:    restricted,
+		}
+
+		switch mapValue := tx.Statement.Dest.(type) {
+		case map[string]any:
+			setUp.Do(mapValue)
+
+		case *map[string]any:
+			setUp.Do(*mapValue)
+
+		case *[]map[string]any:
+			slices.All(*mapValue)(func(_ int, m map[string]any) bool {
+				setUp.Do(m)
+				return true
+			})
+
+		default: // ignore
+		}
 	}
+}
+
+type setUpMapValues struct {
+	sch           *gormschema.Schema
+	curTime       time.Time
+	selectColumns map[string]bool
+	restricted    bool
+}
+
+func (setUp *setUpMapValues) Do(mapValue map[string]any) {
+	slices.All(setUp.sch.DBNames)(func(_ int, dbName string) bool {
+		if field := setUp.sch.FieldsByDBName[dbName]; !util.MapOk(mapValue, field.Name) &&
+			!util.MapOk(mapValue, dbName) &&
+			(!field.HasDefaultValue || field.DefaultValueInterface != nil) {
+			if v, ok := setUp.selectColumns[dbName]; (ok && v) ||
+				(!ok && (!setUp.restricted || field.AutoCreateTime > 0 || field.AutoUpdateTime > 0)) {
+				if field.DefaultValueInterface != nil {
+					mapValue[field.Name] = field.DefaultValueInterface
+				} else if field.AutoCreateTime > 0 || field.AutoUpdateTime > 0 {
+					mapValue[field.Name] = setUp.curTime
+				}
+			}
+		}
+		return true
+	})
 }
 
 func afterCreateSetAutoIncPkToMap(tx *gorm.DB) {
@@ -102,8 +151,11 @@ func hasSchemaAndDestIsMap(tx *gorm.DB) (sch *gormschema.Schema, ok bool) {
 // (Map[DBName] -> Value) To (Map[Name] -> Value)
 func replaceAutoIncPkDBNameToName(autoIncPk []*gormschema.Field, dstMap, srcMap map[string]any) {
 	slices.All(autoIncPk)(func(_ int, field *gormschema.Field) bool {
-		if srcV, ok := srcMap[field.DBName]; ok {
+		if srcV, ok := srcMap[field.DBName]; ok { // DBName called ColumnName
 			delete(dstMap, field.DBName)
+			dstMap[field.Name] = srcV
+		} else if srcV, ok = srcMap["@"+field.DBName]; ok { // @DBName called NamedColumnName
+			delete(dstMap, "@"+field.DBName)
 			dstMap[field.Name] = srcV
 		}
 		return true
@@ -114,8 +166,11 @@ func replaceAutoIncPkDBNameToName(autoIncPk []*gormschema.Field, dstMap, srcMap 
 // (Map[Name] -> Value) By (Map[DBName] -> Value)
 func addAutoIncPkNameByDBName(autoIncPk []*gormschema.Field, dstMap, srcMap map[string]any) {
 	slices.All(autoIncPk)(func(_ int, field *gormschema.Field) bool {
-		if srcV, ok := srcMap[field.DBName]; ok {
+		if srcV, ok := srcMap[field.DBName]; ok { // DBName called ColumnName
 			//delete(dstMap, field.DBName)
+			dstMap[field.Name] = srcV
+		} else if srcV, ok = srcMap["@"+field.DBName]; ok { // @DBName called NamedColumnName
+			//delete(dstMap, "@"+field.DBName)
 			dstMap[field.Name] = srcV
 		}
 		return true
