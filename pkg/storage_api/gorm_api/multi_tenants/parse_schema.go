@@ -21,6 +21,7 @@ func (cfg *Config) ParseSchema(tx *gorm.DB) {
 }
 
 func (cfg *Config) GraspSchema(tx *gorm.DB, zeroList ...any) {
+	cfg.UseTableParseSchema = true
 	slices.All(zeroList)(func(_ int, zeroV any) bool {
 		stmt := tx.Statement
 		err := stmt.Parse(zeroV)
