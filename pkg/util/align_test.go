@@ -62,3 +62,11 @@ func TestG(t *testing.T) {
 	logFn("key[str]", "key[str]", kStr == kStr)
 	logFn("key[int]", "key[str]", kInt == kStr)
 }
+
+func TestSize(t *testing.T) {
+	t.Log(unsafe.Sizeof(struct {
+		B1 bool
+		B2 bool
+		I  int
+	}{}))
+}
