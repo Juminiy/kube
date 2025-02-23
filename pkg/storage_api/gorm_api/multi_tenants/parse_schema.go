@@ -11,7 +11,10 @@ import (
 
 func (cfg *Config) ParseSchema(tx *gorm.DB) {
 	stmt := tx.Statement
-	if cfg.UseTableParseSchema && stmt.Schema == nil && len(stmt.Table) != 0 {
+	if cfg.UseTableParseSchema && len(stmt.Table) != 0 &&
+		(stmt.Schema == nil || // no Schema
+			(stmt.Schema != nil && len(stmt.Schema.Name) == 0 || // unnamed Schema
+				stmt.ReflectValue.Type() != _IndI(stmt.Model).Type)) { // destSchema != parsedSchema
 		if zeroV, ok := cfg.cacheStore.Load(cfg.graspSchemaKey(stmt.Table)); ok {
 			if err := stmt.Parse(zeroV); err != nil {
 				tx.Logger.Error(stmt.Context, "use table parse schema error: %s", err.Error())

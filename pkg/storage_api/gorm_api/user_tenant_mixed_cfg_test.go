@@ -99,3 +99,69 @@ func TestMagicType(t *testing.T) {
 	Err(t, err)
 	t.Logf("%s", bs)
 }
+
+func TestQueryModelEqDest(t *testing.T) {
+	var appUserList []AppUser
+	Err(t, _txTenant().Find(&appUserList).Error)
+
+	Err(t, _txTenant().Model(&AppUser{}).Find(&appUserList).Error)
+
+	Err(t, _txTenant().Table(`tbl_app_user`).Find(&appUserList).Error)
+}
+
+type appUserStruct struct { // named
+	Username string `mt:"unique"`
+	Mobile   string `mt:"unique"`
+	Email    string `mt:"unique"`
+	Desc     string `gorm:"not null"`
+}
+
+func TestQueryModelNeqDest(t *testing.T) {
+	// Model->SchemaStruct, Dest->named
+	var appUser2 appUserStruct
+	Err(t, _txTenant().Model(&AppUser{}).Find(&appUser2).Error)
+
+	// Model->SchemaTable, Dest->named
+	// TODO: testcase not covered
+	Err(t, _txTenant().Table(`tbl_app_user`).Find(&appUser2).Error)
+
+	var appUser struct { // unnamed
+		Username string `mt:"unique"`
+		Mobile   string `mt:"unique"`
+		Email    string `mt:"unique"`
+		Desc     string `gorm:"not null"`
+	}
+	// Model->SchemaStruct, Dest->unnamed
+	Err(t, _txTenant().Model(&AppUser{}).Find(&appUser).Error)
+
+	// Model->SchemaTable, Dest->unnamed
+	Err(t, _txTenant().Table(`tbl_app_user`).Find(&appUser).Error)
+}
+
+type appUserList []struct { // named
+	Username string `mt:"unique"`
+	Mobile   string `mt:"unique"`
+	Email    string `mt:"unique"`
+	Desc     string `gorm:"not null"`
+}
+
+func TestQueryModelNeqDestList(t *testing.T) {
+	var list2 appUserList
+	// Model->SchemaStruct, Dest->[]named
+	Err(t, _txTenant().Model(&AppUser{}).Find(&list2).Error)
+
+	// Model->SchemaTable, Dest->[]named
+	Err(t, _txTenant().Table(`tbl_app_user`).Find(&list2).Error)
+
+	var list []struct { // unnamed
+		Username string `mt:"unique"`
+		Mobile   string `mt:"unique"`
+		Email    string `mt:"unique"`
+		Desc     string `gorm:"not null"`
+	}
+	// Model->SchemaStruct, Dest->[]unnamed
+	Err(t, _txTenant().Model(&AppUser{}).Find(&list).Error)
+
+	// Model->SchemaTable, Dest->[]unnamed
+	Err(t, _txTenant().Table(`tbl_app_user`).Find(&list).Error)
+}
