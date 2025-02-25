@@ -14,7 +14,7 @@ type String[Model any] struct {
 	DynamicConvert map[string]Value
 	FieldUnique    map[string]sets.Set[string]
 	List           *[]Model
-	Actions        []func()
+	Actions        []func() error
 
 	Headers  []string
 	Cells    []string
