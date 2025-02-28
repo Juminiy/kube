@@ -48,10 +48,10 @@ func (cfg *Config) AfterCreate(tx *gorm.DB) {
 	}
 }
 
+// referred from: callbacks.ConvertToCreateValues
 func beforeCreateSetDefaultValuesToMap(tx *gorm.DB) {
 	// Field: gorm.Model.CreatedAt, gorm.Model.UpdatedAt, tag with default
 	if sch, ok := hasSchemaAndDestIsMap(tx); ok {
-		// refer to callbacks.ConvertToCreateValues
 		selectColumns, restricted := tx.Statement.SelectAndOmitColumns(true, false)
 		setUp := setUpMapValues{
 			sch:           sch,

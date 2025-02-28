@@ -18,15 +18,14 @@ func (t *Tenant) AddClause(tx *gorm.DB) {
 	tx.Statement.AddClause(t)
 }
 
-func (t *Tenant) Name() string { return "" }
+func (t *Tenant) Name() string { return "Tenant" }
 
 func (t *Tenant) Build(_ clause.Builder) {}
 
 func (t *Tenant) MergeClause(_ *clause.Clause) {}
 
+// referred from: gorm.SoftDeleteQueryClause
 func (t *Tenant) ModifyStatement(stmt *gorm.Statement) {
-	// refer to gorm.SoftDeleteQueryClause
-	// add/move tenant clause to top level
 	if c, ok := stmt.Clauses["WHERE"]; ok {
 		if where, ok := c.Expression.(clause.Where); ok && len(where.Exprs) >= 1 {
 			for _, expr := range where.Exprs {

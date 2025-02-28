@@ -3,6 +3,7 @@ package multi_tenants
 import (
 	"errors"
 	"github.com/Juminiy/kube/pkg/storage_api/gorm_api/clause_checker"
+	"github.com/Juminiy/kube/pkg/util"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"slices"
@@ -23,7 +24,7 @@ func (cfg *Config) BeforeDelete(tx *gorm.DB) {
 		}
 	}
 
-	if sCfg.BeforeDeleteDoQuery {
+	if sCfg.BeforeDeleteDoQuery || util.MapOk(tx.Statement.Clauses, "RETURNING") {
 		cfg.doQueryBeforeDelete(tx)
 	}
 

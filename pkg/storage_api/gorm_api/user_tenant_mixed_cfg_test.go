@@ -1,7 +1,6 @@
 package gorm_api
 
 import (
-	"encoding/json"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/Juminiy/kube/pkg/util/encrypt"
 	"gorm.io/gorm"
@@ -77,29 +76,6 @@ func TestSelectOmit(t *testing.T) {
 	t.Log(Enc(userList))
 }
 
-type Name string
-
-func (n Name) MarshalJSON() ([]byte, error) {
-	if n == "" || n == "null" {
-		return nil, nil
-	}
-	return util.String2BytesNoCopy(string(n)), nil
-}
-
-func (n *Name) UnmarshalJSON(b []byte) error {
-	if str := util.Bytes2StringNoCopy(b); str != "null" {
-		*n = Name(str)
-	}
-	return nil
-}
-
-func TestMagicType(t *testing.T) {
-	n := Name("null")
-	bs, err := json.Marshal(n)
-	Err(t, err)
-	t.Logf("%s", bs)
-}
-
 func TestQueryModelEqDest(t *testing.T) {
 	var appUserList []AppUser
 	Err(t, _txTenant().Find(&appUserList).Error)
@@ -122,7 +98,6 @@ func TestQueryModelNeqDest(t *testing.T) {
 	Err(t, _txTenant().Model(&AppUser{}).Find(&appUser2).Error)
 
 	// Model->SchemaTable, Dest->named
-	// TODO: testcase not covered
 	Err(t, _txTenant().Table(`tbl_app_user`).Find(&appUser2).Error)
 
 	var appUser struct { // unnamed
@@ -164,4 +139,8 @@ func TestQueryModelNeqDestList(t *testing.T) {
 
 	// Model->SchemaTable, Dest->[]unnamed
 	Err(t, _txTenant().Table(`tbl_app_user`).Find(&list).Error)
+}
+
+var txMixed = func() *gorm.DB {
+	return _txTenant().Set("user_id", "3")
 }

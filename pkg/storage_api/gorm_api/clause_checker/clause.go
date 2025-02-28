@@ -4,15 +4,20 @@ import "gorm.io/gorm"
 
 // gorm support clause
 const (
-	Where      = "WHERE"
-	Returning  = "RETURNING"
-	OnConflict = "ON CONFLICT"
+	Delete     = "DELETE"
 	From       = "FROM"
-	Set        = "SET"
-	Select     = "SELECT"
-	Limit      = "LIMIT"
-	OrderBy    = "ORDER BY"
 	GroupBy    = "GROUP BY"
+	Insert     = "INSERT"
+	Limit      = "LIMIT"
+	Locking    = "FOR"
+	OnConflict = "ON CONFLICT"
+	OrderBy    = "ORDER BY"
+	Returning  = "RETURNING"
+	Select     = "SELECT"
+	Set        = "SET"
+	Update     = "UPDATE"
+	Values     = "VALUES"
+	Where      = "WHERE"
 )
 
 func (cfg *Config) Clause(tx *gorm.DB) {

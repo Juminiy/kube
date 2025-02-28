@@ -17,6 +17,7 @@ require (
 	github.com/distribution/reference v0.6.0
 	github.com/docker/docker v27.4.0-rc.2+incompatible
 	github.com/docker/go-units v0.5.0
+	github.com/dsnet/compress v0.0.1
 	github.com/dubbogo/gost v1.14.0
 	github.com/elliotchance/orderedmap/v2 v2.6.0
 	github.com/fatih/color v1.18.0
@@ -108,7 +109,6 @@ require (
 	github.com/dgraph-io/ristretto/v2 v2.1.0 // indirect
 	github.com/docker/distribution v2.8.3+incompatible // indirect
 	github.com/docker/go-connections v0.5.0 // indirect
-	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/ebitengine/purego v0.8.1 // indirect
 	github.com/emicklei/go-restful/v3 v3.11.0 // indirect
