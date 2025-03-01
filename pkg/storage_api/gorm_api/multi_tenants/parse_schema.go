@@ -1,12 +1,14 @@
 package multi_tenants
 
 import (
+	"database/sql"
 	"github.com/Juminiy/kube/pkg/storage_api/gorm_api/clause_checker"
 	"github.com/Juminiy/kube/pkg/util"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	gormschema "gorm.io/gorm/schema"
 	"slices"
+	"time"
 )
 
 func (cfg *Config) ParseSchema(tx *gorm.DB) {
@@ -106,4 +108,11 @@ func DeletedAt(schema *gormschema.Schema) *Field { // maybe not required
 		}
 	}
 	return util.New(FieldFromSchema(deletedAt))
+}
+
+func ValidTime(src gorm.DeletedAt, dest time.Time) gorm.DeletedAt {
+	if !src.Valid {
+		return gorm.DeletedAt(sql.NullTime{Valid: true, Time: dest})
+	}
+	return src
 }

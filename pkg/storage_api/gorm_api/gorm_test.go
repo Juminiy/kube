@@ -36,7 +36,7 @@ func init() {
 		BeforePlugins:              []string{"multi_tenants"},
 	}))
 	tx.Plugins["multi_tenants"].(*multi_tenants.Config).
-		GraspSchema(tx.DB, &Product{}, &AppUser{})
+		GraspSchema(tx.DB, &Product{}, &AppUser{}, &Consumer{})
 	tx.DB = tx.Debug()
 	_tx = tx
 }

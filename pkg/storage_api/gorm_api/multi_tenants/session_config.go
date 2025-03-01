@@ -9,15 +9,21 @@ type SessionConfig struct {
 	DisableFieldDup          bool // effect on create and update
 	ComplexFieldDup          bool // effect on create
 	DeleteAllowTenantAll     bool // effect on delete, only tenant and soft_delete, no other where clause
-	BeforeDeleteDoQuery      bool // effect on delete
+	BeforeDeleteDoQuery      bool // effect on delete, as well as clause.Returning
 	UpdateAllowTenantAll     bool // effect on update, only tenant and soft_delete, no other where clause
-	UpdateOmitMapZeroElemKey bool // effect on update
+	UpdateOmitMapZeroElemKey bool // effect on update, may not useful
 	AfterCreateShowTenant    bool // effect on create
+	BeforeQueryOmitField     bool // effect on query, as well as tag `gorm:"->:false"`
 	AfterQueryShowTenant     bool // effect on query
-	BeforeQueryOmitField     bool // effect on query
+
+	// callbacks Hooks
+	CreateMapCallHooks    bool
+	UpdateMapCallHooks    bool
+	AfterFindMapCallHooks bool
 }
 
 func GetSessionConfig(cfg *Config, tx *gorm.DB) SessionConfig {
+	cfg.ParseSchema(tx)
 	if v, ok := tx.Get(SessionCfg); ok {
 		if vRecv, ok := v.(SessionConfig); ok {
 			return vRecv
@@ -25,7 +31,6 @@ func GetSessionConfig(cfg *Config, tx *gorm.DB) SessionConfig {
 			return *pRecv
 		}
 	}
-	cfg.ParseSchema(tx)
 	return *cfg.GlobalCfg
 }
 

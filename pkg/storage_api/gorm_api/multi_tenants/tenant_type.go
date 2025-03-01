@@ -34,13 +34,31 @@ func (t TenantID) CreateClauses(f *gormschema.Field) []clause.Interface {
 }
 
 func (t TenantID) QueryClauses(f *gormschema.Field) []clause.Interface {
-	return []clause.Interface{}
+	return []clause.Interface{&Tenant{Field: Field{
+		Name:    f.Name,
+		DBTable: f.Schema.Table,
+		DBName:  f.DBName,
+		Value:   t.V,
+		Values:  nil,
+	}}}
 }
 
 func (t TenantID) UpdateClauses(f *gormschema.Field) []clause.Interface {
-	return []clause.Interface{}
+	return []clause.Interface{&Tenant{Field: Field{
+		Name:    f.Name,
+		DBTable: f.Schema.Table,
+		DBName:  f.DBName,
+		Value:   t.V,
+		Values:  nil,
+	}}}
 }
 
 func (t TenantID) DeleteClauses(f *gormschema.Field) []clause.Interface {
-	return []clause.Interface{}
+	return []clause.Interface{&Tenant{Field: Field{
+		Name:    f.Name,
+		DBTable: f.Schema.Table,
+		DBName:  f.DBName,
+		Value:   t.V,
+		Values:  nil,
+	}}}
 }

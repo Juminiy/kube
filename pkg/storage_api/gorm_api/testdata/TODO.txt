@@ -65,13 +65,13 @@ Reinforce:
 4. Hooks Reinforce
     > support type: map[string]any, *map[string]any, *[]map[string]any
         - modify CallbacksInterface with Map Type
-        - callbacks.BeforeCreateInterface
-        - callbacks.AfterCreateInterface
+        - ✅✅✅ callbacks.BeforeCreateInterface
+        - ✅✅✅ callbacks.AfterCreateInterface
         - callbacks.BeforeUpdateInterface
         - callbacks.AfterUpdateInterface
         - callbacks.BeforeDeleteInterface
         - callbacks.AfterDeleteInterface
-        - callbacks.AfterFindInterface
+        - ✅✅✅ callbacks.AfterFindInterface
 
 5. ParseSchema Reinforce
     > support more flexible unnamed type or named but not known schema type
@@ -85,3 +85,9 @@ Reinforce:
             - tx.Table(`tbl_app_user`).Find(&appUserOtherStruct)
             - tx.Model(&AppUser{}).Find(&appUserOtherStruct)
             - tx.Find(&appUserOtherStruct)
+        - ✅✅✅ Parse Bug Fix, SessionCfg .Table() But no Schema Parsed
+
+6. Returning Clause by QueryBeforeDelete
+    - ✅❌❌ Select Fields in Returning Columns
+    - ✅❌❌ BeforeDelete
+    - ✅❌❌ BeforeUpdate

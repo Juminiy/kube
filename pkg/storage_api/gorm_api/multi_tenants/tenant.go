@@ -3,6 +3,7 @@ package multi_tenants
 import (
 	"github.com/Juminiy/kube/pkg/storage_api/gorm_api/plugin_register"
 	"github.com/Juminiy/kube/pkg/util"
+	safe_reflectv2 "github.com/Juminiy/kube/pkg/util/safe_reflect/v2"
 	safe_reflectv3 "github.com/Juminiy/kube/pkg/util/safe_reflect/v3"
 	"github.com/samber/lo"
 	"gorm.io/gorm"
@@ -88,6 +89,14 @@ func _Ind(rv reflect.Value) safe_reflectv3.Tv {
 
 func _IndI(i any) safe_reflectv3.Tv {
 	return safe_reflectv3.Indirect(i)
+}
+
+func _IndISet(i any) safe_reflectv2.Value {
+	return safe_reflectv2.Indirect(i)
+}
+
+func _DirI(i any) safe_reflectv3.Tv {
+	return safe_reflectv3.Direct(i)
 }
 
 func _Tag(s string) safe_reflectv3.Tag {

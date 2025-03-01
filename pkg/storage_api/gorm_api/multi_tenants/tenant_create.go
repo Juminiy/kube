@@ -4,6 +4,7 @@ import (
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/samber/lo"
 	"gorm.io/gorm"
+	"gorm.io/gorm/callbacks"
 	gormschema "gorm.io/gorm/schema"
 	"reflect"
 	"slices"
@@ -23,6 +24,10 @@ func (cfg *Config) BeforeCreate(tx *gorm.DB) {
 		}
 	}
 
+	if sCfg.CreateMapCallHooks {
+		beforeCreateMapCallHook(tx)
+	}
+
 	beforeCreateSetDefaultValuesToMap(tx)
 
 	if tInfo := cfg.TenantInfo(tx); tInfo != nil {
@@ -36,10 +41,15 @@ func (cfg *Config) AfterCreate(tx *gorm.DB) {
 	if tx.Error != nil {
 		return
 	}
+	sCfg := GetSessionConfig(cfg, tx)
 
 	afterCreateSetAutoIncPkToMap(tx)
 
-	if !GetSessionConfig(cfg, tx).AfterCreateShowTenant {
+	if sCfg.CreateMapCallHooks {
+		afterCreateMapCallHook(tx)
+	}
+
+	if !sCfg.AfterCreateShowTenant {
 		if tInfo := cfg.TenantInfo(tx); tInfo != nil {
 			_Ind(tx.Statement.ReflectValue).SetField(map[string]any{
 				tInfo.Field.Name: nil, // FieldName
@@ -175,4 +185,35 @@ func addAutoIncPkNameByDBName(autoIncPk []*gormschema.Field, dstMap, srcMap map[
 		}
 		return true
 	})
+}
+
+// referred from: callbacks.BeforeCreate
+func beforeCreateMapCallHook(db *gorm.DB) {
+	if sch, ok := hasSchemaAndDestIsMap(db); ok &&
+		!db.Statement.SkipHooks && sch.BeforeCreate {
+		setUpDestMapStmtModel(db, sch)
+		CallHooks(db, func(v any, tx *gorm.DB) bool {
+			if beforeCreateI, ok := v.(callbacks.BeforeCreateInterface); ok {
+				_ = db.AddError(beforeCreateI.BeforeCreate(tx))
+				return true
+			}
+			return false
+		})
+		scanModelToDestMap(db)
+	}
+}
+
+// referred from: callbacks.AfterCreate
+func afterCreateMapCallHook(db *gorm.DB) {
+	if sch, ok := hasSchemaAndDestIsMap(db); ok &&
+		!db.Statement.SkipHooks && sch.AfterCreate {
+		CallHooks(db, func(v any, tx *gorm.DB) bool {
+			if afterCreateI, ok := v.(callbacks.AfterCreateInterface); ok {
+				_ = db.AddError(afterCreateI.AfterCreate(tx))
+				return true
+			}
+			return false
+		})
+		scanModelToDestMap(db)
+	}
 }

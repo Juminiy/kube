@@ -57,6 +57,15 @@ func (cfg *Config) doQueryBeforeDelete(tx *gorm.DB) {
 		ntx.Where(txClause)
 	}
 
+	if returning, ok := util.MapElemOk(tx.Statement.Clauses, "RETURNING"); ok {
+		if returningClause, ok := returning.Expression.(clause.Returning); ok {
+			slices.All(returningClause.Columns)(func(_ int, column clause.Column) bool {
+				ntx.Select(column.Name)
+				return true
+			})
+		}
+	}
+
 	err := ntx.Find(tx.Statement.Dest).Error
 	if err != nil {
 		tx.Logger.Error(tx.Statement.Context, "before delete, do query, error: %s", err.Error())
