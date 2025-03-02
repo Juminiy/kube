@@ -89,3 +89,11 @@ func (v V) MapRange() []MapKeyElem {
 	}
 	return keyValues
 }
+
+// type Is map[string]any
+func IsMapStringAny(i any) bool {
+	typ := NewT(i)
+	keyTyp, elemTyp := typ.MapKeyType(), typ.MapElemType()
+	return keyTyp != nil && keyTyp.Kind() == reflect.String &&
+		elemTyp != nil && WrapT(elemTyp).IsEFace()
+}

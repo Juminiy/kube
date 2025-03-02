@@ -53,4 +53,5 @@ func IsOdd(n int) bool {
 
 const (
 	MagicNumber = 114514
+	MagicFloat  = 114.514
 )

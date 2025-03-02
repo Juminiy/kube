@@ -175,3 +175,24 @@ func ToAnySlice(i any) []any {
 	}
 	return aS
 }
+
+// CopyFieldValue
+// reinforce of safe_reflect.CopyFieldValue
+func CopyFieldValue(src any, dst any) {
+	srcOf, dstOf := Indirect(src), Indirect(dst)
+
+	switch {
+	case srcOf.V.Value != _ZeroValue &&
+		dstOf.V.Value != _ZeroValue &&
+		srcOf.T.Kind() == reflect.Struct &&
+		dstOf.T.Kind() == reflect.Struct &&
+		dstOf.V.CanSet():
+		srcFieldValues := srcOf.StructToMap()
+		for idx := range dstOf.T.NumField() {
+			if srcFieldValue, ok := srcFieldValues[dstOf.T.Field(idx).Name]; ok {
+				WrapV(dstOf.V.Field(idx)).SetI(srcFieldValue)
+			}
+		}
+	}
+
+}

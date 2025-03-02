@@ -111,8 +111,6 @@ func (t T) FieldType() Types {
 	}
 }
 
-type MetaElemCate int8
-
 func (t T) New() Tv {
 	if t.Type == nil {
 		return Tv{}
@@ -136,4 +134,6 @@ func (t T) NewElem() Tv {
 	}
 }
 
-var _NilType = reflect.TypeOf(nil)
+func (t T) IsEFace() bool {
+	return t.Type.Kind() == reflect.Interface && t.Type.NumMethod() == 0
+}

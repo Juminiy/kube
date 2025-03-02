@@ -1,8 +1,12 @@
 package safe_reflectv3
 
 import (
+	"database/sql"
 	"github.com/Juminiy/kube/pkg/util"
+	"github.com/samber/lo"
+	"strings"
 	"testing"
+	"time"
 	"unsafe"
 )
 
@@ -121,4 +125,109 @@ func TestToAnySlice(t *testing.T) {
 	} {
 		t.Log(ToAnySlice(v))
 	}
+}
+
+func TestCopyFieldValue(t *testing.T) {
+	src, dst :=
+		ExportStruct{
+			Int:   1919810,
+			Float: 114.514,
+			String: strings.Join(lo.Times(util.MagicSliceCap, func(index int) string {
+				return util.MagicStr
+			}), ","),
+		},
+		ExportStruct{
+			Int:    114514,
+			Float:  1919.810,
+			String: util.MagicStr,
+		}
+	t.Logf("%#v", dst)
+	CopyFieldValue(src, &dst)
+	t.Logf("%#v", dst)
+}
+
+func TestCopyFieldValue2(t *testing.T) {
+	src := struct {
+		I    int
+		S    string
+		A    any
+		T    time.Time
+		IPtr *int
+		SPtr *string
+		APtr *any
+		TPtr *time.Time
+		i    int
+		s    string
+		a    any
+		t    time.Time
+		iptr *int
+		sptr *string
+		aptr *any
+		tptr *time.Time
+	}{
+		I:    114514,
+		S:    "iam magic boy",
+		A:    "{\"key\": 1}",
+		T:    time.Now(),
+		IPtr: util.New(1),
+		SPtr: util.New("hilo"),
+		APtr: util.New(any("master")),
+		TPtr: util.New(time.Now()),
+		i:    1919810,
+		s:    "nobody am i?",
+		a:    "{\"key\": \"value\"}",
+		t:    time.Now(),
+		iptr: util.New(2),
+		sptr: util.New("lcov"),
+		aptr: util.New(any("slave")),
+		tptr: util.New(time.Now()),
+	}
+
+	dst := struct {
+		I    int
+		S    string
+		A    any
+		T    time.Time
+		IPtr *int
+		SPtr *string
+		APtr *any
+		TPtr *time.Time
+		i    int
+		s    string
+		a    any
+		t    time.Time
+		iptr *int
+		sptr *string
+		aptr *any
+		tptr *time.Time
+	}{}
+
+	t.Logf("%#v", dst)
+	CopyFieldValue(src, &dst)
+	t.Logf("%#v", dst)
+}
+
+func TestCopyFieldValue3(t *testing.T) {
+	src := struct {
+		Int    string
+		Float  string
+		String int64
+		Time   string
+	}{
+		Int:    "114514",
+		Float:  "1919.810",
+		String: -888,
+		Time:   time.Now().String(),
+	}
+
+	dst := struct {
+		Int    int
+		Float  float64
+		String string
+		Time   sql.NullTime
+	}{}
+
+	t.Logf("%#v", dst)
+	CopyFieldValue(src, &dst)
+	t.Logf("%#v", dst)
 }

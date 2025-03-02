@@ -36,3 +36,42 @@ func TestT_NewElem(t *testing.T) {
 		t.Logf("%+v", tv.Indirect().I())
 	}
 }
+
+type named interface {
+	Name() string
+}
+
+type namedValue struct{}
+
+func (namedValue) Name() string { return `value` }
+
+func TestT_IsEFace(t *testing.T) {
+	var strValue any
+	strValue = "some value"
+	t.Log(Direct(1).IsEFace())
+	t.Log(Direct(2.2).IsEFace())
+	t.Log(Direct("iammagiboy").IsEFace())
+	t.Log(Direct(strValue).IsEFace())
+	t.Log(Direct(new(any)).IsEFace())
+	t.Log(Direct(named(namedValue{})).IsEFace())
+}
+
+func TestIsMapStringAny(t *testing.T) {
+	type mapStringAny map[string]any
+	type mapStringAny2 = map[string]any
+	t.Log(IsMapStringAny(map[string]any{}))
+	t.Log(IsMapStringAny(mapStringAny{}))
+	t.Log(IsMapStringAny(mapStringAny2{}))
+
+	t.Log(IsMapStringAny(map[string]string{}))
+	t.Log(IsMapStringAny(map[string]int{}))
+	t.Log(IsMapStringAny(map[string]named{}))
+
+	t.Log(IsMapStringAny(&map[string]any{}))
+	t.Log(IsMapStringAny(&mapStringAny{}))
+	t.Log(IsMapStringAny(&mapStringAny2{}))
+
+	t.Log(IsMapStringAny(&map[string]string{}))
+	t.Log(IsMapStringAny(&map[string]int{}))
+	t.Log(IsMapStringAny(&map[string]named{}))
+}

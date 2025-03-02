@@ -23,6 +23,9 @@ func Wrap2(rv reflect.Value, i any) Value {
 }
 
 func (v Value) SetI(i any) {
+	if !v.CanSet() {
+		return
+	}
 	indirv := v.indirect()
 	if !indirv.CanSet() {
 		return
@@ -41,6 +44,9 @@ func (v Value) SetI(i any) {
 }
 
 func (v Value) SetILike(i any) {
+	if !v.CanSet() {
+		return
+	}
 	indirv := v.indirect()
 	if !indirv.CanSet() {
 		return
