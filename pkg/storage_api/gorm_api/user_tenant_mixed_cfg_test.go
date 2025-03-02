@@ -141,6 +141,6 @@ func TestQueryModelNeqDestList(t *testing.T) {
 	Err(t, _txTenant().Table(`tbl_app_user`).Find(&list).Error)
 }
 
-var txMixed = func() *gorm.DB {
+func txMixed() *gorm.DB {
 	return _txTenant().Set("user_id", "3")
 }

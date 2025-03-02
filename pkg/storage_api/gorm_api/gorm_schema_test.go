@@ -74,6 +74,6 @@ func TestSchema(t *testing.T) {
 	}
 }
 
-var txMigrate = func() *gorm.DB {
+func txMigrate() *gorm.DB {
 	return _tx.Set(clause_checker.SkipRawOrRow, struct{}{})
 }

@@ -71,7 +71,7 @@ func (cfg *Config) Initialize(tx *gorm.DB) error {
 		tx.Callback().Query().After("gorm:after_query").
 			Register(plugin_register.CallbackName(cfg.PluginName, false, 'Q'), cfg.AfterQuery),
 
-		tx.Callback().Update().Before("gorm:before_update").
+		tx.Callback().Update().Before("gorm:setup_reflect_value").
 			Register(plugin_register.CallbackName(cfg.PluginName, true, 'U'), cfg.BeforeUpdate),
 		tx.Callback().Update().After("gorm:after_update").
 			Register(plugin_register.CallbackName(cfg.PluginName, false, 'U'), cfg.AfterUpdate),

@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-var _txTenant = func() *gorm.DB {
+func _txTenant() *gorm.DB {
 	return _tx.Set("tenant_id", uint(114514))
 }
 
@@ -51,7 +51,7 @@ func TestDeleteList(t *testing.T) {
 	t.Log(Enc(prod))
 }
 
-var mtGrp = func() *gorm.DB {
+func mtGrp() *gorm.DB {
 	return _tx.Set("tenant_ids", []int{1, 2, 3, 4, 5, 114514})
 }
 
@@ -61,7 +61,7 @@ func TestQueryListInTenants(t *testing.T) {
 	t.Log(Enc(list))
 }
 
-var mtSglAndGrp = func() *gorm.DB {
+func mtSglAndGrp() *gorm.DB {
 	return _tx.Set("tenant_id", "9527").
 		Set("tenant_ids", []int{1, 2, 3, 4, 5, 114514})
 }
@@ -103,7 +103,7 @@ func TestUpdateTenantAll(t *testing.T) {
 	}).Model(&Product{}).Update("code", "114514").Error)
 }
 
-var showT = func() *gorm.DB {
+func showT() *gorm.DB {
 	return _txTenant().Set(multi_tenants.SessionCfg, multi_tenants.SessionConfig{
 		DisableFieldDup:       true,
 		AfterCreateShowTenant: true,

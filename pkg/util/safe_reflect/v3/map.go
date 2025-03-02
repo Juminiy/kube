@@ -43,6 +43,9 @@ func (v V) MapValues() map[string]any {
 
 func (v V) MapDeleteZero() {
 	for _, ke := range lo.Filter(v.MapRange(), func(item MapKeyElem, _ int) bool {
+		/*if item.Elem.Kind() == reflect.Interface && item.Elem.NumMethod() == 0 { // any(0), any(""), any(false), any(struct{}{})
+			return reflect.Indirect(item.Elem).IsZero()
+		}*/
 		return item.Elem.IsZero()
 	}) {
 		v.SetMapIndex(ke.Key, _ZeroValue)

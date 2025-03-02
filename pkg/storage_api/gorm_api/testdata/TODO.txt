@@ -18,10 +18,15 @@ SessionConfig
         - ✅✅✅ DeleteAllowTenantAll
         - ✅✅✅ BeforeDeleteDoQuery
         - ✅✅✅ UpdateAllowTenantAll
-        - ✅❌❌ UpdateOmitMapZeroElemKey (not always useful)
+        - ✅✅✅ UpdateOmitMapZeroElemKey
+        - UpdateOmitMapUnknownKey
+        - UpdateMapSetPkToClause
         - ✅✅✅ AfterCreateShowTenant
+        - ✅✅✅ BeforeQueryOmitField -> use with gorm tag `->:false`
         - ✅✅✅ AfterQueryShowTenant
-        - ✅✅✅ BeforeQueryOmitField -> replaced by gorm tag `->:false`
+        - ✅✅✅ CreateMapCallHooks
+        - ✅✅✅ UpdateMapCallHooks
+        - ✅❌❌ AfterFindMapCallHooks
 
 FieldDup
     - ✅✅✅ Create OneStruct
@@ -67,8 +72,8 @@ Reinforce:
         - modify CallbacksInterface with Map Type
         - ✅✅✅ callbacks.BeforeCreateInterface
         - ✅✅✅ callbacks.AfterCreateInterface
-        - callbacks.BeforeUpdateInterface
-        - callbacks.AfterUpdateInterface
+        - ✅✅✅ callbacks.BeforeUpdateInterface
+        - ✅✅✅ callbacks.AfterUpdateInterface
         - callbacks.BeforeDeleteInterface
         - callbacks.AfterDeleteInterface
         - ✅✅✅ callbacks.AfterFindInterface

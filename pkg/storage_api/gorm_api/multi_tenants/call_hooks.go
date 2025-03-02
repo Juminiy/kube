@@ -36,10 +36,19 @@ func setUpDestMapStmtModel(tx *gorm.DB, sch *gormschema.Schema) {
 	//if tx.Statement.Model == tx.Statement.Dest
 	switch _IndI(tx.Statement.Dest).T.Kind() {
 	case reflect.Slice: // *[]map[string]any, []map[string]any
+		// only for create
 		tx.Statement.Model = sch.MakeSlice().Interface() // *[]*T
 
 	case reflect.Map: // *map[string]any, map[string]any
-		tx.Statement.Model = reflect.New(sch.ModelType).Interface() // *T
+		if modelInd := _IndI(tx.Statement.Model); modelInd.T.Kind() == reflect.Struct &&
+			modelInd.CanAddr() { // Model is *T, **T, ...
+			// do nothing
+		} else { // for create
+			tx.Statement.Model = reflect.New(sch.ModelType).Interface() // *T
+			if modelInd.T.Kind() == reflect.Struct && !modelInd.IsZero() {
+				_IndI(tx.Statement.Model).Set(modelInd.Value)
+			}
+		}
 
 	default: // ignore
 	}
@@ -99,12 +108,20 @@ func scanModelValueToDestValue(modelValue, destValue map[string]any) {
 
 func toFieldValue(sch *gormschema.Schema, values map[string]any) map[string]any {
 	return lo.MapKeys(values, func(_ any, columnOrField string) string {
-		return sch.LookUpField(columnOrField).Name
+		field := sch.LookUpField(columnOrField)
+		if field != nil {
+			return field.Name
+		}
+		return ""
 	})
 }
 
 func toColumnValue(sch *gormschema.Schema, values map[string]any) map[string]any {
 	return lo.MapKeys(values, func(_ any, columnOrField string) string {
-		return sch.LookUpField(columnOrField).DBName
+		field := sch.LookUpField(columnOrField)
+		if field != nil {
+			return field.DBName
+		}
+		return ""
 	})
 }

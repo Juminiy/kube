@@ -11,15 +11,17 @@ type SessionConfig struct {
 	DeleteAllowTenantAll     bool // effect on delete, only tenant and soft_delete, no other where clause
 	BeforeDeleteDoQuery      bool // effect on delete, as well as clause.Returning
 	UpdateAllowTenantAll     bool // effect on update, only tenant and soft_delete, no other where clause
-	UpdateOmitMapZeroElemKey bool // effect on update, may not useful
+	UpdateOmitMapZeroElemKey bool // effect on update
+	UpdateOmitMapUnknownKey  bool // effect on update
+	UpdateMapSetPkToClause   bool // effect on update
 	AfterCreateShowTenant    bool // effect on create
 	BeforeQueryOmitField     bool // effect on query, as well as tag `gorm:"->:false"`
 	AfterQueryShowTenant     bool // effect on query
 
 	// callbacks Hooks
-	CreateMapCallHooks    bool
-	UpdateMapCallHooks    bool
-	AfterFindMapCallHooks bool
+	CreateMapCallHooks    bool // effect on create map
+	UpdateMapCallHooks    bool // effect on update map
+	AfterFindMapCallHooks bool // effect on find map
 }
 
 func GetSessionConfig(cfg *Config, tx *gorm.DB) SessionConfig {

@@ -5,7 +5,6 @@ import (
 	"github.com/spf13/cast"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
-	gormschema "gorm.io/gorm/schema"
 	"testing"
 )
 
@@ -34,19 +33,21 @@ func (c *Consumer) AfterCreate(tx *gorm.DB) error {
 }
 
 func (c *Consumer) BeforeUpdate(tx *gorm.DB) error {
+	tx.Logger.Info(tx.Statement.Context, "you are in PointerTo Consumer before update hooks")
 	if userID, ok := tx.Get("user_id"); ok {
-		tx.Statement.AddClause(ClauseUserID(tx.Statement.Schema.FieldsByName["UserID"], userID))
+		tx.Statement.AddClause(ClauseUserID(tx.Statement, userID))
 	}
 	return nil
 }
 
 func (c *Consumer) AfterUpdate(tx *gorm.DB) error {
+	tx.Logger.Info(tx.Statement.Context, "you are in PointerTo Consumer after update hooks")
 	return nil
 }
 
 func (c *Consumer) BeforeDelete(tx *gorm.DB) error {
 	if userID, ok := tx.Get("user_id"); ok {
-		tx.Statement.AddClause(ClauseUserID(tx.Statement.Schema.FieldsByName["UserID"], userID))
+		tx.Statement.AddClause(ClauseUserID(tx.Statement, userID))
 	}
 	return nil
 }
@@ -60,8 +61,8 @@ func (c *Consumer) AfterFind(tx *gorm.DB) error {
 	return nil
 }
 
-func ClauseUserID(field *gormschema.Field, userID any) clause.Interface {
-	f := multi_tenants.FieldFromSchema(field)
+func ClauseUserID(stmt *gorm.Statement, userID any) clause.Interface {
+	f := multi_tenants.FieldFromSchema(stmt.Schema.FieldsByName["UserID"])
 	f.Value = userID
 	return &multi_tenants.Tenant{Field: f}
 }
@@ -76,102 +77,4 @@ func txHooks() *gorm.DB {
 		UpdateMapCallHooks:    true,
 		AfterFindMapCallHooks: true,
 	})
-}
-
-/*
-	gorm do not support MapType Alias
-
-type ConsumerMap map[string]any
-
-	func (m ConsumerMap) BeforeCreate(tx *gorm.DB) error {
-		if userID, ok := tx.Get("user_id"); ok {
-			m["UserID"] = userID
-		}
-		return nil
-	}
-
-	func (m ConsumerMap) AfterCreate(tx *gorm.DB) error {
-		delete(m, "UserID")
-		return nil
-	}
-*/
-func TestCallbacksBeforeCreate(t *testing.T) {
-	// create Struct Hook is success
-	var consumerStruct = Consumer{
-		AppID: 11,
-	}
-	Err(t, txMixed().Create(&consumerStruct).Error)
-	// create with user_id
-	t.Log(Enc(consumerStruct))
-
-	// create Map
-	var consumerMap = map[string]any{
-		"AppID": 22,
-	}
-	Err(t, txMixed().Model(&Consumer{}).Create(&consumerMap).Error)
-	// create with no user_id
-	t.Log(Enc(consumerMap))
-
-	var consumerMap2 = map[string]any{
-		"AppID": 33,
-	}
-	Err(t, txMixed().Table(`tbl_consumer`).Create(&consumerMap2).Error)
-	// create with no user_id
-	t.Log(Enc(consumerMap2))
-
-	// unsupported type: panic
-	/*var consumerMapV2 = ConsumerMap{
-		"AppID": 44,
-	}
-	Err(t, txMixed().Table(`tbl_consumer`).Create(&consumerMapV2).Error)
-	// create ? user_id ?
-	t.Log(Enc(consumerMapV2))*/
-}
-
-func TestCreateMapHooks(t *testing.T) {
-	// one map with hooks
-	var consumerMap2 = map[string]any{
-		"AppID": 33,
-	}
-	Err(t, txHooks().Table(`tbl_consumer`).Create(&consumerMap2).Error)
-	// create with user_id
-	t.Log(Enc(consumerMap2))
-
-	// map list with hooks
-	var consumerMapList = []map[string]any{}
-	for i := 0; i < 100; i++ {
-		consumerMapList = append(consumerMapList, map[string]any{
-			"AppID": (i + 1) * 5,
-		})
-	}
-	Err(t, txHooks().Table(`tbl_consumer`).Create(&consumerMapList).Error)
-	t.Log(Enc(consumerMapList))
-
-}
-
-func TestFindMapHooks(t *testing.T) {
-	var consumerMap map[string]any
-	Err(t, txHooks().Table(`tbl_consumer`).First(&consumerMap, 156).Error)
-	t.Log(Enc(consumerMap))
-
-	var consumerMapList []map[string]any
-	Err(t, txHooks().Table(`tbl_consumer`).Find(&consumerMapList, 157, 158, 159).Error)
-	t.Log(Enc(consumerMapList))
-}
-
-func TestCallbacksBeforeUpdate(t *testing.T) {
-	// update Struct Hook is success
-	Err(t, txMixed().Updates(&Consumer{
-		Model: gorm.Model{ID: 2},
-		AppID: 20,
-	}).Error)
-
-	// update Map
-}
-
-func TestCallbacksBeforeDelete(t *testing.T) {
-	Err(t, txMixed().Delete(&Consumer{
-		Model: gorm.Model{ID: 2},
-		AppID: 20,
-	}).Error)
 }

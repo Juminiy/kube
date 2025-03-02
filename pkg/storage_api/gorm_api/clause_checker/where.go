@@ -2,8 +2,10 @@ package clause_checker
 
 import (
 	"github.com/Juminiy/kube/pkg/util"
+	safe_reflectv3 "github.com/Juminiy/kube/pkg/util/safe_reflect/v3"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+	gormschema "gorm.io/gorm/schema"
 	"reflect"
 	"slices"
 )
@@ -42,7 +44,9 @@ func WhereClause(tx *gorm.DB) (whereClause clause.Where, ok bool) {
 
 func NoWhereClause(tx *gorm.DB) bool {
 	_, ok := WhereClause(tx)
-	return !ok && !destKindIsStructAndHasPrimaryKeyNotZero(tx.Statement)
+	return !ok &&
+		!destKindIsStructAndHasPrimaryKeyNotZero(tx.Statement) &&
+		!destKindIsMapAndHasPrimaryKeyNotZero(tx.Statement)
 }
 
 // referred from: callbacks.BuildQuerySQL
@@ -59,4 +63,40 @@ func destKindIsStructAndHasPrimaryKeyNotZero(stmt *gorm.Statement) bool {
 		}
 	}
 	return false
+}
+
+func destKindIsMapAndHasPrimaryKeyNotZero(stmt *gorm.Statement) bool {
+	if stmt.SQL.Len() == 0 {
+		if mapRv := safe_reflectv3.Indirect(stmt.Dest); mapRv.Value.Kind() == reflect.Map && stmt.Schema != nil {
+			mapValue := mapRv.MapValues()
+			for _, pF := range stmt.Schema.PrimaryFields {
+				if mapElem, ok := util.MapElemOk(mapValue, pF.DBName); ok {
+					mapElemRv := reflect.ValueOf(mapElem)
+					return mapElemRv.IsValid() && !mapElemRv.IsZero()
+				}
+			}
+		}
+	}
+	return false
+}
+
+func ClauseFieldEq(field *gormschema.Field, value any) clause.Interface {
+	return clause.Where{Exprs: []clause.Expression{
+		clause.Eq{
+			Column: clause.Column{
+				Table: field.Schema.Table,
+				Name:  field.DBName,
+			},
+			Value: value,
+		},
+	}}
+}
+
+func ClauseColumnEq(column string, value any) clause.Interface {
+	return clause.Where{Exprs: []clause.Expression{
+		clause.Eq{
+			Column: column,
+			Value:  value,
+		},
+	}}
 }
