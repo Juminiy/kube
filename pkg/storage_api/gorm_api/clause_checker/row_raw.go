@@ -14,6 +14,12 @@ func (cfg *Config) RowRawClause(tx *gorm.DB) {
 			where.Build(tx.Statement)
 		}
 
+		cfg.OrderByClause(tx)
+		if orderBy, ok := OrderByClause(tx); ok {
+			_ = tx.Statement.WriteByte(' ')
+			orderBy.Build(tx.Statement)
+		}
+
 		if limit, ok := LimitClause(tx); ok {
 			_ = tx.Statement.WriteByte(' ')
 			limit.Build(tx.Statement)

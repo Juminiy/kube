@@ -1,0 +1,13 @@
+Details in gorm.io/gorm/callbacks/callbacks.go
+
+- Create
+
+- Update
+
+- Delete
+
+- Query
+
+- Row
+
+- Raw

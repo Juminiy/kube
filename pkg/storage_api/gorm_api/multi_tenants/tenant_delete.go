@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/Juminiy/kube/pkg/storage_api/gorm_api/clause_checker"
 	"github.com/Juminiy/kube/pkg/util"
+	gormdrivermysql "gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"slices"
@@ -24,7 +25,8 @@ func (cfg *Config) BeforeDelete(tx *gorm.DB) {
 		}
 	}
 
-	if sCfg.BeforeDeleteDoQuery || util.MapOk(tx.Statement.Clauses, "RETURNING") {
+	if sCfg.BeforeDeleteDoQuery && util.MapOk(tx.Statement.Clauses, "RETURNING") &&
+		dialectorNotSupportReturningClause(tx.Dialector) {
 		cfg.doQueryBeforeDelete(tx)
 	}
 
@@ -60,14 +62,20 @@ func (cfg *Config) doQueryBeforeDelete(tx *gorm.DB) {
 	if returning, ok := util.MapElemOk(tx.Statement.Clauses, "RETURNING"); ok {
 		if returningClause, ok := returning.Expression.(clause.Returning); ok {
 			slices.All(returningClause.Columns)(func(_ int, column clause.Column) bool {
-				ntx.Select(column.Name)
+				ntx.Statement.Selects = append(ntx.Statement.Selects, column.Name)
 				return true
 			})
 		}
+	} else if len(tx.Statement.Selects) != 0 {
+		ntx.Statement.Selects = tx.Statement.Selects
 	}
 
 	err := ntx.Find(tx.Statement.Dest).Error
 	if err != nil {
 		tx.Logger.Error(tx.Statement.Context, "before delete, do query, error: %s", err.Error())
 	}
+}
+
+func dialectorNotSupportReturningClause(dialector gorm.Dialector) bool {
+	return util.ElemIn(dialector.Name(), gormdrivermysql.DefaultDriverName)
 }

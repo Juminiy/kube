@@ -38,3 +38,5 @@ func OrderByClause(tx *gorm.DB) (orderByClause clause.OrderBy, ok bool) {
 	}
 	return
 }
+
+// TODO: order by clause add not existing column check and omit

@@ -8,14 +8,14 @@ import (
 type SessionConfig struct {
 	DisableFieldDup          bool // effect on create and update
 	ComplexFieldDup          bool // effect on create
-	DeleteAllowTenantAll     bool // effect on delete, only tenant and soft_delete, no other where clause
-	BeforeDeleteDoQuery      bool // effect on delete, as well as clause.Returning
-	UpdateAllowTenantAll     bool // effect on update, only tenant and soft_delete, no other where clause
+	DeleteAllowTenantAll     bool // effect on delete, if false: raise error when clause only have (tenant) and (soft_delete)
+	BeforeDeleteDoQuery      bool // effect on delete, use with clause.Returning, when database not support Returning
+	UpdateAllowTenantAll     bool // effect on update, if false: raise error when clause only have (tenant) and (soft_delete)
 	UpdateOmitMapZeroElemKey bool // effect on update
 	UpdateOmitMapUnknownKey  bool // effect on update
 	UpdateMapSetPkToClause   bool // effect on update
 	AfterCreateShowTenant    bool // effect on create
-	BeforeQueryOmitField     bool // effect on query, as well as tag `gorm:"->:false"`
+	BeforeQueryOmitField     bool // effect on query, use with tag `gorm:"->:false"`
 	AfterQueryShowTenant     bool // effect on query
 
 	// callbacks Hooks

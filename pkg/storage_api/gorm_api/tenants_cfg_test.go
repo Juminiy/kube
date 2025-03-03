@@ -4,6 +4,7 @@ import (
 	"github.com/Juminiy/kube/pkg/storage_api/gorm_api/multi_tenants"
 	"github.com/samber/lo"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"testing"
 )
 
@@ -15,7 +16,9 @@ func TestQueryBeforeDeleteOne(t *testing.T) {
 	prod := Product{}
 	err := _txTenant().Set(multi_tenants.SessionCfg, multi_tenants.SessionConfig{
 		BeforeDeleteDoQuery: true,
-	}).Delete(&prod, 1).Error
+	}).Clauses(clause.Returning{Columns: []clause.Column{
+		{Name: "name"}, {Name: "desc"}, {Name: "code"},
+	}}).Delete(&prod, 40).Error
 	if err != nil {
 		t.Error(err)
 	}

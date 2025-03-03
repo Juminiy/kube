@@ -61,7 +61,7 @@ func (cfg *Config) Initialize(tx *gorm.DB) error {
 	cfg.cacheStore = new(sync.Map)
 
 	return plugin_register.OneError(
-		tx.Callback().Create().Before("gorm:create").
+		tx.Callback().Create().Before("gorm:before_create").
 			Register(plugin_register.CallbackName(cfg.PluginName, true, 'C'), cfg.BeforeCreate),
 		tx.Callback().Create().After("gorm:after_create").
 			Register(plugin_register.CallbackName(cfg.PluginName, false, 'C'), cfg.AfterCreate),
@@ -76,7 +76,7 @@ func (cfg *Config) Initialize(tx *gorm.DB) error {
 		tx.Callback().Update().After("gorm:after_update").
 			Register(plugin_register.CallbackName(cfg.PluginName, false, 'U'), cfg.AfterUpdate),
 
-		tx.Callback().Delete().Before("gorm:delete").
+		tx.Callback().Delete().Before("gorm:before_delete").
 			Register(plugin_register.CallbackName(cfg.PluginName, true, 'D'), cfg.BeforeDelete),
 		tx.Callback().Delete().After("gorm:after_delete").
 			Register(plugin_register.CallbackName(cfg.PluginName, false, 'D'), cfg.AfterDelete),

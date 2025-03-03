@@ -19,8 +19,8 @@ SessionConfig
         - ✅✅✅ BeforeDeleteDoQuery
         - ✅✅✅ UpdateAllowTenantAll
         - ✅✅✅ UpdateOmitMapZeroElemKey
-        - UpdateOmitMapUnknownKey
-        - UpdateMapSetPkToClause
+        - ✅✅✅ UpdateOmitMapUnknownKey
+        - ✅✅✅ UpdateMapSetPkToClause
         - ✅✅✅ AfterCreateShowTenant
         - ✅✅✅ BeforeQueryOmitField -> use with gorm tag `->:false`
         - ✅✅✅ AfterQueryShowTenant
@@ -92,7 +92,7 @@ Reinforce:
             - tx.Find(&appUserOtherStruct)
         - ✅✅✅ Parse Bug Fix, SessionCfg .Table() But no Schema Parsed
 
-6. Returning Clause by QueryBeforeDelete
-    - ✅❌❌ Select Fields in Returning Columns
-    - ✅❌❌ BeforeDelete
-    - ✅❌❌ BeforeUpdate
+6. Returning Clause by QueryBeforeDelete, when do delete in not support RETURNING Driver(Database)
+    - ✅✅✅ Select Fields in Returning Columns
+        - ✅✅✅ BeforeDelete
+        - ✅❌❌ BeforeUpdate
