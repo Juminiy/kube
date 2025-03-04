@@ -1,6 +1,7 @@
 package multi_tenants
 
 import (
+	"github.com/Juminiy/kube/pkg/util/safe_reflect"
 	"github.com/samber/lo"
 	"gorm.io/gorm"
 	gormschema "gorm.io/gorm/schema"
@@ -91,7 +92,6 @@ func scanModelToDestMap(tx *gorm.DB) {
 
 	default: // ignore
 	}
-
 }
 
 func scanModelValueToDestValue(modelValue, destValue map[string]any) {
@@ -99,11 +99,30 @@ func scanModelValueToDestValue(modelValue, destValue map[string]any) {
 		if destFv, ok := destValue[field]; ok && reflect.ValueOf(modelFv).IsZero() {
 			delete(destValue, field)
 		} else if (!ok || reflect.ValueOf(destFv).IsZero()) &&
+			safe_reflect.CanDirectCompare(reflect.TypeOf(modelFv)) &&
 			!reflect.ValueOf(modelFv).IsZero() {
 			destValue[field] = modelFv
 		}
 		return true
 	})
+}
+
+func scanDestMapToModel(tx *gorm.DB) {
+	// omit embedded fields
+	switch destValue := tx.Statement.Dest.(type) {
+	case map[string]any:
+		_IndI(tx.Statement.Model).StructSet(destValue)
+
+	case *map[string]any:
+		_IndI(tx.Statement.Model).StructSet(*destValue)
+
+	case *[]map[string]any:
+		modelSlice := _IndI(tx.Statement.Model)
+		slices.All(*destValue)(func(i int, m map[string]any) bool {
+			_Ind(modelSlice.Index(i)).StructSet(m)
+			return true
+		})
+	}
 }
 
 func toFieldValue(sch *gormschema.Schema, values map[string]any) map[string]any {

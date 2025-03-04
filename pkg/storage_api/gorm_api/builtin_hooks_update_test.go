@@ -56,11 +56,11 @@ func TestCallbacksBeforeUpdateHooks(t *testing.T) {
 
 func txHooksUpdate() *gorm.DB {
 	return txMixed().Set(multi_tenants.SessionCfg, multi_tenants.SessionConfig{
-		UpdateOmitMapUnknownKey: true,
-		UpdateMapSetPkToClause:  true,
-		CreateMapCallHooks:      true,
-		UpdateMapCallHooks:      true,
-		AfterFindMapCallHooks:   true,
+		UpdateOmitMapUnknownKey:  true,
+		UpdateMapSetPkToClause:   true,
+		BeforeCreateMapCallHooks: true,
+		UpdateMapCallHooks:       true,
+		AfterFindMapCallHooks:    true,
 	})
 }
 

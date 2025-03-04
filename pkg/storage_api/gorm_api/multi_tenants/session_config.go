@@ -19,9 +19,10 @@ type SessionConfig struct {
 	AfterQueryShowTenant     bool // effect on query
 
 	// callbacks Hooks
-	CreateMapCallHooks    bool // effect on create map
-	UpdateMapCallHooks    bool // effect on update map
-	AfterFindMapCallHooks bool // effect on find map
+	BeforeCreateMapCallHooks bool // effect on before create map
+	AfterCreateMapCallHooks  bool // effect on after create map, it's a low efficiency option, not to open it unless strong need
+	UpdateMapCallHooks       bool // effect on update map
+	AfterFindMapCallHooks    bool // effect on find map
 }
 
 func GetSessionConfig(cfg *Config, tx *gorm.DB) SessionConfig {

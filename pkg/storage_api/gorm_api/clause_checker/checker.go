@@ -16,6 +16,7 @@ type Config struct {
 	CheckAndOmitNotExistingColumn bool
 
 	BeforePlugins []string
+	AfterPlugins  []string
 }
 
 func (cfg *Config) Name() string {
@@ -69,7 +70,7 @@ func (cfg *Config) Initialize(tx *gorm.DB) error {
 		tx.Callback().Delete().Before("gorm:delete").
 			Register(plugin_register.CallbackName(cfg.PluginName, true, 'D'), cfg.Clause),
 
-		tx.Callback().Update().Before("gorm:before_update").
+		tx.Callback().Update().Before("gorm:update").
 			Register(plugin_register.CallbackName(cfg.PluginName, true, 'U'), cfg.Clause),
 
 		tx.Callback().Query().Before("gorm:query").

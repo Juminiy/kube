@@ -47,7 +47,7 @@ func beforeQueryOmit(tx *gorm.DB) {
 	if sch := tx.Statement.Schema; sch != nil {
 		slices.All(sch.Fields)(func(_ int, field *gormschema.Field) bool {
 			if !field.Readable {
-				tx.Omit(field.DBName)
+				tx.Statement.Omit(field.DBName)
 			}
 			return true
 		})

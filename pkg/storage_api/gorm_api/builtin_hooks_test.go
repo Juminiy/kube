@@ -73,8 +73,8 @@ func TestBuiltinHooks(t *testing.T) {
 
 func txHooks() *gorm.DB {
 	return txMixed().Set(multi_tenants.SessionCfg, multi_tenants.SessionConfig{
-		CreateMapCallHooks:    true,
-		UpdateMapCallHooks:    true,
-		AfterFindMapCallHooks: true,
+		BeforeCreateMapCallHooks: true,
+		UpdateMapCallHooks:       true,
+		AfterFindMapCallHooks:    true,
 	})
 }

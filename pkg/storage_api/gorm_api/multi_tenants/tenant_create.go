@@ -24,7 +24,7 @@ func (cfg *Config) BeforeCreate(tx *gorm.DB) {
 		}
 	}
 
-	if sCfg.CreateMapCallHooks {
+	if sCfg.BeforeCreateMapCallHooks {
 		beforeCreateMapCallHook(tx)
 	}
 
@@ -45,7 +45,7 @@ func (cfg *Config) AfterCreate(tx *gorm.DB) {
 
 	afterCreateSetAutoIncPkToMap(tx)
 
-	if sCfg.CreateMapCallHooks {
+	if sCfg.AfterCreateMapCallHooks {
 		afterCreateMapCallHook(tx)
 	}
 
@@ -207,6 +207,7 @@ func beforeCreateMapCallHook(db *gorm.DB) {
 func afterCreateMapCallHook(db *gorm.DB) {
 	if sch, ok := hasSchemaAndDestIsMap(db); ok &&
 		!db.Statement.SkipHooks && sch.AfterCreate {
+		scanDestMapToModel(db)
 		CallHooks(db, func(v any, tx *gorm.DB) bool {
 			if afterCreateI, ok := v.(callbacks.AfterCreateInterface); ok {
 				_ = db.AddError(afterCreateI.AfterCreate(tx))

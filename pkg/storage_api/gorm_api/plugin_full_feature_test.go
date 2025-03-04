@@ -28,7 +28,8 @@ func txFull() *gorm.DB {
 			AfterCreateShowTenant:    true,
 			BeforeQueryOmitField:     true,
 			AfterQueryShowTenant:     true,
-			CreateMapCallHooks:       true,
+			BeforeCreateMapCallHooks: true,
+			AfterCreateMapCallHooks:  true,
 			UpdateMapCallHooks:       true,
 			AfterFindMapCallHooks:    true,
 		})
@@ -46,8 +47,10 @@ type CalicoWeave struct {
 	AppID      uint    `mt:"unique:loc_app,app"` // callbacksDo not_null dup_check
 	AppMe      string  `mt:"unique:app"`         // callbacksDo not_null dup_check
 	AppYr      string  `mt:"unique:app"`         // callbacksDo not_null dup_check
-	AppSecret  string  `gorm:"->:false"`         // readOnly
+	AppSecret  string  `gorm:"->:false;<-"`      // writeOnly, notWriteable
 }
+
+// create(created_at, updated_at, tenant_id, user_id, name, pumping, elephant)
 
 func (w *CalicoWeave) BeforeCreate(tx *gorm.DB) error {
 	if userID, ok := tx.Get("user_id"); ok {
@@ -66,6 +69,7 @@ func (w *CalicoWeave) BeforeUpdate(tx *gorm.DB) error {
 	if userID, ok := tx.Get("user_id"); ok {
 		tx.Statement.AddClause(ClauseUserID(tx.Statement, userID))
 	}
+	tx.Statement.Omit("user_id")
 	return nil
 }
 
@@ -73,6 +77,12 @@ func (w *CalicoWeave) BeforeDelete(tx *gorm.DB) error {
 	if userID, ok := tx.Get("user_id"); ok {
 		tx.Statement.AddClause(ClauseUserID(tx.Statement, userID))
 	}
+	tx.Statement.Omit("user_id")
+	return nil
+}
+
+func (w *CalicoWeave) AfterFind(tx *gorm.DB) error {
+	w.UserID = util.MaxUint
 	return nil
 }
 
@@ -82,8 +92,7 @@ func TestInitFullFeatureTable(t *testing.T) {
 
 func TestCreateWithTenantUserDefaultValue(t *testing.T) {
 	cw0 := CalicoWeave{
-		Name:      "sandbox-9",
-		Desc:      "Isolation Sandbox Environment",
+		Name:      "sandbox-1",
 		LocID:     rand.Uint(),
 		AppID:     rand.UintN(128),
 		AppMe:     gofakeit.Name(),
@@ -94,20 +103,76 @@ func TestCreateWithTenantUserDefaultValue(t *testing.T) {
 	t.Log(Enc(cw0))
 
 	cw1 := map[string]any{
-		"Name":      "sandbox-8",
+		"Name":      "sandbox-2",
 		"LocID":     rand.Uint(),
 		"AppID":     rand.UintN(128),
+		"AppMe":     gofakeit.Name(),
+		"AppYr":     gofakeit.Hobby(),
 		"AppSecret": encrypt.Md5("no-secret"),
 	}
 	Err(t, txFull().Model(&CalicoWeave{}).Create(&cw1).Error)
 	t.Log(Enc(cw1))
 
 	cw2 := map[string]any{
-		"Name":      "sandbox-7",
+		"Name":      "sandbox-3",
 		"LocID":     rand.Uint(),
 		"AppID":     rand.UintN(128),
+		"AppMe":     gofakeit.Name(),
+		"AppYr":     gofakeit.Hobby(),
 		"AppSecret": encrypt.Md5("show-secret"),
 	}
 	Err(t, txFull().Table(`tbl_calico_weave`).Create(&cw2).Error)
 	t.Log(Enc(cw2))
+}
+
+func TestCreateList(t *testing.T) {
+	cwList0 := []CalicoWeave{
+		{Name: "handsome-5"},
+		{Name: "handsome-6"},
+	}
+	Err(t, txFull().Create(&cwList0).Error)
+	t.Log(Enc(cwList0))
+
+	cwList1 := []map[string]any{
+		{"Name": "handsome-3"},
+		{"Name": "handsome-4"},
+	}
+	Err(t, txFull().Table(`tbl_calico_weave`).Create(&cwList1).Error)
+	t.Log(Enc(cwList1))
+}
+
+func TestUpdateTenantUserSetPkToClause(t *testing.T) {
+	Err(t, txFull().Updates(&CalicoWeave{
+		Model:    gorm.Model{ID: 2},
+		TenantID: util.MaxUint,
+		UserID:   util.MaxUint,
+		Name:     "MyName",
+	}).Error)
+
+	Err(t, txFull().Table(`tbl_calico_weave`).Updates(&map[string]any{
+		"id":        2,
+		"tenant_id": util.MaxUint,
+		"user_id":   util.MaxUint,
+		"name":      "MyName",
+	}).Error)
+}
+
+func TestDeleteWithTenantUser(t *testing.T) {
+	Err(t, txFull().Delete(&CalicoWeave{}, "id = ?", 2).Error)
+
+	Err(t, txFull().Delete(&[]CalicoWeave{}, "id = ?", 2).Error)
+
+	Err(t, txFull().Table(`tbl_calico_weave`).
+		Where("id = ?", 2).
+		Delete(map[string]any{}).Error)
+}
+
+func TestQueryWithTenant(t *testing.T) {
+	var cw CalicoWeave
+	Err(t, txFull().First(&cw, 10).Error)
+	t.Log(Enc(cw))
+
+	var cwList []CalicoWeave
+	Err(t, txFull().Find(&cwList, 10, 11).Error)
+	t.Log(Enc(cwList))
 }

@@ -9,7 +9,11 @@ func (cfg *Config) tenantClause(tx *gorm.DB, forQuery bool) {
 	if tInfo := cfg.TenantInfo(tx); tInfo != nil {
 		tInfo.AddClause(tx)
 		if !forQuery {
-			tx.Omit(tInfo.Field.DBName)
+			_Ind(tx.Statement.ReflectValue).SetField(map[string]any{
+				tInfo.Field.DBName: nil,
+				tInfo.Field.Name:   nil,
+			})
+			/*tx.Statement.Omit(tInfo.Field.DBName) // not effected*/
 		}
 	}
 }
