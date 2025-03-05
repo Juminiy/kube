@@ -176,3 +176,18 @@ func TestQueryWithTenant(t *testing.T) {
 	Err(t, txFull().Find(&cwList, 10, 11).Error)
 	t.Log(Enc(cwList))
 }
+
+func TestUpdateFieldDup(t *testing.T) {
+	Err(t, txFull().Table(`tbl_calico_weave`).
+		Updates(map[string]any{
+			"id":        3,                      // primaryKey
+			"tenant_id": 114514,                 // ignored by callbacks
+			"user_id":   1919810,                // ignored by hooks
+			"username":  "My-Name-is-LiHua",     // ignored by callbacks unknownSetting
+			"name":      "Li-Hua",               // dupGroup["name"] and Set to
+			"loc_id":    33,                     // dupGroup["loc_app"] and Set to
+			"app_id":    156,                    // dupGroup["loc_app"],["app"] and Set to
+			"app_me":    "which-is-my-handsome", // dupGroup["app"] and Set to
+			"app_yr":    "my-bingo-done",        // dupGroup["app"] and Set to
+		}).Error)
+}

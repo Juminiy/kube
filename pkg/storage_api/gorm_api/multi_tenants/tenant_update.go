@@ -27,6 +27,18 @@ func (cfg *Config) BeforeUpdate(tx *gorm.DB) {
 		}
 	}
 
+	if sCfg.UpdateMapSetPkToClause {
+		beforeUpdateMapDeletePkAndSetPkToClause(tx)
+	}
+
+	if sCfg.UpdateOmitMapZeroElemKey {
+		beforeUpdateMapDeleteZeroValueColumn(tx)
+	}
+
+	if sCfg.UpdateOmitMapUnknownKey {
+		beforeUpdateMapDeleteUnknownColumn(tx)
+	}
+
 	if !sCfg.DisableFieldDup {
 		cfg.FieldDupCheck(tx, true)
 		if tx.Error != nil {
@@ -39,19 +51,6 @@ func (cfg *Config) BeforeUpdate(tx *gorm.DB) {
 	}
 
 	cfg.tenantClause(tx, false)
-
-	if sCfg.UpdateOmitMapZeroElemKey {
-		beforeUpdateMapDeleteZeroValueColumn(tx)
-	}
-
-	if sCfg.UpdateOmitMapUnknownKey {
-		beforeUpdateMapDeleteUnknownColumn(tx)
-	}
-
-	if sCfg.UpdateMapSetPkToClause {
-		beforeUpdateMapDeletePkAndSetPkToClause(tx)
-	}
-
 }
 
 func (cfg *Config) AfterUpdate(tx *gorm.DB) {
