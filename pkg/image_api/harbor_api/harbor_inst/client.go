@@ -2,15 +2,16 @@
 package harbor_inst
 
 import (
+	"context"
 	"github.com/Juminiy/kube/pkg/image_api/harbor_api"
 	"github.com/Juminiy/kube/pkg/util"
+	"github.com/goharbor/go-client/pkg/sdk/v2.0/client"
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/client/artifact"
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/client/ping"
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/client/project"
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/client/repository"
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/client/user"
 	"github.com/goharbor/go-client/pkg/sdk/v2.0/models"
-	"golang.org/x/net/context"
 	"net/http"
 	"time"
 )
@@ -61,6 +62,10 @@ func DeleteProject(_string string) (*project.DeleteProjectOK, error) {
 
 func DeleteRepository(_string string, _string2 string) (*repository.DeleteRepositoryOK, error) {
 	return harbor_api.UnwrapErr(_harborClient.DeleteRepository(_string, _string2))
+}
+
+func Do(harborAPI func(*client.HarborAPI) error) error {
+	return _harborClient.Do(harborAPI)
 }
 
 func GC(varLenfunc ...util.Func) {

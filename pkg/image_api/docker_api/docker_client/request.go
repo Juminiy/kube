@@ -18,7 +18,7 @@ type req struct {
 
 func (r *req) do() (resp *resty.Response, err error) {
 	r.o.Do(func() {
-		resp, err = r.r.Execute(r.method, fmt.Sprintf("/%s/%s", r.c.version, strings.TrimPrefix(r.url, "/")))
+		resp, err = r.r.Execute(r.method, fmt.Sprintf("/%s/%s", r.c.rawVersion, strings.TrimPrefix(r.url, "/")))
 	})
 	return
 }

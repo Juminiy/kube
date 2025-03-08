@@ -5,6 +5,7 @@ import (
 	"context"
 	"github.com/Juminiy/kube/pkg/storage_api/minio_api"
 	"github.com/Juminiy/kube/pkg/util"
+	"github.com/minio/madmin-go/v3"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"io"
@@ -16,8 +17,12 @@ func AddIAMUser(value *credentials.Value) error {
 	return _minioClient.AddIAMUser(value)
 }
 
-func AtomicDeleteFlow(resp minio_api.Resp) {
-	_minioClient.AtomicDeleteFlow(resp)
+func AdminClientDo(adminClient func(*madmin.AdminClient) error) error {
+	return _minioClient.AdminClientDo(adminClient)
+}
+
+func AtomicDeleteFlow(resp minio_api.Resp) error {
+	return _minioClient.AtomicDeleteFlow(resp)
 }
 
 func AtomicWorkflow(req minio_api.Req) (minio_api.Resp, error) {
@@ -34,6 +39,10 @@ func BatchDeletePolicy() {
 
 func BatchRemoveBucket(_mapstringstruct map[string]struct{}) error {
 	return _minioClient.BatchRemoveBucket(_mapstringstruct)
+}
+
+func ClientDo(client func(*minio.Client) error) error {
+	return _minioClient.ClientDo(client)
 }
 
 func CreateAccessKey() (credentials.Value, error) {

@@ -4,6 +4,8 @@ package minio_inst
 import (
 	"github.com/Juminiy/kube/pkg/internal"
 	"github.com/Juminiy/kube/pkg/util"
+	"github.com/minio/madmin-go/v3"
+	"github.com/minio/minio-go/v7"
 	"sync"
 )
 
@@ -54,5 +56,14 @@ func (o *ConfigOption) WithSecure() *ConfigOption {
 
 func (o *ConfigOption) WithPublicBucket(publicBucket string) *ConfigOption {
 	_minioPublicBucket = publicBucket
+	return o
+}
+
+func (o *ConfigOption) LoadOpts() {
+	o.Do(InitWithOpts)
+}
+
+func (o *ConfigOption) WithOpts(clientOpts minio.Options, adminOpts madmin.Options) *ConfigOption {
+	_clientOpts, _adminOpts = clientOpts, adminOpts
 	return o
 }

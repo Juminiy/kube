@@ -11,15 +11,16 @@ import (
 	"github.com/docker/docker/api/types/registry"
 	dockercli "github.com/docker/docker/client"
 	"github.com/go-resty/resty/v2"
+	"net/http"
 )
 
 //go:generate go run codegen/codegen.go
 type Client struct {
-	cli      *dockercli.Client // official SDK
-	ctx      context.Context
-	page     *util.Page
-	hostAddr string
-	version  string
+	cli     *dockercli.Client // official SDK
+	ctx     context.Context
+	page    *util.Page
+	host    string
+	version string
 
 	apiClient *docker_client.Client // official API
 	reg       docker_registry.Registry
@@ -30,26 +31,57 @@ type Client struct {
 	cache *clientCache
 }
 
-func New(hostURL, version string) (*Client, error) {
+func New(host, version string) (*Client, error) {
 	dCli, err := dockercli.NewClientWithOpts(
-		dockercli.WithHost(hostURL),
+		dockercli.WithHost(host),
 		dockercli.WithVersion(version),
 	)
 	if err != nil {
-		stdlog.ErrorF("connect to docker host: %s error: %s", hostURL, err.Error())
+		stdlog.ErrorF("connect to docker host: %s error: %s", host, err.Error())
 		return nil, err
 	}
 
 	cli := &Client{
-		cli:      dCli,
-		ctx:      util.TODOContext(),
-		page:     util.DefaultPage(),
-		hostAddr: util.TrimProto(hostURL),
-		version:  version,
+		cli:     dCli,
+		ctx:     util.TODOContext(),
+		page:    util.DefaultPage(),
+		host:    host,
+		version: version,
 	}
-	cli.apiClient = docker_client.New(hostURL, version).
+	cli.apiClient = docker_client.New(host, version).
 		WithPage(*cli.page).
 		WithContext(cli.ctx)
+	return cli, nil
+}
+
+func NewWithOpts(
+	host,
+	version string,
+	client *http.Client,
+	opt ...dockercli.Opt,
+) (*Client, error) {
+	dCli, err := dockercli.NewClientWithOpts(
+		append(opt,
+			dockercli.WithHost(host),
+			dockercli.WithVersion(version),
+			dockercli.WithHTTPClient(client),
+		)...,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	cli := &Client{
+		cli:     dCli,
+		ctx:     util.TODOContext(),
+		page:    util.DefaultPage(),
+		host:    host,
+		version: version,
+	}
+	cli.apiClient = docker_client.New(host, version).
+		WithPage(*cli.page).
+		WithContext(cli.ctx).
+		WithHTTPClient(client)
 	return cli, nil
 }
 
@@ -95,4 +127,8 @@ func (c *Client) GetAPIProvider() api_provider.APIProvider {
 		SDK: c.cli,
 		API: c.apiClient,
 	}
+}
+
+func (c *Client) Do(fc func(cli *dockercli.Client) error) error {
+	return fc(c.cli)
 }

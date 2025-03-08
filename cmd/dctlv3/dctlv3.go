@@ -1,9 +1,9 @@
 package main
 
 import (
+	"context"
 	"github.com/Juminiy/kube/pkg/util"
 	cli "github.com/urfave/cli/v3"
-	"golang.org/x/net/context"
 	"os"
 )
 

@@ -4,6 +4,8 @@ package docker_inst
 import (
 	"context"
 	"github.com/Juminiy/kube/pkg/internal"
+	dockercli "github.com/docker/docker/client"
+	"net/http"
 	"sync"
 )
 
@@ -39,5 +41,19 @@ func (o *ConfigOption) WithVersion(version string) *ConfigOption {
 
 func (o *ConfigOption) WithContext(ctx context.Context) *ConfigOption {
 	_docketContext = ctx
+	return o
+}
+
+func (o *ConfigOption) LoadOpts() {
+	o.Do(InitWithOpts)
+}
+
+func (o *ConfigOption) WithHTTPClient(client *http.Client) *ConfigOption {
+	_httpClient = client
+	return o
+}
+
+func (o *ConfigOption) WithOpts(opts ...dockercli.Opt) *ConfigOption {
+	_dockerOpts = opts
 	return o
 }

@@ -1,3 +1,5 @@
+//go:build enable_sonic
+
 package safe_json
 
 import (

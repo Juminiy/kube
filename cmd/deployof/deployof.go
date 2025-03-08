@@ -11,6 +11,8 @@ import (
 	"github.com/docker/docker/api/types/registry"
 	"github.com/gin-gonic/gin"
 	fiberlog "github.com/gofiber/fiber/v3/log"
+	"github.com/minio/madmin-go/v3"
+	"github.com/minio/minio-go/v7"
 	"gopkg.in/yaml.v3"
 	"log"
 	"os"
@@ -88,6 +90,7 @@ func InitMinio() {
 		WithAccessKeyID(_config.Minio.AccessKeyID).
 		WithSecretAccessKey(_config.Minio.SecretAccessKey).
 		WithPublicBucket(_config.Minio.Public).
-		Load()
+		WithOpts(minio.Options{}, madmin.Options{}).
+		LoadOpts()
 	fiberlog.Info("minio init success")
 }

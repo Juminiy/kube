@@ -1,11 +1,11 @@
 package deepseek
 
 import (
+	"context"
 	"github.com/Juminiy/kube/pkg/internal_api"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/boltdb/bolt"
 	"github.com/go-resty/resty/v2"
-	"golang.org/x/net/context"
 )
 
 type Client struct {

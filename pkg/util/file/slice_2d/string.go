@@ -1,8 +1,8 @@
 package slice_2d
 
 import (
+	"context"
 	"github.com/Juminiy/kube/pkg/util"
-	"golang.org/x/net/context"
 	"k8s.io/apimachinery/pkg/util/sets"
 )
 

@@ -1,8 +1,8 @@
 package korm
 
 import (
+	"context"
 	"database/sql"
-	"golang.org/x/net/context"
 	"log"
 )
 

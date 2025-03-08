@@ -1,8 +1,8 @@
 package deepseek
 
 import (
+	"context"
 	"github.com/Juminiy/kube/pkg/util"
-	"golang.org/x/net/context"
 	"gopkg.in/yaml.v3"
 	"io"
 	"os"

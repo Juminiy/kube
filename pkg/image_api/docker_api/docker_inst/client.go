@@ -12,6 +12,7 @@ import (
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/registry"
 	"github.com/docker/docker/api/types/system"
+	"github.com/docker/docker/client"
 	"io"
 )
 
@@ -49,6 +50,10 @@ func CreateImageTagV2(_string string, _string2 string) (docker_api.PushImageOffi
 
 func CreateImageTagV3(_string string, _string2 string) (docker_client.EventResp, error) {
 	return _dockerClient.CreateImageTagV3(_string, _string2)
+}
+
+func Do(client func(*client.Client) error) error {
+	return _dockerClient.Do(client)
 }
 
 func ExportImage(_string string) (docker_api.ExportImageResp, error) {

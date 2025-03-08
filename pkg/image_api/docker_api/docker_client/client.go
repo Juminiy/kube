@@ -6,7 +6,10 @@ import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	"github.com/docker/docker/api/types/registry"
+	dockercli "github.com/docker/docker/client"
+	"github.com/dubbogo/gost/log/logger"
 	"github.com/go-resty/resty/v2"
+	"net/http"
 	"strings"
 )
 
@@ -15,25 +18,35 @@ type Client struct {
 	page *util.Page      // for list pagination
 	ctx  context.Context // for task cancellation
 
-	hostAddr string                   // docker host address, ex. ip:port, domain:port
-	version  string                   // docker client version, ex. 1.27, v1.27
-	reg      docker_registry.Registry // docker registry, for pull, push, tag, etc
+	// referred from: dockercli.Client
+	rawHost    string
+	rawVersion string
+	rest       *restConfig
+
+	// docker registry, for pull, push, tag, etc
+	reg docker_registry.Registry
 }
 
 func New(host, version string) *Client {
-	hostAddr := util.TrimProto(host)
-	restyCli := resty.NewWithClient(util.DefaultHTTPClient()).
-		SetAllowGetMethodPayload(true).
-		SetBaseURL(util.URLWithHTTP(hostAddr)).
-		SetScheme("http").
-		SetTimeout(util.TimeSecond(60))
-	return &Client{
-		rCli:     restyCli,
-		hostAddr: hostAddr,
-		version:  versionWithV(version),
-		page:     util.DefaultPage(),
-		ctx:      util.TODOContext(),
+	return (&Client{
+		page: util.DefaultPage(),
+		ctx:  util.TODOContext(),
+
+		rawHost:    host,
+		rawVersion: version,
+	}).WithHTTPClient(util.DefaultHTTPClient())
+}
+
+func (c *Client) WithHTTPClient(client *http.Client) *Client {
+	rCli, rest, err := restyClientWithHTTPClient(c.rawHost, client)
+	if err != nil {
+		logger.Errorf("set resty with http.Client error: %s", err.Error())
+		return c
 	}
+	rest.version = versionWithV(c.rawVersion)
+	c.rCli = rCli
+	c.rest = rest
+	return c
 }
 
 func (c *Client) WithContext(ctx context.Context) *Client {
@@ -62,6 +75,37 @@ func (c *Client) WithRegistryAuth(authConfig registry.AuthConfig) *Client {
 
 func (c *Client) GetRegistry() docker_registry.Registry {
 	return c.reg
+}
+
+type restConfig struct {
+	scheme   string
+	host     string
+	proto    string
+	addr     string
+	basePath string
+	version  string
+}
+
+func restyClientWithHTTPClient(host string, client *http.Client) (*resty.Client, *restConfig, error) {
+	hostURL, err := dockercli.ParseHostURL(host)
+	if err != nil {
+		return nil, nil, err
+	}
+	if hostURL.Scheme == "tcp" {
+		hostURL.Scheme = "http"
+	}
+	return resty.NewWithClient(client).
+			SetAllowGetMethodPayload(true).
+			SetBaseURL(hostURL.String()).
+			SetScheme(hostURL.Scheme).
+			SetTimeout(client.Timeout),
+		&restConfig{
+			scheme:   hostURL.Scheme,
+			host:     host,
+			proto:    hostURL.Scheme,
+			addr:     hostURL.Host,
+			basePath: hostURL.Path,
+		}, nil
 }
 
 func versionWithV(version string) string {

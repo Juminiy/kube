@@ -23,7 +23,7 @@ var _cfg struct {
 }
 
 func init() {
-	cfgPath, err := os.Open(filepath.Join("testdata", "env", "env.yaml"))
+	cfgPath, err := os.Open(filepath.Join("testdata", "env", "config.yaml"))
 	util.Must(err)
 	cfgBytes, err := io.ReadAll(cfgPath)
 	util.Must(err)
