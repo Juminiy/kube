@@ -1,6 +1,7 @@
 package safe_parse
 
 import (
+	"database/sql"
 	"github.com/google/uuid"
 	"reflect"
 	"testing"
@@ -32,19 +33,19 @@ func TestSafeSql(t *testing.T) {
 		newTestRep("114514.191810", reflect.Float64),
 		newTestRep("rr", reflect.Interface),
 		newTestRep("r8", reflect.String),
-		newTestRep("2025-01-05 18:33:42", KStdTime),
-		newTestRep("rrr12211", KBytes),
-		newTestRep("qqwsdasd", KJSONRaw),
-		newTestRep("qweqssad", KRawBytes),
-		newTestRep("rr12112", KNullString),
-		newTestRep("11111", KNullInt64),
-		newTestRep("222222", KNullInt32),
-		newTestRep("121", KNullInt16),
-		newTestRep("88", KNullByte),
-		newTestRep("114.51212", KNullFloat64),
-		newTestRep("false", KNullBool),
-		newTestRep("2025-01-05 18:33:42", KNullTime),
-		newTestRep(uuid.NewString(), KUUID),
+		newTestRep("2025-01-05 18:33:42", KStdTime), newTestRep("2025-01-05 18:33:42", KStdTimePtr),
+		newTestRep("rrr12211", KBytes), newTestRep("rrr12211", KBytesPtr),
+		newTestRep("qqwsdasd", KJSONRaw), newTestRep("qqwsdasd", KJSONRawPtr),
+		newTestRep(uuid.NewString(), KUUID), newTestRep(uuid.NewString(), KUUIDPtr),
+		newTestRep("qweqssad", KRawBytes), newTestRep("qweqssad", KRawBytesPtr),
+		newTestRep("rr12112", KNullString), newTestRep("rr12112", KNullStringPtr), newTestRep("rr12112", KUnderlyingNullString),
+		newTestRep("11111", KNullInt64), newTestRep("11111", KNullInt64Ptr), newTestRep("11111", KUnderlyingNullInt64),
+		newTestRep("222222", KNullInt32), newTestRep("222222", KNullInt32Ptr), newTestRep("222222", KUnderlyingNullInt32),
+		newTestRep("121", KNullInt16), newTestRep("121", KNullInt16Ptr), newTestRep("121", KUnderlyingNullInt16),
+		newTestRep("88", KNullByte), newTestRep("88", KNullBytePtr), newTestRep("88", KUnderlyingNullByte),
+		newTestRep("114.51212", KNullFloat64), newTestRep("114.51212", KNullFloat64Ptr), newTestRep("114.51212", KUnderlyingNullFloat64),
+		newTestRep("false", KNullBool), newTestRep("false", KNullBoolPtr), newTestRep("false", KUnderlyingNullBool),
+		newTestRep("2025-01-05 18:33:42", KNullTime), newTestRep("2025-01-05 18:33:42", KNullTimePtr), newTestRep("2025-01-05 18:33:42", KUnderlyingNullTime),
 	} {
 		pv, ok := Parse(s.RawStr).Get(s.Kind)
 		if ok {
@@ -52,5 +53,28 @@ func TestSafeSql(t *testing.T) {
 		} else {
 			t.Fatalf("%19s to kind: %10s", s.RawStr, s.Kind.String())
 		}
+	}
+}
+
+func TestSafeSqlConvertible(t *testing.T) {
+	type sid sql.NullString
+	type ssid sid
+	type s2id sql.NullString
+	type ss2id s2id
+
+	t.Log(reflect.TypeOf(sid{}).ConvertibleTo(_NullStringType))
+	t.Log(reflect.TypeOf(ssid{}).ConvertibleTo(_NullStringType))
+	t.Log(reflect.TypeOf(s2id{}).ConvertibleTo(_NullStringType))
+	t.Log(reflect.TypeOf(ss2id{}).ConvertibleTo(_NullStringType))
+	t.Log(reflect.TypeOf(sid{}).ConvertibleTo(reflect.TypeOf(sid{})))
+	t.Log(reflect.TypeOf(sid{}).ConvertibleTo(reflect.TypeOf(ssid{})))
+	t.Log(reflect.TypeOf(sid{}).ConvertibleTo(reflect.TypeOf(s2id{})))
+	t.Log(reflect.TypeOf(sid{}).ConvertibleTo(reflect.TypeOf(ss2id{})))
+}
+
+func TestSafeSqlUnderlyingRType(t *testing.T) {
+	type sid sql.NullString
+	if parsedValueRt, ok := Parse("iamhajimi").GetByRT(reflect.TypeOf(sid{})); ok {
+		t.Log(parsedValueRt.(sid).String, parsedValueRt.(sid).Valid)
 	}
 }
