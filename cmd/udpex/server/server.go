@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	udplib.IPv4Server("192.168.3.37:3344")
+	udplib.IPv4Server("host.local:3344")
 }

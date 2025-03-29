@@ -8,11 +8,9 @@ require (
 	github.com/aws/smithy-go v1.22.1
 	github.com/boltdb/bolt v1.3.1
 	github.com/brianvoe/gofakeit/v7 v7.1.2
-	github.com/bytedance/sonic v1.12.9
 	github.com/chdb-io/chdb-go v1.7.1
 	github.com/containerd/containerd/v2 v2.0.1
 	github.com/containerd/platforms v1.0.0-rc.0
-	github.com/dchest/captcha v1.1.0
 	github.com/dgraph-io/badger/v4 v4.5.1
 	github.com/distribution/reference v0.6.0
 	github.com/docker/docker v27.4.0-rc.2+incompatible
@@ -23,12 +21,10 @@ require (
 	github.com/fatih/color v1.18.0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-resty/resty/v2 v2.16.2
-	github.com/go-sql-driver/mysql v1.8.1
 	github.com/goccy/go-json v0.10.3
 	github.com/gofiber/fiber/v3 v3.0.0-beta.3
 	github.com/goharbor/go-client v0.210.0
 	github.com/google/uuid v1.6.0
-	github.com/jackc/pgx/v5 v5.7.2
 	github.com/json-iterator/go v1.1.12
 	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/mindprince/gonvml v0.0.0-20211002210717-ac0b66419a41
@@ -46,10 +42,8 @@ require (
 	github.com/sashabaranov/go-openai v1.36.1
 	github.com/shirou/gopsutil/v4 v4.24.11
 	github.com/spf13/cast v1.7.0
-	github.com/spf13/cobra v1.8.1
 	github.com/syndtr/goleveldb v1.0.0
 	github.com/teris-io/shortid v0.0.0-20220617161101-71ec9f2aa569
-	github.com/urfave/cli/v3 v3.0.0-beta1
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fastjson v1.6.4
 	github.com/xuri/excelize/v2 v2.9.0
@@ -58,11 +52,6 @@ require (
 	golang.org/x/exp v0.0.0-20241108190413-2d47ceb2692f
 	golang.org/x/sync v0.11.0
 	gopkg.in/yaml.v3 v3.0.1
-	gorm.io/driver/mysql v1.5.7
-	gorm.io/driver/postgres v1.5.11
-	gorm.io/driver/sqlite v1.5.7
-	gorm.io/gorm v1.25.12
-	gorm.io/plugin/soft_delete v1.2.1
 	k8s.io/api v0.31.3
 	k8s.io/apimachinery v0.31.3
 	k8s.io/client-go v0.31.3
@@ -71,7 +60,6 @@ require (
 )
 
 require (
-	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/AdaLogics/go-fuzz-headers v0.0.0-20240806141605-e8a1dd7889d6 // indirect
 	github.com/AdamKorcz/go-118-fuzz-build v0.0.0-20231105174938-2b5cbb29f3e2 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 // indirect
@@ -84,6 +72,7 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.32.6 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.25 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.25 // indirect
+	github.com/bytedance/sonic v1.12.9 // indirect
 	github.com/bytedance/sonic/loader v0.2.3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cloudwego/base64x v0.1.5 // indirect
@@ -133,6 +122,7 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.20.0 // indirect
+	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/gofiber/utils/v2 v2.0.0-beta.4 // indirect
 	github.com/gofrs/flock v0.12.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
@@ -152,12 +142,6 @@ require (
 	github.com/huandu/xstrings v1.4.0 // indirect
 	github.com/imdario/mergo v0.3.16 // indirect
 	github.com/in-toto/in-toto-golang v0.5.0 // indirect
-	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/jackc/pgpassfile v1.0.0 // indirect
-	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
-	github.com/jackc/puddle/v2 v2.2.2 // indirect
-	github.com/jinzhu/inflection v1.0.0 // indirect
-	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/klauspost/compress v1.17.11 // indirect

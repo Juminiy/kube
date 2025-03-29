@@ -31,13 +31,13 @@ func TestClient_SetAccessPolicy(t *testing.T) {
 		_cli.SetAccessPolicy(
 			&PolicyConfig{
 				BusinessUser: BusinessUser{
-					Name: "chisatox0129",
+					Name: "juminiyx0129",
 					ID:   strconv.Itoa(33),
 				},
 				Cred: miniocred.Value{
 					AccessKeyID: "uUDC29bGJj3v15K33rAmM1urgRk6c924eov0IrF6PZz3BnHj24",
 				},
-				BucketName: "s3fs-mount-bucket-chisato0129",
+				BucketName: "s3fs-mount-bucket-juminiy0129",
 			},
 		))
 }

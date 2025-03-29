@@ -6,15 +6,15 @@ import "testing"
 func TestLookupIP(t *testing.T) {
 	/*t.Log(LookupIP("harbor.local"))
 	t.Log(LookupIP("harbor.local:18111"))*/
-	t.Log(LookupIP("192.168.31.66"))
-	t.Log(LookupIP("192.168.31.66:18111"))
+	t.Log(LookupIP("host.local"))
+	t.Log(LookupIP("host.local:18111"))
 }
 
 func TestTrimProto(t *testing.T) {
-	t.Log(TrimProto("192.168.31.66"))
-	t.Log(TrimProto("192.168.31.66"))
-	t.Log(TrimProto("192.168.31.66"))
-	t.Log(TrimProto("http://192.168.31.66"))
-	t.Log(TrimProto("tcp://192.168.31.66"))
-	t.Log(TrimProto("udp://192.168.31.66"))
+	t.Log(TrimProto("host.local"))
+	t.Log(TrimProto("host.local"))
+	t.Log(TrimProto("host.local"))
+	t.Log(TrimProto("http://host.local"))
+	t.Log(TrimProto("tcp://host.local"))
+	t.Log(TrimProto("udp://host.local"))
 }

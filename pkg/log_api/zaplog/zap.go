@@ -6,6 +6,7 @@ import (
 	"github.com/Juminiy/kube/pkg/util"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"slices"
 )
 
 // LogLevelMap is constant immutable variable
@@ -43,7 +44,7 @@ var (
 // global var
 var (
 	_zapConfig     *zap.Config
-	_restoreFunc   util.Fn = util.NothingFn()
+	_restoreFunc   = util.NothingFn()
 	_logger        *zap.Logger
 	_sugaredLogger *zap.SugaredLogger
 )
@@ -51,54 +52,48 @@ var (
 func Init() {
 	var _zapError error
 
-	/*if len(_outputPaths) == 0 &&
-		len(_errorOutputPaths) == 0 {
-		stdlog.Error("output path and error output path must have one available absolute path at least")
-		return
-	} else if len(_errorOutputPaths) == 0 {
-		_errorOutputPaths = _outputPaths
-	} else if len(_outputPaths) == 0 {
-		_outputPaths = _errorOutputPaths
-	}*/
-
-	checkOutputPath := func(outputPaths ...string) int {
-		cnt := 0
-		for _, outputPath := range outputPaths {
-			if !util.OSFilePathExists(outputPath) {
-				_zapError = util.OSCreateAbsolutePath(outputPath)
-				if _zapError != nil {
-					stdlog.Error(_zapError)
-					continue
-				}
-				cnt++
-				continue
+	checkPaths := func(paths ...string) (legal int) {
+		slices.Values(paths)(func(path string) bool {
+			if util.OSFilePathExists(path) {
+				legal++
+				return true
 			}
-			cnt++
-		}
-		return cnt
+			if err := util.OSCreateAbsolutePath(path); err == nil {
+				legal++
+			} else {
+				stdlog.Error(err)
+			}
+			return true
+		})
+		return legal
 	}
-	outputPathCnt := checkOutputPath(_outputPaths...)
-	errorOutputPathCnt := checkOutputPath(_errorOutputPaths...)
-
-	if outputPathCnt == 0 &&
-		errorOutputPathCnt == 0 {
+	legalOutput := checkPaths(_outputPaths...)
+	legalErrOutput := checkPaths(_errorOutputPaths...)
+	if legalOutput == 0 &&
+		legalErrOutput == 0 {
 		stdlog.Error("output path and error output path must have one available absolute path at least")
 		return
-	} else if outputPathCnt == 0 {
+	} else if legalOutput == 0 {
 		_outputPaths = _errorOutputPaths
-	} else if errorOutputPathCnt == 0 {
+	} else if legalErrOutput == 0 {
 		_errorOutputPaths = _outputPaths
 	}
 
 	_zapConfig = util.New(zap.NewProductionConfig())
+	func(lvl string) {
+		logLevelInt8, ok := _logLevelMap[lvl]
+		if !ok {
+			stdlog.WarnF("in config file log.level: %s is not supported, please use: Debug, Info, Warn, Error, DPanic, Panic, Fatal", lvl)
+			logLevelInt8 = zap.InfoLevel
+		}
+		_zapConfig.Level = zap.NewAtomicLevelAt(logLevelInt8)
+	}(_logLevel)
 	_zapConfig.DisableCaller = !_caller
 	_zapConfig.DisableStacktrace = !_stacktrace
-	setLogLevel(_logLevel)
-	setOutputPaths(_outputPaths, _errorOutputPaths)
+	_zapConfig.OutputPaths = _outputPaths
+	_zapConfig.ErrorOutputPaths = _errorOutputPaths
 	_zapConfig.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-	_zapConfig.EncoderConfig.EncodeCaller = func(_ zapcore.EntryCaller, enc zapcore.PrimitiveArrayEncoder) {
-		enc.AppendString("")
-	}
+	_zapConfig.EncoderConfig.EncodeCaller = zapcore.ShortCallerEncoder
 
 	_logger, _zapError = _zapConfig.Build()
 	if _zapError != nil {
@@ -110,18 +105,10 @@ func Init() {
 	_restoreFunc = zap.ReplaceGlobals(_logger)
 }
 
-// will be exported later
-func setLogLevel(level string) {
-	logLevelInt8, ok := _logLevelMap[level]
-	if !ok {
-		stdlog.ErrorF("in config file log.level: %s is not supported, please use: Debug, Info, Warn, Error, DPanic, Panic, Fatal", level)
-		return
-	}
-	_zapConfig.Level = zap.NewAtomicLevelAt(logLevelInt8)
+func Get() *zap.Logger {
+	return _logger
 }
 
-// will be exported later
-func setOutputPaths(paths, errorPaths []string) {
-	_zapConfig.OutputPaths = paths
-	_zapConfig.ErrorOutputPaths = errorPaths
+func GetSugar() *zap.SugaredLogger {
+	return _sugaredLogger
 }

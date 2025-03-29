@@ -15,5 +15,4 @@ var (
 	_iLoggerV2 kubeapi.InternalLoggerV2
 )
 
-func Init() {
-}
+func Init() {}

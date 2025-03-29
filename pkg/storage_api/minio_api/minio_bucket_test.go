@@ -16,7 +16,7 @@ func TestClient_MakeBucket(t *testing.T) {
 		_cli.MakeBucket(&BucketConfig{
 			Quota: util.Gi * 30,
 			BusinessUser: BusinessUser{
-				Name: "chisato",
+				Name: "Juminiy",
 			},
 		}))
 }
@@ -26,7 +26,7 @@ func TestClient_UpdateBucketQuota(t *testing.T) {
 	util.SilentFatalf("update quota error",
 		_cli.UpdateBucketQuota(&BucketConfig{
 			Quota:      util.Gi * 60,
-			BucketName: "s3fs-mount-bucket-chisato",
+			BucketName: "s3fs-mount-bucket-juminiy",
 		}))
 
 }
@@ -34,7 +34,7 @@ func TestClient_UpdateBucketQuota(t *testing.T) {
 // +passed
 func TestClient_RemoveBucket(t *testing.T) {
 	util.SilentFatalf("remove bucket error",
-		_cli.RemoveBucket("s3fs-mount-bucket-chisato"),
+		_cli.RemoveBucket("s3fs-mount-bucket-juminiy"),
 	)
 }
 
@@ -43,13 +43,13 @@ func TestClient_SetBucketPolicy(t *testing.T) {
 	util.SilentFatalf("create bucket policy error", _cli.SetBucketPolicy(
 		&PolicyConfig{
 			BusinessUser: BusinessUser{
-				Name: "chisato",
+				Name: "juminiy",
 				ID:   strconv.Itoa(11),
 			},
 			Cred: miniocred.Value{
 				AccessKeyID: "uUDC29bGJj3v15K33rAmM1urgRk6c924eov0IrF6PZz3BnHj24",
 			},
-			BucketName: "s3fs-mount-bucket-chisato",
+			BucketName: "s3fs-mount-bucket-juminiy",
 		},
 	))
 }
@@ -59,7 +59,7 @@ func TestClient_SetBucketPolicy(t *testing.T) {
 // +passed
 func TestClient_BucketWorkflow(t *testing.T) {
 	businessUser := BusinessUser{
-		Name: "chisatox0129",
+		Name: "juminiyx0129",
 		ID:   strconv.Itoa(33),
 	}
 

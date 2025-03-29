@@ -9,10 +9,10 @@ import (
 
 // LookupIP
 //
-// +example 192.168.31.254 -> 192.168.31.254
-// +example app.local -> 192.168.31.254
-// +example 192.168.31.254:80 -> 192.168.31.254:80
-// +example app.local:80 -> 192.168.31.254:80
+// +example 172.10.0.1 -> 172.10.0.1
+// +example host.local -> 172.10.0.1
+// +example 172.10.0.1:80 -> 172.10.0.1:80
+// +example host.local:80 -> 172.10.0.1:80
 func LookupIP(host string) string {
 	ipPort := strings.Split(host, ":")
 	ip := ""

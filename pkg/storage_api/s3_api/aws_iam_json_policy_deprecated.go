@@ -1,6 +1,6 @@
 package s3_api
 
-// SASRStatement
+/*// SASRStatement
 // Single Action Single Resource Statement
 // Deprecated : Use Statement
 type SASRStatement struct {
@@ -58,4 +58,4 @@ type MAMRStatement struct {
 
 func (s *MAMRStatement) WithName(name string) {
 	s.Sid = name
-}
+}*/

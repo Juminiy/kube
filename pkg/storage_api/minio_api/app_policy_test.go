@@ -9,10 +9,10 @@ import (
 func TestPolicyConfig_IBAPAccessKeyWithOneBucketObjectCRUDPolicy(t *testing.T) {
 	pc := PolicyConfig{
 		BusinessUser: BusinessUser{
-			Name: "chisato-x",
+			Name: "juminiy-x",
 			ID:   strconv.FormatUint(8, 10),
 		},
-		BucketName: "s3fs-mount-bucket-chisato-x",
+		BucketName: "s3fs-mount-bucket-juminiy-x",
 	}
 	t.Log(pc.IBAPAccessKeyWithOneBucketObjectCRUDPolicy())
 }
@@ -21,10 +21,10 @@ func TestPolicyConfig_IBAPAccessKeyWithOneBucketObjectCRUDPolicy(t *testing.T) {
 func TestPolicyConfig_RBAPBucketWithAdminAllWithAccessKeyOneBucketObjectCRUDPolicy(t *testing.T) {
 	pc := PolicyConfig{
 		BusinessUser: BusinessUser{
-			Name: "chisato-x",
+			Name: "juminiy-x",
 			ID:   strconv.FormatUint(8, 10),
 		},
-		BucketName: "s3fs-mount-bucket-chisato-x",
+		BucketName: "s3fs-mount-bucket-juminiy-x",
 	}
 	t.Log(pc.RBAPBucketWithAdminAllWithAccessKeyOneBucketObjectCRUDPolicy())
 }
