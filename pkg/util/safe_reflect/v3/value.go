@@ -187,6 +187,10 @@ func CopyFieldValue(src any, dst any) {
 		srcOf.T.Kind() == reflect.Struct &&
 		dstOf.T.Kind() == reflect.Struct &&
 		dstOf.V.CanSet():
+		if srcOf.Type == dstOf.Type {
+			dstOf.Set(srcOf.Value)
+			return
+		}
 		srcFieldValues := srcOf.StructToMap()
 		for idx := range dstOf.T.NumField() {
 			if srcFieldValue, ok := srcFieldValues[dstOf.T.Field(idx).Name]; ok {
