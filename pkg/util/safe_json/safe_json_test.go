@@ -1,7 +1,9 @@
 package safe_json
 
 import (
+	"encoding/json"
 	"github.com/Juminiy/kube/pkg/util"
+	safe_reflectv3 "github.com/Juminiy/kube/pkg/util/safe_reflect/v3"
 	goccyjson "github.com/goccy/go-json"
 	"testing"
 	"time"
@@ -121,5 +123,71 @@ func TestMapAny(t *testing.T) {
 		bs, err := lite.Marshal(mapv)
 		util.Must(err)
 		t.Logf("%19s: %s", name, string(bs))
+	}
+}
+
+type jsonKv struct {
+	KeyStr string
+	KeyInt int
+}
+
+type jsonKvDummy struct {
+	KeyStr string
+	KeyInt int
+}
+
+func (j jsonKv) MarshalJSON() ([]byte, error) {
+	if len(j.KeyStr) == 0 && j.KeyInt == 0 {
+		return json.Marshal(nil)
+	}
+	var jDummy jsonKvDummy
+	safe_reflectv3.CopyFieldValue(j, &jDummy)
+	return json.Marshal(jDummy)
+}
+
+func (j *jsonKv) UnmarshalJSON(b []byte) error {
+	var (
+		jStr   string
+		jDummy jsonKvDummy
+	)
+	if err := json.Unmarshal(b, &jDummy); err == nil {
+		safe_reflectv3.CopyFieldValue(jDummy, j)
+		return nil
+	}
+	if err := json.Unmarshal(b, &jStr); err != nil {
+		return err
+	} else {
+		if err := json.Unmarshal([]byte(jStr), &jDummy); err != nil {
+			return err
+		}
+		safe_reflectv3.CopyFieldValue(jDummy, j)
+		return nil
+	}
+}
+
+func TestJSONStringInJSON(t *testing.T) {
+	var jsonInJSON struct {
+		JIJ jsonKv
+		Int int
+		Str string
+	}
+	for _, testCase := range []string{
+		`{
+"JIJ": "{\"KeyStr\":\"ValStr\", \"KeyInt\":114514}",
+"Int": 1919810,
+"Str": "rrr"
+}`,
+		`{
+"JIJ": {"KeyStr":"ValStr", "KeyInt":114514},
+"Int": 1919810,
+"Str": "rrr"
+}
+`,
+	} {
+		err := json.Unmarshal([]byte(testCase), &jsonInJSON)
+		if err != nil {
+			t.Error(err)
+		}
+		t.Logf("%+v", jsonInJSON)
 	}
 }
