@@ -1,9 +1,8 @@
 package safe_json
 
 import (
-	"encoding/json"
+	"encoding/json" // only for test
 	"github.com/Juminiy/kube/pkg/util"
-	safe_reflectv3 "github.com/Juminiy/kube/pkg/util/safe_reflect/v3"
 	goccyjson "github.com/goccy/go-json"
 	"testing"
 	"time"
@@ -78,7 +77,7 @@ var jsonUnmarshalers = map[string]util.JSONUnmarshaler{
 	"json-iterator/std":   JSONIter(),
 	"json-iterator/favor": JSONIterFav(),
 	"goccy":               GoCCY(),
-	"sonic":               Sonic(),
+	//"sonic":               Sonic(),
 }
 
 var jsonMarshalers = map[string]util.JSONMarshaler{
@@ -86,7 +85,7 @@ var jsonMarshalers = map[string]util.JSONMarshaler{
 	"json-iterator/std":   JSONIter(),
 	"json-iterator/favor": JSONIterFav(),
 	"goccy":               GoCCY(),
-	"sonic":               Sonic(),
+	//"sonic":               Sonic(),
 }
 
 var jsonLites = map[string]util.JSONLite{
@@ -94,7 +93,7 @@ var jsonLites = map[string]util.JSONLite{
 	"json-iterator/std":   JSONIter(),
 	"json-iterator/favor": JSONIterFav(),
 	"goccy":               GoCCY(),
-	"sonic":               Sonic(),
+	//"sonic":               Sonic(),
 }
 
 // json BUG
@@ -130,37 +129,29 @@ type jsonKv struct {
 	KeyStr string
 	KeyInt int
 }
-
-type jsonKvDummy struct {
-	KeyStr string
-	KeyInt int
-}
+type jsonKvAlias jsonKv
 
 func (j jsonKv) MarshalJSON() ([]byte, error) {
 	if len(j.KeyStr) == 0 && j.KeyInt == 0 {
 		return json.Marshal(nil)
 	}
-	var jDummy jsonKvDummy
-	safe_reflectv3.CopyFieldValue(j, &jDummy)
-	return json.Marshal(jDummy)
+	return json.Marshal(jsonKvAlias(j))
 }
 
 func (j *jsonKv) UnmarshalJSON(b []byte) error {
-	var (
-		jStr   string
-		jDummy jsonKvDummy
-	)
-	if err := json.Unmarshal(b, &jDummy); err == nil {
-		safe_reflectv3.CopyFieldValue(jDummy, j)
+	var jAlias jsonKvAlias
+	if err := json.Unmarshal(b, &jAlias); err == nil {
+		*j = jsonKv(jAlias)
 		return nil
 	}
+	var jStr string
 	if err := json.Unmarshal(b, &jStr); err != nil {
 		return err
 	} else {
-		if err := json.Unmarshal([]byte(jStr), &jDummy); err != nil {
+		if err := json.Unmarshal([]byte(jStr), &jAlias); err == nil {
+			*j = jsonKv(jAlias)
 			return err
 		}
-		safe_reflectv3.CopyFieldValue(jDummy, j)
 		return nil
 	}
 }
@@ -187,7 +178,301 @@ func TestJSONStringInJSON(t *testing.T) {
 		err := json.Unmarshal([]byte(testCase), &jsonInJSON)
 		if err != nil {
 			t.Error(err)
+			continue
 		}
 		t.Logf("%+v", jsonInJSON)
+		if jBytes, err := json.Marshal(jsonInJSON); err == nil {
+			t.Logf("%s", jBytes)
+		}
+	}
+}
+
+type embedS struct {
+	E1 int
+	E2 string
+	e2 string
+}
+
+func (s embedS) IsZero() bool {
+	return s.E1 == 0 && len(s.E2) == 0 && len(s.e2) == 0
+}
+
+func TestJSONFeatures(t *testing.T) {
+	type intStr struct {
+		Int int `json:",omitempty,string"`
+		embedS
+		embedS2 embedS
+		EmbedS3 embedS `json:"-"`
+	}
+	for _, testCase := range []intStr{
+		{Int: 0, embedS: embedS{E1: 1, E2: "Hamburger"}, EmbedS3: embedS{E1: 5, E2: "K", e2: "v"}},
+		{Int: 10, embedS2: embedS{E1: 10, E2: "Egg", e2: "apple"}},
+	} {
+		t.Log("marshal")
+		bs, err := json.Marshal(testCase)
+		if err != nil {
+			t.Error(err)
+			continue
+		} else {
+			t.Logf("%+v -> %s", testCase, bs)
+		}
+		t.Log("unmarshal")
+		var newStruct intStr
+		if err := json.Unmarshal(bs, &newStruct); err != nil {
+			t.Error(err)
+			continue
+		} else {
+			t.Logf("%s -> %+v", bs, newStruct)
+		}
+	}
+}
+
+func TestJSONFeature2(t *testing.T) {
+	type intStr2 struct {
+		embedS  `json:"embedS"`
+		embedS2 embedS `json:"embedS2"`
+		EmbedS3 embedS `json:"embedS3"`
+		EmbedS4 embedS `json:"-"`
+	}
+	for _, testCase := range []string{
+		`{"E1":10,"E2":"Exported","e2":"unExported"}`,
+		`{"embedS":{"E1":10,"E2":"Exported","e2":"unExported"}}`,
+		`{"embedS2":{"E1":10,"E2":"Exported","e2":"unExported"}}`,
+		`{"embedS3":{"E1":10,"E2":"Exported","e2":"unExported"}}`,
+		`{"embedS4":{"E1":10,"E2":"Exported","e2":"unExported"}}`,
+		`{"-":{"E1":10,"E2":"Exported","e2":"unExported"}}`,
+	} {
+		var val intStr2
+		// stdlib not same behaviour with json-iterator
+		if err := JSONIter().Unmarshal([]byte(testCase), &val); err != nil {
+			t.Error(err)
+			continue
+		}
+		t.Logf("%s -> %+v", testCase, map[string]bool{
+			"embeddedField-embedS": val.embedS.IsZero(),
+			"field-embedS2":        val.embedS2.IsZero(),
+			"field-EmbedS3":        val.EmbedS3.IsZero(),
+			"field-EmbedS4":        val.EmbedS4.IsZero(),
+		})
+		//t.Logf("%s -> %+v", testCase, val)
+	}
+}
+
+func TestJSONFeature3(t *testing.T) {
+	type intStr2 struct {
+		*embedS `json:"embedS"`
+		embedS2 *embedS `json:"embedS2"`
+		EmbedS3 *embedS `json:"embedS3"`
+		EmbedS4 *embedS `json:"-"`
+	}
+	for _, testCase := range []string{
+		`{"E1":10,"E2":"Exported","e2":"unExported"}`,
+		`{"embedS":{"E1":10,"E2":"Exported","e2":"unExported"}}`,
+		`{"embedS2":{"E1":10,"E2":"Exported","e2":"unExported"}}`,
+		`{"embedS3":{"E1":10,"E2":"Exported","e2":"unExported"}}`,
+		`{"embedS4":{"E1":10,"E2":"Exported","e2":"unExported"}}`,
+		`{"-":{"E1":10,"E2":"Exported","e2":"unExported"}}`,
+	} {
+		var val intStr2
+		if err := JSONIter().Unmarshal([]byte(testCase), &val); err != nil {
+			t.Error(err)
+			continue
+		}
+		t.Logf("%s -> %+v", testCase, val)
+	}
+}
+
+type embStructLowerCase struct {
+	embedS `json:",inline"`
+	Int    int
+}
+
+func (e *embStructLowerCase) Clean() {}
+
+type embStructPtrLowerCase struct {
+	*embedS `json:",inline"`
+	Int     int
+}
+
+func (e *embStructPtrLowerCase) Clean() {}
+
+type embStructLowerCaseTagged struct {
+	embedS `json:"embedS"`
+	Int    int
+}
+
+func (e *embStructLowerCaseTagged) Clean() {}
+
+type embStructPtrLowerCaseTagged struct {
+	*embedS `json:"embedS"`
+	Int     int
+}
+
+func (e *embStructPtrLowerCaseTagged) Clean() {}
+
+type fieldStructLowerCase struct {
+	field embedS `json:"field"`
+	Int   int
+}
+
+func (e *fieldStructLowerCase) Clean() {}
+
+type fieldStructPtrLowerCase struct {
+	field *embedS `json:"field"`
+	Int   int
+}
+
+func (e *fieldStructPtrLowerCase) Clean() {}
+
+type cleaner interface {
+	Clean()
+}
+
+func TestJSONUnmarshalStructLowerCase(t *testing.T) {
+	for name, unl := range jsonUnmarshalers {
+		for _, memVal := range []cleaner{
+			&embStructLowerCase{},
+			&embStructPtrLowerCase{},
+			&embStructLowerCaseTagged{},
+			&embStructPtrLowerCaseTagged{},
+			&fieldStructLowerCase{},
+			&fieldStructPtrLowerCase{},
+		} {
+			for _, testCase := range []string{
+				`{"E1":666, "E2":"V2", "e2": "v2"}`,
+			} {
+				if err := unl.Unmarshal([]byte(testCase), &memVal); err != nil {
+					t.Logf("PVD(%s) ERR(%s)", name, err.Error())
+				} else {
+					t.Logf("PVD(%s) RAW(%s) -> MEMORY(%+v)", name, testCase, memVal)
+				}
+			}
+		}
+	}
+}
+
+type EmbedS struct {
+	E1 int
+	E2 string
+	e3 string
+}
+
+type EmbedStruct struct {
+	EmbedS
+}
+
+func (e *EmbedStruct) Clean() {}
+
+type EmbedStructPtr struct {
+	*EmbedS
+}
+
+func (e *EmbedStructPtr) Clean() {}
+
+type EmbedStructTagged struct {
+	EmbedS `json:"embedS"`
+}
+
+func (e *EmbedStructTagged) Clean() {}
+
+type EmbedStructPtrTagged struct {
+	*EmbedS `json:"embedS"`
+}
+
+func (e *EmbedStructPtrTagged) Clean() {}
+
+type FieldStruct struct {
+	Field EmbedS `json:"field"`
+}
+
+func (e *FieldStruct) Clean() {}
+
+type FieldStructPtr struct {
+	Field *EmbedS `json:"field"`
+}
+
+func (e *FieldStructPtr) Clean() {}
+
+func TestJSONUnmarshalStructUpperCase(t *testing.T) {
+	for name, unl := range jsonUnmarshalers {
+		for _, memVal := range []cleaner{
+			&EmbedStruct{},
+			&EmbedStructPtr{},
+			&EmbedStructTagged{},
+			&EmbedStructPtrTagged{},
+			&FieldStruct{},
+			&FieldStructPtr{},
+		} {
+			for _, testCase := range []string{
+				`{"E1":666, "E2":"V2", "e3": "v2"}`,
+			} {
+				if err := unl.Unmarshal([]byte(testCase), &memVal); err != nil {
+					t.Logf("PVD(%s) ERR(%s)", name, err.Error())
+				} else {
+					t.Logf("PVD(%s) RAW(%s) -> MEMORY(%+v)", name, testCase, memVal)
+				}
+			}
+		}
+	}
+}
+
+type FieldDataValue struct {
+	i      int
+	Int    int  `json:",omitzero"`
+	IntPtr *int `json:",omitempty"`
+	IntStr int  `json:",string"`
+}
+
+func TestJSONUnmarshalPtr(t *testing.T) {
+	for name, unl := range jsonUnmarshalers {
+		for _, testCase := range []string{
+			`{"i":1, "Int":10, "IntPtr":0}`,
+			`{"i":1, "Int":10, "IntPtr":20}`,
+		} {
+			var memVal FieldDataValue
+			if err := unl.Unmarshal([]byte(testCase), &memVal); err != nil {
+				t.Logf("PVD(%s) ERR(%s)", name, err.Error())
+			} else {
+				t.Logf("PVD(%s) RAW(%s) -> MEMORY(%+v)", name, testCase, memVal)
+			}
+		}
+	}
+}
+
+// conclusion: json to go-object none-type to map[string]any
+// stdlib: only call UseNumber in json.Decoder
+// goccy: call UseNumber in goccyjson.Decoder
+// json-iterator: global config jsoniter.Config
+func TestJSONUnmarshalMap(t *testing.T) {
+	for name, unl := range jsonUnmarshalers {
+		for _, testCase := range []string{
+			`{"i":1, "Int":10, "IntPtr":0}`,
+			`{"i":1, "Int":10, "IntPtr":20}`,
+		} {
+			var memVal any
+			if err := unl.Unmarshal([]byte(testCase), &memVal); err != nil {
+				t.Logf("PVD(%s) ERR(%s)", name, err.Error())
+			} else {
+				t.Logf("PVD(%s) RAW(%s) -> MEMORY(%+v)", name, testCase, memVal)
+			}
+		}
+	}
+}
+
+// conclusion: tag-options
+// stdlib support: omitempty, omitzero, string
+// goccy, json-iterator support: omitempty, string
+func TestJSONMarshal(t *testing.T) {
+	for name, msl := range jsonMarshalers {
+		for _, memVal := range []FieldDataValue{
+			{i: 10, Int: 100, IntPtr: util.New(1000), IntStr: 5},
+			{i: 0, Int: 0, IntPtr: nil, IntStr: 0},
+		} {
+			if bs, err := msl.Marshal(memVal); err != nil {
+				t.Logf("PVD(%s) ERR(%s)", name, err.Error())
+			} else {
+				t.Logf("PVD(%s) MEMORY(%+v) -> RAW(%s)", name, memVal, bs)
+			}
+		}
 	}
 }

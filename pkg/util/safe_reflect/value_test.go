@@ -64,3 +64,19 @@ func TestSet(t *testing.T) {
 	reflect.ValueOf(iptr).Elem().SetInt(int64(666))
 	t.Log(iptr)
 }
+
+func TestCopyFieldValue2(t *testing.T) {
+	src := struct {
+		A int
+		b string
+	}{A: 114514, b: "Hajimi"}
+
+	dst := struct {
+		A int
+		b string
+	}{}
+
+	t.Logf("%+v", dst)
+	CopyFieldValue(src, &dst)
+	t.Logf("%+v", dst)
+}
