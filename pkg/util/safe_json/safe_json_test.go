@@ -125,6 +125,9 @@ func TestMapAny(t *testing.T) {
 	}
 }
 
+/* * * * * * * * * * * * *
+ * JSONStringInJSONField *
+ * * * * * * * * * * * * */
 type jsonKv struct {
 	KeyStr string
 	KeyInt int
@@ -138,22 +141,19 @@ func (j jsonKv) MarshalJSON() ([]byte, error) {
 	return json.Marshal(jsonKvAlias(j))
 }
 
-func (j *jsonKv) UnmarshalJSON(b []byte) error {
+func (j *jsonKv) UnmarshalJSON(b []byte) (err error) {
 	var jAlias jsonKvAlias
-	if err := json.Unmarshal(b, &jAlias); err == nil {
+	if err = json.Unmarshal(b, &jAlias); err == nil {
 		*j = jsonKv(jAlias)
 		return nil
 	}
 	var jStr string
-	if err := json.Unmarshal(b, &jStr); err != nil {
-		return err
-	} else {
-		if err := json.Unmarshal([]byte(jStr), &jAlias); err == nil {
+	if err = json.Unmarshal(b, &jStr); err == nil {
+		if err = json.Unmarshal([]byte(jStr), &jAlias); err == nil {
 			*j = jsonKv(jAlias)
-			return err
 		}
-		return nil
 	}
+	return err
 }
 
 func TestJSONStringInJSON(t *testing.T) {
@@ -186,6 +186,10 @@ func TestJSONStringInJSON(t *testing.T) {
 		}
 	}
 }
+
+/* * * * * * * * * * * * *
+ * EmbedStructLowerCase  *
+ * * * * * * * * * * * * */
 
 type embedS struct {
 	E1 int
@@ -351,23 +355,27 @@ func TestJSONUnmarshalStructLowerCase(t *testing.T) {
 	}
 }
 
+/* * * * * * * * * * * * *
+ * EmbedStructUpperCase  *
+ * * * * * * * * * * * * */
+
 type EmbedS struct {
-	E1 int
-	E2 string
+	E1 int    `json:"E1"`
+	E2 string `json:"E2"`
 	e3 string
 }
 
-type EmbedStruct struct {
+type EmbedStructNoTagged struct {
 	EmbedS
 }
 
-func (e *EmbedStruct) Clean() {}
+func (e *EmbedStructNoTagged) Clean() {}
 
-type EmbedStructPtr struct {
-	*EmbedS
+type EmbedStructUnTagged struct {
+	EmbedS `json:"-"`
 }
 
-func (e *EmbedStructPtr) Clean() {}
+func (e *EmbedStructUnTagged) Clean() {}
 
 type EmbedStructTagged struct {
 	EmbedS `json:"embedS"`
@@ -375,41 +383,87 @@ type EmbedStructTagged struct {
 
 func (e *EmbedStructTagged) Clean() {}
 
+type EmbedStructPtrNoTagged struct {
+	*EmbedS
+}
+
+func (e *EmbedStructPtrNoTagged) Clean() {}
+
+type EmbedStructPtrUnTagged struct {
+	*EmbedS `json:"-"`
+}
+
+func (e *EmbedStructPtrUnTagged) Clean() {}
+
 type EmbedStructPtrTagged struct {
 	*EmbedS `json:"embedS"`
 }
 
 func (e *EmbedStructPtrTagged) Clean() {}
 
-type FieldStruct struct {
-	Field EmbedS `json:"field"`
+type FieldStructNoTagged struct {
+	Field EmbedS
 }
 
-func (e *FieldStruct) Clean() {}
+func (e *FieldStructNoTagged) Clean() {}
 
-type FieldStructPtr struct {
-	Field *EmbedS `json:"field"`
+type FieldStructUnTagged struct {
+	Field EmbedS `json:"-"`
 }
 
-func (e *FieldStructPtr) Clean() {}
+func (e *FieldStructUnTagged) Clean() {}
+
+type FieldStructTagged struct {
+	Field EmbedS `json:"embedS"`
+}
+
+func (e *FieldStructTagged) Clean() {}
+
+type FieldStructPtrNoTagged struct {
+	Field *EmbedS
+}
+
+func (e *FieldStructPtrNoTagged) Clean() {}
+
+type FieldStructPtrUnTagged struct {
+	Field *EmbedS `json:"-"`
+}
+
+func (e *FieldStructPtrUnTagged) Clean() {}
+
+type FieldStructPtrTagged struct {
+	Field *EmbedS `json:"embedS"`
+}
+
+func (e *FieldStructPtrTagged) Clean() {}
 
 func TestJSONUnmarshalStructUpperCase(t *testing.T) {
-	for name, unl := range jsonUnmarshalers {
-		for _, memVal := range []cleaner{
-			&EmbedStruct{},
-			&EmbedStructPtr{},
-			&EmbedStructTagged{},
-			&EmbedStructPtrTagged{},
-			&FieldStruct{},
-			&FieldStructPtr{},
+	for unlName, unl := range jsonUnmarshalers {
+		for testCaseName, testCase := range map[string]string{
+			"Inline":    `{"E1":666, "E2":"E2Value", "e3": "e3Value"}`,            // inline EmbedS
+			"Inline-CI": `{"e1":666, "e2":"E2Value", "e3": "e3Value"}`,            // inline EmbedS, case-insensitive
+			"Field":     `{"embedS":{"E1":666, "E2":"E2Value", "e3": "e3Value"}}`, // field EmbedS
+			"Field-CI":  `{"eMbEdS":{"E1":666, "E2":"E2Value", "e3": "e3Value"}}`, // field EmbedS, case-insensitive
 		} {
-			for _, testCase := range []string{
-				`{"E1":666, "E2":"V2", "e3": "v2"}`,
+			for memName, memVal := range map[string]cleaner{
+				"Embed-NoTag":     &EmbedStructNoTagged{},
+				"Embed-UnTag":     &EmbedStructUnTagged{},
+				"Embed-Tagged":    &EmbedStructTagged{},
+				"EmbedPtr-NoTag":  &EmbedStructPtrNoTagged{},
+				"EmbedPtr-UnTag":  &EmbedStructPtrUnTagged{},
+				"EmbedPtr-Tagged": &EmbedStructPtrTagged{},
+				"Field-NoTag":     &FieldStructNoTagged{},
+				"Field-UnTag":     &FieldStructUnTagged{},
+				"Field-Tagged":    &FieldStructTagged{},
+				"FieldPtr-NoTag":  &FieldStructPtrNoTagged{},
+				"FieldPtr-UnTag":  &FieldStructPtrUnTagged{},
+				"FieldPtr-Tagged": &FieldStructPtrTagged{},
 			} {
+
 				if err := unl.Unmarshal([]byte(testCase), &memVal); err != nil {
-					t.Logf("PVD(%s) ERR(%s)", name, err.Error())
+					t.Logf("PVD(%s) ERR(%s)", unlName, err.Error())
 				} else {
-					t.Logf("PVD(%s) RAW(%s) -> MEMORY(%+v)", name, testCase, memVal)
+					t.Logf("PVD(%s), C(%s)->M(%s): MEM(%v)", unlName, testCaseName, memName, memVal)
 				}
 			}
 		}
