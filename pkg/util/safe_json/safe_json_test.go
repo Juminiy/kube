@@ -480,8 +480,8 @@ type FieldDataValue struct {
 func TestJSONUnmarshalPtr(t *testing.T) {
 	for name, unl := range jsonUnmarshalers {
 		for _, testCase := range []string{
-			`{"i":1, "Int":10, "IntPtr":0}`,
-			`{"i":1, "Int":10, "IntPtr":20}`,
+			`{"i":1, "Int":10, "IntPtr":0, "IntStr": "0"}`,
+			`{"i":1, "Int":10, "IntPtr":20, "IntStr": "1000"}`,
 		} {
 			var memVal FieldDataValue
 			if err := unl.Unmarshal([]byte(testCase), &memVal); err != nil {
