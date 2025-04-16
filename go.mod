@@ -22,6 +22,7 @@ require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-resty/resty/v2 v2.16.2
 	github.com/goccy/go-json v0.10.3
+	github.com/goccy/go-reflect v1.2.0
 	github.com/gofiber/fiber/v3 v3.0.0-beta.3
 	github.com/goharbor/go-client v0.210.0
 	github.com/google/uuid v1.6.0

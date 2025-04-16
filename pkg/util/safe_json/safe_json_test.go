@@ -234,7 +234,7 @@ func TestJSONFeatures(t *testing.T) {
 func TestJSONFeature2(t *testing.T) {
 	type intStr2 struct {
 		embedS  `json:"embedS"`
-		embedS2 embedS `json:"embedS2"`
+		embedS2 embedS
 		EmbedS3 embedS `json:"embedS3"`
 		EmbedS4 embedS `json:"-"`
 	}
@@ -265,7 +265,7 @@ func TestJSONFeature2(t *testing.T) {
 func TestJSONFeature3(t *testing.T) {
 	type intStr2 struct {
 		*embedS `json:"embedS"`
-		embedS2 *embedS `json:"embedS2"`
+		embedS2 *embedS
 		EmbedS3 *embedS `json:"embedS3"`
 		EmbedS4 *embedS `json:"-"`
 	}
@@ -315,14 +315,14 @@ type embStructPtrLowerCaseTagged struct {
 func (e *embStructPtrLowerCaseTagged) Clean() {}
 
 type fieldStructLowerCase struct {
-	field embedS `json:"field"`
+	field embedS
 	Int   int
 }
 
 func (e *fieldStructLowerCase) Clean() {}
 
 type fieldStructPtrLowerCase struct {
-	field *embedS `json:"field"`
+	field *embedS
 	Int   int
 }
 
