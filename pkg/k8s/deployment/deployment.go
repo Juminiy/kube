@@ -1,23 +1,22 @@
 package deployment
 
 import (
+	"github.com/Juminiy/kube/pkg/k8s/metadata"
 	"github.com/Juminiy/kube/pkg/util"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func New(podName string) appsv1.Deployment {
+func New(name string) appsv1.Deployment {
 	return appsv1.Deployment{
 		TypeMeta:   metav1.TypeMeta{},
 		ObjectMeta: metav1.ObjectMeta{},
 		Spec: appsv1.DeploymentSpec{
-			Replicas: util.NewInt32(3),
+			Replicas: util.NewInt32(0),
 			Selector: nil,
 			Template: corev1.PodTemplateSpec{
-				ObjectMeta: metav1.ObjectMeta{
-					Name: podName,
-				},
+				ObjectMeta: metadata.ObjectMeta("", "", nil, nil),
 				Spec: corev1.PodSpec{
 					Volumes:                       nil,
 					InitContainers:                nil,
@@ -66,6 +65,5 @@ func New(podName string) appsv1.Deployment {
 			Paused:                  false,
 			ProgressDeadlineSeconds: nil,
 		},
-		Status: appsv1.DeploymentStatus{},
 	}
 }

@@ -1,16 +1,20 @@
 package volume
 
-import corev1 "k8s.io/api/core/v1"
+import (
+	corev1 "k8s.io/api/core/v1"
+)
 
-func ROConfigMap(configMapName string) corev1.Volume {
+func ConfigMap() corev1.Volume {
 	return corev1.Volume{
-		Name: configMapName,
+		Name: "",
 		VolumeSource: corev1.VolumeSource{
 			ConfigMap: &corev1.ConfigMapVolumeSource{
-				LocalObjectReference: corev1.LocalObjectReference{},
-				Items:                nil,
-				DefaultMode:          nil,
-				Optional:             nil,
+				LocalObjectReference: corev1.LocalObjectReference{
+					Name: "",
+				},
+				Items:       []corev1.KeyToPath{},
+				DefaultMode: nil,
+				Optional:    nil,
 			},
 		},
 	}
