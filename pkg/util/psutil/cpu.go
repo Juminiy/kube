@@ -4,7 +4,6 @@ import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	"github.com/Juminiy/kube/pkg/util"
 	pscpu "github.com/shirou/gopsutil/v4/cpu"
-	"github.com/spf13/cast"
 )
 
 func cpu() []pscpu.InfoStat {
@@ -39,7 +38,7 @@ func cpuV2() CPUV2 {
 		modelInfo.Cores += info.Cores
 		modelInfo.CacheSizeByte += info.CacheSize
 		modelInfo.CacheSize = util.MeasureByte(int(modelInfo.CacheSizeByte))
-		modelInfo.Frequency = cast.ToString(info.Mhz) + "MHZ"
+		modelInfo.Frequency = util.F64toa(info.Mhz) + "MHZ"
 		modelInfo.Flags = info.Flags
 		info.Flags = nil
 		modelInfo.InfoStat = append(modelInfo.InfoStat, info)

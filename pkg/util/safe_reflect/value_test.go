@@ -24,7 +24,7 @@ type (
 func (s *struct1) String() string {
 	return util.StringJoin(", ",
 		strconv.Itoa(s.V1),
-		util.Ptr2a(s.V2),
+		//util.Ptr2a(s.V2),
 		s.v3,
 	)
 }

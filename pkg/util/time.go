@@ -5,7 +5,6 @@ import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
 	unit "github.com/docker/go-units"
 	"github.com/prometheus/prometheus/model/timestamp"
-	"github.com/spf13/cast"
 	"time"
 )
 
@@ -108,13 +107,13 @@ func MeasureTime(dur time.Duration) string {
 
 func ToTimestamp(t time.Time) string {
 	if t != _zeroTime {
-		return cast.ToString(timestamp.FromTime(t))
+		return I64toa(timestamp.FromTime(t))
 	}
 	return ""
 }
 
 func FromTimestamp(s string) time.Time {
-	return timestamp.Time(cast.ToInt64(s))
+	return timestamp.Time(AtoI64(s))
 }
 
 var _zeroTime = time.Time{}

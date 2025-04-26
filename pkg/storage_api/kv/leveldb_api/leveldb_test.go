@@ -3,9 +3,9 @@ package leveldb_api
 import (
 	"errors"
 	"github.com/Juminiy/kube/pkg/util"
-	"github.com/spf13/cast"
 	"github.com/syndtr/goleveldb/leveldb"
 	leveldbutil "github.com/syndtr/goleveldb/leveldb/util"
+	"strconv"
 	"testing"
 )
 
@@ -38,7 +38,7 @@ func TestBatch(t *testing.T) {
 	ltx, err := _db.OpenTransaction()
 	util.Must(err)
 	for i := range 114514 {
-		th := cast.ToString(i)
+		th := strconv.Itoa(i)
 		util.Must(ltx.Put(_S2B("lkey_"+th), _S2B("lval_"+th), nil))
 	}
 	util.Must(ltx.Commit())

@@ -31,7 +31,7 @@ func (IRReverse) WithUIntSalt(val string, salt ...uint) string {
 	str := strings.Builder{}
 	str.WriteString(val)
 	for _, saltUint := range salt {
-		str.WriteString(strconv.FormatUint(uint64(saltUint), 10))
+		str.WriteString(util.U64toa(uint64(saltUint)))
 	}
 	return sha256Encrypt(val, str.String())
 }

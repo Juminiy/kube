@@ -2,7 +2,6 @@
 package safe_cast
 
 import (
-	"github.com/spf13/cast"
 	"math"
 )
 
@@ -80,16 +79,4 @@ func U64toU32(u64 uint64) uint32 {
 
 func U64toUPtr(u64 uint64) uintptr {
 	return uintptr(u64)
-}
-
-// UtoF32
-// precision lose
-func UtoF32[U ~uint | uint8 | uint16 | uint32 | uint64 | uintptr](u U) float32 {
-	return cast.ToFloat32(cast.ToString(u))
-}
-
-// UtoF64
-// precision lose
-func UtoF64[U ~uint | uint8 | uint16 | uint32 | uint64 | uintptr](u U) float64 {
-	return cast.ToFloat64(cast.ToString(u))
 }

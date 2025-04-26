@@ -31,56 +31,43 @@ type Number struct {
 // a safe Number representation
 func ParseNumber(s string) (num Number) {
 	num.s = s
-	i, ok := ParseInt(s)
-	if ok {
+	if i, ok := ParseInt(s); ok {
 		num.i = util.New(i)
 	}
-	i8, ok := ParseInt8(s)
-	if ok {
+	if i8, ok := ParseInt8(s); ok {
 		num.i8 = util.New(i8)
 	}
-	i16, ok := ParseInt16(s)
-	if ok {
+	if i16, ok := ParseInt16(s); ok {
 		num.i16 = util.New(i16)
 	}
-	i32, ok := ParseInt32(s)
-	if ok {
+	if i32, ok := ParseInt32(s); ok {
 		num.i32 = util.New(i32)
 	}
-	i64, ok := ParseInt64(s)
-	if ok {
+	if i64, ok := ParseInt64(s); ok {
 		num.i64 = util.New(i64)
 	}
-	u, ok := ParseUint(s)
-	if ok {
+	if u, ok := ParseUint(s); ok {
 		num.u = util.New(u)
 	}
-	u8, ok := ParseUint8(s)
-	if ok {
+	if u8, ok := ParseUint8(s); ok {
 		num.u8 = util.New(u8)
 	}
-	u16, ok := ParseUint16(s)
-	if ok {
+	if u16, ok := ParseUint16(s); ok {
 		num.u16 = util.New(u16)
 	}
-	u32, ok := ParseUint32(s)
-	if ok {
+	if u32, ok := ParseUint32(s); ok {
 		num.u32 = util.New(u32)
 	}
-	u64, ok := ParseUint64(s)
-	if ok {
+	if u64, ok := ParseUint64(s); ok {
 		num.u64 = util.New(u64)
 	}
-	uptr, ok := ParseUintptr(s)
-	if ok {
+	if uptr, ok := ParseUintptr(s); ok {
 		num.uptr = util.New(uptr)
 	}
-	f32, ok := ParseFloat32(s)
-	if ok {
+	if f32, ok := ParseFloat32(s); ok {
 		num.f32 = util.New(f32)
 	}
-	f64, ok := ParseFloat64(s)
-	if ok {
+	if f64, ok := ParseFloat64(s); ok {
 		num.f64 = util.New(f64)
 	}
 	return

@@ -7,7 +7,6 @@ import (
 	"github.com/minio/madmin-go/v3"
 	"github.com/minio/minio-go/v7"
 	miniocred "github.com/minio/minio-go/v7/pkg/credentials"
-	"github.com/spf13/cast"
 )
 
 type Req struct {
@@ -124,7 +123,7 @@ func (c *Client) AtomicDeleteFlow(resp Resp) error {
 
 	err := c.DeleteAccessPolicy(&PolicyConfig{
 		BusinessUser: BusinessUser{
-			ID:   cast.ToString(resp.UserID),
+			ID:   util.U64toa(resp.UserID),
 			Name: resp.UserName,
 		},
 		Cred:       resp.CredValue,

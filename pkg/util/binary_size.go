@@ -2,8 +2,7 @@ package util
 
 import (
 	"github.com/Juminiy/kube/pkg/log_api/stdlog"
-	unit "github.com/docker/go-units"
-	"github.com/spf13/cast"
+	"github.com/docker/go-units"
 	"strconv"
 )
 
@@ -21,6 +20,11 @@ const (
 // BytesOf
 // get a proper measurement: B/KiB/MiB/GiB/TiB/PiB/EiB
 func BytesOf(bs []byte) string {
+	return MeasureByte(len(bs))
+}
+
+// Deprecated
+func bytesOfV1(bs []byte) string {
 	lenOf := len(bs)
 	var appr float64
 	var measure = "B"
@@ -42,19 +46,27 @@ func BytesOf(bs []byte) string {
 	return F64toa(appr) + measure
 }
 
+// Deprecated
 func BytesKB(bs []byte) float64 {
 	return float64(len(bs)) / (1.0 * Ki)
 }
 
+// Deprecated
 func BytesMB(bs []byte) float64 {
 	return float64(len(bs)) / (1.0 * Mi)
 }
 
+// Deprecated
 func BytesGB(bs []byte) float64 {
 	return float64(len(bs)) / (1.0 * Gi)
 }
 
 func MeasureByte(size int) string {
+	return units.BytesSize(float64(size))
+}
+
+// Deprecated
+func measureByteV1(size int) string {
 	var (
 		appr float64 = 0.0
 		meas string  = "B"
@@ -84,14 +96,4 @@ func MeasureByte(size int) string {
 		return strconv.Itoa(size) + meas
 	}
 	return F64toa(appr) + meas
-}
-
-// +parameter a: int, uint, float
-func HumanSize(a any) string {
-	return unit.HumanSize(cast.ToFloat64(a))
-}
-
-// +parameter a: int, uint, float
-func HumanBytesSize(a any) string {
-	return unit.BytesSize(cast.ToFloat64(a))
 }

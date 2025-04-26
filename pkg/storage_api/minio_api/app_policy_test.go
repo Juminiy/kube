@@ -1,7 +1,7 @@
 package minio_api
 
 import (
-	"strconv"
+	"github.com/Juminiy/kube/pkg/util"
 	"testing"
 )
 
@@ -10,7 +10,7 @@ func TestPolicyConfig_IBAPAccessKeyWithOneBucketObjectCRUDPolicy(t *testing.T) {
 	pc := PolicyConfig{
 		BusinessUser: BusinessUser{
 			Name: "juminiy-x",
-			ID:   strconv.FormatUint(8, 10),
+			ID:   util.U64toa(8),
 		},
 		BucketName: "s3fs-mount-bucket-juminiy-x",
 	}
@@ -22,7 +22,7 @@ func TestPolicyConfig_RBAPBucketWithAdminAllWithAccessKeyOneBucketObjectCRUDPoli
 	pc := PolicyConfig{
 		BusinessUser: BusinessUser{
 			Name: "juminiy-x",
-			ID:   strconv.FormatUint(8, 10),
+			ID:   util.I64toa(8),
 		},
 		BucketName: "s3fs-mount-bucket-juminiy-x",
 	}

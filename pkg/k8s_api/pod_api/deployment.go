@@ -281,5 +281,5 @@ func getCPUStr(coreNum float64) string {
 // B -> KiB/MiB/GiB/TiB/PiB/EiB
 // currently not conv
 func getByteStr(memByte int64) string {
-	return strconv.FormatInt(memByte, 10)
+	return util.I64toa(memByte)
 }
