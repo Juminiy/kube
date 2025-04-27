@@ -1,7 +1,7 @@
 package deployment
 
 import (
-	"github.com/Juminiy/kube/pkg/k8s/metadata"
+	"github.com/Juminiy/kube/pkg/k8score/metadata"
 	"github.com/Juminiy/kube/pkg/util"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"

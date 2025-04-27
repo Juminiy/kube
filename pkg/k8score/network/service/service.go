@@ -1,24 +1,26 @@
 package service
 
 import (
-	"github.com/Juminiy/kube/pkg/k8s/metadata"
+	"github.com/Juminiy/kube/pkg/k8score/metadata"
 	"github.com/Juminiy/kube/pkg/util"
 	corev1 "k8s.io/api/core/v1"
 )
 
-func New() corev1.Service {
+func NodePort(
+	name, ns string,
+	podSelector map[string]string,
+) corev1.Service {
 	return corev1.Service{
 		TypeMeta:   metadata.TypeMetaService(),
-		ObjectMeta: metadata.ObjectMeta("", "", nil, nil),
+		ObjectMeta: metadata.ObjectMeta(name, ns, podSelector, nil),
 		Spec: corev1.ServiceSpec{
-			Ports:                         nil,
-			Selector:                      nil,
+			Ports:                         []corev1.ServicePort{},
+			Selector:                      podSelector,
 			ClusterIP:                     "",
 			ClusterIPs:                    nil,
-			Type:                          "",
+			Type:                          corev1.ServiceTypeNodePort,
 			ExternalIPs:                   nil,
 			SessionAffinity:               "",
-			LoadBalancerIP:                "",
 			LoadBalancerSourceRanges:      nil,
 			ExternalName:                  "",
 			ExternalTrafficPolicy:         "",
