@@ -66,9 +66,9 @@ func NewUbuntuDeployment() *pod_api.DeploymentConfig {
 			//}.Args(),
 		).CancelCmdArgs(false).
 		WithUserHost(&cmd_args.UserHostConfig{
-			HostName: "hln",
-			UserName: "hln",
-			Password: "hln@666",
+			HostName: "",
+			UserName: "",
+			Password: "",
 		}).CancelUserHost(true)
 
 	err := pod_api.NewDeployment(dConf)
