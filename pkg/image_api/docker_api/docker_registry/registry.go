@@ -49,4 +49,5 @@ func (r *Registry) GetProject() string {
 const (
 	DockerHub = "dockerhub"
 	Harbor    = "harbor"
+	Registry2 = "registry2"
 )
