@@ -41,7 +41,7 @@ func getTestTasks() []util.Func {
 			} else if i%7 == 0 {
 				return errors.New("faked error index: " + strconv.Itoa(i) + "")
 			} else if i%555 == 0 {
-				util.Must(fmt.Errorf("faked panic index: " + strconv.Itoa(i) + ""))
+				util.Must(fmt.Errorf("faked panic index: %d", i))
 			}
 			return nil
 		}
